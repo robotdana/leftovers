@@ -1,0 +1,12 @@
+---
+ignore:
+  .git
+only:
+  - '*.rb'
+  - '*.rake'
+  - '*.ru'
+  - Rakefile
+  - Gemfile
+allowed:
+  - initialize # called by new
+  - inspect # called by repl

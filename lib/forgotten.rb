@@ -1,6 +1,14 @@
-require "forgotten/version"
+require_relative "./forgotten/version"
+require_relative "./forgotten/collector"
+require_relative "./forgotten/file_list"
+require_relative "./forgotten/config"
 
 module Forgotten
   class Error < StandardError; end
-  # Your code goes here...
+
+  module_function
+
+  def config
+    @config ||= Forgotten::Config.new
+  end
 end

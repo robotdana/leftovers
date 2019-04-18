@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "forgotten"
+require_relative "../lib/forgotten"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -11,4 +11,5 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+  require_relative './temp_file_helper'
 end
