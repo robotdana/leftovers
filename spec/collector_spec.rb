@@ -9,7 +9,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:m)]
+    expect(subject.definitions).to contain_exactly start_with(:m)
   end
 
   it 'collects method calls in optional arguments' do
@@ -17,8 +17,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:m)]
-    expect(subject.calls).to match [:b]
+    expect(subject.definitions).to contain_exactly start_with(:m)
+    expect(subject.calls).to contain_exactly :b
   end
 
   it 'collects method calls that match a previously defined lvar' do
@@ -26,8 +26,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:m)]
-    expect(subject.calls).to match [:a]
+    expect(subject.definitions).to contain_exactly start_with(:m)
+    expect(subject.calls).to contain_exactly :a
   end
 
   it 'collects method calls using send' do
@@ -36,7 +36,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to match [:send, :foo]
+    expect(subject.calls).to contain_exactly :send, :foo
   end
 
   it 'collects method calls using send with strings' do
@@ -45,7 +45,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to match [:send, :foo]
+    expect(subject.calls).to contain_exactly :send, :foo
   end
 
   it 'collects method calls using Symbol#to_proc' do
@@ -57,13 +57,40 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly :array, :each, :foo
   end
 
+  it 'collects method calls using a method that calls multiple methods' do
+    temp_file 'foo.rb', 'before_action :method_one, :method_two'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :before_action, :method_one, :method_two
+  end
+
+  it 'collects method calls passed to before_save if:' do
+    temp_file 'foo.rb', 'before_save :do_a_thing, if: :thing_to_be_done?'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :before_save, :do_a_thing, :thing_to_be_done?
+  end
+
+  it 'collects method calls passed in an array to a before_save if:' do
+    temp_file 'foo.rb', 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :before_save, :do_a_thing, :thing_to_be_done?, :another_thing?
+  end
+
   it 'copes with method calls using send with lvars' do
     temp_file 'foo.rb', 'send(foo)'
 
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to match [:send, :foo]
+    expect(subject.calls).to contain_exactly :send, :foo
   end
 
   it 'copes with method calls using send with interpolated lvars' do
@@ -72,7 +99,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to match [:send, :bar]
+    expect(subject.calls).to contain_exactly :send, :bar
   end
 
   it 'collects method calls that match a previously defined lvar in a different context' do
@@ -80,8 +107,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:m)]
-    expect(subject.calls).to match [:a]
+    expect(subject.definitions).to contain_exactly start_with(:m)
+    expect(subject.calls).to contain_exactly :a
   end
 
   it 'collects constant references' do
@@ -98,7 +125,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.definitions).to contain_exactly start_with(:Whatever)
     expect(subject.calls).to be_empty
   end
 
@@ -107,7 +134,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.definitions).to contain_exactly start_with(:Whatever)
     expect(subject.calls).to contain_exactly :SuperClass
   end
 
@@ -116,7 +143,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.definitions).to contain_exactly start_with(:Whatever)
     expect(subject.calls).to be_empty
   end
 
@@ -125,7 +152,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.definitions).to contain_exactly start_with(:Whatever)
     expect(subject.calls).to contain_exactly :Class, :new
   end
 
@@ -225,4 +252,51 @@ RSpec.describe Forgotten::Collector do
     # the extra options are internal erb stuff and i don't mind
     expect(subject.calls).to include(:foo, :present?).and(exclude(:a, :href, :label))
   end
+
+  it 'collects method calls in hash values' do
+    temp_file 'foo.rb', '{ call: this }'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:this)
+  end
+
+  it 'collects method calls in route values' do
+    temp_file 'foo.rb', 'patch :thing, to: "controller#action"'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:patch, :thing, :controller, :action)
+  end
+
+  it 'collects scoped constant calls in class_name symbol keys' do
+    temp_file 'foo.rb', 'has_many :whatever, class_name: "Which::Ever"'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:has_many, :Which, :Ever)
+  end
+
+  it 'collects used in scope as calls' do
+    temp_file 'foo.rb', 'A::B'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:A, :B)
+  end
+
+  # it "handles complex examples" do
+  #     temp_file 'foo.rb', <<~RUBY
+
+  #     RUBY
+
+  #     subject.collect
+
+  #     expect(subject.definitions).to contain_exactly start_with(:EmailActions), start_with(:initialize), start_with(:email_params_from_order), start_with(:address_params)
+  #     expect(subject.calls).to contain_exactly(:email_params_from_order, :address_params)
+  #   end
 end

@@ -2,10 +2,4 @@
 
 require_relative '../lib/forgotten'
 
-collector = Forgotten::Collector.new
-
-collector.collect
-
-exit collector.report
-
-
+exit Forgotten.run

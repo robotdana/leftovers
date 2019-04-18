@@ -23,6 +23,22 @@ module Forgotten
       @method_callers ||= @config[:method_callers].map(&:to_sym)
     end
 
+    def method_list_callers
+      @method_list_callers ||= @config[:method_list_callers].map(&:to_sym)
+    end
+
+    def symbol_key_callers
+      @symbol_key_callers ||= @config[:symbol_key_callers].map(&:to_sym)
+    end
+
+    def symbol_key_list_callers
+      @symbol_key_list_callers ||= @config[:symbol_key_list_callers].map(&:to_sym)
+    end
+
+    def symbol_key_scoped_reference_callers
+      @symbol_key_scoped_reference_callers ||= @config[:symbol_key_scoped_reference_callers].map(&:to_sym)
+    end
+
     def allowed
       @allowed ||= @config[:allowed].map do |pattern|
         # * becomes .*, everything else is rendered inert for regexps. Also it's anchored

@@ -1,7 +1,7 @@
 ---
 ignore:
   .git
-  db/migrate/**
+  db/migrate
 
 only:
   - '*.rb'
@@ -40,6 +40,12 @@ method_callers:
   - after_destroy
   - after_commit
   - after_rollback
+  # ruby routes
+  - delete
+  - get
+  - patch
+  - post
+  - put
 
 method_list_callers:
   # rails controller callbacks
@@ -65,11 +71,22 @@ method_definers_with_predicate:
   # rails model attributes
   - attribute
 
-symbol_callers:
+symbol_key_callers:
   - if # rails callbacks
   - unless # rails callbacks
   - to # rails delegate
-  - class_name # associations
+  - class_name # rails associations
+  - action # rails routes
+  - with # rails rescue_from with:
+  - layout # rails controller
+
+symbol_key_list_callers:
+  - if # rails callbacks
+  - unless # rails callbacks
+
+# put :method, to: "controller#action"
+symbol_key_scoped_reference_callers:
+  - to # rails routes
 
 allowed:
   - initialize # called by new
@@ -79,3 +96,4 @@ allowed:
   - respond_to? # metaprogramming
   - '*Helper' # rails included in the ViewContext
   - '*Controller' # routes!
+  - ClassMethods # rails ActiveSupport::Concern
