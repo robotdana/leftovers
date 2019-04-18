@@ -2,6 +2,7 @@
 ignore:
   .git
   db/migrate/**
+
 only:
   - '*.rb'
   - '*.rake'
@@ -16,6 +17,10 @@ only:
 method_callers:
   - send
   - public_send
+  - __send__
+  # rails model validations
+  - validates
+  # rails model callbacks
   - after_initialize
   - after_find
   - after_touch
@@ -37,6 +42,7 @@ method_callers:
   - after_rollback
 
 method_list_callers:
+  # rails controller callbacks
   - after_action
   - append_after_action
   - append_around_action
@@ -56,12 +62,14 @@ method_list_definers:
   - alias_method
 
 method_definers_with_predicate:
+  # rails model attributes
   - attribute
 
 symbol_callers:
-  - if
-  - unless
-  - to
+  - if # rails callbacks
+  - unless # rails callbacks
+  - to # rails delegate
+  - class_name # associations
 
 allowed:
   - initialize # called by new
@@ -69,5 +77,5 @@ allowed:
   - respond_to_missing? # metaprogramming
   - method_missing # metaprogramming
   - respond_to? # metaprogramming
-  - '*Helper'
-  - '*Controller'
+  - '*Helper' # rails included in the ViewContext
+  - '*Controller' # routes!

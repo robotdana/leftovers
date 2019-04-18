@@ -60,7 +60,7 @@ module Forgotten
 
     def collect_if_method_caller(node)
       return unless Forgotten.config.method_callers.include?(node.children[1])
-      return unless [:sym, :str].include?(node.children[2].type)
+      return unless [:sym, :str].include?(node.children[2]&.type)
 
       calls << node.children[2].children[0].to_sym
     end
@@ -72,6 +72,13 @@ module Forgotten
       super
     end
     alias_method :on_const, :on_send
+
+    def on_block_pass(node)
+      if node.children[0].type == :sym
+        calls << node.children[0].children[0]
+      end
+      super
+    end
 
     def on_class(node)
       definitions << [node.children.first.children[1], node.children.first.loc.name, @current_filename]

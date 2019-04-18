@@ -54,7 +54,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to match [:array, :each, :foo]
+    expect(subject.calls).to contain_exactly :array, :each, :foo
   end
 
   it 'copes with method calls using send with lvars' do
