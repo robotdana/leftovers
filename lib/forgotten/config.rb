@@ -19,6 +19,10 @@ module Forgotten
       @config[:only]
     end
 
+    def method_callers
+      @method_callers ||= @config[:method_callers].map(&:to_sym)
+    end
+
     def allowed
       @allowed ||= @config[:allowed].map do |pattern|
         # * becomes .*, everything else is rendered inert for regexps. Also it's anchored

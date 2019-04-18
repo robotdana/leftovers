@@ -1,6 +1,7 @@
 ---
 ignore:
   .git
+  db/migrate/**
 only:
   - '*.rb'
   - '*.rake'
@@ -12,9 +13,61 @@ only:
   - '*.builder'
   - '*.jbuilder'
 
+method_callers:
+  - send
+  - public_send
+  - after_initialize
+  - after_find
+  - after_touch
+  - before_validation
+  - after_validation
+  - before_save
+  - around_save
+  - after_save
+  - before_create
+  - around_create
+  - after_create
+  - before_update
+  - around_update
+  - after_update
+  - before_destroy
+  - around_destroy
+  - after_destroy
+  - after_commit
+  - after_rollback
+
+method_list_callers:
+  - after_action
+  - append_after_action
+  - append_around_action
+  - append_before_action
+  - around_action
+  - before_action
+  - prepend_after_action
+  - prepend_around_action
+  - prepend_before_action
+
+method_definers:
+  - scope
+
+method_list_definers:
+  - attr_reader
+  - attr_writer
+  - alias_method
+
+method_definers_with_predicate:
+  - attribute
+
+symbol_callers:
+  - if
+  - unless
+  - to
+
 allowed:
   - initialize # called by new
   - inspect # called by repl
   - respond_to_missing? # metaprogramming
   - method_missing # metaprogramming
   - respond_to? # metaprogramming
+  - '*Helper'
+  - '*Controller'

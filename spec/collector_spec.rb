@@ -30,6 +30,51 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to match [:a]
   end
 
+  it 'collects method calls using send' do
+    temp_file 'foo.rb', 'send(:foo)'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to match [:send, :foo]
+  end
+
+  it 'collects method calls using send with strings' do
+    temp_file 'foo.rb', 'send("foo")'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to match [:send, :foo]
+  end
+
+  it 'collects method calls using Symbol#to_proc' do
+    temp_file 'foo.rb', 'array.each(&:foo)'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to match [:array, :each, :foo]
+  end
+
+  it 'copes with method calls using send with lvars' do
+    temp_file 'foo.rb', 'send(foo)'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to match [:send, :foo]
+  end
+
+  it 'copes with method calls using send with interpolated lvars' do
+    temp_file 'foo.rb', 'send("foo#{bar}")'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to match [:send, :bar]
+  end
+
   it 'collects method calls that match a previously defined lvar in a different context' do
     temp_file 'foo.rb', 'def m(a) nil end; a'
 
@@ -143,6 +188,18 @@ RSpec.describe Forgotten::Collector do
 
     expect(subject.definitions).to be_empty
     expect(subject.calls).to include(:foo, :each).and(exclude(:bar))
+  end
+
+  it 'collects haml files with echoed whitespace-significant blocks' do
+    temp_file 'foo.haml', <<~HAML
+      = form_for(whatever) do |bar|
+        = bar
+    HAML
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to include(:form_for, :whatever).and(exclude(:bar))
   end
 
   it 'collects erb files' do

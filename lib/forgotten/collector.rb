@@ -23,11 +23,14 @@ module Forgotten
           require 'haml'
           file = Haml::Engine.new(file).precompiled
         when '.rhtml', '.rjs', '.erb'
-          require 'erb'
-          file = ERB.new(file, nil, '-', '_').src
+          require_relative './erb'
+          @erb_compiler ||= Forgotten::ERB.new('-')
+          file = @erb_compiler.compile(File.read(filename)).first
         end
 
         parse_and_process(file)
+      rescue Parser::SyntaxError => e
+        puts "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}"
       end
     end
 
@@ -50,14 +53,22 @@ module Forgotten
     end
 
     def on_def(node)
-      definitions << [node.children.first, node.loc.name, @current_filename.delete_prefix(Dir.pwd + '/')]
+      definitions << [node.children.first, node.loc.name, @current_filename]
 
       super
     end
 
+    def collect_if_method_caller(node)
+      return unless Forgotten.config.method_callers.include?(node.children[1])
+      return unless [:sym, :str].include?(node.children[2].type)
+
+      calls << node.children[2].children[0].to_sym
+    end
+
     def on_send(node)
       calls << node.children[1]
-
+      # send, etc
+      collect_if_method_caller(node)
       super
     end
     alias_method :on_const, :on_send
