@@ -8,6 +8,9 @@ only:
   - Rakefile
   - Gemfile
   - '*.haml'
+  - '*.erb'
+  - '*.builder'
+  - '*.jbuilder'
 
 allowed:
   - initialize # called by new

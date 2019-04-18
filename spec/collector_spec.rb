@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+RSpec::Matchers.define_negated_matcher :exclude, :include
 RSpec.describe Forgotten::Collector do
   around { |example| with_temp_dir { example.run } }
 
@@ -89,7 +90,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly :a
+    expect(subject.calls).to include(:a)
   end
 
   it 'collects haml files with hidden scripts' do
@@ -102,12 +103,12 @@ RSpec.describe Forgotten::Collector do
   end
 
   it 'collects haml files string interpolation' do
-    temp_file 'foo.haml', '#{a}'
+    temp_file 'foo.haml', 'before#{a}after'
 
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly :a
+    expect(subject.calls).to include(:a).and(exclude(:before, :after))
   end
 
   it 'collects haml files with ruby blocks' do
@@ -120,7 +121,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly :a
+    expect(subject.calls).to include(:a).and(exclude(:ruby))
   end
 
   it 'collects haml files with dynamic attributes' do
@@ -129,6 +130,28 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly :a
+    expect(subject.calls).to include(:a).and(exclude(:id, :div))
+  end
+
+  it 'collects haml files with whitespace-significant blocks' do
+    temp_file 'foo.haml', <<~HAML
+      - foo.each do |bar|
+        = bar
+    HAML
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to include(:foo, :each).and(exclude(:bar))
+  end
+
+  it 'collects erb files' do
+    temp_file 'foo.erb', '<a href="<%= whatever %>"></a>'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    # the extra options are internal erb stuff and i don't mind
+    expect(subject.calls).to include(:whatever).and(exclude(:a, :href))
   end
 end

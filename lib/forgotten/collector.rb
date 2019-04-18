@@ -16,13 +16,18 @@ module Forgotten
     def collect
       Forgotten::FileList.new.each do |filename|
         @current_filename = filename.delete_prefix(Dir.pwd + '/')
+        file = File.read(filename)
 
         case File.extname(filename)
         when '.haml'
-          Forgotten::Haml.new(filename, self)
-        else
-          parse_and_process(File.read(filename))
+          require 'haml'
+          file = Haml::Engine.new(file).precompiled
+        when '.rhtml', '.rjs', '.erb'
+          require 'erb'
+          file = ERB.new(file).src
         end
+
+        parse_and_process(file)
       end
     end
 
