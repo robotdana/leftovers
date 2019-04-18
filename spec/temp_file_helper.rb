@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 require 'tmpdir'
+require 'pathname'
 
 module TempFileHelper
   def with_temp_dir(&block)
     dir = Pathname.new(Dir.mktmpdir)
     Dir.chdir(dir, &block)
   ensure
-    dir.rmtree
+    dir&.rmtree
   end
 
   def temp_files(filenames)

@@ -8,7 +8,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.method_definitions).to match [start_with(:m)]
+    expect(subject.definitions).to match [start_with(:m)]
   end
 
   it 'collects method calls in optional arguments' do
@@ -16,8 +16,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.method_definitions).to match [start_with(:m)]
-    expect(subject.maybe_method_calls).to eq [:b]
+    expect(subject.definitions).to match [start_with(:m)]
+    expect(subject.calls).to match [:b]
   end
 
   it 'collects method calls that match a previously defined lvar' do
@@ -25,8 +25,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.method_definitions).to match [start_with(:m)]
-    expect(subject.maybe_method_calls).to eq [:a]
+    expect(subject.definitions).to match [start_with(:m)]
+    expect(subject.calls).to match [:a]
   end
 
   it 'collects method calls that match a previously defined lvar in a different context' do
@@ -34,8 +34,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.method_definitions).to match [start_with(:m)]
-    expect(subject.maybe_method_calls).to eq [:a]
+    expect(subject.definitions).to match [start_with(:m)]
+    expect(subject.calls).to match [:a]
   end
 
   it 'collects constant references' do
@@ -43,8 +43,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.maybe_constant_references).to eq [:Whatever]
-    expect(subject.constant_definitions).to be_empty
+    expect(subject.calls).to contain_exactly :Whatever, :new
+    expect(subject.definitions).to be_empty
   end
 
   it 'collects class definitions' do
@@ -52,8 +52,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.constant_definitions).to match [start_with(:Whatever)]
-    expect(subject.maybe_constant_references).to be_empty
+    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.calls).to be_empty
   end
 
   it 'collects class definitions and constant calls to the inheritance class' do
@@ -61,8 +61,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.constant_definitions).to match [start_with(:Whatever)]
-    expect(subject.maybe_constant_references).to eq [:SuperClass]
+    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.calls).to contain_exactly :SuperClass
   end
 
   it 'collects module definitions' do
@@ -70,8 +70,8 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.constant_definitions).to match [start_with(:Whatever)]
-    expect(subject.maybe_constant_references).to be_empty
+    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.calls).to be_empty
   end
 
   it 'collects constant assignment' do
@@ -79,7 +79,56 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.constant_definitions).to match [start_with(:Whatever)]
-    expect(subject.maybe_constant_references).to eq [:Class]
+    expect(subject.definitions).to match [start_with(:Whatever)]
+    expect(subject.calls).to contain_exactly :Class, :new
+  end
+
+  it 'collects haml files' do
+    temp_file 'foo.haml', '= a'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :a
+  end
+
+  it 'collects haml files with hidden scripts' do
+    temp_file 'foo.haml', '- a'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :a
+  end
+
+  it 'collects haml files string interpolation' do
+    temp_file 'foo.haml', '#{a}'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :a
+  end
+
+  it 'collects haml files with ruby blocks' do
+    temp_file 'foo.haml', <<~HAML
+      :ruby
+        a(1)
+    HAML
+
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :a
+  end
+
+  it 'collects haml files with dynamic attributes' do
+    temp_file 'foo.haml', '%div{id: a}'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :a
   end
 end

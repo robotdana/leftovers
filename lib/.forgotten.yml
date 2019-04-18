@@ -7,6 +7,11 @@ only:
   - '*.ru'
   - Rakefile
   - Gemfile
+  - '*.haml'
+
 allowed:
   - initialize # called by new
   - inspect # called by repl
+  - respond_to_missing? # metaprogramming
+  - method_missing # metaprogramming
+  - respond_to? # metaprogramming

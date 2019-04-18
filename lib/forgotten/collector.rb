@@ -7,19 +7,27 @@ module Forgotten
   class Collector < Parser::AST::Processor
     attr_reader :calls
     attr_reader :definitions
-    attr_reader :file_list
 
-    def initialize(file_list)
-      @file_list = file_list
+    def initialize
       @calls = Set.new
       @definitions = []
     end
 
     def collect
-      file_list.each do |filename|
+      Forgotten::FileList.new.each do |filename|
         @current_filename = filename.delete_prefix(Dir.pwd + '/')
-        process(Parser::CurrentRuby.parse(File.read(filename)))
+
+        case File.extname(filename)
+        when '.haml'
+          Forgotten::Haml.new(filename, self)
+        else
+          parse_and_process(File.read(filename))
+        end
       end
+    end
+
+    def parse_and_process(ruby)
+      process(Parser::CurrentRuby.parse(ruby))
     end
 
     def report

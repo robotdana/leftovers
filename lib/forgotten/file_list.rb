@@ -25,7 +25,11 @@ module Forgotten
     def ruby_hashbang?(file)
       return unless File.extname(file).empty?
 
-      File.foreach(file).first.chomp =~ %r{\A#!.*\bruby$}
+      return if File.empty?(file)
+
+      File.foreach(file).first&.chomp&.match(%r{\A#!.*\bruby$})
+    rescue ArgumentError, Errno::ENOENT
+      # if it's a binary file we can't open it
     end
 
     def each
