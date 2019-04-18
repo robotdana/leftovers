@@ -146,12 +146,26 @@ RSpec.describe Forgotten::Collector do
   end
 
   it 'collects erb files' do
-    temp_file 'foo.erb', '<a href="<%= whatever %>"></a>'
+    temp_file 'foo.erb', '<a href="<%= whatever %>">label</a>'
 
     subject.collect
 
     expect(subject.definitions).to be_empty
     # the extra options are internal erb stuff and i don't mind
-    expect(subject.calls).to include(:whatever).and(exclude(:a, :href))
+    expect(subject.calls).to include(:whatever).and(exclude(:a, :href, :label))
+  end
+
+  it 'collects erb files when newline trimmed' do
+    temp_file 'foo.erb', <<~ERB
+      <%- if foo.present? -%>
+        <a href="<%= foo %>">label</a>
+      <%- end -%>
+    ERB
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    # the extra options are internal erb stuff and i don't mind
+    expect(subject.calls).to include(:foo, :present?).and(exclude(:a, :href, :label))
   end
 end

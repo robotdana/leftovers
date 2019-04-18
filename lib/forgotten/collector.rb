@@ -24,7 +24,7 @@ module Forgotten
           file = Haml::Engine.new(file).precompiled
         when '.rhtml', '.rjs', '.erb'
           require 'erb'
-          file = ERB.new(file).src
+          file = ERB.new(file, nil, '-', '_').src
         end
 
         parse_and_process(file)
