@@ -11,26 +11,33 @@ module Forgotten
     def initialize
       @calls = Set.new
       @definitions = []
+      @process_next = []
     end
 
     def collect
       Forgotten::FileList.new.each do |filename|
         @current_filename = filename.delete_prefix(Dir.pwd + '/')
-        file = File.read(filename)
-
-        case File.extname(filename)
-        when '.haml'
-          require 'haml'
-          file = Haml::Engine.new(file).precompiled
-        when '.rhtml', '.rjs', '.erb'
-          require_relative './erb'
-          @erb_compiler ||= Forgotten::ERB.new('-')
-          file = @erb_compiler.compile(File.read(filename)).first
-        end
+        file = preprocess_file(filename)
 
         parse_and_process(file)
       rescue Parser::SyntaxError => e
         puts "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}"
+      end
+    end
+
+    def preprocess_file(filename)
+      file = File.read(filename)
+
+      case File.extname(filename)
+      when '.haml'
+        require 'haml'
+        Haml::Engine.new(file).precompiled
+      when '.rhtml', '.rjs', '.erb'
+        require_relative './erb'
+        @erb_compiler ||= Forgotten::ERB.new('-')
+        @erb_compiler.compile(File.read(filename)).first
+      else
+        file
       end
     end
 
@@ -51,18 +58,17 @@ module Forgotten
 
       calls << node.children[1]
       # send, etc
+      collect_if_alias_method(node)
       collect_if_method_caller(node)
       collect_if_method_list_caller(node)
     end
     alias_method :on_const, :on_send
 
-    # grab the :to_s in each(&:to_s)
+    # grab e.g. :to_s in each(&:to_s)
     def on_block_pass(node)
       super
 
-      if node.children[0].type == :sym
-        calls << node.children[0].children[0]
-      end
+      collect_symbol_call(node.children.first)
     end
 
     # grab class Constant or module Constant
@@ -86,51 +92,64 @@ module Forgotten
 
       collect_if_symbol_key_caller(node)
       collect_if_symbol_key_list_caller(node)
-      collect_if_symbol_key_scoped_reference_caller(node)
+    end
+
+    # grab calls to `alias new_method original_method`
+    def on_alias(node)
+      super
+
+      definitions << [node.children.first.children.first, node.children.first.loc.expression, @current_filename]
+      calls << node.children[1].children.first
     end
 
     private
 
-    def collect_reference(node)
+    def collect_symbol_definition(node)
       return unless node
       return unless [:sym, :str].include?(node.type)
 
-      parse_and_process(node.children.first.to_s)
+      definitions << [node.children.first, node.loc.expression, @current_filename]
     end
 
-    # like 'controller#action'
-    def collect_scoped_reference(node)
+    def collect_symbol_call(node)
       return unless node
       return unless [:sym, :str].include?(node.type)
 
-      calls << node.children.first.to_s.split('#', 2)[1].to_sym
+      node.children.first.to_s.split(/[.:#]+/).each do |sub_node|
+        calls << sub_node.to_sym
+      end
     end
 
+    # grab calls to `alias_method :new_method, :original_method`
+    def collect_if_alias_method(node)
+      return unless Forgotten.config.alias_method_callers.include?(node.children[1])
+
+      collect_symbol_definition(node.children[2])
+      collect_symbol_call(node.children[3])
+    end
+
+    # grab calls to `validate :presence if: :condition?`
     def collect_if_symbol_key_caller(node)
       return unless Forgotten.config.symbol_key_callers.include?(node.children.first.children.first)
 
-      collect_reference(node.children[1])
+      collect_symbol_call(node.children[1])
     end
 
+    # grab calls to `validate :presence if: [:condition_one?, :condition_two?]`
     def collect_if_symbol_key_list_caller(node)
       return unless Forgotten.config.symbol_key_callers.include?(node.children.first.children.first)
 
       if node.children[1].type == :array
         node.children[1].children.each do |sub_node|
-          collect_reference(sub_node)
+          collect_symbol_call(sub_node)
         end
       end
     end
 
-    def collect_if_symbol_key_scoped_reference_caller(node)
-      return unless Forgotten.config.symbol_key_scoped_reference_callers.include?(node.children.first.children.first)
-
-      collect_scoped_reference(node.children[1])
-    end
     # grab calls to `send(:method), send('method')`
     def collect_if_method_caller(node)
       return unless Forgotten.config.method_callers.include?(node.children[1])
-      collect_reference(node.children[2])
+      collect_symbol_call(node.children[2])
     end
 
     # grab calls to `before_action :method1, :method2`
@@ -138,7 +157,7 @@ module Forgotten
       return unless Forgotten.config.method_list_callers.include?(node.children[1])
 
       node.children.drop(2).each do |sub_node|
-        collect_reference(sub_node)
+        collect_symbol_call(sub_node)
       end
     end
   end

@@ -35,8 +35,8 @@ module Forgotten
       @symbol_key_list_callers ||= @config[:symbol_key_list_callers].map(&:to_sym)
     end
 
-    def symbol_key_scoped_reference_callers
-      @symbol_key_scoped_reference_callers ||= @config[:symbol_key_scoped_reference_callers].map(&:to_sym)
+    def alias_method_callers
+      @alias_method_callers ||= @config[:alias_method_callers].map(&:to_sym)
     end
 
     def allowed

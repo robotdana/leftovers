@@ -1,7 +1,6 @@
 ---
 ignore:
-  .git
-  db/migrate
+  - db/migrate
 
 only:
   - '*.rb'
@@ -14,12 +13,17 @@ only:
   - '*.builder'
   - '*.jbuilder'
 
+alias_method_callers:
+  - alias_method
+  - alias
+  - define_negated_matcher
+  - alias_matcher
+
 method_callers:
   - send
   - public_send
   - __send__
-  # rails model validations
-  - validates
+  - method
   # rails model callbacks
   - after_initialize
   - after_find
@@ -46,6 +50,8 @@ method_callers:
   - patch
   - post
   - put
+  # rails controller
+  - layout
 
 method_list_callers:
   # rails controller callbacks
@@ -58,6 +64,14 @@ method_list_callers:
   - prepend_after_action
   - prepend_around_action
   - prepend_before_action
+  # rails model validations
+  - validate
+  # rails form helpers
+  - options_from_collection_for_select
+  - collection_select
+  - collection_check_boxes
+  - collection_radio_buttons
+  - grouped_collection_select
 
 method_definers:
   - scope
@@ -65,7 +79,6 @@ method_definers:
 method_list_definers:
   - attr_reader
   - attr_writer
-  - alias_method
 
 method_definers_with_predicate:
   # rails model attributes
@@ -78,15 +91,10 @@ symbol_key_callers:
   - class_name # rails associations
   - action # rails routes
   - with # rails rescue_from with:
-  - layout # rails controller
 
 symbol_key_list_callers:
   - if # rails callbacks
   - unless # rails callbacks
-
-# put :method, to: "controller#action"
-symbol_key_scoped_reference_callers:
-  - to # rails routes
 
 allowed:
   - initialize # called by new
@@ -97,3 +105,6 @@ allowed:
   - '*Helper' # rails included in the ViewContext
   - '*Controller' # routes!
   - ClassMethods # rails ActiveSupport::Concern
+  - process_action # rails ActiveSupport::LogSubscriber
+  - validate_each # rails validator
+  - '*Validator'

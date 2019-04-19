@@ -36,6 +36,7 @@ module Forgotten
       # TODO: handle no gitignore
       gitignore = File.join(Dir.pwd, '.gitignore')
       gitignore = nil unless File.exist?(gitignore)
+
       FastIgnore.new(rules: Forgotten.config.ignored, gitignore: gitignore).each do |file|
         next unless config_only?(file) || ruby_hashbang?(file)
         yield(file)

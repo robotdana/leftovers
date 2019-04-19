@@ -289,6 +289,37 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly(:A, :B)
   end
 
+  it 'collects alias method arguments' do
+    temp_file 'foo.rb', 'alias_method :new_method, :original_method'
+
+    subject.collect
+
+    expect(subject.definitions).to contain_exactly(start_with(:new_method))
+    expect(subject.calls).to contain_exactly(:alias_method, :original_method)
+  end
+
+  it "doesn't collect alias method arguments that aren't symbols" do
+    temp_file 'foo.rb', <<~RUBY
+      a = :whatever
+      b = :whichever
+      alias_method a, b
+    RUBY
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:alias_method)
+  end
+
+  it 'collects alias arguments' do
+    temp_file 'foo.rb', 'alias new_method original_method'
+
+    subject.collect
+
+    expect(subject.definitions).to contain_exactly(start_with(:new_method))
+    expect(subject.calls).to contain_exactly(:original_method)
+  end
+
   # it "handles complex examples" do
   #     temp_file 'foo.rb', <<~RUBY
 
