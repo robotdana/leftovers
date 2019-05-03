@@ -26,7 +26,7 @@ module Forgotten
       collector.collect
 
       collector.definitions.reject do |(name, loc, filename)|
-        collector.calls.include?(name) || allowed?(name.to_s)
+        collector.called?(name) || allowed?(name.to_s)
       end
     end
   end

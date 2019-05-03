@@ -1,5 +1,4 @@
 require 'fast_ignore'
-require 'set'
 require 'parser'
 require 'parser/current'
 
@@ -9,7 +8,7 @@ module Forgotten
     attr_reader :definitions
 
     def initialize
-      @calls = Set.new
+      @calls = []
       @definitions = []
       @process_next = []
     end
@@ -23,6 +22,17 @@ module Forgotten
       rescue Parser::SyntaxError => e
         puts "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}"
       end
+
+      process_collected
+    end
+
+    def process_collected
+      calls.sort!
+      calls.uniq!
+    end
+
+    def called?(definition)
+      calls.bsearch { |value| definition <=> value }
     end
 
     def preprocess_file(filename)
