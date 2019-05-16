@@ -36,18 +36,15 @@ module Forgotten
     end
 
     def preprocess_file(filename)
-      file = File.read(filename)
-
       case File.extname(filename)
       when '.haml'
-        require 'haml'
-        Haml::Engine.new(file).precompiled
+        require_relative 'haml'
+        Forgotten::Haml.read(filename)
       when '.rhtml', '.rjs', '.erb'
-        require_relative './erb'
-        @erb_compiler ||= Forgotten::ERB.new('-')
-        @erb_compiler.compile(File.read(filename)).first
+        require_relative 'erb'
+        Forgotten::ERB.read(filename)
       else
-        file
+        File.read(filename)
       end
     end
 

@@ -162,7 +162,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to include(:a)
+    expect(subject.calls).to contain_exactly(:a)
   end
 
   it 'collects haml files with hidden scripts' do
@@ -180,7 +180,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to include(:a).and(exclude(:before, :after))
+    expect(subject.calls).to contain_exactly(:a)
   end
 
   it 'collects haml files with ruby blocks' do
@@ -193,7 +193,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to include(:a).and(exclude(:ruby))
+    expect(subject.calls).to contain_exactly(:a)
   end
 
   it 'collects haml files with dynamic attributes' do
@@ -202,7 +202,10 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to include(:a).and(exclude(:id, :div))
+    # :merge is because of a way haml-lint works around
+    # %div{ literal: hash }, vs %div{ variable_containing_hash }
+    # (it outputs as {}.merge(literal: hash) or {}.merge(variable_containing_hash) )
+    expect(subject.calls).to contain_exactly(:a, :merge)
   end
 
   it 'collects haml files with whitespace-significant blocks' do
@@ -214,7 +217,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to include(:foo, :each).and(exclude(:bar))
+    expect(subject.calls).to contain_exactly(:foo, :each)
   end
 
   it 'collects haml files with echoed whitespace-significant blocks' do
@@ -226,7 +229,7 @@ RSpec.describe Forgotten::Collector do
     subject.collect
 
     expect(subject.definitions).to be_empty
-    expect(subject.calls).to include(:form_for, :whatever).and(exclude(:bar))
+    expect(subject.calls).to contain_exactly(:form_for, :whatever)
   end
 
   it 'collects erb files' do
@@ -236,7 +239,7 @@ RSpec.describe Forgotten::Collector do
 
     expect(subject.definitions).to be_empty
     # the extra options are internal erb stuff and i don't mind
-    expect(subject.calls).to include(:whatever).and(exclude(:a, :href, :label))
+    expect(subject.calls).to contain_exactly(:whatever)
   end
 
   it 'collects erb files when newline trimmed' do
@@ -250,7 +253,7 @@ RSpec.describe Forgotten::Collector do
 
     expect(subject.definitions).to be_empty
     # the extra options are internal erb stuff and i don't mind
-    expect(subject.calls).to include(:foo, :present?).and(exclude(:a, :href, :label))
+    expect(subject.calls).to contain_exactly(:foo, :present?)
   end
 
   it 'collects method calls in hash values' do
