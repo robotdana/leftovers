@@ -7,7 +7,7 @@ RSpec.describe Forgotten do
     around { |example| with_temp_dir { example.run } }
     before { described_class.reset }
 
-    subject { described_class.forgotten }
+    subject { described_class }
 
     it "doesn't think method calls in the same file are forgotten" do
       temp_file 'foo.rb', <<~RUBY
@@ -28,10 +28,12 @@ RSpec.describe Forgotten do
         end
       RUBY
 
-      subject.collect
+      expect(subject.forgotten.map(&:name)).to contain_exactly :EmailActions
 
-      expect(subject.definitions).to contain_exactly starts_with(:EmailActions), starts_with(:initialize), starts_with(:email_params_from_order), starts_with(:address_params)
-      expect(subject.calls).to contain_exactly(:address_params)
+      expect(subject.collector.definitions.map(&:name)).to contain_exactly(:EmailActions, :initialize, :email_params_from_order, :address_params)
+      expect(subject.collector.calls).to contain_exactly(:address_params, :email_params_from_order)
+
+
     end
   end
 end

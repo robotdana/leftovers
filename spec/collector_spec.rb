@@ -9,7 +9,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:m)
+    expect(subject.definitions.map(&:name)).to contain_exactly :m
   end
 
   it 'collects method calls in optional arguments' do
@@ -17,7 +17,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:m)
+    expect(subject.definitions.map(&:name)).to contain_exactly :m
     expect(subject.calls).to contain_exactly :b
   end
 
@@ -26,7 +26,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:m)
+    expect(subject.definitions.map(&:name)).to contain_exactly :m
     expect(subject.calls).to contain_exactly :a
   end
 
@@ -107,7 +107,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:m)
+    expect(subject.definitions.map(&:name)).to contain_exactly :m
     expect(subject.calls).to contain_exactly :a
   end
 
@@ -125,7 +125,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:Whatever)
+    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
     expect(subject.calls).to be_empty
   end
 
@@ -134,7 +134,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:Whatever)
+    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
     expect(subject.calls).to contain_exactly :SuperClass
   end
 
@@ -143,7 +143,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:Whatever)
+    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
     expect(subject.calls).to be_empty
   end
 
@@ -152,7 +152,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly start_with(:Whatever)
+    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
     expect(subject.calls).to contain_exactly :Class, :new
   end
 
@@ -294,7 +294,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly(start_with(:new_method))
+    expect(subject.definitions.map(&:name)).to contain_exactly(:new_method)
     expect(subject.calls).to contain_exactly(:alias_method, :original_method)
   end
 
@@ -316,18 +316,7 @@ RSpec.describe Forgotten::Collector do
 
     subject.collect
 
-    expect(subject.definitions).to contain_exactly(start_with(:new_method))
+    expect(subject.definitions.map(&:name)).to contain_exactly(:new_method)
     expect(subject.calls).to contain_exactly(:original_method)
   end
-
-  # it "handles complex examples" do
-  #     temp_file 'foo.rb', <<~RUBY
-
-  #     RUBY
-
-  #     subject.collect
-
-  #     expect(subject.definitions).to contain_exactly start_with(:EmailActions), start_with(:initialize), start_with(:email_params_from_order), start_with(:address_params)
-  #     expect(subject.calls).to contain_exactly(:email_params_from_order, :address_params)
-  #   end
 end

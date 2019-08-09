@@ -30,8 +30,13 @@ module Forgotten
 
       case File.extname(filename)
       when '.haml'
-        require 'haml'
-        Haml::Engine.new(file).precompiled
+        begin
+          require 'haml'
+          Haml::Engine.new(file).precompiled
+        rescue LoadError
+          $stderr.puts "Tried parsing a haml file, but the haml gem was not available"
+          ''
+        end
       when '.rhtml', '.rjs', '.erb'
         require_relative './erb'
         @erb_compiler ||= Forgotten::ERB.new('-')
@@ -47,7 +52,7 @@ module Forgotten
 
     # grab method definitions
     def on_def(node)
-      definitions << [node.children.first, node.loc.name, @current_filename]
+      definitions << Definition.new(node.children.first, node.loc.name, @current_filename)
 
       super
     end
@@ -76,7 +81,7 @@ module Forgotten
       # don't call super so we don't process the class name
       process_all(node.children.drop(1))
 
-      definitions << [node.children.first.children[1], node.children.first.loc.name, @current_filename]
+      definitions << Definition.new(node.children.first.children[1], node.children.first.loc.name, @current_filename)
     end
     alias_method :on_module, :on_class
 
@@ -84,7 +89,7 @@ module Forgotten
     def on_casgn(node)
       super
 
-      definitions << [node.children[1], node.loc.name, @current_filename]
+      definitions << Definition.new(node.children[1], node.loc.name, @current_filename)
     end
 
     def on_pair(node)
@@ -98,7 +103,7 @@ module Forgotten
     def on_alias(node)
       super
 
-      definitions << [node.children.first.children.first, node.children.first.loc.expression, @current_filename]
+      definitions << Definition.new(node.children.first.children.first, node.children.first.loc.expression, @current_filename)
       calls << node.children[1].children.first
     end
 
@@ -108,7 +113,7 @@ module Forgotten
       return unless node
       return unless [:sym, :str].include?(node.type)
 
-      definitions << [node.children.first, node.loc.expression, @current_filename]
+      definitions << Definition.new(node.children.first, node.loc.expression, @current_filename)
     end
 
     def collect_symbol_call(node)

@@ -1,4 +1,5 @@
 require_relative "./forgotten/version"
+require_relative "./forgotten/definition"
 require_relative "./forgotten/collector"
 require_relative "./forgotten/file_list"
 require_relative "./forgotten/config"
@@ -25,8 +26,8 @@ module Forgotten
     @forgotten ||= begin
       collector.collect
 
-      collector.definitions.reject do |(name, loc, filename)|
-        collector.calls.include?(name) || allowed?(name.to_s)
+      collector.definitions.reject do |definition|
+        collector.calls.include?(definition.name) || allowed?(definition.name.to_s)
       end
     end
   end
@@ -34,7 +35,7 @@ module Forgotten
   def run
     reset
     return 0 if forgotten.empty?
-    forgotten.each { |(name, loc, filename)| reporter.call(name, loc, filename) }
+    forgotten.each { |definition| reporter.call(definition) }
 
     1
   end
