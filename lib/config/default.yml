@@ -1,0 +1,32 @@
+---
+only:
+  - '*.rb'
+  - '*.rake'
+  - '*.ru'
+  - Rakefile
+  - Gemfile
+  - '*.haml'
+  - '*.erb'
+  - '*.builder'
+  - '*.jbuilder'
+
+method_arg_define_arg_call:
+  - alias_method
+
+method_arg_call:
+  - send
+  - public_send
+  - __send__
+  - method
+  - respond_to?
+
+method_args_define:
+  - attr_reader
+  - attr_writer
+
+allowed:
+  - initialize # called by new
+  - inspect # called by repl
+  - respond_to_missing? # metaprogramming
+  - method_missing # metaprogramming
+  - respond_to? # metaprogramming

@@ -4,6 +4,8 @@ RSpec::Matchers.define_negated_matcher :exclude, :include
 RSpec.describe Forgotten::Collector do
   around { |example| with_temp_dir { example.run } }
 
+  before { Forgotten.reset }
+
   it 'collects method definitions' do
     temp_file 'foo.rb', 'def m(a) a end'
 
@@ -57,31 +59,66 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly :array, :each, :foo
   end
 
-  it 'collects method calls using a method that calls multiple methods' do
-    temp_file 'foo.rb', 'before_action :method_one, :method_two'
+  context 'when rails' do
+    before do
+      temp_file '.forgotten.yml', "---\nrails: true"
+      Forgotten.reset
+    end
 
-    subject.collect
+    it 'collects method calls using a method that calls multiple methods' do
+      temp_file 'foo.rb', 'before_action :method_one, :method_two'
 
-    expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly :before_action, :method_one, :method_two
-  end
+      subject.collect
 
-  it 'collects method calls passed to before_save if:' do
-    temp_file 'foo.rb', 'before_save :do_a_thing, if: :thing_to_be_done?'
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly :before_action, :method_one, :method_two
+    end
 
-    subject.collect
+    it 'collects method calls passed to before_save if:' do
+      temp_file 'foo.rb', 'before_save :do_a_thing, if: :thing_to_be_done?'
 
-    expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly :before_save, :do_a_thing, :thing_to_be_done?
-  end
+      subject.collect
 
-  it 'collects method calls passed in an array to a before_save if:' do
-    temp_file 'foo.rb', 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]'
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly :before_save, :do_a_thing, :thing_to_be_done?
+    end
 
-    subject.collect
+    it 'collects method calls passed in an array to a before_save if:' do
+      temp_file 'foo.rb', 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]'
 
-    expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly :before_save, :do_a_thing, :thing_to_be_done?, :another_thing?
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly :before_save, :do_a_thing, :thing_to_be_done?, :another_thing?
+    end
+
+
+    it 'collects method calls in route values' do
+      temp_file 'foo.rb', 'patch :thing, to: "users#logout"'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:patch, :thing, :UsersController, :logout, :'users#logout')
+    end
+
+    it 'collects scoped constant calls in class_name symbol keys' do
+      temp_file 'foo.rb', 'has_many :whatever, class_name: "Which::Ever"'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:has_many, :Which, :Ever)
+    end
+
+    it 'collects hash key calls' do
+      temp_file 'foo.rb', 'validates test: true, other: :bar, presence: true'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:TestValidator, :validates, :OtherValidator, :PresenceValidator)
+    end
   end
 
   it 'copes with method calls using send with lvars' do
@@ -260,24 +297,6 @@ RSpec.describe Forgotten::Collector do
 
     expect(subject.definitions).to be_empty
     expect(subject.calls).to contain_exactly(:this)
-  end
-
-  it 'collects method calls in route values' do
-    temp_file 'foo.rb', 'patch :thing, to: "controller#action"'
-
-    subject.collect
-
-    expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly(:patch, :thing, :controller, :action)
-  end
-
-  it 'collects scoped constant calls in class_name symbol keys' do
-    temp_file 'foo.rb', 'has_many :whatever, class_name: "Which::Ever"'
-
-    subject.collect
-
-    expect(subject.definitions).to be_empty
-    expect(subject.calls).to contain_exactly(:has_many, :Which, :Ever)
   end
 
   it 'collects used in scope as calls' do

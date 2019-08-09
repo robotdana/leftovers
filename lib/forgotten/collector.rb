@@ -30,13 +30,8 @@ module Forgotten
 
       case File.extname(filename)
       when '.haml'
-        begin
-          require 'haml'
-          Haml::Engine.new(file).precompiled
-        rescue LoadError
-          $stderr.puts "Tried parsing a haml file, but the haml gem was not available"
-          ''
-        end
+        Forgotten.try_require('haml', "Tried parsing a haml file, but the haml gem was not available\n`gem install haml`")
+        defined?(Haml) ? Haml::Engine.new(file).precompiled : ''
       when '.rhtml', '.rjs', '.erb'
         require_relative './erb'
         @erb_compiler ||= Forgotten::ERB.new('-')
@@ -66,6 +61,7 @@ module Forgotten
       collect_if_alias_method(node)
       collect_if_method_caller(node)
       collect_if_method_list_caller(node)
+      collect_if_method_hash_key_caller(node)
     end
     alias_method :on_const, :on_send
 
@@ -116,53 +112,86 @@ module Forgotten
       definitions << Definition.new(node.children.first, node.loc.expression, @current_filename)
     end
 
-    def collect_symbol_call(node)
+    def collect_symbol_call(node, matcher = nil)
       return unless node
       return unless [:sym, :str].include?(node.type)
 
-      node.children.first.to_s.split(/[.:#]+/).each do |sub_node|
-        calls << sub_node.to_sym
+      node.children.first.to_s.split(/[.:]+/).each do |sub_node|
+        calls << (matcher ? matcher.transform(sub_node).to_sym : sub_node.to_sym)
       end
     end
 
     # grab calls to `alias_method :new_method, :original_method`
     def collect_if_alias_method(node)
-      return unless Forgotten.config.alias_method_callers.include?(node.children[1])
+      caller = node.children[1]
+      Forgotten.config.alias_method_callers.select do |matcher|
+        next unless matcher.name == caller
 
-      collect_symbol_definition(node.children[2])
-      collect_symbol_call(node.children[3])
+        collect_symbol_definition(node.children[2])
+        collect_symbol_call(node.children[3], matcher)
+      end
     end
 
     # grab calls to `validate :presence if: :condition?`
     def collect_if_symbol_key_caller(node)
-      return unless Forgotten.config.symbol_key_callers.include?(node.children.first.children.first)
+      caller = node.children.first.children.first
+      callee = node.children[1]
 
-      collect_symbol_call(node.children[1])
+      Forgotten.config.symbol_key_callers.each do |matcher|
+        next unless matcher.name == caller
+
+        collect_symbol_call(callee, matcher)
+      end
     end
 
     # grab calls to `validate :presence if: [:condition_one?, :condition_two?]`
     def collect_if_symbol_key_list_caller(node)
-      return unless Forgotten.config.symbol_key_callers.include?(node.children.first.children.first)
+      return unless node.children[1].type == :array
 
-      if node.children[1].type == :array
-        node.children[1].children.each do |sub_node|
-          collect_symbol_call(sub_node)
-        end
+      caller = node.children.first.children.first
+      callees = node.children[1].children
+      Forgotten.config.symbol_key_list_callers.each do |matcher|
+        next unless matcher.name == caller
+
+        callees.each { |callee| collect_symbol_call(callee, matcher) }
       end
     end
 
     # grab calls to `send(:method), send('method')`
     def collect_if_method_caller(node)
-      return unless Forgotten.config.method_callers.include?(node.children[1])
-      collect_symbol_call(node.children[2])
+      caller = node.children[1]
+      callee = node.children[2]
+      Forgotten.config.method_callers.each do |matcher|
+        next unless matcher.name == caller
+
+        collect_symbol_call(callee, matcher)
+      end
     end
 
     # grab calls to `before_action :method1, :method2`
     def collect_if_method_list_caller(node)
-      return unless Forgotten.config.method_list_callers.include?(node.children[1])
+      caller = node.children[1]
+      callees = node.children.drop(2)
 
-      node.children.drop(2).each do |sub_node|
-        collect_symbol_call(sub_node)
+      Forgotten.config.method_list_callers.each do |matcher|
+        next unless matcher.name == caller
+
+        callees.each { |callee| collect_symbol_call(callee, matcher) }
+      end
+    end
+
+    def collect_if_method_hash_key_caller(node)
+      caller = node.children[1]
+      callees = node.children.last
+
+      return unless callees.type == :hash
+
+      Forgotten.config.method_hash_key_callers.each do |matcher|
+        next unless matcher.name == caller
+
+        callees.children.each do |pair|
+          collect_symbol_call(pair.children.first, matcher)
+        end
       end
     end
   end

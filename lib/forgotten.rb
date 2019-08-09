@@ -1,5 +1,6 @@
 require_relative "./forgotten/version"
 require_relative "./forgotten/definition"
+require_relative "./forgotten/matcher"
 require_relative "./forgotten/collector"
 require_relative "./forgotten/file_list"
 require_relative "./forgotten/config"
@@ -45,9 +46,19 @@ module Forgotten
     remove_instance_variable(:@collector) if defined?(@collector)
     remove_instance_variable(:@reporter) if defined?(@reporter)
     remove_instance_variable(:@forgotten) if defined?(@forgotten)
+    remove_instance_variable(:@try_require) if defined?(@try_require)
   end
 
   def allowed?(name)
     Forgotten.config.allowed.any? { |pattern| name.match(pattern) }
+  end
+
+  def try_require(requirable, message = nil)
+    @try_require ||= {}
+    return @try_require[requirable] if @try_require.key?(requirable)
+    @try_require[requirable] = require requirable
+  rescue LoadError
+    $stderr.puts message if message
+    @try_require[requirable] = false
   end
 end
