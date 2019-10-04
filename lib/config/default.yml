@@ -1,28 +1,15 @@
 ---
-only:
+includes:
   - '*.rb'
   - '*.rake'
   - '*.ru'
   - Rakefile
   - Gemfile
+  - Capfile
   - '*.haml'
   - '*.erb'
   - '*.builder'
   - '*.jbuilder'
-
-method_arg_define_arg_call:
-  - alias_method
-
-method_arg_call:
-  - send
-  - public_send
-  - __send__
-  - method
-  - respond_to?
-
-method_args_define:
-  - attr_reader
-  - attr_writer
 
 allowed:
   - initialize # called by new
@@ -30,3 +17,34 @@ allowed:
   - respond_to_missing? # metaprogramming
   - method_missing # metaprogramming
   - respond_to? # metaprogramming
+  - to_s # called by string interpolation
+  - to_ary
+  - to_str
+  - <=>
+
+rules:
+  - method:
+      - send
+      - public_send
+      - __send__
+      - method
+      - respond_to?
+      - instance_method
+    caller:
+      position: 1
+  - method: attr_reader
+    definer: true
+  - method: attr_writer
+    definer:
+      suffix: '='
+  - method: attr_accessor
+    definer:
+      - suffix: '='
+      - true
+  - method: define_method
+    definer: true
+  - method: alias_method
+    definer:
+      position: 1
+    caller:
+      position: 2

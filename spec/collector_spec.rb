@@ -59,6 +59,51 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly :array, :each, :foo
   end
 
+  it 'collects method calls using =' do
+    temp_file 'foo.rb', 'self.foo = 1'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :foo=
+  end
+
+  it 'collects method calls using +=' do
+    temp_file 'foo.rb', 'self.foo += 1'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :foo=, :foo
+  end
+
+  it 'collects method calls using *=' do
+    temp_file 'foo.rb', 'self.foo *= 1'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :foo=, :foo
+  end
+
+  it 'collects method calls using ||=' do
+    temp_file 'foo.rb', 'self.foo ||= 1'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :foo=, :foo
+  end
+
+  it 'collects method calls using &&=' do
+    temp_file 'foo.rb', 'self.foo &&= 1'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly :foo=, :foo
+  end
+
   context 'when rails' do
     before do
       temp_file '.forgotten.yml', "---\nrails: true"
@@ -99,7 +144,7 @@ RSpec.describe Forgotten::Collector do
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(:patch, :thing, :UsersController, :logout, :'users#logout')
+      expect(subject.calls).to contain_exactly(:patch, :thing, :UsersController, :logout)
     end
 
     it 'collects scoped constant calls in class_name symbol keys' do
@@ -107,7 +152,7 @@ RSpec.describe Forgotten::Collector do
 
       subject.collect
 
-      expect(subject.definitions).to be_empty
+      expect(subject.definitions.map(&:name)).to contain_exactly(:whatever)
       expect(subject.calls).to contain_exactly(:has_many, :Which, :Ever)
     end
 
@@ -118,6 +163,60 @@ RSpec.describe Forgotten::Collector do
 
       expect(subject.definitions).to be_empty
       expect(subject.calls).to contain_exactly(:TestValidator, :validates, :OtherValidator, :PresenceValidator)
+    end
+
+    it 'collects hash key calls' do
+      temp_file 'foo.rb', "get '/logout' => 'users#logout'"
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:UsersController, :get, :logout)
+    end
+
+    it 'collects delegation definitions and calls' do
+      temp_file 'foo.rb', "delegate :foo, to: :bar"
+
+      subject.collect
+
+      expect(subject.definitions.map(&:name)).to contain_exactly(:foo)
+      expect(subject.calls).to contain_exactly(:delegate, :bar)
+    end
+
+    it 'collects delegation definitions and calls when prefix is defined' do
+      temp_file 'foo.rb', "delegate :foo, :few, prefix: :bar, to: :baz"
+
+      subject.collect
+
+      expect(subject.definitions.map(&:name)).to contain_exactly(:bar_foo, :bar_few)
+      expect(subject.calls).to contain_exactly(:delegate, :baz)
+    end
+
+    it 'collects delegation definitions and calls when prefix is true' do
+      temp_file 'foo.rb', "delegate :foo, :few, prefix: true, to: :bar"
+
+      subject.collect
+
+      expect(subject.definitions.map(&:name)).to contain_exactly(:bar_foo, :bar_few)
+      expect(subject.calls).to contain_exactly(:delegate, :bar)
+    end
+
+    it 'collects attribute assignment args' do
+      temp_file 'foo.rb', 'User.new(first_name: "Jane", last_name: "Smith")'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:User, :new, :first_name=, :last_name=)
+    end
+
+    it 'collects attribute assignment args' do
+      temp_file 'foo.rb', 'User.create!'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:User, :create!)
     end
   end
 
@@ -337,5 +436,16 @@ RSpec.describe Forgotten::Collector do
 
     expect(subject.definitions.map(&:name)).to contain_exactly(:new_method)
     expect(subject.calls).to contain_exactly(:original_method)
+  end
+
+  it 'collects inline comment allows' do
+    temp_file 'foo.rb', <<~RUBY
+      def method_name # leftovers:allow method_name
+      end
+    RUBY
+
+    subject.collect
+    expect(subject.definitions.map(&:name)).to contain_exactly(:method_name)
+    expect(subject.calls).to contain_exactly(:method_name)
   end
 end

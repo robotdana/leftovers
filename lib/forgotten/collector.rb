@@ -31,7 +31,16 @@ module Forgotten
       case File.extname(filename)
       when '.haml'
         Forgotten.try_require('haml', "Tried parsing a haml file, but the haml gem was not available\n`gem install haml`")
-        defined?(Haml) ? Haml::Engine.new(file).precompiled : ''
+        if defined?(Haml)
+          begin
+            Haml::Engine.new(file).precompiled
+          rescue Haml::SyntaxError => e
+            puts "#{e.class}: #{e.message} #{filename}:#{e.line}"
+            ''
+          end
+        else
+          ''
+        end
       when '.rhtml', '.rjs', '.erb'
         require_relative './erb'
         @erb_compiler ||= Forgotten::ERB.new('-')
@@ -42,7 +51,18 @@ module Forgotten
     end
 
     def parse_and_process(ruby)
-      process(Parser::CurrentRuby.parse(ruby))
+      ast, comments = Parser::CurrentRuby.parse_with_comments(ruby)
+      process(ast)
+      process_comments(comments)
+    end
+
+    def process_comments(comments)
+      comments.each do |comment|
+        match = comment.text.match(/leftovers:allow ([[:alnum:]_:., ]*)/)
+        next unless match
+
+        match[1].split(/[^[:alnum:]_]/).each { |s| calls << s.to_sym }
+      end
     end
 
     # grab method definitions
@@ -52,16 +72,34 @@ module Forgotten
       super
     end
 
+    def on_op_asgn(node)
+      collect_op_asgn(node)
+
+      super
+    end
+
+    def on_and_asgn(node)
+      collect_op_asgn(node)
+
+      super
+    end
+
+    def on_or_asgn(node)
+      collect_op_asgn(node)
+
+      super
+    end
+
     # grab method calls
     def on_send(node)
       super
 
       calls << node.children[1]
-      # send, etc
-      collect_if_alias_method(node)
-      collect_if_method_caller(node)
-      collect_if_method_list_caller(node)
-      collect_if_method_hash_key_caller(node)
+
+      collect_method_rules(node)
+    rescue StandardError => e
+      puts "#{e.message} #{@current_filename}:#{node.loc.expression}"
+      raise
     end
     alias_method :on_const, :on_send
 
@@ -88,13 +126,6 @@ module Forgotten
       definitions << Definition.new(node.children[1], node.loc.name, @current_filename)
     end
 
-    def on_pair(node)
-      super
-
-      collect_if_symbol_key_caller(node)
-      collect_if_symbol_key_list_caller(node)
-    end
-
     # grab calls to `alias new_method original_method`
     def on_alias(node)
       super
@@ -105,92 +136,27 @@ module Forgotten
 
     private
 
-    def collect_symbol_definition(node)
+    def collect_op_asgn(node)
+      if node.children.first.type == :send
+        calls << node.children.first.children[1]
+        calls << :"#{node.children.first.children[1]}="
+      end
+    end
+
+    def collect_symbol_call(node)
       return unless node
       return unless [:sym, :str].include?(node.type)
 
-      definitions << Definition.new(node.children.first, node.loc.expression, @current_filename)
+      calls << node.children.first
     end
 
-    def collect_symbol_call(node, matcher = nil)
-      return unless node
-      return unless [:sym, :str].include?(node.type)
+    def collect_method_rules(node)
+      Forgotten.config.rules.each do |rule|
+        rule.calls(node).each { |call| calls << call }
 
-      node.children.first.to_s.split(/[.:]+/).each do |sub_node|
-        calls << (matcher ? matcher.transform(sub_node).to_sym : sub_node.to_sym)
-      end
-    end
-
-    # grab calls to `alias_method :new_method, :original_method`
-    def collect_if_alias_method(node)
-      caller = node.children[1]
-      Forgotten.config.alias_method_callers.select do |matcher|
-        next unless matcher.name == caller
-
-        collect_symbol_definition(node.children[2])
-        collect_symbol_call(node.children[3], matcher)
-      end
-    end
-
-    # grab calls to `validate :presence if: :condition?`
-    def collect_if_symbol_key_caller(node)
-      caller = node.children.first.children.first
-      callee = node.children[1]
-
-      Forgotten.config.symbol_key_callers.each do |matcher|
-        next unless matcher.name == caller
-
-        collect_symbol_call(callee, matcher)
-      end
-    end
-
-    # grab calls to `validate :presence if: [:condition_one?, :condition_two?]`
-    def collect_if_symbol_key_list_caller(node)
-      return unless node.children[1].type == :array
-
-      caller = node.children.first.children.first
-      callees = node.children[1].children
-      Forgotten.config.symbol_key_list_callers.each do |matcher|
-        next unless matcher.name == caller
-
-        callees.each { |callee| collect_symbol_call(callee, matcher) }
-      end
-    end
-
-    # grab calls to `send(:method), send('method')`
-    def collect_if_method_caller(node)
-      caller = node.children[1]
-      callee = node.children[2]
-      Forgotten.config.method_callers.each do |matcher|
-        next unless matcher.name == caller
-
-        collect_symbol_call(callee, matcher)
-      end
-    end
-
-    # grab calls to `before_action :method1, :method2`
-    def collect_if_method_list_caller(node)
-      caller = node.children[1]
-      callees = node.children.drop(2)
-
-      Forgotten.config.method_list_callers.each do |matcher|
-        next unless matcher.name == caller
-
-        callees.each { |callee| collect_symbol_call(callee, matcher) }
-      end
-    end
-
-    def collect_if_method_hash_key_caller(node)
-      caller = node.children[1]
-      callees = node.children.last
-
-      return unless callees.type == :hash
-
-      Forgotten.config.method_hash_key_callers.each do |matcher|
-        next unless matcher.name == caller
-
-        callees.children.each do |pair|
-          collect_symbol_call(pair.children.first, matcher)
+        rule.definitions(node).each do |definition|
+          definition.filename = @current_filename
+          definitions << definition
         end
       end
     end

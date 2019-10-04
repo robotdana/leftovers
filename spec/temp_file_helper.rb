@@ -10,12 +10,6 @@ module TempFileHelper
     dir&.rmtree
   end
 
-  def temp_files(filenames)
-    filenames.each do |filename|
-      temp_file(filename)
-    end
-  end
-
   def temp_file(filename, body = '')
     path = Pathname.pwd.join(filename)
     path.parent.mkpath

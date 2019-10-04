@@ -1,114 +1,155 @@
 ---
-ignore:
+excludes:
   - db/migrate
-
-method_callers:
-  # callbacks
-  - after_initialize
-  - after_find
-  - after_touch
-  - before_validation
-  - after_validation
-  - before_save
-  - around_save
-  - after_save
-  - before_create
-  - around_create
-  - after_create
-  - before_update
-  - around_update
-  - after_update
-  - before_destroy
-  - around_destroy
-  - after_destroy
-  - after_commit
-  - after_rollback
-  # routes
-  - delete
-  - get
-  - patch
-  - post
-  - put
-  -
-    name: namespace
-    activesupport: camelize
-  -
-    name: resource
-    activesupport: [pluralize, camelize]
-    suffix: Controller
-  -
-    name: resources
-    activesupport: camelize
-    suffix: Controller
-  # controller
-  - layout
-
-method_list_callers:
-  # callbacks
-  - after_action
-  - append_after_action
-  - append_around_action
-  - append_before_action
-  - around_action
-  - before_action
-  - prepend_after_action
-  - prepend_around_action
-  - prepend_before_action
-  # validations
-  - validate
-  # rails form helpers
-  - options_from_collection_for_select
-  - collection_select
-  - collection_check_boxes
-  - collection_radio_buttons
-  - grouped_collection_select
-
-method_hash_key_callers:
-  -
-    name: validates
-    activesupport: camelize
-    suffix: Validator
-
-method_definers:
-  - scope
-
-method_definers:
-  - attribute
-  -
-    name: attribute
-    suffix: "?"
-
-symbol_key_callers:
-  # callbacks
-  - if
-  - unless
-  # delegate
-  - to
-  # associations
-  - class_name
-  # routes
-  - action
-  -
-    name: controller
-    activesupport: [pluralize, camelize]
-    suffix: "Controller"
-  # rescue_from
-  - with
-  -
-    name: to
-    before: '#'
-    activesupport: [pluralize, camelize]
-    suffix: "Controller"
-  - name: to
-    after: '#'
-
-symbol_key_list_callers:
-  # callbacks
-  - if
-  - unless
 
 allowed:
   - '*Helper' # included in the ViewContext
   - ClassMethods # ActiveSupport::Concern
   - process_action # ActiveSupport::LogSubscriber
-  - validate_each # validator
+  - validate_each # ActiveModel::EachValidator
+  - format_message # ActiveSupport::Logger
+
+rules:
+  - method:
+      - after_initialize
+      - after_find
+      - after_touch
+      - before_validation
+      - after_validation
+      - before_save
+      - around_save
+      - after_save
+      - before_create
+      - around_create
+      - after_create
+      - before_update
+      - around_update
+      - after_update
+      - before_destroy
+      - around_destroy
+      - after_destroy
+      - after_commit
+      - after_rollback
+      - after_create_commit
+      - after_update_commit
+      - after_destroy_commit
+      - after_save_commit
+      - validate
+    caller:
+      - position: 1
+      - keyword:
+          - if
+          - unless
+        array: [true, false]
+  - method:
+      - after_action
+      - append_after_action
+      - append_around_action
+      - append_before_action
+      - around_action
+      - before_action
+      - prepend_after_action
+      - prepend_around_action
+      - prepend_before_action
+    caller: true
+  - method:
+      - delete
+      - get
+      - patch
+      - post
+      - put
+    caller:
+      - position: 1
+  - method: validates
+    caller:
+      key: true
+      suffix: Validator
+      activesupport: camelize
+  - method: options_from_collection_for_select
+    caller:
+      - position: [2,3]
+  - method:
+      - collection_select
+      - collection_check_boxes
+      - collection_radio_buttons
+    caller:
+      - position: 2
+        suffix: '='
+      - position: [4,5]
+  - method: grouped_collection_select
+    caller:
+      - position: 2
+        suffix: '='
+      - position: [4,5,6,7]
+  - method: option_groups_from_collection_for_select
+    caller:
+      - position: [1,2,3,4]
+  - method: scope
+    definer:
+      - position: 1 # ar
+    caller:
+      - keyword: module # routes
+        activesupport: camelize
+  - method: namespace
+    caller:
+      - position: 1
+        activesupport: camelize
+  - method: attribute
+    definer:
+      - position: 1
+      - position: 1
+        suffix: '?'
+      - position: 1
+        suffix: '='
+  - method:
+      - has_one
+      - has_many
+      - belongs_to
+      - has_and_belongs_to_many
+    definer:
+      - position: 1
+    caller:
+      - keyword: through
+      - keyword: class_name
+      - keyword: inverse_of
+  - method:
+      - rescue_from
+    caller:
+      - keyword: with
+  - method:
+      - match
+      - delete
+      - get
+      - patch
+      - post
+      - put
+    caller:
+      - position: 1
+      - keyword: '*'
+        after: '#'
+      - keyword: '*'
+        before: '#'
+        suffix: Controller
+        activesupport: camelize
+  - method: delegate
+    definer:
+      - rails_delegate: true
+    caller:
+      - keyword: to
+  - method:
+    - new
+    - create
+    - create!
+    - update
+    - update!
+    - assign_attributes
+    caller:
+      key: true
+      suffix: '='
+  - method:
+    - permit
+    caller:
+      key: true
+
+
+

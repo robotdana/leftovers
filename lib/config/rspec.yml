@@ -1,12 +1,19 @@
 ---
 alias_method_callers:
   - define_negated_matcher
-  - alias_matcher
-method_hash_key_callers:
-  - have_attributes
-  - has_attributes?
-  - receive_messages
-method_callers:
-  - receive
-  - respond_to
-
+---
+allowed:
+  - diffable?
+  - actual
+rules:
+  - method:
+      - have_attributes
+      - has_attributes?
+      - receive_messages
+    caller:
+      - keyword: true
+  - method:
+    - receive
+    - respond_to
+  caller:
+    - possition: 1

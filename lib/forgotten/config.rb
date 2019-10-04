@@ -11,14 +11,15 @@ module Forgotten
       @config = merge_config(default_config, project_config)
       @config = merge_config(@config, load_yaml(__dir__, '..', 'config', 'rails.yml')) if rails?
       @config = merge_config(@config, load_yaml(__dir__, '..', 'config', 'rspec.yml')) if rspec?
+      @config = merge_config(@config, load_yaml(__dir__, '..', 'config', 'redcarpet.yml')) if redcarpet?
     end
 
-    def ignored
-      @config[:ignore]
+    def excludes
+      @config[:excludes]
     end
 
-    def only
-      @config[:only]
+    def includes
+      @config[:includes]
     end
 
     def rails?
@@ -29,28 +30,12 @@ module Forgotten
       @config[:rspec]
     end
 
-    def method_callers
-      @method_callers ||= Matcher.wrap(@config[:method_callers])
+    def redcarpet?
+      @config[:redcarpet]
     end
 
-    def method_list_callers
-      @method_list_callers ||= Matcher.wrap(@config[:method_list_callers])
-    end
-
-    def symbol_key_callers
-      @symbol_key_callers ||= Matcher.wrap(@config[:symbol_key_callers])
-    end
-
-    def symbol_key_list_callers
-      @symbol_key_list_callers ||= Matcher.wrap(@config[:symbol_key_list_callers])
-    end
-
-    def alias_method_callers
-      @alias_method_callers ||= Matcher.wrap(@config[:alias_method_callers])
-    end
-
-    def method_hash_key_callers
-      @method_hash_key_callers ||= Matcher.wrap(@config[:method_hash_key_callers])
+    def rules
+      @rules ||= MethodRule.wrap(@config[:rules])
     end
 
     def allowed

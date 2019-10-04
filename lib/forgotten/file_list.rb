@@ -18,8 +18,8 @@ module Forgotten
       File.fnmatch?(pattern, file.delete_prefix(root + '/'), File::FNM_DOTMATCH)
     end
 
-    def config_only?(file)
-      Forgotten.config.only.empty? || Forgotten.config.only.any? { |o| fnmatch?(o, file) }
+    def config_includes?(file)
+      Forgotten.config.includes.empty? || Forgotten.config.includes.any? { |o| fnmatch?(o, file) }
     end
 
     def ruby_hashbang?(file)
@@ -37,8 +37,8 @@ module Forgotten
       gitignore = File.join(Dir.pwd, '.gitignore')
       gitignore = nil unless File.exist?(gitignore)
 
-      FastIgnore.new(rules: Forgotten.config.ignored, gitignore: gitignore).each do |file|
-        next unless config_only?(file) || ruby_hashbang?(file)
+      FastIgnore.new(rules: Forgotten.config.excludes, gitignore: gitignore).each do |file|
+        next unless config_includes?(file) || ruby_hashbang?(file)
         yield(file)
       end
     end

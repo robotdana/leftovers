@@ -1,14 +1,13 @@
 require_relative "./forgotten/version"
 require_relative "./forgotten/definition"
-require_relative "./forgotten/matcher"
+require_relative "./forgotten/argument_rule"
+require_relative "./forgotten/method_rule"
 require_relative "./forgotten/collector"
 require_relative "./forgotten/file_list"
 require_relative "./forgotten/config"
 require_relative "./forgotten/reporter"
 
 module Forgotten
-  class Error < StandardError; end
-
   module_function
 
   def config

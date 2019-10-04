@@ -60,6 +60,7 @@ module Forgotten
     end
 
     MID_BLOCK_KEYWORDS = %w[else elsif when rescue ensure].freeze
+    # leftovers:allow mid_block_keyword?
     def mid_block_keyword?(text)
       MID_BLOCK_KEYWORDS.include?(block_keyword(text))
     end
