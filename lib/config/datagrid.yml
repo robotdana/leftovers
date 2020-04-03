@@ -1,0 +1,11 @@
+rules:
+  - method: filter
+    caller:
+      keyword:
+        - default
+        - select
+  - method: column
+    caller:
+      keyword:
+          - if
+          - unless

@@ -1,0 +1,16 @@
+rules:
+  # this doesn't handle custom prefix, suffix, attribute
+  - method: attr_encrypted
+    definer:
+      - position: 1
+    caller:
+      - position: 1
+        prefix: encrypted_
+      - position: 1
+        prefix: encrypted_
+        suffix: _iv
+      - keyword: encryptor
+      - keyword: encrypt_method
+      - keyword: decrypt_method
+      - keyword: key
+

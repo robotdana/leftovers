@@ -20,7 +20,8 @@ allowed:
   - to_s # called by string interpolation
   - to_ary
   - to_str
-  - <=>
+  - <=> # called by Comparable
+  - each # called by Enumerable
 
 rules:
   - method:

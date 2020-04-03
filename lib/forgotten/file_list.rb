@@ -33,8 +33,8 @@ module Forgotten
       gitignore = File.join(Dir.pwd, '.gitignore')
       gitignore = nil unless File.exist?(gitignore)
 
-      FastIgnore.new(rules: Forgotten.config.excludes, gitignore: gitignore).each do |file|
-        next unless config_includes?(file) || ruby_hashbang?(file)
+      FastIgnore.new(ignore_rules: Forgotten.config.excludes, include_rules: Forgotten.config.includes).each do |file|
+        next if File.extname(file).empty? && !ruby_hashbang?(file)
         yield(file)
       end
     end

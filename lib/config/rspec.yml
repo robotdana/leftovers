@@ -1,10 +1,8 @@
 ---
-alias_method_callers:
-  - define_negated_matcher
----
 allowed:
   - diffable?
   - actual
+
 rules:
   - method:
       - have_attributes
@@ -15,5 +13,18 @@ rules:
   - method:
     - receive
     - respond_to
-  caller:
-    - possition: 1
+    caller:
+      position: 1
+  - method: define_negated_matcher
+    definer:
+      position: 1
+    caller:
+      position: 2
+  - method: 'be_*'
+    caller:
+      position: 0
+      delete_prefix: be_
+      suffix: '?'
+  - method: let
+    definer:
+      position: 1

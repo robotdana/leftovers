@@ -1,0 +1,4 @@
+rules:
+  - method: field
+    caller:
+      position: 1

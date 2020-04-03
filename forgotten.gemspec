@@ -30,6 +30,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry", "~> 0.1"
-  spec.add_dependency "fast_ignore", "~> 0.3.1"
+  spec.add_development_dependency "haml"
+  spec.add_development_dependency "activesupport"
+  spec.add_dependency "fast_ignore", "~> 0.6.0"
   spec.add_dependency "parser"
 end
