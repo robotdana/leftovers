@@ -25,9 +25,9 @@ module Forgotten
   def forgotten
     @forgotten ||= begin
       collector.collect
-
-      collector.definitions.reject do |definition|
-        collector.calls.include?(definition.name) || allowed?(definition.name.to_s)
+      forgotten = collector.definitions.reject do |definition|
+        allowed?(definition.name.to_s) ||
+          definition.names.any? { |name| collector.calls.include?(name) }
       end
     end
   end

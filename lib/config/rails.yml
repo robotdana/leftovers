@@ -1,6 +1,6 @@
 ---
 excludes:
-  - db/migrate
+  - db/migrate/*
 
 allowed:
   - '*Helper' # included in the ViewContext
@@ -8,6 +8,7 @@ allowed:
   - process_action # ActiveSupport::LogSubscriber
   - validate_each # ActiveModel::EachValidator
   - format_message # ActiveSupport::Logger
+  - ssl_configured? # ApplicationController
 
 rules:
   - method:
@@ -35,12 +36,12 @@ rules:
       - after_destroy_commit
       - after_save_commit
       - validate
+      - with_options
     caller:
       - position: 1
       - keyword:
           - if
           - unless
-        array: [true, false]
   - method:
       - after_action
       - append_after_action
@@ -51,7 +52,14 @@ rules:
       - prepend_after_action
       - prepend_around_action
       - prepend_before_action
-    caller: true
+      - skip_before_action
+      - skip_after_action
+      - skip_around_action
+    caller:
+      - true
+      - keyword:
+          - if
+          - unless
   - method:
       - delete
       - get
@@ -62,9 +70,57 @@ rules:
       - position: 1
   - method: validates
     caller:
-      key: true
-      suffix: Validator
-      activesupport: camelize
+      - position: '*'
+      - keyword:
+          - 'in'
+          - inclusion
+          - scope
+      - key: true
+        suffix: Validator
+        activesupport: camelize
+      - keyword:
+          - if
+          - unless
+  - method:
+      - validate
+      - validate_associated
+    caller:
+      - position: '*'
+      - keyword: [if, unless]
+  - method:
+    - check_box
+    - date_select
+    - datetime_select
+    - file_field
+    - hidden_field
+    - label
+    - radio_button
+    - select
+    - time_select
+    - time_zone_select
+    - color_field
+    - date_field
+    - datetime_field
+    - dattime_local_field
+    - email_field
+    - month_field
+    - number_field
+    - password_field
+    - phone_field
+    - range_field
+    - search_field
+    - telephone_field
+    - text_area
+    - text_field
+    - time_field
+    - url_field
+    - week_field
+    caller:
+      position: 1 # with a receiver
+      position: 2 # with no receiver
+  - method: fields_for
+    caller:
+      suffix: _attributes
   - method: options_from_collection_for_select
     caller:
       - position: [2,3]
@@ -85,22 +141,48 @@ rules:
     caller:
       - position: [1,2,3,4]
   - method: scope
+    path: app/models/*
     definer:
-      - position: 1 # ar
+      position: 1 # ar
+  - method: scope
+    path: config/routes*
     caller:
-      - keyword: module # routes
-        activesupport: camelize
+      keyword: module # routes
+      activesupport: camelize
   - method: namespace
     caller:
       - position: 1
         activesupport: camelize
   - method: attribute
+    path: app/models/*
     definer:
       - position: 1
-      - position: 1
-        suffix: '?'
-      - position: 1
-        suffix: '='
+        transforms:
+          - true
+          - suffix: '?'
+          - suffix: '='
+  - method:
+    - has_one
+    - belongs_to
+    caller:
+      position: 1
+      activesupport: camelize
+      unless:
+        keyword: class_name
+  - method:
+    - has_many
+    - has_and_belongs_to_many
+    caller:
+      position: 1
+      activesupport: [singularize, camelize]
+      unless:
+        keyword: class_name
+  - method:
+    - has_many
+    - has_one
+    - has_and_belongs_to_many
+    caller:
+      keyword: as
   - method:
       - has_one
       - has_many
@@ -108,6 +190,9 @@ rules:
       - has_and_belongs_to_many
     definer:
       - position: 1
+        transforms:
+          - true
+          - suffix: '='
     caller:
       - keyword: through
       - keyword: class_name
@@ -131,11 +216,58 @@ rules:
         before: '#'
         suffix: Controller
         activesupport: camelize
+      - keyword: action
   - method: delegate
     definer:
-      - rails_delegate: true
+      - if:
+          keyword:
+            prefix: true
+        prefix:
+          from_keyword: to
+          joiner: '_'
+      - if:
+          keyword: prefix
+        unless:
+          keyword:
+            prefix: true
+        prefix:
+          from_keyword: prefix
+          joiner: '_'
     caller:
       - keyword: to
+      - if:
+          keyword: prefix
+  - method:
+      - resource
+      - resources
+    caller:
+      - keyword: only
+      - keyword: controller
+        suffix: Controller
+        activesupport: camelize
+  - method:
+      - resources
+      - controller
+      - namespace
+    caller:
+      - position: 1
+        suffix: Controller
+        activesupport: camelize
+  - method: accepts_nested_attributes_for
+    definer:
+      position: 1
+      transforms:
+        - suffix: _attributes
+        - suffix: _attributes=
+    caller:
+      keyword: reject_if
+  - method: resource
+    caller:
+      - position: 1
+        suffix: Controller
+        activesupport:
+          - pluralize
+          - camelize
   - method:
     - new
     - create
@@ -146,10 +278,28 @@ rules:
     caller:
       key: true
       suffix: '='
-  - method:
-    - permit
+  - method: permit
     caller:
+      position:
+        - '*'
+        - '**'
+      keyword: '*'
       key: true
-
-
+      suffix: "="
+  - method: layout
+    caller:
+      position: 1
+  - method:
+      - includes
+      - preload
+      - eager_load
+      - joins
+      - left_joins
+      - left_outer_joins
+    caller:
+      position:
+          - '*'
+          - '**'
+      keyword: '*'
+      key: true
 

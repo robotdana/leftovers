@@ -9,29 +9,17 @@ module Forgotten
       project_config = load_yaml(Dir.pwd, '.forgotten.yml')
 
       @config = merge_config(default_config, project_config)
-      @config = merge_config(@config, load_yaml(__dir__, '..', 'config', 'rails.yml')) if rails?
-      @config = merge_config(@config, load_yaml(__dir__, '..', 'config', 'rspec.yml')) if rspec?
-      @config = merge_config(@config, load_yaml(__dir__, '..', 'config', 'redcarpet.yml')) if redcarpet?
+      Array(@config[:gems]).each do |gem|
+        @config = merge_config(@config, load_yaml(__dir__, '..', 'config', "#{gem}.yml"))
+      end
     end
 
     def excludes
-      @config[:excludes]
+      Array(@config[:excludes])
     end
 
     def includes
-      @config[:includes]
-    end
-
-    def rails?
-      @config[:rails]
-    end
-
-    def rspec?
-      @config[:rspec]
-    end
-
-    def redcarpet?
-      @config[:redcarpet]
+      Array(@config[:includes])
     end
 
     def rules
@@ -52,6 +40,9 @@ module Forgotten
       return {} unless ::File.exist?(file)
 
       YAML.safe_load(::File.read(file), symbolize_names: true)
+    rescue Psych::SyntaxError => e
+      $stderr.puts "\e[31mError with config #{path.join('/')}: #{e.message}\e[0m"
+      exit 1
     end
 
     def merge_config(default, project)

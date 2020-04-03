@@ -18,10 +18,6 @@ module Forgotten
       File.fnmatch?(pattern, file.delete_prefix(root + '/'), File::FNM_DOTMATCH)
     end
 
-    def config_includes?(file)
-      Forgotten.config.includes.empty? || Forgotten.config.includes.any? { |o| fnmatch?(o, file) }
-    end
-
     def ruby_hashbang?(file)
       return unless File.extname(file).empty?
 

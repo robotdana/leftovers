@@ -106,7 +106,7 @@ RSpec.describe Forgotten::Collector do
 
   context 'when rails' do
     before do
-      temp_file '.forgotten.yml', "---\nrails: true"
+      temp_file '.forgotten.yml', "---\ngems: rails"
       Forgotten.reset
     end
 
@@ -117,6 +117,15 @@ RSpec.describe Forgotten::Collector do
 
       expect(subject.definitions).to be_empty
       expect(subject.calls).to contain_exactly :before_action, :method_one, :method_two
+    end
+
+    it 'collects method calls using a method that calls multiple methods' do
+      temp_file 'foo.rb', 'skip_before_action :method_one, :method_two, if: :other_method?'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly :skip_before_action, :method_one, :method_two, :other_method?
     end
 
     it 'collects method calls passed to before_save if:' do
@@ -152,7 +161,7 @@ RSpec.describe Forgotten::Collector do
 
       subject.collect
 
-      expect(subject.definitions.map(&:name)).to contain_exactly(:whatever)
+      expect(subject.definitions.map(&:name)).to contain_exactly(:whatever, :whatever=)
       expect(subject.calls).to contain_exactly(:has_many, :Which, :Ever)
     end
 
@@ -174,12 +183,43 @@ RSpec.describe Forgotten::Collector do
       expect(subject.calls).to contain_exactly(:UsersController, :get, :logout)
     end
 
+    it 'collects routes controller calls' do
+      temp_file 'foo.rb', <<~RUBY
+        controller :users do
+          get :new
+        end
+      RUBY
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:controller, :UsersController, :get, :new)
+    end
+
+    it 'collects routes resource calls' do
+      temp_file 'foo.rb', "resource :user"
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:resource, :UsersController)
+    end
+
+    it 'collects routes controller calls' do
+      temp_file 'foo.rb', "resources :users"
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:resources, :UsersController)
+    end
+
     it 'collects delegation definitions and calls' do
       temp_file 'foo.rb', "delegate :foo, to: :bar"
 
       subject.collect
 
-      expect(subject.definitions.map(&:name)).to contain_exactly(:foo)
+      expect(subject.definitions).to be_empty # it's not a definiton because it doesn't create any new method names
       expect(subject.calls).to contain_exactly(:delegate, :bar)
     end
 
@@ -189,7 +229,7 @@ RSpec.describe Forgotten::Collector do
       subject.collect
 
       expect(subject.definitions.map(&:name)).to contain_exactly(:bar_foo, :bar_few)
-      expect(subject.calls).to contain_exactly(:delegate, :baz)
+      expect(subject.calls).to contain_exactly(:delegate, :baz, :foo, :few)
     end
 
     it 'collects delegation definitions and calls when prefix is true' do
@@ -198,7 +238,7 @@ RSpec.describe Forgotten::Collector do
       subject.collect
 
       expect(subject.definitions.map(&:name)).to contain_exactly(:bar_foo, :bar_few)
-      expect(subject.calls).to contain_exactly(:delegate, :bar)
+      expect(subject.calls).to contain_exactly(:delegate, :bar, :foo, :few)
     end
 
     it 'collects attribute assignment args' do
@@ -217,6 +257,88 @@ RSpec.describe Forgotten::Collector do
 
       expect(subject.definitions).to be_empty
       expect(subject.calls).to contain_exactly(:User, :create!)
+    end
+
+    it 'collects basic permit args' do
+      temp_file 'foo.rb', 'permit(:first_name, :last_name)'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:permit, :first_name=, :last_name=)
+    end
+
+    it 'collects hash permit args' do
+      temp_file 'foo.rb', 'permit(names: [:first_name, :last_name], age: :years)'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:permit, :names=, :first_name=, :last_name=, :age=, :years=)
+    end
+
+    it 'collects deep permit args' do
+      temp_file 'foo.rb', 'permit(person_attributes: { names: [:first_name, :last_name, { deep: :hash}], age: :years })'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:permit, :names=, :first_name=, :last_name=, :age=, :years=, :person_attributes=, :deep=, :hash=)
+    end
+
+    it 'collects routes scope' do
+      temp_file 'config/routes.rb', <<~RUBY
+        Rails.application.routes.draw do
+          scope '/whatever', module: :whichever
+        end
+      RUBY
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:Rails, :application, :routes, :draw, :scope, :Whichever)
+    end
+
+    it 'collects AR scope' do
+      temp_file 'app/models/user.rb', <<~RUBY
+        class User < ApplicationRecord
+          scope :whatever, -> { order(:whichever) }
+        end
+      RUBY
+
+      subject.collect
+
+      expect(subject.definitions.map(&:name)).to contain_exactly(:User, :whatever)
+      expect(subject.calls).to contain_exactly(:ApplicationRecord, :lambda, :scope, :order)
+    end
+
+    it 'collects validation calls' do
+      temp_file 'foo.rb', 'validate :validator_method_name, if: :condition_method?'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:validate, :validator_method_name, :condition_method?)
+    end
+
+    it 'collects validations calls inclusion method' do
+      temp_file 'foo.rb', 'validates :name, presence: true, inclusion: :inclusion_method, if: :condition_method?'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      # IfValidator is awkward, but fine
+      expect(subject.calls).to contain_exactly(:validates, :name, :PresenceValidator, :IfValidator, :InclusionValidator, :inclusion_method, :condition_method?)
+    end
+
+    it 'collects validations calls with inclusion hash' do
+      temp_file 'foo.rb', 'validates :name, presence: true, inclusion: { in: :inclusion_method }, if: :condition_method?'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      # IfValidator is awkward, but fine
+      expect(subject.calls).to contain_exactly(:validates, :name, :PresenceValidator, :IfValidator, :InclusionValidator, :inclusion_method, :condition_method?)
     end
   end
 
@@ -438,14 +560,88 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly(:original_method)
   end
 
+  it 'collects lazy method calls' do
+    temp_file 'foo.rb', 'this&.that'
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:this, :that)
+  end
+
   it 'collects inline comment allows' do
     temp_file 'foo.rb', <<~RUBY
-      def method_name # leftovers:allow method_name
+      def method_name # leftovers:call method_name
       end
+
+      def method_name=(value) # leftovers:call method_name=
+      end
+
+      def method_name? # leftovers:call method_name?
+      end
+
+      def method_name! # leftovers:call method_name!
+      end
+
+      class MyConstant # leftovers:call MyConstant
+      end
+
+      method_names = [
+        :method_name_1,
+        :method_name_1?,
+        :method_name_1=,
+        :method_name_1!,
+      ]
+      # leftovers:call method_name_1, method_name_1? method_name_1=, method_name_1!
+      method_names.each { |n| send(n) }
     RUBY
 
     subject.collect
-    expect(subject.definitions.map(&:name)).to contain_exactly(:method_name)
-    expect(subject.calls).to contain_exactly(:method_name)
+    expect(subject.definitions.map(&:name)).to contain_exactly(
+      :method_name, :method_name?, :method_name=, :method_name!,
+      :MyConstant
+    )
+    expect(subject.calls).to contain_exactly(
+      :method_name, :method_name?, :method_name=, :method_name!,
+      :method_name_1, :method_name_1?, :method_name_1=, :method_name_1!,
+      :MyConstant, :each, :send
+    )
+  end
+
+  it 'collects affixxed methods' do
+    temp_file 'foo.rb', 'test_html'
+
+    temp_file '.forgotten.yml', <<~YML
+      ---
+      rules:
+        - method: '*_html'
+          caller:
+            - position: 0
+              delete_suffix: _html
+            - position: 0
+              replace_with: html
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:test, :html, :test_html)
+  end
+
+  it 'collects flow' do
+    temp_file 'foo.rb', 'flow(whatever, [:method_1, :method_2])'
+
+    temp_file '.forgotten.yml', <<~YML
+      ---
+      rules:
+        - method: flow
+          caller:
+            - position: 2
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:flow, :whatever, :method_1, :method_2)
   end
 end

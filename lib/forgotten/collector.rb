@@ -56,12 +56,17 @@ module Forgotten
       process_comments(comments)
     end
 
+    METHOD_NAME_RE=/[[:lower:]_][[:alnum:]_]*\b[\?!=]?/
+    NON_ALPHA_METHOD_NAME_RE=/\[\]=?|\*\*|[!~+\-&^|<>*\/%]|[+\-]@|>>|<<|<=>?|>=|={2,3}|![=~]|=~/
+    CONSTANT_NAME_RE=/[[:upper:]][[:alnum:]_]*\b/
+    NAME_RE=/#{METHOD_NAME_RE}|#{NON_ALPHA_METHOD_NAME_RE}|#{CONSTANT_NAME_RE}/
+    LEFTOVERS_RE=/\bleftovers:call (#{NAME_RE}([, :]+#{NAME_RE})*)/
     def process_comments(comments)
       comments.each do |comment|
-        match = comment.text.match(/leftovers:allow ([[:alnum:]_:., ]*)/)
-        next unless match
+        match = comment.text.match(LEFTOVERS_RE)
+        next unless match[1]
 
-        match[1].split(/[^[:alnum:]_]/).each { |s| calls << s.to_sym }
+        match[1].scan(NAME_RE).each { |s| calls << s.to_sym }
       end
     end
 
@@ -102,6 +107,7 @@ module Forgotten
       raise
     end
     alias_method :on_const, :on_send
+    alias_method :on_csend, :on_send
 
     # grab e.g. :to_s in each(&:to_s)
     def on_block_pass(node)
@@ -152,12 +158,9 @@ module Forgotten
 
     def collect_method_rules(node)
       Forgotten.config.rules.each do |rule|
-        rule.calls(node).each { |call| calls << call }
+        calls.merge(rule.calls(node, @current_filename))
 
-        rule.definitions(node).each do |definition|
-          definition.filename = @current_filename
-          definitions << definition
-        end
+        definitions.concat(rule.definitions(node, @current_filename))
       end
     end
   end

@@ -9,6 +9,26 @@ RSpec.describe Forgotten do
 
     subject { described_class }
 
+    it "doesn't care about using one of multiple simultaneous defined methods" do
+      temp_file '.forgotten.yml', <<~YML
+        gems: rails
+      YML
+
+      temp_file 'app/models/foo.rb', <<~RUBY
+        attribute :foo
+
+        def check_foo
+          foo?
+        end
+      RUBY
+
+      expect(subject.forgotten.map(&:name)).to contain_exactly :check_foo
+      expect(subject.collector.definitions.map(&:name)).to contain_exactly(
+        :foo, :foo?, :foo=, :check_foo
+      )
+      expect(subject.collector.calls).to contain_exactly(:attribute, :foo?)
+    end
+
     it "doesn't think method calls in the same file are forgotten" do
       temp_file 'foo.rb', <<~RUBY
         class EmailActions
@@ -32,8 +52,6 @@ RSpec.describe Forgotten do
 
       expect(subject.collector.definitions.map(&:name)).to contain_exactly(:EmailActions, :initialize, :email_params_from_order, :address_params)
       expect(subject.collector.calls).to contain_exactly(:address_params, :email_params_from_order)
-
-
     end
   end
 end
