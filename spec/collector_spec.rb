@@ -582,10 +582,36 @@ RSpec.describe Forgotten::Collector do
 
       def method_name! # leftovers:call method_name!
       end
+    RUBY
+
+    subject.collect
+    expect(subject.definitions.map(&:name)).to contain_exactly(
+      :method_name, :method_name?, :method_name=, :method_name!
+    )
+    expect(subject.calls).to contain_exactly(
+      :method_name, :method_name?, :method_name=, :method_name!
+    )
+  end
+
+  it 'collects inline comment allows for constants' do
+    temp_file 'foo.rb', <<~RUBY
+      OVERRIDDEN_CONSTANT='trash' # leftovers:call OVERRIDDEN_CONSTANT
 
       class MyConstant # leftovers:call MyConstant
       end
+    RUBY
 
+    subject.collect
+    expect(subject.definitions.map(&:name)).to contain_exactly(
+      :MyConstant, :OVERRIDDEN_CONSTANT
+    )
+    expect(subject.calls).to contain_exactly(
+      :MyConstant, :OVERRIDDEN_CONSTANT
+    )
+  end
+
+  it 'collects multiple inline comment allows' do
+    temp_file 'foo.rb', <<~RUBY
       method_names = [
         :method_name_1,
         :method_name_1?,
@@ -597,14 +623,24 @@ RSpec.describe Forgotten::Collector do
     RUBY
 
     subject.collect
-    expect(subject.definitions.map(&:name)).to contain_exactly(
-      :method_name, :method_name?, :method_name=, :method_name!,
-      :MyConstant
-    )
+    expect(subject.definitions).to be_empty
     expect(subject.calls).to contain_exactly(
-      :method_name, :method_name?, :method_name=, :method_name!,
       :method_name_1, :method_name_1?, :method_name_1=, :method_name_1!,
-      :MyConstant, :each, :send
+      :each, :send
+    )
+  end
+
+  it 'collects multiple inline comment allows for non alpha methods' do
+    temp_file 'foo.rb', <<~RUBY
+      # leftovers:call [] []= ** ! ~ +@ -@ * / % + - >> <<
+      # leftovers:call & ^ | <= < > >= <=> == === != =~ !~
+    RUBY
+
+    subject.collect
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(
+      :[], :[]=, :**, :'!', :~, :+@, :-@, :*, :/, :%, :+, :-, :>>, :<<,
+      :&, :^, :|, :<=, :<, :>, :>=, :<=>, :==, :===, :'!=', :=~, :!~
     )
   end
 

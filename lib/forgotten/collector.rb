@@ -56,14 +56,19 @@ module Forgotten
       process_comments(comments)
     end
 
-    METHOD_NAME_RE=/[[:lower:]_][[:alnum:]_]*\b[\?!=]?/
-    NON_ALPHA_METHOD_NAME_RE=/\[\]=?|\*\*|[!~+\-&^|<>*\/%]|[+\-]@|>>|<<|<=>?|>=|={2,3}|![=~]|=~/
-    CONSTANT_NAME_RE=/[[:upper:]][[:alnum:]_]*\b/
-    NAME_RE=/#{METHOD_NAME_RE}|#{NON_ALPHA_METHOD_NAME_RE}|#{CONSTANT_NAME_RE}/
-    LEFTOVERS_RE=/\bleftovers:call (#{NAME_RE}([, :]+#{NAME_RE})*)/
+    METHOD_NAME_RE = /[[:lower:]_][[:alnum:]_]*\b[\?!=]?/.freeze
+    NON_ALNUM_METHOD_NAME_RE = Regexp.union(%w{
+      []= [] ** ~ +@ -@ * / % + - >> << &
+      ^ | <=> <= >= < > === == != =~ !~ !
+    }.map { |op| /#{Regexp.escape(op)}/ })
+    CONSTANT_NAME_RE = /[[:upper:]][[:alnum:]_]*\b/.freeze
+    NAME_RE = Regexp.union(METHOD_NAME_RE, NON_ALNUM_METHOD_NAME_RE, CONSTANT_NAME_RE)
+    LEFTOVERS_RE = /\bleftovers:call (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
     def process_comments(comments)
       comments.each do |comment|
         match = comment.text.match(LEFTOVERS_RE)
+
+        next unless match
         next unless match[1]
 
         match[1].scan(NAME_RE).each { |s| calls << s.to_sym }

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 RSpec.describe Forgotten do
-  it "has a version number" do
+  it 'has a version number' do
     expect(Forgotten::VERSION).not_to be nil
   end
 
