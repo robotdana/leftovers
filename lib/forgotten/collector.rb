@@ -9,7 +9,7 @@ module Forgotten
     attr_reader :definitions
 
     def initialize
-      @calls = Set.new
+      @calls = []
       @definitions = []
       @process_next = []
     end
@@ -23,6 +23,8 @@ module Forgotten
       rescue Parser::SyntaxError => e
         puts "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}"
       end
+
+      @calls = calls.to_set
     end
 
     def preprocess_file(filename)
@@ -123,10 +125,12 @@ module Forgotten
 
     # grab class Constant or module Constant
     def on_class(node)
-      # don't call super so we don't process the class name
+      # don't call super so we don't process the class name (# wtf does this mean dana? what would happen instead?)
       process_all(node.children.drop(1))
 
-      definitions << Definition.new(node.children.first.children[1], node.children.first.loc.name, @current_filename)
+      node = node.children.first
+
+      definitions << Definition.new(node.children[1], node.loc.name, @current_filename)
     end
     alias_method :on_module, :on_class
 
@@ -141,16 +145,20 @@ module Forgotten
     def on_alias(node)
       super
 
-      definitions << Definition.new(node.children.first.children.first, node.children.first.loc.expression, @current_filename)
-      calls << node.children[1].children.first
+      new_method, original_method = node.children
+
+      definitions << Definition.new(new_method.children.first, new_method.loc.expression, @current_filename)
+      calls << original_method.children.first
     end
 
     private
 
     def collect_op_asgn(node)
-      if node.children.first.type == :send
-        calls << node.children.first.children[1]
-        calls << :"#{node.children.first.children[1]}="
+      node = node.children.first
+      if node.type == :send
+        name = node.children[1]
+        calls << name
+        calls << :"#{name}="
       end
     end
 
@@ -162,9 +170,12 @@ module Forgotten
     end
 
     def collect_method_rules(node)
-      Forgotten.config.rules.each do |rule|
-        calls.merge(rule.calls(node, @current_filename))
+      node = MethodNode.new(node)
 
+      Forgotten.config.rules.each do |rule|
+        next unless rule.match?(node, @current_filename)
+
+        calls.concat(rule.calls(node))
         definitions.concat(rule.definitions(node, @current_filename))
       end
     end

@@ -2,7 +2,6 @@ require_relative 'matcher'
 
 module Forgotten
   class MethodRule
-    attr_reader :method
     attr_reader :path
     attr_reader :caller
     attr_reader :definer
@@ -24,7 +23,7 @@ module Forgotten
     end
 
     def method_name?(node)
-      @method_matcher.match?(node.children[1].to_s)
+      @method_matcher.match?(node.name)
     end
 
     def filename?(filename)
@@ -33,15 +32,15 @@ module Forgotten
       path.any? { |p| File.fnmatch?(p, filename) }
     end
 
-    def calls(node, filename)
-      return [] unless method_name?(node) && filename?(filename)
+    def match?(node, filename)
+      method_name?(node) && filename?(filename)
+    end
 
+    def calls(node)
       caller.flat_map { |m| m.matches(node) }
     end
 
     def definitions(node, filename)
-      return [] unless method_name?(node) && filename?(filename)
-
       definer.flat_map { |m| m.matches(node) }.each { |d| d.filename = filename }
     end
   end

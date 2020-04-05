@@ -1,3 +1,5 @@
+require_relative 'method_node'
+require_relative 'hash_node'
 module Forgotten
   class ArgumentRule
     attr_accessor :group
@@ -27,6 +29,7 @@ module Forgotten
       delete_suffix: nil,
       delete_prefix: nil,
       replace_with: nil,
+      nested: false,
       key: false,
       definer: false,
       group: nil,
@@ -74,7 +77,7 @@ module Forgotten
     end
 
     def prepare_keyword(keyword)
-      Forgotten.wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }
+      Forgotten.wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }.to_set
     end
 
     def matches(method_node)
@@ -83,13 +86,13 @@ module Forgotten
       position.flat_map do |n|
         case n
         when '*'
-          method_node.children.drop(2).flat_map { |s| value(s, method_node) }
+          method_node.arguments.flat_map { |s| value(s, method_node) }
         when '**'
-          hash(kwargs(method_node), method_node)
+          hash(method_node.kwargs, method_node)
         when 0
           method_value(method_node)
         when Integer
-          value(method_node.children[n + 1], method_node)
+          value(method_node.arguments[n - 1], method_node)
         end
       end.compact
     end
@@ -100,55 +103,41 @@ module Forgotten
     end
 
     def condition_match?(condition, method_name)
-      hash_node = kwargs(method_name)
+      hash_node = method_name.kwargs
 
       return false unless hash_node
 
       condition[:keyword].all? do |kw|
         if kw.is_a?(Hash)
           kw.all? do |k, v|
-            hash_value(hash_node, k.to_sym) == v || hash_value(hash_node, k.to_s) == v
+            hash_node[k] == v
           end
         else
-          hash_node.children.any? do |pair|
-            keyword_match?(pair.children.first, kw: Array(kw))
-          end
+          hash_node.key?(kw)
         end
       end
     end
 
-    def kwargs(method_node)
-      hash_node = method_node.children.drop(2)[-1]
-      return unless hash_node && hash_node.type == :hash
-
-      hash_node
-    end
-
     def hash(hash_node, method_node)
       return unless hash_node
-      return unless hash_node.type == :hash
 
       out = if key == true
-        hash_node.children.flat_map { |pair| value(pair.children.first, method_node) }
+        hash_node.keys.map { |k| value(k, method_node) }
       else
         []
       end
 
-      hash_node.children.each do |pair|
-        next unless keyword_match?(pair.children.first)
+      value_nodes = if keyword.include?(:'*')
+        hash_node.value_nodes
+      else
+        hash_node.value_nodes_at(keyword)
+      end
 
-        out << value(pair.children.last, method_node)
-      end.compact
+      value_nodes.each do |v|
+        out << value(v, method_node)
+      end
+
       out.flatten
-    end
-
-    def keyword_match?(symbol_node, kw: keyword)
-      return true if kw.include?(:*)
-
-      return unless symbol_node
-      return unless symbol_node?(symbol_node)
-
-      kw.include?(symbol_node.children.first)
     end
 
     def array_values(value_node, method_node)
@@ -158,13 +147,18 @@ module Forgotten
     def value(value_node, method_node)
       return unless value_node
 
-      case value_node.type
-      when :array
-        array_values(value_node, method_node)
-      when :hash
-        hash(value_node, method_node)
-      when :str, :sym
+      case value_node
+      when Symbol
         symbol_or_string(value_node, method_node)
+      else
+        case value_node.type
+        when :array
+          array_values(value_node, method_node)
+        when :hash
+          hash(HashNode.new(value_node), method_node)
+        when :str, :sym
+          symbol_or_string(value_node, method_node)
+        end
       end
     end
 
@@ -173,14 +167,14 @@ module Forgotten
     end
 
     def symbol_or_string(symbol_node, method_node)
-      subnodes = symbol_node.children.first.to_s.split(/[.:]+/).flat_map { |s| transform(s, method_node) }
+      subnodes = StringSymbolNode.try(symbol_node).parts.flat_map { |s| transform(s, method_node) }
       return subnodes unless definer
 
       Definition.wrap(subnodes, symbol_node.loc.expression)
     end
 
     def method_value(method_node)
-      values = transform(method_node.children[1].to_s, method_node)
+      values = transform(method_node.name, method_node)
 
       return values unless definer
 
@@ -204,7 +198,7 @@ module Forgotten
       return transform[:prefix] unless transform[:prefix].is_a?(Hash)
 
       if transform[:prefix][:from_keyword]
-        prefix = hash_value(method_node.children.last, transform[:prefix][:from_keyword]).to_s
+        prefix = method_node.kwargs[transform[:prefix][:from_keyword].to_sym].to_s
       end
 
       return unless prefix
@@ -214,28 +208,6 @@ module Forgotten
       end
 
       prefix
-    end
-
-    def hash_value(hash_node, key)
-      return nil unless hash_node&.type == :hash
-
-      pair_node = hash_node.children.find do |pair|
-        key_node = pair.children.first
-        next unless symbol_node?(key_node)
-        next unless key_node.children.first.to_sym == key.to_sym
-
-        true
-      end
-
-      return unless pair_node
-
-      value_node = pair_node.children.last
-
-      if symbol_node?(value_node)
-        value_node.children.first
-      else
-        value_node.type == :true
-      end
     end
 
     def process_activesupport(string, activesupport)

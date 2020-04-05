@@ -1,26 +1,37 @@
 require 'set'
-class Matcher
-  def initialize(patterns)
-    patterns = Forgotten.wrap_array(patterns)
-    @strings = patterns.select { |pattern| pattern.is_a?(String) }.to_set
-    regexps = patterns.select { |pattern| pattern.is_a?(Hash) }
-    unless regexps.empty?
-      regexps.map! do |pattern|
-        if pattern[:match]
-          /\A#{pattern[:match]}\z/
-        elsif pattern[:prefix] && pattern[:suffix]
-          /\A#{Regexp.escape(pattern[:prefix])}.*#{Regexp.escape(pattern[:suffix])}\z/
-        elsif pattern[:prefix]
-          /\A#{Regexp.escape(pattern[:prefix])}/
-        elsif pattern[:suffix]
-          /#{Regexp.escape(pattern[:suffix])}\z/
+module Forgotten
+  class Matcher
+    def initialize(patterns)
+      patterns = Forgotten.wrap_array(patterns)
+      regexps = []
+      @strings = Set.new
+      patterns.each do |pattern|
+        case pattern
+        when String
+          @strings << pattern.freeze
+        when Hash
+          if pattern[:match]
+            regexps << /\A#{pattern[:match]}\z/
+          elsif pattern[:prefix] && pattern[:suffix]
+            regexps << /\A#{Regexp.escape(pattern[:prefix])}.*#{Regexp.escape(pattern[:suffix])}\z/
+          elsif pattern[:prefix]
+            regexps << /\A#{Regexp.escape(pattern[:prefix])}/
+          elsif pattern[:suffix]
+            regexps << /#{Regexp.escape(pattern[:suffix])}\z/
+          end
         end
       end
+
+      if @strings.length <= 1
+        @string = @strings.first
+        @strings = nil
+      end
+
       @regexp = Regexp.union(regexps)
     end
-  end
 
-  def match?(string)
-    @strings.include?(string) || @regexp&.match?(string)
+    def match?(string)
+      @string&.==(string) || @strings&.include?(string) || @regexp&.match?(string)
+    end
   end
 end
