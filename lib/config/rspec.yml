@@ -1,7 +1,23 @@
 ---
 allowed:
+  # matchers
   - diffable?
   - actual
+  # formatters:
+  - start
+  - example_group_started
+  - example_started
+  - example_passed
+  - example_failed
+  - example_pending
+  - message
+  - stop
+  - start_dump
+  - dump_pending
+  - dump_failures
+  - dump_summary
+  - seed
+  - close
 
 rules:
   - method:
@@ -21,11 +37,18 @@ rules:
     caller:
       position: 2
   - method:
-      - prefix: 'be_'
+      prefix: be_
     caller:
       position: 0
       delete_prefix: be_
       suffix: '?'
+  - method:
+      prefix: have_
+    caller:
+      position: 0
+      delete_prefix: have_
+      suffix: '?'
+      prefix: has_
   - method: let
     definer:
       position: 1

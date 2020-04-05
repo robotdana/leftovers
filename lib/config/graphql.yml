@@ -1,4 +1,19 @@
+allowed:
+  - cursor_from_node
+  - paged_nodes
+  - sliced_nodes
 rules:
   - method: field
     caller:
-      position: 1
+      - position: 1
+        unless:
+          keyword: method
+      - keyword: method
+  - method: argument
+    caller:
+      - position: 1
+        suffix: '='
+        unless:
+          keyword: as
+      - keyword: as
+        suffix: '='

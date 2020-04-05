@@ -1,0 +1,2 @@
+allowed:
+  - current_user_for_rollbar

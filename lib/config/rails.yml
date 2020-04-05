@@ -55,6 +55,7 @@ rules:
       - skip_before_action
       - skip_after_action
       - skip_around_action
+      - validates_associated
     caller:
       - position: '*'
       - keyword:
@@ -116,8 +117,10 @@ rules:
     - url_field
     - week_field
     caller:
-      position: 1 # with a receiver
-      position: 2 # with no receiver
+      - position: [1,2] # 1: with a receiver, 2: with no receiver
+        transforms:
+          - true
+          - suffix: '='
   - method: fields_for
     caller:
       position: 1
@@ -198,6 +201,12 @@ rules:
       - keyword: through
       - keyword: class_name
       - keyword: inverse_of
+      - position: 1
+        if:
+          keyword: dependent
+      - position: 1
+        if:
+          keyword: inverse_of
   - method:
       - rescue_from
     caller:
@@ -259,7 +268,7 @@ rules:
         activesupport: camelize
   - method: accepts_nested_attributes_for
     definer:
-      position: 1
+      position: '*'
       transforms:
         - suffix: _attributes
         - suffix: _attributes=
@@ -302,4 +311,23 @@ rules:
       position: '*'
       keyword: '*'
       key: true
-
+  - method:
+      - string
+      - text
+      - integer
+      - bigint
+      - float
+      - decimal
+      - numeric
+      - datetime
+      - time
+      - date
+      - binary
+      - boolean
+    path: config/db_schema.rb
+    caller:
+      position: 1
+      transforms:
+        - true
+        - suffix: '='
+        - suffix: '?'
