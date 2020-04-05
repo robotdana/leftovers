@@ -159,10 +159,6 @@ module Forgotten
       end
     end
 
-    def symbol_node?(symbol_node)
-      [:sym, :str].include?(symbol_node.type)
-    end
-
     def symbol_or_string(symbol_node, method_node)
       subnodes = StringSymbolNode.try(symbol_node).parts.flat_map { |s| transform(s, method_node) }
       return subnodes unless definer

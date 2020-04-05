@@ -34,12 +34,6 @@ module Forgotten
       @to_s ||= value.to_s
     end
 
-    def ==(value)
-      value.respond_to?(:to_sym) && self.value == value.to_sym
-    end
-    alias_method :eql?, :==
-    alias_method :eq?, :==
-
     private
 
     attr_reader :node

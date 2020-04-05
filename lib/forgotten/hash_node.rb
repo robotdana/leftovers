@@ -51,14 +51,6 @@ module Forgotten
       pairs_with_symbol_keys.key?(key)
     end
 
-    def include_keys?(keys)
-      if keys.length > 1
-        self.symbol_keys > keys
-      else
-        key?(keys.first)
-      end
-    end
-
     def value_nodes_at(keys)
       pairs_with_symbol_keys.values_at(*keys)
     end
