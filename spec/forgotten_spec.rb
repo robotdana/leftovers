@@ -5,6 +5,21 @@ RSpec.describe Forgotten do
     expect(Forgotten::VERSION).not_to be nil
   end
 
+  describe '.config.rules' do
+    around { |example| with_temp_dir { example.run } }
+    before { described_class.reset }
+    it 'can load all default config' do
+      files = Pathname.glob("#{__dir__}/../lib/config/*.yml")
+      files = files.map { |f| f.basename.sub_ext('').to_s }
+
+      temp_file '.forgotten.yml', <<~YML
+        gems: #{files.inspect}
+      YML
+
+      Forgotten.config.rules
+    end
+  end
+
   describe '.forgotten' do
     around { |example| with_temp_dir { example.run } }
     before { described_class.reset }

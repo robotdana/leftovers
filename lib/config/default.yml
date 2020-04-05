@@ -37,16 +37,20 @@ rules:
     caller:
       position: 1
   - method: attr_reader
-    definer: true
+    definer:
+      position: '*'
   - method: attr_writer
     definer:
+      position: '*'
       suffix: '='
   - method: attr_accessor
     definer:
       - suffix: '='
-      - true
+        position: '*'
+      - position: '*'
   - method: define_method
-    definer: true
+    definer:
+      position: 1
   - method: alias_method
     definer:
       position: 1

@@ -18,8 +18,18 @@ module Forgotten
     def initialize(method:, caller: nil, definer: nil, path: nil)
       @method_matcher = Matcher.new(method)
       @path = Array(path)
-      @caller = ArgumentRule.wrap(caller)
-      @definer = ArgumentRule.wrap(definer, definer: true)
+
+      begin
+        @caller = ArgumentRule.wrap(caller)
+      rescue ArgumentError => e
+        raise ArgumentError, "#{e.message} for caller #{method}"
+      end
+
+      begin
+        @definer = ArgumentRule.wrap(definer, definer: true)
+      rescue ArgumentError => e
+        raise ArgumentError, "#{e.message} for definer #{method}"
+      end
     end
 
     def method_name?(node)

@@ -56,7 +56,7 @@ rules:
       - skip_after_action
       - skip_around_action
     caller:
-      - true
+      - position: '*'
       - keyword:
           - if
           - unless
@@ -120,6 +120,7 @@ rules:
       position: 2 # with no receiver
   - method: fields_for
     caller:
+      position: 1
       suffix: _attributes
   - method: options_from_collection_for_select
     caller:
@@ -219,13 +220,15 @@ rules:
       - keyword: action
   - method: delegate
     definer:
-      - if:
+      - position: '*'
+        if:
           keyword:
             prefix: true
         prefix:
           from_keyword: to
           joiner: '_'
-      - if:
+      - position: '*'
+        if:
           keyword: prefix
         unless:
           keyword:
@@ -235,7 +238,8 @@ rules:
           joiner: '_'
     caller:
       - keyword: to
-      - if:
+      - position: '*'
+        if:
           keyword: prefix
   - method:
       - resource
@@ -280,9 +284,7 @@ rules:
       suffix: '='
   - method: permit
     caller:
-      position:
-        - '*'
-        - '**'
+      position: '*'
       keyword: '*'
       key: true
       suffix: "="
@@ -297,9 +299,7 @@ rules:
       - left_joins
       - left_outer_joins
     caller:
-      position:
-          - '*'
-          - '**'
+      position: '*'
       keyword: '*'
       key: true
 

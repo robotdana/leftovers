@@ -29,7 +29,6 @@ module Forgotten
       delete_suffix: nil,
       delete_prefix: nil,
       replace_with: nil,
-      nested: false,
       key: false,
       definer: false,
       group: nil,
@@ -39,8 +38,9 @@ module Forgotten
       @if = prepare_condition(@if)
       @unless = prepare_condition(@unless)
       @keyword = prepare_keyword(keyword)
-      @position = prepare_position(position, @keyword, key)
+      @position = Array(position)
       @key = key
+      raise ArgumentError, "require at least one of 'position', 'keyword', 'key'" if @position.empty? && @keyword.empty? && !@key
       @definer = definer
       @transforms = prepare_transforms({
         before: before,
@@ -69,13 +69,6 @@ module Forgotten
       end
     end
 
-    def prepare_position(position, keyword, key)
-      position = Array(position)
-      return position if position && !position.empty?
-      return ['**'] if (keyword && !keyword.empty?) || key
-      ['*']
-    end
-
     def prepare_keyword(keyword)
       Forgotten.wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }.to_set
     end
@@ -83,18 +76,22 @@ module Forgotten
     def matches(method_node)
       return [] unless all_conditions_match?(method_node)
 
-      position.flat_map do |n|
+      values = position.flat_map do |n|
         case n
         when '*'
           method_node.arguments.flat_map { |s| value(s, method_node) }
-        when '**'
-          hash(method_node.kwargs, method_node)
         when 0
           method_value(method_node)
         when Integer
           value(method_node.arguments[n - 1], method_node)
         end
-      end.compact
+      end
+
+      if (keyword && !keyword.empty?) || key
+        values << hash_values(method_node.kwargs, method_node)
+      end
+
+      values.flatten.compact
     end
 
     def all_conditions_match?(method_node)
@@ -118,7 +115,7 @@ module Forgotten
       end
     end
 
-    def hash(hash_node, method_node)
+    def hash_values(hash_node, method_node)
       return unless hash_node
 
       out = if key == true
@@ -155,7 +152,7 @@ module Forgotten
         when :array
           array_values(value_node, method_node)
         when :hash
-          hash(HashNode.new(value_node), method_node)
+          hash_values(HashNode.new(value_node), method_node)
         when :str, :sym
           symbol_or_string(value_node, method_node)
         end
