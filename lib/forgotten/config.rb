@@ -27,10 +27,7 @@ module Forgotten
     end
 
     def allowed
-      @allowed ||= Array(@config[:allowed]).map do |pattern|
-        # * becomes .*, everything else is rendered inert for regexps. Also it's anchored
-        Regexp.new("\\A#{Regexp.escape(pattern).gsub('\\*', '.*')}\\z")
-      end
+      @allowed ||= Matcher.new(@config[:allowed])
     end
 
     private

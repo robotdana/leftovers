@@ -49,7 +49,7 @@ module Forgotten
   end
 
   def allowed?(name)
-    Forgotten.config.allowed.any? { |pattern| name.match(pattern) }
+    Forgotten.config.allowed.match?(name)
   end
 
   def try_require(requirable, message = nil)
@@ -59,5 +59,16 @@ module Forgotten
   rescue LoadError
     $stderr.puts message if message
     @try_require[requirable] = false
+  end
+
+  def wrap_array(value)
+    case value
+    when Hash
+      [value]
+    when Array
+      value
+    else
+      Array(value)
+    end
   end
 end

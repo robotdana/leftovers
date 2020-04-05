@@ -61,7 +61,7 @@ module Forgotten
     end
 
     def prepare_condition(conditions)
-      wrap_array(conditions).each do |cond|
+      Forgotten.wrap_array(conditions).each do |cond|
         cond[:keyword] = prepare_keyword(cond[:keyword])
       end
     end
@@ -74,7 +74,7 @@ module Forgotten
     end
 
     def prepare_keyword(keyword)
-      wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }
+      Forgotten.wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }
     end
 
     def matches(method_node)
@@ -97,17 +97,6 @@ module Forgotten
     def all_conditions_match?(method_node)
       @if.all? { |c| condition_match?(c, method_node) } &&
         @unless.all? { |c| !condition_match?(c, method_node) }
-    end
-
-    def wrap_array(value)
-      case value
-      when Hash
-        [value]
-      when Array
-        value
-      else
-        Array(value)
-      end
     end
 
     def condition_match?(condition, method_name)

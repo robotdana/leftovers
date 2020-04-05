@@ -104,6 +104,22 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly :foo=, :foo
   end
 
+  context 'when rspec' do
+    before do
+      temp_file '.forgotten.yml', "---\ngems: rspec"
+      Forgotten.reset
+    end
+
+    it 'collects method calls using be_' do
+      temp_file 'foo.rb', 'expect(array).to be_empty'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly :expect, :array, :to, :empty?, :be_empty
+    end
+  end
+
   context 'when rails' do
     before do
       temp_file '.forgotten.yml', "---\ngems: rails"
@@ -650,7 +666,8 @@ RSpec.describe Forgotten::Collector do
     temp_file '.forgotten.yml', <<~YML
       ---
       rules:
-        - method: '*_html'
+        - method:
+            suffix: '_html'
           caller:
             - position: 0
               delete_suffix: _html

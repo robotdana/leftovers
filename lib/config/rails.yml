@@ -3,7 +3,7 @@ excludes:
   - db/migrate/*
 
 allowed:
-  - '*Helper' # included in the ViewContext
+  - suffix: Helper # included in the ViewContext
   - ClassMethods # ActiveSupport::Concern
   - process_action # ActiveSupport::LogSubscriber
   - validate_each # ActiveModel::EachValidator

@@ -1,3 +1,5 @@
+require_relative 'matcher'
+
 module Forgotten
   class MethodRule
     attr_reader :method
@@ -15,14 +17,14 @@ module Forgotten
     end
 
     def initialize(method:, caller: nil, definer: nil, path: nil)
-      @method = Array(method).map(&:to_sym)
+      @method_matcher = Matcher.new(method)
       @path = Array(path)
       @caller = ArgumentRule.wrap(caller)
       @definer = ArgumentRule.wrap(definer, definer: true)
     end
 
     def method_name?(node)
-      method.any? { |m| File.fnmatch?(m.to_s, node.children[1].to_s) }
+      @method_matcher.match?(node.children[1].to_s)
     end
 
     def filename?(filename)

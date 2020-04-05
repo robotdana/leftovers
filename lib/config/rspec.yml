@@ -20,7 +20,8 @@ rules:
       position: 1
     caller:
       position: 2
-  - method: 'be_*'
+  - method:
+      - prefix: 'be_'
     caller:
       position: 0
       delete_prefix: be_
