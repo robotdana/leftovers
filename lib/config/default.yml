@@ -14,14 +14,17 @@ includes:
 allowed:
   - initialize # called by new
   - inspect # called by repl
-  - respond_to_missing? # metaprogramming
-  - method_missing # metaprogramming
-  - respond_to? # metaprogramming
-  - to_s # called by string interpolation
+  - respond_to_missing? # called by respond_to?
+  - method_missing # called by method dispatch
+  - to_s # called by #{}
   - to_ary
   - to_str
   - <=> # called by Comparable
   - each # called by Enumerable
+  - marshal_dump # called by Marshal.dump
+  - marshal_load # called by Marshal.load
+  - _dump # called by Marshal.dump
+  - _load # called by Marshal.load
 
 rules:
   - method:
