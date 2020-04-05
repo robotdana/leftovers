@@ -50,8 +50,8 @@ module Forgotten
       caller.flat_map { |m| m.matches(node) }
     end
 
-    def definitions(node, filename)
-      definer.flat_map { |m| m.matches(node) }.each { |d| d.filename = filename }
+    def definitions(node)
+      definer.flat_map { |m| m.matches(node) }
     end
   end
 end

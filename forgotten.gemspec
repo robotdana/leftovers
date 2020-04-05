@@ -34,4 +34,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "activesupport"
   spec.add_dependency "fast_ignore", "~> 0.6.0"
   spec.add_dependency "parser"
+  spec.add_dependency "parallel"
 end
