@@ -19,6 +19,9 @@ allowed:
   - seed
   - close
 
+tests:
+  - /spec/
+
 rules:
   - method:
       - have_attributes

@@ -15,11 +15,15 @@ module Forgotten
     end
 
     def excludes
-      Array(@config[:excludes])
+      @excludes ||= Array(@config[:excludes])
     end
 
     def includes
-      Array(@config[:includes])
+      @includes ||= Array(@config[:includes])
+    end
+
+    def test_paths
+      @test_paths ||= FastIgnore.new(include_rules: @config[:tests])
     end
 
     def rules

@@ -6,10 +6,12 @@ require_relative 'file_collector'
 module Forgotten
   class Collector
     attr_reader :calls
+    attr_reader :test_calls
     attr_reader :definitions
 
     def initialize
       @calls = []
+      @test_calls = []
       @definitions = []
     end
 
@@ -18,14 +20,20 @@ module Forgotten
         file_collector = Forgotten::FileCollector.new(filename)
         file_collector.collect
 
-        { calls: file_collector.calls, definitions: file_collector.definitions }
+        file_collector.to_h
       end
 
       @calls = calls.to_set
+      @test_calls = test_calls.to_set
     end
 
     def finish_parallel(_, _, result)
-      @calls.concat(result[:calls])
+      if result[:test?]
+        @test_calls.concat(result[:calls])
+      else
+        @calls.concat(result[:calls])
+      end
+
       @definitions.concat(result[:definitions])
     end
   end

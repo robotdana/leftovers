@@ -10,6 +10,7 @@ includes:
   - '*.erb'
   - '*.builder'
   - '*.jbuilder'
+  - '*.gemspec'
 
 allowed:
   - initialize # called by new
@@ -25,6 +26,10 @@ allowed:
   - marshal_load # called by Marshal.load
   - _dump # called by Marshal.dump
   - _load # called by Marshal.load
+
+tests:
+  - /tests/
+  - /test/
 
 rules:
   - method:

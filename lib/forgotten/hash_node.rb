@@ -43,10 +43,6 @@ module Forgotten
       @keys ||= pairs.keys.to_set
     end
 
-    def symbol_keys
-      @symbol_keys ||= pairs_with_symbol_keys.keys.to_set
-    end
-
     def key?(key)
       pairs_with_symbol_keys.key?(key)
     end

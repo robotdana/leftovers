@@ -12,10 +12,25 @@ module Forgotten
       @calls = []
       @definitions = []
       @path = filename
-      @filename = filename.delete_prefix(Dir.pwd + '/')
     end
 
-    attr_reader :filename
+    def filename
+      @filename ||= @path.delete_prefix(Dir.pwd + '/')
+    end
+
+    def to_h
+      {
+        test?: test?,
+        calls: calls,
+        definitions: definitions
+      }
+    end
+
+    def test?
+      return @test if defined?(@test)
+
+      @test = Forgotten.config.test_paths.allowed?(filename)
+    end
 
     def collect
       ruby = preprocess_file
@@ -71,13 +86,13 @@ module Forgotten
         next unless match
         next unless match[1]
 
-        match[1].scan(NAME_RE).each { |s| calls << s.to_sym }
+        match[1].scan(NAME_RE).each { |s| add_call(s.to_sym) }
       end
     end
 
     # grab method definitions
     def on_def(node)
-      definitions << Definition.new(node.children.first, node.loc.name, @filename)
+      add_definition(node.children.first, node.loc.name)
 
       super
     end
@@ -104,11 +119,11 @@ module Forgotten
     def on_send(node)
       super
 
-      calls << node.children[1]
+      add_call(node.children[1])
 
       collect_method_rules(node)
     rescue StandardError => e
-      puts "#{e.message} #{@filename}:#{node.loc.expression}"
+      puts "#{e.message} #{filename}:#{node.loc.expression}"
       raise
     end
     alias_method :on_const, :on_send
@@ -128,7 +143,7 @@ module Forgotten
 
       node = node.children.first
 
-      definitions << Definition.new(node.children[1], node.loc.name, @filename)
+      add_definition(node.children[1], node.loc.name)
     end
     alias_method :on_module, :on_class
 
@@ -136,7 +151,15 @@ module Forgotten
     def on_casgn(node)
       super
 
-      definitions << Definition.new(node.children[1], node.loc.name, @filename)
+      add_definition(node.children[1], node.loc.name)
+    end
+
+    def add_definition(name, loc)
+      definitions << Definition.new(name, loc, filename: filename, test: test?)
+    end
+
+    def add_call(name)
+      calls << name
     end
 
     # grab calls to `alias new_method original_method`
@@ -145,8 +168,8 @@ module Forgotten
 
       new_method, original_method = node.children
 
-      definitions << Definition.new(new_method.children.first, new_method.loc.expression, @filename)
-      calls << original_method.children.first
+      add_definition(new_method.children.first, new_method.loc.expression)
+      add_call(original_method.children.first)
     end
 
     private
@@ -155,8 +178,8 @@ module Forgotten
       node = node.children.first
       if node.type == :send
         name = node.children[1]
-        calls << name
-        calls << :"#{name}="
+        add_call(name)
+        add_call(:"#{name}=")
       end
     end
 
@@ -164,17 +187,22 @@ module Forgotten
       return unless node
       return unless [:sym, :str].include?(node.type)
 
-      calls << node.children.first
+      add_call(node.children.first)
     end
 
     def collect_method_rules(node)
       node = MethodNode.new(node)
 
       Forgotten.config.rules.each do |rule|
-        next unless rule.match?(node, @filename)
+        next unless rule.match?(node, filename)
 
         calls.concat(rule.calls(node))
-        definitions.concat(rule.definitions(node).each { |d| d.filename = @filename })
+        definitions.concat(
+          rule.definitions(node).each do |d|
+            d.filename = filename
+            d.test = test?
+          end
+        )
       end
     end
   end

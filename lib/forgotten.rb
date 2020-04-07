@@ -27,7 +27,7 @@ module Forgotten
       collector.collect
       forgotten = collector.definitions.reject do |definition|
         allowed?(definition.name.to_s) ||
-          definition.names.any? { |name| collector.calls.include?(name) }
+          definition.any_in_collection?(collector)
       end
     end
   end
@@ -35,7 +35,26 @@ module Forgotten
   def run
     reset
     return 0 if forgotten.empty?
-    forgotten.each { |definition| reporter.call(definition) }
+
+    only_test = []
+    none = []
+    forgotten.sort.each do |definition|
+      if !definition.test? && collector.test_calls.include?(definition.name)
+        only_test << definition
+      else
+        none << definition
+      end
+    end
+
+    unless only_test.empty?
+      puts "\e[31mOnly directly called in tests:\e[0m"
+      only_test.each { |definition| reporter.call(definition) }
+    end
+
+    unless none.empty?
+      puts "\e[31mNot directly called at all:\e[0m"
+      none.each { |definition| reporter.call(definition) }
+    end
 
     1
   end
