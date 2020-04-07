@@ -41,6 +41,33 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly :send, :foo
   end
 
+  it 'collects method definitions using attr_reader' do
+    temp_file 'foo.rb', 'attr_reader(:cat)'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly(:cat)
+    expect(subject.calls).to contain_exactly :attr_reader, :@cat
+  end
+
+  it 'collects method definitions using attr_accessor' do
+    temp_file 'foo.rb', 'attr_accessor(:cat)'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly(:cat, :cat=)
+    expect(subject.calls).to contain_exactly :attr_accessor, :@cat
+  end
+
+  it 'collects method definitions using attr_writer' do
+    temp_file 'foo.rb', 'attr_writer(:cat)'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly(:cat=)
+    expect(subject.calls).to contain_exactly :attr_writer
+  end
+
   it 'collects method calls using send with strings' do
     temp_file 'foo.rb', 'send("foo")'
 

@@ -44,6 +44,9 @@ rules:
   - method: attr_reader
     definer:
       position: '*'
+    caller:
+      position: '*'
+      prefix: '@'
   - method: attr_writer
     definer:
       position: '*'
@@ -53,6 +56,9 @@ rules:
       - suffix: '='
         position: '*'
       - position: '*'
+    caller:
+      position: '*'
+      prefix: '@'
   - method: define_method
     definer:
       position: 1
@@ -61,3 +67,9 @@ rules:
       position: 1
     caller:
       position: 2
+  - method: instance_variable_get
+    caller:
+      position: 1
+  - method: instance_variable_set
+    definer:
+      position: 1

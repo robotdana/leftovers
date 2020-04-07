@@ -6,10 +6,6 @@ module Forgotten
   class FileList
     include Enumerable
 
-    def initialize(*patterns)
-      @patterns = patterns
-    end
-
     def root
       @root ||= Dir.pwd
     end

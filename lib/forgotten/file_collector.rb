@@ -97,6 +97,18 @@ module Forgotten
       super
     end
 
+    def on_ivasgn(node)
+      add_definition(node.children.first, node.loc.name)
+
+      super
+    end
+
+    def on_ivar(node)
+      add_call(node.children.first)
+
+      super
+    end
+
     def on_op_asgn(node)
       collect_op_asgn(node)
 
@@ -176,11 +188,17 @@ module Forgotten
 
     def collect_op_asgn(node)
       node = node.children.first
-      if node.type == :send
-        name = node.children[1]
-        add_call(name)
-        add_call(:"#{name}=")
+      name = case node.type
+      when :send
+        node.children[1]
+      when :ivasgn
+        node.children.first
       end
+
+      return unless name
+
+      add_call(name)
+      add_call(:"#{name}=")
     end
 
     def collect_symbol_call(node)
