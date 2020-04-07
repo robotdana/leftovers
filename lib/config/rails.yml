@@ -165,6 +165,20 @@ rules:
           - true
           - suffix: '?'
           - suffix: '='
+  - method: alias_attribute
+    path: app/models/*
+    definer:
+      - position: 1
+        transforms:
+          - true
+          - suffix: '?'
+          - suffix: '='
+    caller:
+      - position: 2
+        transforms:
+          - true
+          - suffix: '?'
+          - suffix: '='
   - method:
     - has_one
     - belongs_to
@@ -331,3 +345,49 @@ rules:
         - true
         - suffix: '='
         - suffix: '?'
+  - method:
+      - cattr_accessor
+      - mattr_accessor
+    definer:
+      - position: '*'
+        suffix: '='
+      - position: '*'
+    caller:
+      - position: '*'
+        prefix: '@'
+  - method:
+      - cattr_reader
+      - mattr_reader
+    definer:
+      - position: '*'
+    caller:
+      - position: '*'
+        prefix: '@'
+  - method:
+      - cattr_writer
+      - mattr_writer
+    definer:
+      - position: '*'
+        suffix: '='
+
+  - method:
+    - thread_cattr_accessor
+    - thread_mattr_accessor
+    definer:
+      - position: '*'
+      - position: '*'
+        suffix: '='
+  - method:
+    - thread_cattr_reader
+    - thread_mattr_reader
+    definer:
+      - position: '*'
+  - method:
+    - thread_cattr_writer
+    - thread_mattr_writer
+    definer:
+      - position: '*'
+        suffix: '='
+  - method: delegate_missing_to
+    caller:
+      - position: 1

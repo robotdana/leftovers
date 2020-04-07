@@ -131,6 +131,141 @@ RSpec.describe Forgotten::Collector do
     expect(subject.calls).to contain_exactly :foo=, :foo
   end
 
+  it 'collects ivar definitions' do
+    temp_file 'foo.rb', '@foo = 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.calls).to be_empty
+  end
+
+  it 'collects ivar calls using +=' do
+    temp_file 'foo.rb', '@foo += 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.calls).to contain_exactly :@foo
+  end
+
+  it 'collects ivar calls using *=' do
+    temp_file 'foo.rb', '@foo *= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.calls).to contain_exactly :@foo
+  end
+
+  it 'collects ivar calls using ||=' do
+    temp_file 'foo.rb', '@foo ||= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.calls).to contain_exactly :@foo
+  end
+
+  it 'collects ivar calls using &&=' do
+    temp_file 'foo.rb', '@foo &&= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.calls).to contain_exactly :@foo
+  end
+
+  it 'collects gvar definitions' do
+    temp_file 'foo.rb', '$foo = 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.calls).to be_empty
+  end
+
+  it 'collects gvar calls using +=' do
+    temp_file 'foo.rb', '$foo += 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.calls).to contain_exactly :$foo
+  end
+
+  it 'collects gvar calls using *=' do
+    temp_file 'foo.rb', '$foo *= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.calls).to contain_exactly :$foo
+  end
+
+  it 'collects gvar calls using ||=' do
+    temp_file 'foo.rb', '$foo ||= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.calls).to contain_exactly :$foo
+  end
+
+  it 'collects gvar calls using &&=' do
+    temp_file 'foo.rb', '$foo &&= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.calls).to contain_exactly :$foo
+  end
+
+  it 'collects cvar definitions' do
+    temp_file 'foo.rb', '@@foo = 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.calls).to be_empty
+  end
+
+  it 'collects cvar calls using +=' do
+    temp_file 'foo.rb', '@@foo += 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.calls).to contain_exactly :@@foo
+  end
+
+  it 'collects cvar calls using *=' do
+    temp_file 'foo.rb', '@@foo *= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.calls).to contain_exactly :@@foo
+  end
+
+  it 'collects cvar calls using ||=' do
+    temp_file 'foo.rb', '@@foo ||= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.calls).to contain_exactly :@@foo
+  end
+
+  it 'collects cvar calls using &&=' do
+    temp_file 'foo.rb', '@@foo &&= 1'
+
+    subject.collect
+
+    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.calls).to contain_exactly :@@foo
+  end
+
   context 'when rspec' do
     before do
       temp_file '.forgotten.yml', "---\ngems: rspec"

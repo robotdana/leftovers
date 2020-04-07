@@ -102,12 +102,16 @@ module Forgotten
 
       super
     end
+    alias_method :on_gvasgn, :on_ivasgn
+    alias_method :on_cvasgn, :on_ivasgn
 
     def on_ivar(node)
       add_call(node.children.first)
 
       super
     end
+    alias_method :on_gvar, :on_ivar
+    alias_method :on_cvar, :on_ivar
 
     def on_op_asgn(node)
       collect_op_asgn(node)
@@ -186,19 +190,30 @@ module Forgotten
 
     private
 
-    def collect_op_asgn(node)
-      node = node.children.first
-      name = case node.type
-      when :send
-        node.children[1]
-      when :ivasgn
-        node.children.first
-      end
+    # just collects the call, super will collect the definition
+    def collect_var_op_asgn(node)
+      name = node.children.first
+
+      return unless name
+
+      add_call(name)
+    end
+
+    def collect_send_op_asgn(node)
+      name = node.children[1]
 
       return unless name
 
       add_call(name)
       add_call(:"#{name}=")
+    end
+
+    def collect_op_asgn(node)
+      node = node.children.first
+      case node.type
+      when :send then collect_send_op_asgn(node)
+      when :ivasgn, :gvasgn, :cvasgn then collect_var_op_asgn(node)
+      end
     end
 
     def collect_symbol_call(node)

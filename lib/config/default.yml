@@ -67,9 +67,13 @@ rules:
       position: 1
     caller:
       position: 2
-  - method: instance_variable_get
+  - method:
+      - instance_variable_get
+      - class_variable_set
     caller:
       position: 1
-  - method: instance_variable_set
+  - method:
+      - instance_variable_set
+      - class_variable_set
     definer:
       position: 1
