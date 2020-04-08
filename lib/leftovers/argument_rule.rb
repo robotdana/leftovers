@@ -1,6 +1,6 @@
 require_relative 'method_node'
 require_relative 'hash_node'
-module Forgotten
+module Leftovers
   class ArgumentRule
     attr_accessor :group
 
@@ -64,13 +64,13 @@ module Forgotten
     end
 
     def prepare_condition(conditions)
-      Forgotten.wrap_array(conditions).each do |cond|
+      Leftovers.wrap_array(conditions).each do |cond|
         cond[:keyword] = prepare_keyword(cond[:keyword])
       end
     end
 
     def prepare_keyword(keyword)
-      Forgotten.wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }.to_set
+      Leftovers.wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }.to_set
     end
 
     def matches(method_node)
@@ -206,9 +206,9 @@ module Forgotten
     def process_activesupport(string, activesupport)
       return string if !activesupport || activesupport.empty?
 
-      Forgotten.try_require('active_support/core_ext/string', "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`")
-      Forgotten.try_require('active_support/inflections', "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`")
-      Forgotten.try_require(File.join(Dir.pwd, 'config', 'initializers', 'inflections.rb'))
+      Leftovers.try_require('active_support/core_ext/string', "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`")
+      Leftovers.try_require('active_support/inflections', "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`")
+      Leftovers.try_require(File.join(Dir.pwd, 'config', 'initializers', 'inflections.rb'))
 
       activesupport.each do |method|
         string = string.send(method)

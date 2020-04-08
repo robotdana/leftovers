@@ -1,6 +1,6 @@
 require_relative 'matcher'
 
-module Forgotten
+module Leftovers
   class MethodRule
     attr_reader :path
     attr_reader :caller

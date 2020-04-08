@@ -3,7 +3,7 @@ require 'set'
 require 'parser'
 require 'parser/current'
 
-module Forgotten
+module Leftovers
   class FileCollector < Parser::AST::Processor
     attr_reader :calls
     attr_reader :definitions
@@ -29,7 +29,7 @@ module Forgotten
     def test?
       return @test if defined?(@test)
 
-      @test = Forgotten.config.test_paths.allowed?(filename)
+      @test = Leftovers.config.test_paths.allowed?(filename)
     end
 
     def collect
@@ -45,7 +45,7 @@ module Forgotten
 
       case File.extname(filename)
       when '.haml'
-        Forgotten.try_require('haml', "Tried parsing a haml file, but the haml gem was not available\n`gem install haml`")
+        Leftovers.try_require('haml', "Tried parsing a haml file, but the haml gem was not available\n`gem install haml`")
         if defined?(Haml)
           begin
             Haml::Engine.new(file).precompiled
@@ -58,7 +58,7 @@ module Forgotten
         end
       when '.rhtml', '.rjs', '.erb'
         require_relative './erb'
-        @erb_compiler ||= Forgotten::ERB.new('-')
+        @erb_compiler ||= Leftovers::ERB.new('-')
         @erb_compiler.compile(file).first
       else
         file
@@ -226,7 +226,7 @@ module Forgotten
     def collect_method_rules(node)
       node = MethodNode.new(node)
 
-      Forgotten.config.rules.each do |rule|
+      Leftovers.config.rules.each do |rule|
         next unless rule.match?(node, filename)
 
         calls.concat(rule.calls(node))

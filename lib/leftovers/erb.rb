@@ -1,6 +1,6 @@
 require 'erb'
 
-module Forgotten
+module Leftovers
   class ERB < ::ERB::Compiler
     def add_insert_cmd(out, content)
       out.push("#{content}\n")

@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 RSpec::Matchers.define_negated_matcher :exclude, :include
-RSpec.describe Forgotten::Collector do
+RSpec.describe Leftovers::Collector do
   around { |example| with_temp_dir { example.run } }
 
-  before { Forgotten.reset }
+  before { Leftovers.reset }
 
   it 'collects method definitions' do
     temp_file 'foo.rb', 'def m(a) a end'
@@ -268,8 +268,8 @@ RSpec.describe Forgotten::Collector do
 
   context 'when rspec' do
     before do
-      temp_file '.forgotten.yml', "---\ngems: rspec"
-      Forgotten.reset
+      temp_file '.leftovers.yml', "---\ngems: rspec"
+      Leftovers.reset
     end
 
     it 'collects method calls using be_' do
@@ -284,8 +284,8 @@ RSpec.describe Forgotten::Collector do
 
   context 'when rails' do
     before do
-      temp_file '.forgotten.yml', "---\ngems: rails"
-      Forgotten.reset
+      temp_file '.leftovers.yml', "---\ngems: rails"
+      Leftovers.reset
     end
 
     it 'collects method calls using a method that calls multiple methods' do
@@ -825,7 +825,7 @@ RSpec.describe Forgotten::Collector do
   it 'collects affixxed methods' do
     temp_file 'foo.rb', 'test_html'
 
-    temp_file '.forgotten.yml', <<~YML
+    temp_file '.leftovers.yml', <<~YML
       ---
       rules:
         - method:
@@ -846,7 +846,7 @@ RSpec.describe Forgotten::Collector do
   it 'collects flow' do
     temp_file 'foo.rb', 'flow(whatever, [:method_1, :method_2])'
 
-    temp_file '.forgotten.yml', <<~YML
+    temp_file '.leftovers.yml', <<~YML
       ---
       rules:
         - method: flow

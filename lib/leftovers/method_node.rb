@@ -1,4 +1,4 @@
-module Forgotten
+module Leftovers
   class MethodNode
     attr_reader :node
 

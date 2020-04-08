@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    forgotten (0.1.0)
+    leftovers (0.1.0)
       fast_ignore (~> 0.6.0)
       parallel
       parser
@@ -60,7 +60,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   bundler (~> 2.0)
-  forgotten!
+  leftovers!
   haml
   pry (~> 0.1)
   rake (~> 10.0)

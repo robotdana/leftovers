@@ -2,7 +2,7 @@
 
 require 'fast_ignore'
 
-module Forgotten
+module Leftovers
   class FileList
     include Enumerable
 
@@ -25,7 +25,7 @@ module Forgotten
     end
 
     def each
-      FastIgnore.new(ignore_rules: Forgotten.config.excludes, include_rules: Forgotten.config.includes).each do |file|
+      FastIgnore.new(ignore_rules: Leftovers.config.excludes, include_rules: Leftovers.config.includes).each do |file|
         yield(file)
       end
 

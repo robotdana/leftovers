@@ -1,31 +1,31 @@
-require_relative "./forgotten/version"
-require_relative "./forgotten/definition"
-require_relative "./forgotten/argument_rule"
-require_relative "./forgotten/method_rule"
-require_relative "./forgotten/collector"
-require_relative "./forgotten/file_list"
-require_relative "./forgotten/config"
-require_relative "./forgotten/reporter"
+require_relative "./leftovers/version"
+require_relative "./leftovers/definition"
+require_relative "./leftovers/argument_rule"
+require_relative "./leftovers/method_rule"
+require_relative "./leftovers/collector"
+require_relative "./leftovers/file_list"
+require_relative "./leftovers/config"
+require_relative "./leftovers/reporter"
 
-module Forgotten
+module Leftovers
   module_function
 
   def config
-    @config ||= Forgotten::Config.new
+    @config ||= Leftovers::Config.new
   end
 
   def collector
-    @collector ||= Forgotten::Collector.new
+    @collector ||= Leftovers::Collector.new
   end
 
   def reporter
-    @reporter ||= Forgotten::Reporter.new
+    @reporter ||= Leftovers::Reporter.new
   end
 
-  def forgotten
-    @forgotten ||= begin
+  def leftovers
+    @leftovers ||= begin
       collector.collect
-      forgotten = collector.definitions.reject do |definition|
+      leftovers = collector.definitions.reject do |definition|
         allowed?(definition.name.to_s) ||
           definition.any_in_collection?(collector)
       end
@@ -34,11 +34,11 @@ module Forgotten
 
   def run
     reset
-    return 0 if forgotten.empty?
+    return 0 if leftovers.empty?
 
     only_test = []
     none = []
-    forgotten.sort.each do |definition|
+    leftovers.sort.each do |definition|
       if !definition.test? && collector.test_calls.include?(definition.name)
         only_test << definition
       else
@@ -63,12 +63,12 @@ module Forgotten
     remove_instance_variable(:@config) if defined?(@config)
     remove_instance_variable(:@collector) if defined?(@collector)
     remove_instance_variable(:@reporter) if defined?(@reporter)
-    remove_instance_variable(:@forgotten) if defined?(@forgotten)
+    remove_instance_variable(:@leftovers) if defined?(@leftovers)
     remove_instance_variable(:@try_require) if defined?(@try_require)
   end
 
   def allowed?(name)
-    Forgotten.config.allowed.match?(name)
+    Leftovers.config.allowed.match?(name)
   end
 
   def try_require(requirable, message = nil)

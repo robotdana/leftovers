@@ -1,4 +1,4 @@
-require_relative "../lib/forgotten"
+require_relative "../lib/leftovers"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

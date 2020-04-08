@@ -1,21 +1,21 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "forgotten/version"
+require "leftovers/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "forgotten"
-  spec.version       = Forgotten::VERSION
+  spec.name          = "leftovers"
+  spec.version       = Leftovers::VERSION
   spec.authors       = ["Dana Sherson"]
   spec.email         = ["robot@dana.sh"]
 
   spec.summary       = %q{Find unused methods and classes/modules}
-  spec.homepage      = "http://github.com/robotdana/forgotten"
+  spec.homepage      = "http://github.com/robotdana/leftovers"
   spec.license       = "MIT"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "http://github.com/robotdana/forgotten"
-  spec.metadata["changelog_uri"] = "http://github.com/robotdana/forgotten/blob/master/CHANGELOG"
+  spec.metadata["source_code_uri"] = "http://github.com/robotdana/leftovers"
+  spec.metadata["changelog_uri"] = "http://github.com/robotdana/leftovers/blob/master/CHANGELOG"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

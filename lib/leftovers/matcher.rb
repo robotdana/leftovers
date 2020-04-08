@@ -1,8 +1,8 @@
 require 'set'
-module Forgotten
+module Leftovers
   class Matcher
     def initialize(patterns)
-      patterns = Forgotten.wrap_array(patterns)
+      patterns = Leftovers.wrap_array(patterns)
       regexps = []
       @strings = Set.new
       patterns.each do |pattern|

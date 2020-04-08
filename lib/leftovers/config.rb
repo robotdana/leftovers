@@ -2,11 +2,11 @@
 
 require 'yaml'
 
-module Forgotten
+module Leftovers
   class Config
     def initialize
       default_config = load_yaml(__dir__, '..', 'config', 'default.yml')
-      project_config = load_yaml(Dir.pwd, '.forgotten.yml')
+      project_config = load_yaml(Dir.pwd, '.leftovers.yml')
 
       @config = merge_config(default_config, project_config)
       Array(@config[:gems]).each do |gem|

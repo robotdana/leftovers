@@ -1,4 +1,4 @@
-module Forgotten
+module Leftovers
   class StringSymbolNode
     def self.try(node)
       if node.is_a?(StringSymbolNode)

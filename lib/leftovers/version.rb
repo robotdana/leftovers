@@ -1,3 +1,3 @@
-module Forgotten
+module Leftovers
   VERSION = "0.1.0"
 end

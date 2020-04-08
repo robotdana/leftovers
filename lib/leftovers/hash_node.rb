@@ -1,6 +1,6 @@
 require_relative 'string_symbol_node'
 
-module Forgotten
+module Leftovers
   class HashNode
     def self.try(node)
       if node&.type == :hash

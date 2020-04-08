@@ -1,4 +1,4 @@
-# Forgotten
+# Leftovers
 
 Find unused methods and classes in your ruby projects
 
@@ -7,7 +7,7 @@ Find unused methods and classes in your ruby projects
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'forgotten'
+gem 'leftovers'
 ```
 
 And then execute:
@@ -16,12 +16,12 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install forgotten
+    $ gem install leftovers
 
 ## Usage
 
 ```
-$ forgotten
+$ leftovers
 > unused method
 ```
 
@@ -33,7 +33,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/forgotten.
+Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/leftovers.
 
 ## License
 

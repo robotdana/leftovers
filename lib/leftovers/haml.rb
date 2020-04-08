@@ -1,6 +1,6 @@
 require 'haml'
 
-module Forgotten
+module Leftovers
   class Haml
     attr_reader :collector
     def initialize(filename, collector)

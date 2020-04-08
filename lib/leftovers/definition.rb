@@ -1,4 +1,4 @@
-module Forgotten
+module Leftovers
   class Definition
     attr_reader :name
     attr_reader :location
