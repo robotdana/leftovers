@@ -5,7 +5,7 @@ require 'yaml'
 module Leftovers
   class Config
     def initialize
-      default_config = load_yaml(__dir__, '..', 'config', 'default.yml')
+      default_config = load_yaml(__dir__, '..', 'config', 'ruby.yml')
       project_config = load_yaml(Dir.pwd, '.leftovers.yml')
 
       @config = merge_config(default_config, project_config)

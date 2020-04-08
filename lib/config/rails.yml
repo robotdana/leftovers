@@ -35,7 +35,6 @@ rules:
       - after_update_commit
       - after_destroy_commit
       - after_save_commit
-      - validate
       - with_options
     caller:
       - position: 1

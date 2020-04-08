@@ -31,7 +31,6 @@ module Leftovers
       replace_with: nil,
       key: false,
       definer: false,
-      group: nil,
       transforms: true,
       **reserved_kwargs)
       @if, @unless = extract_reserved_kwargs!(reserved_kwargs, if: nil, unless: nil)
