@@ -1,6 +1,6 @@
 require 'set'
 module Leftovers
-  class Matcher
+  class NameRule
     def initialize(patterns)
       patterns = Leftovers.wrap_array(patterns)
       regexps = []

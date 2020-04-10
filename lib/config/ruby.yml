@@ -1,5 +1,6 @@
 ---
 includes:
+  - '!*.*'
   - '*.rb'
   - '*.rake'
   - '*.ru'
@@ -11,6 +12,8 @@ includes:
   - '*.builder'
   - '*.jbuilder'
   - '*.gemspec'
+  - '*.rjs'
+  - '*.rhtml'
 
 allowed:
   - initialize # called by new

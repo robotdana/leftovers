@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'yaml'
+require_relative 'name_rule'
 
 module Leftovers
   class Config
@@ -23,7 +24,7 @@ module Leftovers
     end
 
     def test_paths
-      @test_paths ||= FastIgnore.new(include_rules: @config[:tests])
+      @test_paths ||= FastIgnore.new(include_rules: @config[:tests], gitignore: false)
     end
 
     def rules
@@ -31,7 +32,7 @@ module Leftovers
     end
 
     def allowed
-      @allowed ||= Matcher.new(@config[:allowed])
+      @allowed ||= NameRule.new(@config[:allowed])
     end
 
     private

@@ -1,4 +1,4 @@
-require_relative 'matcher'
+require_relative 'name_rule'
 
 module Leftovers
   class MethodRule
@@ -16,8 +16,8 @@ module Leftovers
     end
 
     def initialize(method:, caller: nil, definer: nil, path: nil)
-      @method_matcher = Matcher.new(method)
-      @path = Array(path)
+      @method_matcher = NameRule.new(method)
+      @path = FastIgnore.new(include_rules: path, gitignore: false) if path
 
       begin
         @caller = ArgumentRule.wrap(caller)
@@ -37,9 +37,9 @@ module Leftovers
     end
 
     def filename?(filename)
-      return true if path.empty?
+      return true unless path
 
-      path.any? { |p| File.fnmatch?(p, filename) }
+      path.allowed?(filename)
     end
 
     def match?(node, filename)

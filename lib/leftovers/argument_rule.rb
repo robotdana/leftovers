@@ -1,5 +1,5 @@
-require_relative 'method_node'
-require_relative 'hash_node'
+require_relative 'nodes/method_node'
+require_relative 'nodes/hash_node'
 module Leftovers
   class ArgumentRule
     attr_accessor :group

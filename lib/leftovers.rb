@@ -71,12 +71,16 @@ module Leftovers
     Leftovers.config.allowed.match?(name)
   end
 
+  def warn(message)
+    $stderr.puts("\e[2K#{message}")
+  end
+
   def try_require(requirable, message = nil)
     @try_require ||= {}
     return @try_require[requirable] if @try_require.key?(requirable)
     @try_require[requirable] = require requirable
   rescue LoadError
-    $stderr.puts message if message
+    warn message if message
     @try_require[requirable] = false
   end
 

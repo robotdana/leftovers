@@ -45,11 +45,11 @@ see [the built in config files](https://github.com/robotdana/leftovers/tree/mast
 
 ### `includes:`
 
-List filenames/paths in the gitignore format of files to be checked using a gitignore-esque format.
+List filenames/paths in the gitignore format of files to be checked using a [gitignore-esque format](https://github.com/robotdana/fast_ignore#using-an-includes-list).
 
 By default it checks the following:
 ```yml
-includes:
+include_paths:
   - '*.rb'
   - '*.rake'
   - '*.ru'
@@ -63,12 +63,12 @@ includes:
   - '*.gemspec'
 ```
 
-Also it will check files with no extension that have `ruby` in the shebang/hashbang, e.g. `#!/usr/bin/env ruby`
+Also it will check files with no extension that have `ruby` in the shebang/hashbang, e.g. `#!/usr/bin/env ruby` or `#!/usr/bin/ruby` etc
 
 ### `excludes:`
 
 List filenames/paths that match the above that you might want to exclude, using the gitignore format.
-By default it will read your project's .gitignore file and ignore anything there.
+By default it will also read your project's .gitignore file and ignore anything there.
 
 ```yml
 excludes:
@@ -78,6 +78,7 @@ excludes:
 ### `tests:`
 
 list filenames/paths of test directories that will be used to determine if a method/etc is only tested but not otherwise used.
+Also in the gitignore format
 
 ```yml
 tests:
@@ -121,7 +122,8 @@ rules:
       position: 1
 ```
 
-This defines `send()` and `public_send()` and considers the first positional argument to be a called method (but only if it is a literal string or symbol.)
+This describes how to handle `send()` and `public_send()`. it considers the first positional argument to be a called method.
+
 
 the `caller:` and `definer:` list objects are structured the same way, but have many keywords:
 

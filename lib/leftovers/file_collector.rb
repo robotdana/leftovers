@@ -2,6 +2,8 @@ require 'fast_ignore'
 require 'set'
 require 'parser'
 require 'parser/current'
+require_relative 'erb'
+require_relative 'haml'
 
 module Leftovers
   class FileCollector < Parser::AST::Processor
@@ -37,7 +39,7 @@ module Leftovers
       parse_and_process(ruby)
 
     rescue Parser::SyntaxError => e
-      puts "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}"
+      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}"
     end
 
     def preprocess_file
@@ -45,21 +47,9 @@ module Leftovers
 
       case File.extname(filename)
       when '.haml'
-        Leftovers.try_require('haml', "Tried parsing a haml file, but the haml gem was not available\n`gem install haml`")
-        if defined?(Haml)
-          begin
-            Haml::Engine.new(file).precompiled
-          rescue Haml::SyntaxError => e
-            puts "#{e.class}: #{e.message} #{filename}:#{e.line}"
-            ''
-          end
-        else
-          ''
-        end
+        Leftovers::Haml.precompile(file)
       when '.rhtml', '.rjs', '.erb'
-        require_relative './erb'
-        @erb_compiler ||= Leftovers::ERB.new('-')
-        @erb_compiler.compile(file).first
+        Leftovers::ERB.precompile(file)
       else
         file
       end

@@ -1,7 +1,6 @@
 allowed:
   - add_insert_cmd # called by ::ERB::Compiler
   - add_put_cmd # called by ::ERB::Compiler
-  - mid_block_keyword? # haml copied i'll think of a use for it
 gems:
   - parser
   - rspec
