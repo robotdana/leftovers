@@ -40,10 +40,10 @@ rules:
       - after_save_commit
       - with_options
     caller:
-      - position: 1
-      - keyword:
-          - if
-          - unless
+      argument:
+        - 1
+        - if
+        - unless
   - name:
       - after_action
       - append_after_action
@@ -59,8 +59,8 @@ rules:
       - skip_around_action
       - validates_associated
     caller:
-      - position: '*'
-      - keyword:
+      - argument:
+          - '*'
           - if
           - unless
   - name:
@@ -70,26 +70,24 @@ rules:
       - post
       - put
     caller:
-      - position: 1
+      - argument: 1
   - name: validates
     caller:
-      - position: '*'
-      - keyword:
+      - argument:
+          - '*'
           - 'in'
           - inclusion
           - scope
+          - if
+          - unless
       - key: true
         suffix: Validator
         activesupport: camelize
-      - keyword:
-          - if
-          - unless
   - name:
       - validate
       - validate_associated
     caller:
-      - position: '*'
-      - keyword: [if, unless]
+      - argument: ['*', if, unless]
   - name:
     - check_box
     - date_select
@@ -119,50 +117,50 @@ rules:
     - url_field
     - week_field
     caller:
-      - position: [1,2] # 1: with a receiver, 2: with no receiver
+      - argument: [1,2] # 1: with a receiver, 2: with no receiver
         transforms:
           - true
           - suffix: '='
   - name: fields_for
     caller:
-      position: 1
+      argument: 1
       suffix: _attributes
   - name: options_from_collection_for_select
     caller:
-      - position: [2,3]
+      - argument: [2,3]
   - name:
       - collection_select
       - collection_check_boxes
       - collection_radio_buttons
     caller:
-      - position: 2
+      - argument: 2
         suffix: '='
-      - position: [4,5]
+      - argument: [4,5]
   - name: grouped_collection_select
     caller:
-      - position: 2
+      - argument: 2
         suffix: '='
-      - position: [4,5,6,7]
+      - argument: [4,5,6,7]
   - name: option_groups_from_collection_for_select
     caller:
-      - position: [1,2,3,4]
+      - argument: [1,2,3,4]
   - name: scope
     path: app/models/*
     definer:
-      position: 1 # ar
+      argument: 1 # ar
   - name: scope
     path: config/routes*
     caller:
-      keyword: module # routes
+      argument: module # routes
       activesupport: camelize
   - name: namespace
     caller:
-      - position: 1
+      - argument: 1
         activesupport: camelize
   - name: attribute
     path: app/models/*
     definer:
-      - position: 1
+      - argument: 1
         transforms:
           - true
           - suffix: '?'
@@ -170,13 +168,13 @@ rules:
   - name: alias_attribute
     path: app/models/*
     definer:
-      - position: 1
+      - argument: 1
         transforms:
           - true
           - suffix: '?'
           - suffix: '='
     caller:
-      - position: 2
+      - argument: 2
         transforms:
           - true
           - suffix: '?'
@@ -185,7 +183,7 @@ rules:
     - has_one
     - belongs_to
     caller:
-      position: 1
+      argument: 1
       activesupport: camelize
       unless:
         keyword: class_name
@@ -193,7 +191,7 @@ rules:
     - has_many
     - has_and_belongs_to_many
     caller:
-      position: 1
+      argument: 1
       activesupport: [singularize, camelize]
       unless:
         keyword: class_name
@@ -202,31 +200,32 @@ rules:
     - has_one
     - has_and_belongs_to_many
     caller:
-      keyword: as
+      argument: as
   - name:
       - has_one
       - has_many
       - belongs_to
       - has_and_belongs_to_many
     definer:
-      - position: 1
+      - argument: 1
         transforms:
           - true
           - suffix: '='
     caller:
-      - keyword: through
-      - keyword: class_name
-      - keyword: inverse_of
-      - position: 1
+      - argument:
+          - through
+          - class_name
+          - inverse_of
+      - argument: 1
         if:
           keyword: dependent
-      - position: 1
+      - argument: 1
         if:
           keyword: inverse_of
   - name:
       - rescue_from
     caller:
-      - keyword: with
+      - argument: with
   - name:
       - match
       - delete
@@ -235,24 +234,23 @@ rules:
       - post
       - put
     caller:
-      - position: 1
-      - keyword: '*'
-        after: '#'
-      - keyword: '*'
-        before: '#'
+      - argument: [1, action]
+      - argument: '**'
+        delete_before: '#'
+      - argument: '**'
+        delete_after: '#'
         suffix: Controller
         activesupport: camelize
-      - keyword: action
   - name: delegate
     definer:
-      - position: '*'
+      - argument: '*'
         if:
           keyword:
             prefix: true
         prefix:
           from_keyword: to
           joiner: '_'
-      - position: '*'
+      - argument: '*'
         if:
           keyword: prefix
         unless:
@@ -262,16 +260,16 @@ rules:
           from_keyword: prefix
           joiner: '_'
     caller:
-      - keyword: to
-      - position: '*'
+      - argument: to
+      - argument: '*'
         if:
           keyword: prefix
   - name:
       - resource
       - resources
     caller:
-      - keyword: only
-      - keyword: controller
+      - argument: only
+      - argument: controller
         suffix: Controller
         activesupport: camelize
   - name:
@@ -279,20 +277,20 @@ rules:
       - controller
       - namespace
     caller:
-      - position: 1
+      - argument: 1
         suffix: Controller
         activesupport: camelize
   - name: accepts_nested_attributes_for
     definer:
-      position: '*'
+      argument: '*'
       transforms:
         - suffix: _attributes
         - suffix: _attributes=
     caller:
-      keyword: reject_if
+      argument: reject_if
   - name: resource
     caller:
-      - position: 1
+      - argument: 1
         suffix: Controller
         activesupport:
           - pluralize
@@ -309,13 +307,12 @@ rules:
       suffix: '='
   - name: permit
     caller:
-      position: '*'
-      keyword: '*'
+      argument: ['*', '**']
       key: true
       suffix: "="
   - name: layout
     caller:
-      position: 1
+      argument: 1
   - name:
       - includes
       - preload
@@ -324,8 +321,7 @@ rules:
       - left_joins
       - left_outer_joins
     caller:
-      position: '*'
-      keyword: '*'
+      argument: ['*', '**']
       key: true
   - name:
       - string
@@ -342,7 +338,7 @@ rules:
       - boolean
     path: config/db_schema.rb
     caller:
-      position: 1
+      argument: 1
       transforms:
         - true
         - suffix: '='
@@ -351,45 +347,45 @@ rules:
       - cattr_accessor
       - mattr_accessor
     definer:
-      - position: '*'
+      - argument: '*'
         suffix: '='
-      - position: '*'
+      - argument: '*'
     caller:
-      - position: '*'
+      - argument: '*'
         prefix: '@'
   - name:
       - cattr_reader
       - mattr_reader
     definer:
-      - position: '*'
+      - argument: '*'
     caller:
-      - position: '*'
+      - argument: '*'
         prefix: '@'
   - name:
       - cattr_writer
       - mattr_writer
     definer:
-      - position: '*'
+      - argument: '*'
         suffix: '='
 
   - name:
     - thread_cattr_accessor
     - thread_mattr_accessor
     definer:
-      - position: '*'
-      - position: '*'
+      - argument: '*'
+      - argument: '*'
         suffix: '='
   - name:
     - thread_cattr_reader
     - thread_mattr_reader
     definer:
-      - position: '*'
+      - argument: '*'
   - name:
     - thread_cattr_writer
     - thread_mattr_writer
     definer:
-      - position: '*'
+      - argument: '*'
         suffix: '='
   - name: delegate_missing_to
     caller:
-      - position: 1
+      - argument: 1

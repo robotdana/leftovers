@@ -44,40 +44,40 @@ rules:
       - respond_to?
       - instance_method
     caller:
-      position: 1
+      argument: 1
   - name: attr_reader
     definer:
-      position: '*'
+      argument: '*'
     caller:
-      position: '*'
+      argument: '*'
       prefix: '@'
   - name: attr_writer
     definer:
-      position: '*'
+      argument: '*'
       suffix: '='
   - name: attr_accessor
     definer:
       - suffix: '='
-        position: '*'
-      - position: '*'
+        argument: '*'
+      - argument: '*'
     caller:
-      position: '*'
+      argument: '*'
       prefix: '@'
   - name: define_method
     definer:
-      position: 1
+      argument: 1
   - name: alias_method
     definer:
-      position: 1
+      argument: 1
     caller:
-      position: 2
+      argument: 2
   - name:
       - instance_variable_get
       - class_variable_set
     caller:
-      position: 1
+      argument: 1
   - name:
       - instance_variable_set
       - class_variable_set
     definer:
-      position: 1
+      argument: 1

@@ -831,9 +831,9 @@ RSpec.describe Leftovers::Collector do
         - name:
             suffix: '_html'
           caller:
-            - position: 0
+            - argument: 0
               delete_suffix: _html
-            - position: 0
+            - argument: 0
               replace_with: html
     YML
 
@@ -843,7 +843,7 @@ RSpec.describe Leftovers::Collector do
     expect(subject.calls).to contain_exactly(:test, :html, :test_html)
   end
 
-  it 'collects flow' do
+  it 'collects array values' do
     temp_file 'foo.rb', 'flow(whatever, [:method_1, :method_2])'
 
     temp_file '.leftovers.yml', <<~YML
@@ -851,12 +851,30 @@ RSpec.describe Leftovers::Collector do
       rules:
         - name: flow
           caller:
-            - position: 2
+            - argument: 2
     YML
 
     subject.collect
 
     expect(subject.definitions).to be_empty
     expect(subject.calls).to contain_exactly(:flow, :whatever, :method_1, :method_2)
+  end
+
+  it 'collects matched keyword arguments' do
+    temp_file 'foo.rb', 'flow(whatever, some_values: :method)'
+
+    temp_file '.leftovers.yml', <<~YML
+      ---
+      rules:
+        - name: flow
+          caller:
+            argument:
+              prefix: some
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:flow, :whatever, :method)
   end
 end

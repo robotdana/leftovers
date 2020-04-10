@@ -6,15 +6,15 @@ rules:
       - sliced_nodes
   - name: field
     caller:
-      - position: 1
+      - argument: 1
         unless:
           keyword: method
-      - keyword: method
+      - argument: method
   - name: argument
     caller:
-      - position: 1
+      - argument: 1
         suffix: '='
         unless:
           keyword: as
-      - keyword: as
+      - argument: as
         suffix: '='

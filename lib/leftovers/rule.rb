@@ -26,13 +26,13 @@ module Leftovers
       begin
         @caller = ArgumentRule.wrap(caller)
       rescue ArgumentError => e
-        raise ArgumentError, "#{e.message} for caller for #{name}"
+        raise e, "#{e.message} for caller for #{name}", e.backtrace
       end
 
       begin
         @definer = ArgumentRule.wrap(definer, definer: true)
       rescue ArgumentError => e
-        raise ArgumentError, "#{e.message} for definer for #{name}"
+        raise e, "#{e.message} for definer for #{name}", e.backtrace
       end
     end
 

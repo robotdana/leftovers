@@ -120,7 +120,7 @@ rules:
       - send
       - public_send
     caller:
-      position: 1
+      argument: 1
 ```
 
 This describes how to handle `send()` and `public_send()`. it considers the first positional argument to be a called method.
@@ -131,10 +131,10 @@ the `caller:` and `definer:` list objects are structured the same way, but have 
 It must have at least one of `position:`, `keyword:`, or `key: true` which points to the implied method definition/call.
 This value must be a literal string, symbol, or array of strings or symbols.
 
-#### `position:`
+#### `argument:`
 
-the positional argument that is the method/class name being called/defined.
-`*` means all positional arguments
+the positional or keyword argument that is the method/class name being called/defined.
+`*` means all positional arguments. `**` means all keyword arguments
 
 e.g
 ```yml
@@ -142,22 +142,21 @@ rules:
   # `send(:my_method, arg)` is equivalent to `my_method(arg)`
   - name: send
     caller:
-      position: 1
+      argument: 1
   # `attr_reader :my_attr` is equivalent to `def my_attr; @my_attr; end`
   - name: attr_reader
     definer:
-      position: '*'
+      argument: '*'
 ```
-#### `keyword:`
+#### `argument:`
 
 the keyword argument value that is the method/class name being called/defined.
-`*` means all values of keyword arguments
+`**` means all values of keyword arguments
 ```yml
 rules:
   - name: validate
   caller:
-    - position: '*'
-    - keyword: [if, unless]
+    - argument: ['*', if, unless]
 ```
 
 #### `key: true`
@@ -167,8 +166,7 @@ the keyword argument **keywords** are the method/class_name being called/defined
 rules:
   - name: permit
       caller:
-        position: '*'
-        keyword: '*'
+        argument: ['*', '**']
         key: true
 ```
 (this example, incidentally, is how you get all the positional arguments and nested hashes and arrays that rails likes to use)
@@ -181,7 +179,7 @@ Transforms can be grouped together, any one of these calls would count as a call
 ```yml
 - name: attribute
     definer:
-      - position: 1
+      - argument: 1
         transforms:
           - true # no transformation
           - suffix: '?'
@@ -193,9 +191,9 @@ e.g. attr_accessor, which can be replaced with attr_reader/writer if only one is
 ```yml
 - name: attr_accessor
   definer:
-    - position: '*'
+    - argument: '*'
       suffix: '='
-    - position: '*'
+    - argument: '*'
 ```
 
 | transform | effect | examples |
@@ -204,8 +202,8 @@ e.g. attr_accessor, which can be replaced with attr_reader/writer if only one is
 | `prefix:` | Adds a prefix | `prefix: be_`, `prefix: '@'` |
 | `delete_suffix:` | Removes a suffix if it's there | `delete_suffix: _html` |
 | `delete_prefix:` | Removes a prefix if it's there | `delete_prefix: have_, prefix: has_` |
-| `before:` | keep only the text before this string (e.g. for splitting "controller#action") | `before: '#'` |
-| `after:` | keep only the text after this string | `after: '#"` |
+| `delete_after:` | keep only the text before this string (e.g. for splitting "controller#action") | `delete_after: '#'` |
+| `delete_before:` | keep only the text after this string | `delete_before: '#"` |
 | `replace_with:` | replace the string with whole different string | `replace_with: html` |
 | `activesupport:` | A list of rails' activesupport transformations. requires the activesupport gem | `activesupport: [singularize, camelize]` |
 
@@ -222,14 +220,14 @@ e.g. rails' `delegate` method has a `prefix:` argument of its own that is used w
 rules:
   - name: delegate
     definer:
-      - position: '*'
+      - argument: '*'
         if:
           keyword:
             prefix: true # if the value of the prefix keyword argument is literal true value
         prefix:
           from_keyword: to # use the value of the "to" keyword as the prefix
           joiner: '_' # joining with _ to the original string
-      - position: '*'
+      - argument: '*'
         if: # if the method call has a prefix keyword argument that is not a literal true value
           keyword: prefix
         unless:
@@ -239,8 +237,8 @@ rules:
           from_keyword: prefix # use the value of the "prefix" keyword as the prefix
           joiner: '_' # joining with _ to the original string
     caller:
-      - keyword: to # consider the to argument called.
-      - position: '*'
+      - argument: to # consider the to argument called.
+      - argument: '*'
         if:
           keyword: prefix # if there is a prefix, consider the original method called.
 ```

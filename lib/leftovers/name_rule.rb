@@ -27,7 +27,7 @@ module Leftovers
         @strings = nil
       end
 
-      @regexp = Regexp.union(regexps)
+      @regexp = Regexp.union(regexps) unless regexps.empty?
     end
 
     def match?(string)

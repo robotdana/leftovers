@@ -27,30 +27,30 @@ rules:
       - has_attributes?
       - receive_messages
     caller:
-      - keyword: true
+      - key: true
   - name:
     - receive
     - respond_to
     caller:
-      position: 1
+      argument: 1
   - name: define_negated_matcher
     definer:
-      position: 1
+      argument: 1
     caller:
-      position: 2
+      argument: 2
   - name:
       prefix: be_
     caller:
-      position: 0
+      argument: 0
       delete_prefix: be_
       suffix: '?'
   - name:
       prefix: have_
     caller:
-      position: 0
+      argument: 0
       delete_prefix: have_
       suffix: '?'
       prefix: has_
   - name: let
     definer:
-      position: 1
+      argument: 1

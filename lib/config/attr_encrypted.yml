@@ -2,15 +2,15 @@ rules:
   # this doesn't handle custom prefix, suffix, attribute
   - name: attr_encrypted
     definer:
-      - position: 1
+      - argument: 1
     caller:
-      - position: 1
+      - argument: 1
         prefix: encrypted_
-      - position: 1
+      - argument: 1
         prefix: encrypted_
         suffix: _iv
-      - keyword: encryptor
-      - keyword: encrypt_method
-      - keyword: decrypt_method
-      - keyword: key
-
+      - argument:
+          - encryptor
+          - encrypt_method
+          - decrypt_method
+          - key

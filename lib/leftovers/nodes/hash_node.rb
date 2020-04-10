@@ -51,6 +51,12 @@ module Leftovers
       pairs_with_symbol_keys.values_at(*keys)
     end
 
+    def value_nodes_match(name_matcher)
+      pairs.each_with_object([]) do |(key, value), values|
+        values << value if name_matcher.match?(key.to_s)
+      end
+    end
+
     def value_nodes
       pairs.values
     end

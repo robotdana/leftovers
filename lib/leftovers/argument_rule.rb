@@ -18,10 +18,9 @@ module Leftovers
     end
 
     def initialize(
-      position: nil,
-      keyword: nil,
-      after: nil,
-      before: nil,
+      argument: nil,
+      delete_after: nil,
+      delete_before: nil,
       prefix: nil,
       suffix: nil,
       activesupport: nil,
@@ -36,14 +35,13 @@ module Leftovers
       @if, @unless = extract_reserved_kwargs!(reserved_kwargs, if: nil, unless: nil)
       @if = prepare_condition(@if)
       @unless = prepare_condition(@unless)
-      @keyword = prepare_keyword(keyword)
-      @position = Array(position)
+      prepare_argument(argument)
       @key = key
-      raise ArgumentError, "require at least one of 'position', 'keyword', 'key'" if @position.empty? && @keyword.empty? && !@key
+      raise ArgumentError, "require at least one of 'argument', 'key'" unless @positions || @keywords || @all_positions || @all_keywords || @key
       @definer = definer
       @transforms = prepare_transforms({
-        before: before,
-        after: after,
+        delete_before: delete_before,
+        delete_after: delete_after,
         prefix: prefix,
         suffix: suffix,
         activesupport: Array(activesupport),
@@ -64,21 +62,41 @@ module Leftovers
 
     def prepare_condition(conditions)
       Leftovers.wrap_array(conditions).each do |cond|
-        cond[:keyword] = prepare_keyword(cond[:keyword])
+        cond[:keyword] = Leftovers.wrap_array(cond[:keyword]).map { |k| k.is_a?(Hash) ? k : k.to_sym }
       end
     end
 
-    def prepare_keyword(keyword)
-      Leftovers.wrap_array(keyword).map { |k| k.respond_to?(:to_sym) ? k.to_sym : k }.to_set
+    def prepare_argument(arguments)
+      positions = Set.new
+      keywords = []
+
+      Leftovers.wrap_array(arguments).each do |argument|
+        case argument
+        when '*'
+          @all_positions = true
+        when '**'
+          @all_keywords = true
+        when Integer
+          positions << argument
+        when String, Symbol, Hash
+          keywords << argument
+        end
+      end
+
+      @positions = positions unless @all_positions || positions.empty? || @all_positions
+      @keywords = NameRule.new(keywords) unless @all_keywords || keywords.empty?
     end
 
     def matches(method_node)
       return [] unless all_conditions_match?(method_node)
+      values = []
 
-      values = position.flat_map do |n|
-        case n
-        when '*'
-          method_node.arguments.flat_map { |s| value(s, method_node) }
+      if @all_positions
+        values << method_node.arguments.flat_map { |s| value(s, method_node) }
+      end
+
+      @positions&.each do |n|
+        values << case n
         when 0
           method_value(method_node)
         when Integer
@@ -86,7 +104,7 @@ module Leftovers
         end
       end
 
-      if (keyword && !keyword.empty?) || key
+      if @keywords || @all_keywords || key
         values << hash_values(method_node.kwargs, method_node)
       end
 
@@ -123,13 +141,13 @@ module Leftovers
         []
       end
 
-      value_nodes = if keyword.include?(:'*')
+      value_nodes = if @all_keywords
         hash_node.value_nodes
-      else
-        hash_node.value_nodes_at(keyword)
+      elsif @keywords
+        hash_node.value_nodes_match(@keywords)
       end
 
-      value_nodes.each do |v|
+      value_nodes&.each do |v|
         out << value(v, method_node)
       end
 
@@ -177,8 +195,8 @@ module Leftovers
       transforms.map do |transform|
         string = initial_string.to_s
         string = transform[:replace_with] if transform[:replace_with]
-        string = string.split(transform[:before], 2)[0] if transform[:before]
-        string = string.split(transform[:after], 2)[1] if transform[:after]
+        string = string.split(transform[:delete_after], 2)[0] if transform[:delete_after]
+        string = string.split(transform[:delete_before], 2)[1] if transform[:delete_before]
         string = process_activesupport(string, transform[:activesupport])
         transform[:delete_suffix].each { |s| string = string.delete_suffix(s) }
         transform[:delete_prefix].each { |s| string = string.delete_prefix(s) }

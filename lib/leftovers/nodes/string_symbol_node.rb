@@ -31,7 +31,7 @@ module Leftovers
     alias_method :to_sym, :value
 
     def to_s
-      @to_s ||= value.to_s
+      @to_s ||= value.to_s.freeze
     end
 
     private
