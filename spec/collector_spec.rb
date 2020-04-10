@@ -831,9 +831,9 @@ RSpec.describe Leftovers::Collector do
         - name:
             has_suffix: '_html'
           calls:
-            - argument: 0
+            - itself: true
               delete_suffix: _html
-            - argument: 0
+            - itself: true
               replace_with: html
     YML
 

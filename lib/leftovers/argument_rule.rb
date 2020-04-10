@@ -10,8 +10,6 @@ module Leftovers
         rules.flat_map { |r| wrap(r, definer: definer) }
       when Hash
         [new(**rules, definer: definer)]
-      when true
-        [new(definer: definer)]
       else
         []
       end
@@ -22,6 +20,7 @@ module Leftovers
       arguments: nil,
       key: nil,
       keys: nil,
+      itself: false,
       delete_after: nil,
       delete_before: nil,
       add_prefix: nil,
@@ -39,8 +38,9 @@ module Leftovers
       @unless = prepare_condition(@unless)
       prepare_argument(argument, arguments)
       @key = prepare_key(key, keys)
-      raise ArgumentError, "require at least one of 'argument(s)', 'key(s)'" unless @positions || @keywords || @all_positions || @all_keywords || @key
       @definer = definer
+      @itself = itself
+      raise ArgumentError, "require at least one of 'argument(s)', 'key(s)', itself" unless @positions || @keywords || @all_positions || @all_keywords || @key || @itself
       @transforms = prepare_transforms({
         delete_before: delete_before,
         delete_after: delete_after,
@@ -104,19 +104,18 @@ module Leftovers
 
       if @all_positions
         values << method_node.arguments.flat_map { |s| value(s, method_node) }
-      end
-
-      @positions&.each do |n|
-        values << case n
-        when 0
-          method_value(method_node)
-        when Integer
-          value(method_node.arguments[n - 1], method_node)
+      elsif @positions
+        @positions.each do |n|
+          values << value(method_node.arguments[n - 1], method_node)
         end
       end
 
       if @keywords || @all_keywords || @key
         values << hash_values(method_node.kwargs, method_node)
+      end
+
+      if @itself
+        values << method_value(method_node)
       end
 
       values.flatten.compact

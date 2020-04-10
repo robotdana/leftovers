@@ -41,13 +41,13 @@ rules:
   - name:
       has_prefix: be_
     calls:
-      argument: 0
+      itself: true
       delete_prefix: be_
       add_suffix: '?'
   - name:
       has_prefix: have_
     calls:
-      argument: 0
+      itself: true
       add_suffix: '?'
       delete_prefix: have_
       add_prefix: has_
