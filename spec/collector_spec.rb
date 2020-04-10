@@ -828,7 +828,7 @@ RSpec.describe Leftovers::Collector do
     temp_file '.leftovers.yml', <<~YML
       ---
       rules:
-        - method:
+        - name:
             suffix: '_html'
           caller:
             - position: 0
@@ -849,7 +849,7 @@ RSpec.describe Leftovers::Collector do
     temp_file '.leftovers.yml', <<~YML
       ---
       rules:
-        - method: flow
+        - name: flow
           caller:
             - position: 2
     YML

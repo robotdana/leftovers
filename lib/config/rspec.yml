@@ -23,35 +23,35 @@ tests:
   - /spec/
 
 rules:
-  - method:
+  - name:
       - have_attributes
       - has_attributes?
       - receive_messages
     caller:
       - keyword: true
-  - method:
+  - name:
     - receive
     - respond_to
     caller:
       position: 1
-  - method: define_negated_matcher
+  - name: define_negated_matcher
     definer:
       position: 1
     caller:
       position: 2
-  - method:
+  - name:
       prefix: be_
     caller:
       position: 0
       delete_prefix: be_
       suffix: '?'
-  - method:
+  - name:
       prefix: have_
     caller:
       position: 0
       delete_prefix: have_
       suffix: '?'
       prefix: has_
-  - method: let
+  - name: let
     definer:
       position: 1

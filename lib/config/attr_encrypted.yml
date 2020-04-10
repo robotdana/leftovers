@@ -1,6 +1,6 @@
 rules:
   # this doesn't handle custom prefix, suffix, attribute
-  - method: attr_encrypted
+  - name: attr_encrypted
     definer:
       - position: 1
     caller:

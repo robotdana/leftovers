@@ -1,10 +1,10 @@
 rules:
-  - method: filter
+  - name: filter
     caller:
       keyword:
         - default
         - select
-  - method: column
+  - name: column
     caller:
       keyword:
           - if

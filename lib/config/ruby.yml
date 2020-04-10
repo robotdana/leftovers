@@ -35,7 +35,7 @@ tests:
   - /test/
 
 rules:
-  - method:
+  - name:
       - send
       - public_send
       - __send__
@@ -44,17 +44,17 @@ rules:
       - instance_method
     caller:
       position: 1
-  - method: attr_reader
+  - name: attr_reader
     definer:
       position: '*'
     caller:
       position: '*'
       prefix: '@'
-  - method: attr_writer
+  - name: attr_writer
     definer:
       position: '*'
       suffix: '='
-  - method: attr_accessor
+  - name: attr_accessor
     definer:
       - suffix: '='
         position: '*'
@@ -62,20 +62,20 @@ rules:
     caller:
       position: '*'
       prefix: '@'
-  - method: define_method
+  - name: define_method
     definer:
       position: 1
-  - method: alias_method
+  - name: alias_method
     definer:
       position: 1
     caller:
       position: 2
-  - method:
+  - name:
       - instance_variable_get
       - class_variable_set
     caller:
       position: 1
-  - method:
+  - name:
       - instance_variable_set
       - class_variable_set
     definer:

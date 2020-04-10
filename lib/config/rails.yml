@@ -11,7 +11,7 @@ allowed:
   - ssl_configured? # ApplicationController
 
 rules:
-  - method:
+  - name:
       - after_initialize
       - after_find
       - after_touch
@@ -41,7 +41,7 @@ rules:
       - keyword:
           - if
           - unless
-  - method:
+  - name:
       - after_action
       - append_after_action
       - append_around_action
@@ -60,7 +60,7 @@ rules:
       - keyword:
           - if
           - unless
-  - method:
+  - name:
       - delete
       - get
       - patch
@@ -68,7 +68,7 @@ rules:
       - put
     caller:
       - position: 1
-  - method: validates
+  - name: validates
     caller:
       - position: '*'
       - keyword:
@@ -81,13 +81,13 @@ rules:
       - keyword:
           - if
           - unless
-  - method:
+  - name:
       - validate
       - validate_associated
     caller:
       - position: '*'
       - keyword: [if, unless]
-  - method:
+  - name:
     - check_box
     - date_select
     - datetime_select
@@ -120,14 +120,14 @@ rules:
         transforms:
           - true
           - suffix: '='
-  - method: fields_for
+  - name: fields_for
     caller:
       position: 1
       suffix: _attributes
-  - method: options_from_collection_for_select
+  - name: options_from_collection_for_select
     caller:
       - position: [2,3]
-  - method:
+  - name:
       - collection_select
       - collection_check_boxes
       - collection_radio_buttons
@@ -135,28 +135,28 @@ rules:
       - position: 2
         suffix: '='
       - position: [4,5]
-  - method: grouped_collection_select
+  - name: grouped_collection_select
     caller:
       - position: 2
         suffix: '='
       - position: [4,5,6,7]
-  - method: option_groups_from_collection_for_select
+  - name: option_groups_from_collection_for_select
     caller:
       - position: [1,2,3,4]
-  - method: scope
+  - name: scope
     path: app/models/*
     definer:
       position: 1 # ar
-  - method: scope
+  - name: scope
     path: config/routes*
     caller:
       keyword: module # routes
       activesupport: camelize
-  - method: namespace
+  - name: namespace
     caller:
       - position: 1
         activesupport: camelize
-  - method: attribute
+  - name: attribute
     path: app/models/*
     definer:
       - position: 1
@@ -164,7 +164,7 @@ rules:
           - true
           - suffix: '?'
           - suffix: '='
-  - method: alias_attribute
+  - name: alias_attribute
     path: app/models/*
     definer:
       - position: 1
@@ -178,7 +178,7 @@ rules:
           - true
           - suffix: '?'
           - suffix: '='
-  - method:
+  - name:
     - has_one
     - belongs_to
     caller:
@@ -186,7 +186,7 @@ rules:
       activesupport: camelize
       unless:
         keyword: class_name
-  - method:
+  - name:
     - has_many
     - has_and_belongs_to_many
     caller:
@@ -194,13 +194,13 @@ rules:
       activesupport: [singularize, camelize]
       unless:
         keyword: class_name
-  - method:
+  - name:
     - has_many
     - has_one
     - has_and_belongs_to_many
     caller:
       keyword: as
-  - method:
+  - name:
       - has_one
       - has_many
       - belongs_to
@@ -220,11 +220,11 @@ rules:
       - position: 1
         if:
           keyword: inverse_of
-  - method:
+  - name:
       - rescue_from
     caller:
       - keyword: with
-  - method:
+  - name:
       - match
       - delete
       - get
@@ -240,7 +240,7 @@ rules:
         suffix: Controller
         activesupport: camelize
       - keyword: action
-  - method: delegate
+  - name: delegate
     definer:
       - position: '*'
         if:
@@ -263,7 +263,7 @@ rules:
       - position: '*'
         if:
           keyword: prefix
-  - method:
+  - name:
       - resource
       - resources
     caller:
@@ -271,7 +271,7 @@ rules:
       - keyword: controller
         suffix: Controller
         activesupport: camelize
-  - method:
+  - name:
       - resources
       - controller
       - namespace
@@ -279,7 +279,7 @@ rules:
       - position: 1
         suffix: Controller
         activesupport: camelize
-  - method: accepts_nested_attributes_for
+  - name: accepts_nested_attributes_for
     definer:
       position: '*'
       transforms:
@@ -287,14 +287,14 @@ rules:
         - suffix: _attributes=
     caller:
       keyword: reject_if
-  - method: resource
+  - name: resource
     caller:
       - position: 1
         suffix: Controller
         activesupport:
           - pluralize
           - camelize
-  - method:
+  - name:
     - new
     - create
     - create!
@@ -304,16 +304,16 @@ rules:
     caller:
       key: true
       suffix: '='
-  - method: permit
+  - name: permit
     caller:
       position: '*'
       keyword: '*'
       key: true
       suffix: "="
-  - method: layout
+  - name: layout
     caller:
       position: 1
-  - method:
+  - name:
       - includes
       - preload
       - eager_load
@@ -324,7 +324,7 @@ rules:
       position: '*'
       keyword: '*'
       key: true
-  - method:
+  - name:
       - string
       - text
       - integer
@@ -344,7 +344,7 @@ rules:
         - true
         - suffix: '='
         - suffix: '?'
-  - method:
+  - name:
       - cattr_accessor
       - mattr_accessor
     definer:
@@ -354,7 +354,7 @@ rules:
     caller:
       - position: '*'
         prefix: '@'
-  - method:
+  - name:
       - cattr_reader
       - mattr_reader
     definer:
@@ -362,31 +362,31 @@ rules:
     caller:
       - position: '*'
         prefix: '@'
-  - method:
+  - name:
       - cattr_writer
       - mattr_writer
     definer:
       - position: '*'
         suffix: '='
 
-  - method:
+  - name:
     - thread_cattr_accessor
     - thread_mattr_accessor
     definer:
       - position: '*'
       - position: '*'
         suffix: '='
-  - method:
+  - name:
     - thread_cattr_reader
     - thread_mattr_reader
     definer:
       - position: '*'
-  - method:
+  - name:
     - thread_cattr_writer
     - thread_mattr_writer
     definer:
       - position: '*'
         suffix: '='
-  - method: delegate_missing_to
+  - name: delegate_missing_to
     caller:
       - position: 1

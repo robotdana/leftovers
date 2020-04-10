@@ -107,15 +107,15 @@ allowed:
 ### `rules:`
 
 This is the most complex part of configuration, and is a list of methods that define/call other methods/classes/etc.
-each must have a `method:` list (which can use the same prefix/suffix/match matching that the allowed list does above),
+each must have a `name:` list (which can use the same prefix/suffix/match matching that the allowed list does above),
 a `caller:` list and/or `definer:` list, and optionally a `path:` list that limits what paths this method rule can apply to.
 
-any of the `method:`, `caller:`, `definer:`, and `path:` lists can be single values instead of lists if there's only one.
+any of the `name:`, `caller:`, `definer:`, and `path:` lists can be single values instead of lists if there's only one.
 e.g.
 
 ```yml
 rules:
-  - method:
+  - name:
       - send
       - public_send
     caller:
@@ -139,11 +139,11 @@ e.g
 ```yml
 rules:
   # `send(:my_method, arg)` is equivalent to `my_method(arg)`
-  - method: send
+  - name: send
     caller:
       position: 1
   # `attr_reader :my_attr` is equivalent to `def my_attr; @my_attr; end`
-  - method: attr_reader
+  - name: attr_reader
     definer:
       position: '*'
 ```
@@ -153,7 +153,7 @@ the keyword argument value that is the method/class name being called/defined.
 `*` means all values of keyword arguments
 ```yml
 rules:
-  - method: validate
+  - name: validate
   caller:
     - position: '*'
     - keyword: [if, unless]
@@ -164,7 +164,7 @@ rules:
 the keyword argument **keywords** are the method/class_name being called/defined.
 ```yml
 rules:
-  - method: permit
+  - name: permit
       caller:
         position: '*'
         keyword: '*'
@@ -178,7 +178,7 @@ Sometimes the method being called is modified from the literal argument, sometim
 
 Transforms can be grouped together, any one of these calls would count as a call for any other. e.g
 ```yml
-- method: attribute
+- name: attribute
     definer:
       - position: 1
         transforms:
@@ -190,7 +190,7 @@ Transforms can be grouped together, any one of these calls would count as a call
 If these transforms shouldn't be grouped together, then they can be listed separately for different (or the same) arguments.
 e.g. attr_accessor, which can be replaced with attr_reader/writer if only one is used.
 ```yml
-- method: attr_accessor
+- name: attr_accessor
   definer:
     - position: '*'
       suffix: '='
@@ -219,7 +219,7 @@ e.g. rails' `delegate` method has a `prefix:` argument of its own that is used w
 `if:` and `unless:` work the same way, and are currently limited to looking at keyword arguments and their values.
 ```yml
 rules:
-  - method: delegate
+  - name: delegate
     definer:
       - position: '*'
         if:

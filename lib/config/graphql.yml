@@ -3,13 +3,13 @@ allowed:
   - paged_nodes
   - sliced_nodes
 rules:
-  - method: field
+  - name: field
     caller:
       - position: 1
         unless:
           keyword: method
       - keyword: method
-  - method: argument
+  - name: argument
     caller:
       - position: 1
         suffix: '='
