@@ -1,9 +1,10 @@
 require_relative "./leftovers/version"
 require_relative "./leftovers/definition"
 require_relative "./leftovers/argument_rule"
-require_relative "./leftovers/method_rule"
+require_relative "./leftovers/rule"
 require_relative "./leftovers/collector"
 require_relative "./leftovers/file_list"
+require_relative "./leftovers/merged_config"
 require_relative "./leftovers/config"
 require_relative "./leftovers/reporter"
 
@@ -11,7 +12,7 @@ module Leftovers
   module_function
 
   def config
-    @config ||= Leftovers::Config.new
+    @config ||= Leftovers::MergedConfig.new
   end
 
   def collector
@@ -26,8 +27,7 @@ module Leftovers
     @leftovers ||= begin
       collector.collect
       leftovers = collector.definitions.reject do |definition|
-        allowed?(definition.name.to_s) ||
-          definition.any_in_collection?(collector)
+        definition.any_skipped? || definition.any_in_collection?
       end
     end
   end
@@ -39,7 +39,7 @@ module Leftovers
     only_test = []
     none = []
     leftovers.sort.each do |definition|
-      if !definition.test? && collector.test_calls.include?(definition.name)
+      if !definition.test? && definition.any_in_test_collection?
         only_test << definition
       else
         none << definition
@@ -65,10 +65,6 @@ module Leftovers
     remove_instance_variable(:@reporter) if defined?(@reporter)
     remove_instance_variable(:@leftovers) if defined?(@leftovers)
     remove_instance_variable(:@try_require) if defined?(@try_require)
-  end
-
-  def allowed?(name)
-    Leftovers.config.allowed.match?(name)
   end
 
   def warn(message)

@@ -1,6 +1,9 @@
-allowed:
-  - add_insert_cmd # called by ::ERB::Compiler
-  - add_put_cmd # called by ::ERB::Compiler
+rules:
+  skip: true
+  name:
+    - add_insert_cmd # called by ::ERB::Compiler
+    - add_put_cmd # called by ::ERB::Compiler
+
 gems:
   - parser
   - rspec

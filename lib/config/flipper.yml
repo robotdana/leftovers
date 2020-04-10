@@ -1,2 +1,3 @@
-allowed:
-  - flipper_id
+rules:
+  skip: true
+  name: flipper_id

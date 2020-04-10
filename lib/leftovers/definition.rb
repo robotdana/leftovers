@@ -29,6 +29,11 @@ module Leftovers
         (location.column <=> other.location.column)
     end
 
+    def name_s
+      @name_s ||= name.to_s.freeze
+    end
+    alias_method :to_s, :name_s
+
     def full_location
       "#{filename}:#{location.line}:#{location.column}"
     end
@@ -39,20 +44,50 @@ module Leftovers
         location.source_line.to_s[(location.column_range.end)..-1].rstrip
     end
 
-    def any_in_collection?(collector)
+    def any_in_collection?
       if group?
-        group.any? { |d| d.in_collection?(collector) }
+        group.any? { |d| d.in_collection? }
       else
-        in_collection?(collector)
+        in_collection?
       end
     end
 
-    def in_collection?(collector)
-      if test?
-        collector.calls.include?(name) || collector.test_calls.include?(name)
+    def in_collection?
+      return @in_collection if defined?(@in_collection)
+
+      @in_collection = if test?
+        Leftovers.collector.calls.include?(name) || in_test_collection?
       else
-        collector.calls.include?(name)
+        Leftovers.collector.calls.include?(name)
       end
+    end
+
+    def any_in_test_collection?
+      if group?
+        group.any? { |d| d.in_test_collection? }
+      else
+        in_collection?
+      end
+    end
+
+    def in_test_collection?
+      return @in_test_collection if defined?(@in_test_collection)
+
+      @in_test_collection = Leftovers.collector.test_calls.include?(name)
+    end
+
+    def any_skipped?
+      if group?
+        group.any? { |d| d.skipped? }
+      else
+        skipped?
+      end
+    end
+
+    def skipped?
+      return @skipped if defined?(@skipped)
+
+      @skipped = Leftovers.config.skip_rules.any? { |r| r.match?(name_s, filename) }
     end
   end
 end

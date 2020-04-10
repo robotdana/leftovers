@@ -1,2 +1,3 @@
-allowed:
-  - current_user_for_rollbar
+rules:
+  skip: true
+  name: current_user_for_rollbar

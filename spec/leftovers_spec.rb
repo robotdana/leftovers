@@ -16,6 +16,9 @@ RSpec.describe Leftovers do
         gems: #{files.inspect}
       YML
 
+      Leftovers.config.include_paths
+      Leftovers.config.exclude_paths
+      Leftovers.config.test_paths
       Leftovers.config.rules
     end
   end
@@ -66,8 +69,8 @@ RSpec.describe Leftovers do
       RUBY
 
       expect(subject.leftovers.map(&:name)).to contain_exactly :EmailActions
-
       expect(subject.collector.definitions.map(&:name)).to contain_exactly(:EmailActions, :initialize, :email_params_from_order, :address_params)
+
       expect(subject.collector.calls).to contain_exactly(:address_params, :email_params_from_order)
     end
   end

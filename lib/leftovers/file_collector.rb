@@ -214,10 +214,11 @@ module Leftovers
     end
 
     def collect_method_rules(node)
-      node = MethodNode.new(node)
+      node = SendNode.new(node)
 
       Leftovers.config.rules.each do |rule|
-        next unless rule.match?(node, filename)
+        next unless rule.match?(node.name_s, filename)
+        next if rule.skip?
 
         calls.concat(rule.calls(node))
         definitions.concat(

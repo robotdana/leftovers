@@ -1,8 +1,9 @@
-allowed:
-  - cursor_from_node
-  - paged_nodes
-  - sliced_nodes
 rules:
+  - skip: true
+    name:
+      - cursor_from_node
+      - paged_nodes
+      - sliced_nodes
   - name: field
     caller:
       - position: 1

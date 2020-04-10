@@ -6,10 +6,6 @@ module Leftovers
   class FileList
     include Enumerable
 
-    def root
-      @root ||= Dir.pwd
-    end
-
     def ruby_hashbang?(file)
       return unless File.extname(file).empty?
 
@@ -21,7 +17,7 @@ module Leftovers
     end
 
     def each
-      FastIgnore.new(ignore_rules: Leftovers.config.excludes, include_rules: Leftovers.config.includes).each do |file|
+      FastIgnore.new(ignore_rules: Leftovers.config.exclude_paths, include_rules: Leftovers.config.include_paths).each do |file|
         next if File.extname(file).empty? && !ruby_hashbang?(file)
         yield(file)
       end

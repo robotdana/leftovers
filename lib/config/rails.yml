@@ -1,16 +1,19 @@
 ---
-excludes:
+exclude_paths:
   - db/migrate/*
 
-allowed:
-  - suffix: Helper # included in the ViewContext
-  - ClassMethods # ActiveSupport::Concern
-  - process_action # ActiveSupport::LogSubscriber
-  - validate_each # ActiveModel::EachValidator
-  - format_message # ActiveSupport::Logger
-  - ssl_configured? # ApplicationController
-
 rules:
+  - skip: true
+    name:
+      - ClassMethods # ActiveSupport::Concern
+      - process_action # ActiveSupport::LogSubscriber
+      - validate_each # ActiveModel::EachValidator
+      - format_message # ActiveSupport::Logger
+      - ssl_configured? # ApplicationController
+  - skip: true
+    name:
+      suffix: Helper
+    path: app/helpers
   - name:
       - after_initialize
       - after_find

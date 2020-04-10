@@ -2,40 +2,46 @@
 
 require 'yaml'
 require_relative 'name_rule'
+require_relative 'rule'
 
 module Leftovers
   class Config
-    def initialize
-      default_config = load_yaml(__dir__, '..', 'config', 'ruby.yml')
-      project_config = load_yaml(Dir.pwd, '.leftovers.yml')
-
-      @config = merge_config(default_config, project_config)
-      Array(@config[:gems]).each do |gem|
-        @config = merge_config(@config, load_yaml(__dir__, '..', 'config', "#{gem}.yml"))
-      end
+    def initialize(name, path: File.join(__dir__, '..', 'config', "#{name}.yml"))
+      @name = name
+      @path = path
     end
 
-    def excludes
-      @excludes ||= Array(@config[:excludes])
+    def exist?
+      File.exist?(path)
     end
 
-    def includes
-      @includes ||= Array(@config[:includes])
+    def gems
+      @gems ||= Array(yaml[:gems])
+    end
+
+    def exclude_paths
+      @exclude_paths ||= Array(yaml[:exclude_paths])
+    end
+
+    def include_paths
+      @include_paths ||= Array(yaml[:include_paths])
     end
 
     def test_paths
-      @test_paths ||= FastIgnore.new(include_rules: @config[:tests], gitignore: false)
+      @test_paths ||= Array(yaml[:test_paths])
     end
 
     def rules
-      @rules ||= MethodRule.wrap(@config[:rules])
-    end
-
-    def allowed
-      @allowed ||= NameRule.new(@config[:allowed])
+      @rules ||= Rule.wrap(yaml[:rules])
     end
 
     private
+
+    attr_reader :name, :path
+
+    def yaml
+      @yaml ||= load_yaml(path)
+    end
 
     def load_yaml(*path)
       file = ::File.join(*path)
@@ -43,18 +49,8 @@ module Leftovers
 
       YAML.safe_load(::File.read(file), symbolize_names: true)
     rescue Psych::SyntaxError => e
-      $stderr.puts "\e[31mError with config #{path.join('/')}: #{e.message}\e[0m"
+      $stderr.puts "\e[31mError with config #{path}: #{e.message}\e[0m"
       exit 1
-    end
-
-    def merge_config(default, project)
-      if project.is_a?(Array) && default.is_a?(Array)
-        default | project
-      elsif project.is_a?(Hash) && default.is_a?(Hash)
-        default.merge(project) { |_k, d, p| merge_config(d, p) }
-      else
-        project
-      end
     end
   end
 end

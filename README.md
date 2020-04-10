@@ -43,7 +43,7 @@ Its presence is optional and all of these settings are optional:
 
 see [the built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
 
-### `includes:`
+### `include_paths:`
 
 List filenames/paths in the gitignore format of files to be checked using a [gitignore-esque format](https://github.com/robotdana/fast_ignore#using-an-includes-list).
 
@@ -65,23 +65,23 @@ include_paths:
 
 Also it will check files with no extension that have `ruby` in the shebang/hashbang, e.g. `#!/usr/bin/env ruby` or `#!/usr/bin/ruby` etc
 
-### `excludes:`
+### `exclude_paths:`
 
 List filenames/paths that match the above that you might want to exclude, using the gitignore format.
 By default it will also read your project's .gitignore file and ignore anything there.
 
 ```yml
-excludes:
+exclude_paths:
   - /some/long/irrelevant/generated/file
 ```
 
-### `tests:`
+### `test_paths:`
 
 list filenames/paths of test directories that will be used to determine if a method/etc is only tested but not otherwise used.
 Also in the gitignore format
 
 ```yml
-tests:
+test_paths:
   - /test/
   - /spec/
 ```
@@ -91,17 +91,18 @@ tests:
 list methods/classnames/etc that are considered unused by Leftovers
 but that you want to be allowed
 
-filtering is by exact match or `prefix:` and/or `suffix:` or regex pattern (`match:`).
+filtering is by exact match or `has_prefix:` and/or `has_suffix:` or regex pattern (`matches:`).
 
 ```yml
-allowed:
-  - method_name
-  - ConstantName
-  - suffix: Helper # will match Helper, LinkHelper FormHelper, etc
-  - prefix: be_ # will match be_equal, be_invalid, etc
-  - prefix: is_
-    suffx: ? # will match is_invalid?, is_equal? etc
-  - match: '(?-mix:column_\d+)' # will match column_1, column_2, column_99, etc
+rules:
+  - name:
+      - method_name
+      - ConstantName
+      - has_suffix: Helper # will match Helper, LinkHelper FormHelper, etc
+      - has_prefix: be_ # will match be_equal, be_invalid, etc
+      - has_prefix: is_
+        has_suffx: ? # will match is_invalid?, is_equal? etc
+      - matches: '(?-mix:column_\d+)' # will match column_1, column_2, column_99, etc
 ```
 
 ### `rules:`

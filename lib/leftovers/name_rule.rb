@@ -8,7 +8,7 @@ module Leftovers
       patterns.each do |pattern|
         case pattern
         when String
-          @strings << pattern.freeze
+          @strings.merge(pattern.split(/\s+/).map(&:freeze))
         when Hash
           if pattern[:match]
             regexps << /\A#{pattern[:match]}\z/

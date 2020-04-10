@@ -1,5 +1,5 @@
 module Leftovers
-  class MethodNode
+  class SendNode
     attr_reader :node
 
     def initialize(node)
@@ -7,7 +7,11 @@ module Leftovers
     end
 
     def name
-      @name ||= node.children[1].to_s.freeze
+      @name ||= node.children[1]
+    end
+
+    def name_s
+      @name_s ||= name.to_s.freeze
     end
 
     def kwargs

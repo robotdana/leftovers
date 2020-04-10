@@ -1,12 +1,14 @@
-allowed:
-  # WillPaginate::ViewHelpers::LinkRenderer
-  - page_number
-  - gap
-  - previous_page
-  - next_page
-  - previous_or_next_page
-  - html_container
-  - url
-  - prepare
-  - to_html
-  - container_attributes
+rules:
+  skip: true
+  name:
+    # WillPaginate::ViewHelpers::LinkRenderer
+    - page_number
+    - gap
+    - previous_page
+    - next_page
+    - previous_or_next_page
+    - html_container
+    - url
+    - prepare
+    - to_html
+    - container_attributes

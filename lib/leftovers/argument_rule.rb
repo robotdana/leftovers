@@ -1,4 +1,4 @@
-require_relative 'nodes/method_node'
+require_relative 'nodes/send_node'
 require_relative 'nodes/hash_node'
 module Leftovers
   class ArgumentRule

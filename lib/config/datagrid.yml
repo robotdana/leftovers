@@ -6,6 +6,4 @@ rules:
         - select
   - name: column
     caller:
-      keyword:
-          - if
-          - unless
+      keyword: [if, unless]

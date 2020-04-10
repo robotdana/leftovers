@@ -1,28 +1,27 @@
----
-allowed:
-  # matchers
-  - diffable?
-  - actual
-  # formatters:
-  - start
-  - example_group_started
-  - example_started
-  - example_passed
-  - example_failed
-  - example_pending
-  - message
-  - stop
-  - start_dump
-  - dump_pending
-  - dump_failures
-  - dump_summary
-  - seed
-  - close
-
-tests:
+test_paths:
   - /spec/
 
 rules:
+  - skip: true
+    name:
+      # matchers
+      - diffable?
+      - actual
+      # formatters:
+      - start
+      - example_group_started
+      - example_started
+      - example_passed
+      - example_failed
+      - example_pending
+      - message
+      - stop
+      - start_dump
+      - dump_pending
+      - dump_failures
+      - dump_summary
+      - seed
+      - close
   - name:
       - have_attributes
       - has_attributes?
