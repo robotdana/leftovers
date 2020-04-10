@@ -829,7 +829,7 @@ RSpec.describe Leftovers::Collector do
       ---
       rules:
         - name:
-            suffix: '_html'
+            has_suffix: '_html'
           caller:
             - argument: 0
               delete_suffix: _html
@@ -869,7 +869,7 @@ RSpec.describe Leftovers::Collector do
         - name: flow
           caller:
             argument:
-              prefix: some
+              has_prefix: some
     YML
 
     subject.collect

@@ -182,8 +182,8 @@ Transforms can be grouped together, any one of these calls would count as a call
       - argument: 1
         transforms:
           - true # no transformation
-          - suffix: '?'
-          - suffix: '='
+          - add_suffix: '?'
+          - add_suffix: '='
 ```
 
 If these transforms shouldn't be grouped together, then they can be listed separately for different (or the same) arguments.
@@ -192,22 +192,22 @@ e.g. attr_accessor, which can be replaced with attr_reader/writer if only one is
 - name: attr_accessor
   definer:
     - argument: '*'
-      suffix: '='
+      add_suffix: '='
     - argument: '*'
 ```
 
 | transform | effect | examples |
 | --- | --- | --- |
-| `suffix:` | Adds a suffix | `suffix: '='`, `suffix: _attributes` |
-| `prefix:` | Adds a prefix | `prefix: be_`, `prefix: '@'` |
+| `add_suffix:` | Adds a suffix | `add_suffix: '='`, `add_suffix: _attributes` |
+| `add_prefix:` | Adds a prefix | `add_prefix: be_`, `add_prefix: '@'` |
 | `delete_suffix:` | Removes a suffix if it's there | `delete_suffix: _html` |
-| `delete_prefix:` | Removes a prefix if it's there | `delete_prefix: have_, prefix: has_` |
+| `delete_prefix:` | Removes a prefix if it's there | `delete_prefix: have_, add_prefix: has_` |
 | `delete_after:` | keep only the text before this string (e.g. for splitting "controller#action") | `delete_after: '#'` |
 | `delete_before:` | keep only the text after this string | `delete_before: '#"` |
 | `replace_with:` | replace the string with whole different string | `replace_with: html` |
 | `activesupport:` | A list of rails' activesupport transformations. requires the activesupport gem | `activesupport: [singularize, camelize]` |
 
-`prefix:` has some additional options, rather than just being a literal string it could be a further set of keywords,
+`add_prefix:` has some additional options, rather than just being a literal string it could be a further set of keywords,
 for example delegate in the next section:
 
 #### `if:` and `unless:`
@@ -224,7 +224,7 @@ rules:
         if:
           keyword:
             prefix: true # if the value of the prefix keyword argument is literal true value
-        prefix:
+        add_prefix:
           from_keyword: to # use the value of the "to" keyword as the prefix
           joiner: '_' # joining with _ to the original string
       - argument: '*'
@@ -233,7 +233,7 @@ rules:
         unless:
           keyword:
             prefix: true
-        prefix:
+        add_prefix:
           from_keyword: prefix # use the value of the "prefix" keyword as the prefix
           joiner: '_' # joining with _ to the original string
     caller:

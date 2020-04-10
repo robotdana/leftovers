@@ -39,18 +39,18 @@ rules:
     caller:
       argument: 2
   - name:
-      prefix: be_
+      has_prefix: be_
     caller:
       argument: 0
       delete_prefix: be_
-      suffix: '?'
+      add_suffix: '?'
   - name:
-      prefix: have_
+      has_prefix: have_
     caller:
       argument: 0
+      add_suffix: '?'
       delete_prefix: have_
-      suffix: '?'
-      prefix: has_
+      add_prefix: has_
   - name: let
     definer:
       argument: 1

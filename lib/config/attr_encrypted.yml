@@ -5,10 +5,10 @@ rules:
       - argument: 1
     caller:
       - argument: 1
-        prefix: encrypted_
+        add_prefix: encrypted_
       - argument: 1
-        prefix: encrypted_
-        suffix: _iv
+        add_prefix: encrypted_
+        add_suffix: _iv
       - argument:
           - encryptor
           - encrypt_method

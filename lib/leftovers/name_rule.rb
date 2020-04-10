@@ -12,12 +12,12 @@ module Leftovers
         when Hash
           if pattern[:match]
             regexps << /\A#{pattern[:match]}\z/
-          elsif pattern[:prefix] && pattern[:suffix]
-            regexps << /\A#{Regexp.escape(pattern[:prefix])}.*#{Regexp.escape(pattern[:suffix])}\z/
-          elsif pattern[:prefix]
-            regexps << /\A#{Regexp.escape(pattern[:prefix])}/
-          elsif pattern[:suffix]
-            regexps << /#{Regexp.escape(pattern[:suffix])}\z/
+          elsif pattern[:has_prefix] && pattern[:has_suffix]
+            regexps << /\A#{Regexp.escape(pattern[:has_prefix])}.*#{Regexp.escape(pattern[:has_suffix])}\z/
+          elsif pattern[:has_prefix]
+            regexps << /\A#{Regexp.escape(pattern[:has_prefix])}/
+          elsif pattern[:has_suffix]
+            regexps << /#{Regexp.escape(pattern[:has_suffix])}\z/
           end
         end
       end

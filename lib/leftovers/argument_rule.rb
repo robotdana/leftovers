@@ -21,8 +21,8 @@ module Leftovers
       argument: nil,
       delete_after: nil,
       delete_before: nil,
-      prefix: nil,
-      suffix: nil,
+      add_prefix: nil,
+      add_suffix: nil,
       activesupport: nil,
       condition: nil,
       delete_suffix: nil,
@@ -42,8 +42,8 @@ module Leftovers
       @transforms = prepare_transforms({
         delete_before: delete_before,
         delete_after: delete_after,
-        prefix: prefix,
-        suffix: suffix,
+        add_prefix: add_prefix,
+        add_suffix: add_suffix,
         activesupport: Array(activesupport),
         delete_prefix: Array(delete_prefix),
         delete_suffix: Array(delete_suffix),
@@ -200,21 +200,21 @@ module Leftovers
         string = process_activesupport(string, transform[:activesupport])
         transform[:delete_suffix].each { |s| string = string.delete_suffix(s) }
         transform[:delete_prefix].each { |s| string = string.delete_prefix(s) }
-        :"#{process_prefix(method_node, transform)}#{string}#{transform[:suffix]}"
+        :"#{process_prefix(method_node, transform)}#{string}#{transform[:add_suffix]}"
       end
     end
 
     def process_prefix(method_node, transform)
-      return transform[:prefix] unless transform[:prefix].is_a?(Hash)
+      return transform[:add_prefix] unless transform[:add_prefix].is_a?(Hash)
 
-      if transform[:prefix][:from_keyword]
-        prefix = method_node.kwargs[transform[:prefix][:from_keyword].to_sym].to_s
+      if transform[:add_prefix][:from_keyword]
+        prefix = method_node.kwargs[transform[:add_prefix][:from_keyword].to_sym].to_s
       end
 
       return unless prefix
 
-      if transform[:prefix][:joiner]
-        prefix += transform[:prefix][:joiner]
+      if transform[:add_prefix][:joiner]
+        prefix += transform[:add_prefix][:joiner]
       end
 
       prefix

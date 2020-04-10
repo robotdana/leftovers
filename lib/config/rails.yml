@@ -12,7 +12,7 @@ rules:
       - ssl_configured? # ApplicationController
   - skip: true
     name:
-      suffix: Helper
+      has_suffix: Helper
     path: app/helpers
   - name:
       - after_initialize
@@ -81,7 +81,7 @@ rules:
           - if
           - unless
       - key: true
-        suffix: Validator
+        add_suffix: Validator
         activesupport: camelize
   - name:
       - validate
@@ -120,11 +120,11 @@ rules:
       - argument: [1,2] # 1: with a receiver, 2: with no receiver
         transforms:
           - true
-          - suffix: '='
+          - add_suffix: '='
   - name: fields_for
     caller:
       argument: 1
-      suffix: _attributes
+      add_suffix: _attributes
   - name: options_from_collection_for_select
     caller:
       - argument: [2,3]
@@ -134,12 +134,12 @@ rules:
       - collection_radio_buttons
     caller:
       - argument: 2
-        suffix: '='
+        add_suffix: '='
       - argument: [4,5]
   - name: grouped_collection_select
     caller:
       - argument: 2
-        suffix: '='
+        add_suffix: '='
       - argument: [4,5,6,7]
   - name: option_groups_from_collection_for_select
     caller:
@@ -163,22 +163,22 @@ rules:
       - argument: 1
         transforms:
           - true
-          - suffix: '?'
-          - suffix: '='
+          - add_suffix: '?'
+          - add_suffix: '='
   - name: alias_attribute
     path: app/models/*
     definer:
       - argument: 1
         transforms:
           - true
-          - suffix: '?'
-          - suffix: '='
+          - add_suffix: '?'
+          - add_suffix: '='
     caller:
       - argument: 2
         transforms:
           - true
-          - suffix: '?'
-          - suffix: '='
+          - add_suffix: '?'
+          - add_suffix: '='
   - name:
     - has_one
     - belongs_to
@@ -210,7 +210,7 @@ rules:
       - argument: 1
         transforms:
           - true
-          - suffix: '='
+          - add_suffix: '='
     caller:
       - argument:
           - through
@@ -239,7 +239,7 @@ rules:
         delete_before: '#'
       - argument: '**'
         delete_after: '#'
-        suffix: Controller
+        add_suffix: Controller
         activesupport: camelize
   - name: delegate
     definer:
@@ -247,7 +247,7 @@ rules:
         if:
           keyword:
             prefix: true
-        prefix:
+        add_prefix:
           from_keyword: to
           joiner: '_'
       - argument: '*'
@@ -256,7 +256,7 @@ rules:
         unless:
           keyword:
             prefix: true
-        prefix:
+        add_prefix:
           from_keyword: prefix
           joiner: '_'
     caller:
@@ -270,7 +270,7 @@ rules:
     caller:
       - argument: only
       - argument: controller
-        suffix: Controller
+        add_suffix: Controller
         activesupport: camelize
   - name:
       - resources
@@ -278,20 +278,20 @@ rules:
       - namespace
     caller:
       - argument: 1
-        suffix: Controller
+        add_suffix: Controller
         activesupport: camelize
   - name: accepts_nested_attributes_for
     definer:
       argument: '*'
       transforms:
-        - suffix: _attributes
-        - suffix: _attributes=
+        - add_suffix: _attributes
+        - add_suffix: _attributes=
     caller:
       argument: reject_if
   - name: resource
     caller:
       - argument: 1
-        suffix: Controller
+        add_suffix: Controller
         activesupport:
           - pluralize
           - camelize
@@ -304,12 +304,12 @@ rules:
     - assign_attributes
     caller:
       key: true
-      suffix: '='
+      add_suffix: '='
   - name: permit
     caller:
       argument: ['*', '**']
       key: true
-      suffix: "="
+      add_suffix: "="
   - name: layout
     caller:
       argument: 1
@@ -341,18 +341,18 @@ rules:
       argument: 1
       transforms:
         - true
-        - suffix: '='
-        - suffix: '?'
+        - add_suffix: '='
+        - add_suffix: '?'
   - name:
       - cattr_accessor
       - mattr_accessor
     definer:
       - argument: '*'
-        suffix: '='
+        add_suffix: '='
       - argument: '*'
     caller:
       - argument: '*'
-        prefix: '@'
+        add_prefix: '@'
   - name:
       - cattr_reader
       - mattr_reader
@@ -360,13 +360,13 @@ rules:
       - argument: '*'
     caller:
       - argument: '*'
-        prefix: '@'
+        add_prefix: '@'
   - name:
       - cattr_writer
       - mattr_writer
     definer:
       - argument: '*'
-        suffix: '='
+        add_suffix: '='
 
   - name:
     - thread_cattr_accessor
@@ -374,7 +374,7 @@ rules:
     definer:
       - argument: '*'
       - argument: '*'
-        suffix: '='
+        add_suffix: '='
   - name:
     - thread_cattr_reader
     - thread_mattr_reader
@@ -385,7 +385,7 @@ rules:
     - thread_mattr_writer
     definer:
       - argument: '*'
-        suffix: '='
+        add_suffix: '='
   - name: delegate_missing_to
     caller:
       - argument: 1

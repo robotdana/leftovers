@@ -50,19 +50,19 @@ rules:
       argument: '*'
     caller:
       argument: '*'
-      prefix: '@'
+      add_prefix: '@'
   - name: attr_writer
     definer:
       argument: '*'
-      suffix: '='
+      add_suffix: '='
   - name: attr_accessor
     definer:
-      - suffix: '='
+      - add_suffix: '='
         argument: '*'
       - argument: '*'
     caller:
       argument: '*'
-      prefix: '@'
+      add_prefix: '@'
   - name: define_method
     definer:
       argument: 1

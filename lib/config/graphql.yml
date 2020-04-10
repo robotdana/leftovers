@@ -13,8 +13,8 @@ rules:
   - name: argument
     caller:
       - argument: 1
-        suffix: '='
+        add_suffix: '='
         unless:
           keyword: as
       - argument: as
-        suffix: '='
+        add_suffix: '='
