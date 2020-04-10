@@ -1,17 +1,17 @@
 rules:
   - skip: true
-    name:
+    names:
       - cursor_from_node
       - paged_nodes
       - sliced_nodes
   - name: field
-    caller:
+    calls:
       - argument: 1
         unless:
           keyword: method
       - argument: method
   - name: argument
-    caller:
+    calls:
       - argument: 1
         add_suffix: '='
         unless:

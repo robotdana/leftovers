@@ -1,15 +1,15 @@
 rules:
   # this doesn't handle custom prefix, suffix, attribute
   - name: attr_encrypted
-    definer:
+    defines:
       - argument: 1
-    caller:
+    calls:
       - argument: 1
         add_prefix: encrypted_
       - argument: 1
         add_prefix: encrypted_
         add_suffix: _iv
-      - argument:
+      - arguments:
           - encryptor
           - encrypt_method
           - decrypt_method

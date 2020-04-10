@@ -26,31 +26,31 @@ rules:
       - have_attributes
       - has_attributes?
       - receive_messages
-    caller:
-      - key: true
+    calls:
+      - keys: '*'
   - name:
     - receive
     - respond_to
-    caller:
+    calls:
       argument: 1
   - name: define_negated_matcher
-    definer:
+    defines:
       argument: 1
-    caller:
+    calls:
       argument: 2
   - name:
       has_prefix: be_
-    caller:
+    calls:
       argument: 0
       delete_prefix: be_
       add_suffix: '?'
   - name:
       has_prefix: have_
-    caller:
+    calls:
       argument: 0
       add_suffix: '?'
       delete_prefix: have_
       add_prefix: has_
   - name: let
-    definer:
+    defines:
       argument: 1

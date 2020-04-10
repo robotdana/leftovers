@@ -1,9 +1,9 @@
 rules:
   - name: filter
-    caller:
-      argument:
+    calls:
+      arguments:
         - default
         - select
   - name: column
-    caller:
-      argument: [if, unless]
+    calls:
+      arguments: [if, unless]

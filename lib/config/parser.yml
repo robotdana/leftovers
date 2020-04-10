@@ -1,6 +1,6 @@
 rules:
   skip: true
-  name: |
+  names: |
     on_alias
     on_and
     on_and_asgn

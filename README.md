@@ -109,9 +109,9 @@ rules:
 
 This is the most complex part of configuration, and is a list of methods that define/call other methods/classes/etc.
 each must have a `name:` list (which can use the same prefix/suffix/match matching that the allowed list does above),
-a `caller:` list and/or `definer:` list, and optionally a `path:` list that limits what paths this method rule can apply to.
+a `calls:` list and/or `defines:` list, and optionally a `path:` list that limits what paths this method rule can apply to.
 
-any of the `name:`, `caller:`, `definer:`, and `path:` lists can be single values instead of lists if there's only one.
+any of the `name:`, `calls:`, `defines:`, and `path:` lists can be single values instead of lists if there's only one.
 e.g.
 
 ```yml
@@ -119,16 +119,16 @@ rules:
   - name:
       - send
       - public_send
-    caller:
+    calls:
       argument: 1
 ```
 
 This describes how to handle `send()` and `public_send()`. it considers the first positional argument to be a called method.
 
 
-the `caller:` and `definer:` list objects are structured the same way, but have many keywords:
+the `calls:` and `defines:` list objects are structured the same way, but have many keywords:
 
-It must have at least one of `position:`, `keyword:`, or `key: true` which points to the implied method definition/call.
+It must have at least one of `position:`, `keyword:`, or `keys: '*'` which points to the implied method definition/call.
 This value must be a literal string, symbol, or array of strings or symbols.
 
 #### `argument:`
@@ -141,11 +141,11 @@ e.g
 rules:
   # `send(:my_method, arg)` is equivalent to `my_method(arg)`
   - name: send
-    caller:
+    calls:
       argument: 1
   # `attr_reader :my_attr` is equivalent to `def my_attr; @my_attr; end`
   - name: attr_reader
-    definer:
+    defines:
       argument: '*'
 ```
 #### `argument:`
@@ -155,19 +155,19 @@ the keyword argument value that is the method/class name being called/defined.
 ```yml
 rules:
   - name: validate
-  caller:
-    - argument: ['*', if, unless]
+  calls:
+    - arguments: ['*', if, unless]
 ```
 
-#### `key: true`
+#### `keys: '*'`
 
 the keyword argument **keywords** are the method/class_name being called/defined.
 ```yml
 rules:
   - name: permit
-      caller:
-        argument: ['*', '**']
-        key: true
+      calls:
+        arguments: ['*', '**']
+        keys: '*'
 ```
 (this example, incidentally, is how you get all the positional arguments and nested hashes and arrays that rails likes to use)
 
@@ -178,7 +178,7 @@ Sometimes the method being called is modified from the literal argument, sometim
 Transforms can be grouped together, any one of these calls would count as a call for any other. e.g
 ```yml
 - name: attribute
-    definer:
+    defines:
       - argument: 1
         transforms:
           - true # no transformation
@@ -190,7 +190,7 @@ If these transforms shouldn't be grouped together, then they can be listed separ
 e.g. attr_accessor, which can be replaced with attr_reader/writer if only one is used.
 ```yml
 - name: attr_accessor
-  definer:
+  defines:
     - argument: '*'
       add_suffix: '='
     - argument: '*'
@@ -219,7 +219,7 @@ e.g. rails' `delegate` method has a `prefix:` argument of its own that is used w
 ```yml
 rules:
   - name: delegate
-    definer:
+    defines:
       - argument: '*'
         if:
           keyword:
@@ -236,7 +236,7 @@ rules:
         add_prefix:
           from_keyword: prefix # use the value of the "prefix" keyword as the prefix
           joiner: '_' # joining with _ to the original string
-    caller:
+    calls:
       - argument: to # consider the to argument called.
       - argument: '*'
         if:

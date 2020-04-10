@@ -19,25 +19,27 @@ module Leftovers
 
     def initialize(
       argument: nil,
+      arguments: nil,
+      key: nil,
+      keys: nil,
       delete_after: nil,
       delete_before: nil,
       add_prefix: nil,
       add_suffix: nil,
       activesupport: nil,
-      condition: nil,
       delete_suffix: nil,
       delete_prefix: nil,
       replace_with: nil,
-      key: false,
       definer: false,
-      transforms: true,
+      transform: nil,
+      transforms: nil,
       **reserved_kwargs)
       @if, @unless = extract_reserved_kwargs!(reserved_kwargs, if: nil, unless: nil)
       @if = prepare_condition(@if)
       @unless = prepare_condition(@unless)
-      prepare_argument(argument)
-      @key = key
-      raise ArgumentError, "require at least one of 'argument', 'key'" unless @positions || @keywords || @all_positions || @all_keywords || @key
+      prepare_argument(argument, arguments)
+      @key = prepare_key(key, keys)
+      raise ArgumentError, "require at least one of 'argument(s)', 'key(s)'" unless @positions || @keywords || @all_positions || @all_keywords || @key
       @definer = definer
       @transforms = prepare_transforms({
         delete_before: delete_before,
@@ -48,15 +50,17 @@ module Leftovers
         delete_prefix: Array(delete_prefix),
         delete_suffix: Array(delete_suffix),
         replace_with: replace_with,
-      }, Array(transforms))
+      }, transform, transforms)
     end
 
     attr_reader :position, :keyword, :transforms
-    attr_reader :definer, :key
+    attr_reader :definer
 
-    def prepare_transforms(base, transforms)
-      transforms.map do |transform|
-        transform == true ? base : base.merge(transform)
+    def prepare_transforms(base, transform, transforms)
+      raise ArgumentError, "Only use one of transform/transforms" if transform && transforms
+
+      Array(transform || transforms || true).map do |t|
+        t == true ? base : base.merge(t)
       end
     end
 
@@ -66,20 +70,27 @@ module Leftovers
       end
     end
 
-    def prepare_argument(arguments)
+    def prepare_key(key, keys)
+      raise ArgumentError, "Only use one of key/keys" if key && keys
+
+      key || keys
+    end
+
+    def prepare_argument(argument, arguments)
+      raise ArgumentError, "Only use one of argument/arguments" if argument && arguments
       positions = Set.new
       keywords = []
 
-      Leftovers.wrap_array(arguments).each do |argument|
-        case argument
+      Leftovers.wrap_array(argument || arguments).each do |arg|
+        case arg
         when '*'
           @all_positions = true
         when '**'
           @all_keywords = true
         when Integer
-          positions << argument
+          positions << arg
         when String, Symbol, Hash
-          keywords << argument
+          keywords << arg
         end
       end
 
@@ -104,7 +115,7 @@ module Leftovers
         end
       end
 
-      if @keywords || @all_keywords || key
+      if @keywords || @all_keywords || @key
         values << hash_values(method_node.kwargs, method_node)
       end
 
@@ -135,7 +146,7 @@ module Leftovers
     def hash_values(hash_node, method_node)
       return unless hash_node
 
-      out = if key == true
+      out = if @key == '*'
         hash_node.keys.map { |k| value(k, method_node) }
       else
         []
@@ -177,21 +188,21 @@ module Leftovers
     end
 
     def symbol_or_string(symbol_node, method_node)
-      subnodes = StringSymbolNode.try(symbol_node).parts.flat_map { |s| transform(s, method_node) }
+      subnodes = StringSymbolNode.try(symbol_node).parts.flat_map { |s| do_transform(s, method_node) }
       return subnodes unless definer
 
       Definition.wrap(subnodes, symbol_node.loc.expression)
     end
 
     def method_value(method_node)
-      values = transform(method_node.name, method_node)
+      values = do_transform(method_node.name, method_node)
 
       return values unless definer
 
       Definition.wrap(values, method_node.loc.expression)
     end
 
-    def transform(initial_string, method_node)
+    def do_transform(initial_string, method_node)
       transforms.map do |transform|
         string = initial_string.to_s
         string = transform[:replace_with] if transform[:replace_with]

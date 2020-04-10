@@ -16,23 +16,25 @@ module Leftovers
     attr_reader :skip
     alias_method :skip?, :skip
 
-    def initialize(name:, caller: nil, skip: false, definer: nil, path: nil)
-      raise ArgumentError, "skip can't exist with definer or caller for #{name}" if skip && (definer || caller)
+    def initialize(name: nil, names: nil, calls: nil, skip: false, defines: nil, path: nil, paths: nil)
+      raise ArgumentError, "Only use one of name/names" if name && names
+      raise ArgumentError, "Only use one of path/paths" if path && paths
+      raise ArgumentError, "skip can't exist with defines or calls for #{name || names}" if skip && (defines || calls)
 
-      @name_matcher = NameRule.new(name)
-      @path = FastIgnore.new(include_rules: path, gitignore: false) if path
+      @name_matcher = NameRule.new(name || names)
+      @path = FastIgnore.new(include_rules: path || paths, gitignore: false) if path || paths
       @skip = skip
 
       begin
-        @caller = ArgumentRule.wrap(caller)
+        @calls = ArgumentRule.wrap(calls)
       rescue ArgumentError => e
-        raise e, "#{e.message} for caller for #{name}", e.backtrace
+        raise e, "#{e.message} for calls for #{name}", e.backtrace
       end
 
       begin
-        @definer = ArgumentRule.wrap(definer, definer: true)
+        @defines = ArgumentRule.wrap(defines, definer: true)
       rescue ArgumentError => e
-        raise e, "#{e.message} for definer for #{name}", e.backtrace
+        raise e, "#{e.message} for defines for #{name}", e.backtrace
       end
     end
 
@@ -51,11 +53,11 @@ module Leftovers
     end
 
     def calls(node)
-      @caller.flat_map { |m| m.matches(node) }
+      @calls.flat_map { |m| m.matches(node) }
     end
 
     def definitions(node)
-      @definer.flat_map { |m| m.matches(node) }
+      @defines.flat_map { |m| m.matches(node) }
     end
   end
 end
