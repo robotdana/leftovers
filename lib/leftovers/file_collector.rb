@@ -168,7 +168,7 @@ module Leftovers
     end
 
     def add_definition(name, loc)
-      definitions << Leftovers::Definition.new(name, loc, filename: filename, test: test?)
+      definitions << Leftovers::Definition.new(name, loc, filename: filename, test: test?).freeze
     end
 
     def add_call(name)

@@ -26,8 +26,8 @@ module Leftovers
         Leftovers::FileList.new.each { |filename| finish_parallel(nil, nil, collect_file(filename)) }
       end
       Leftovers.newline
-      @calls = @calls.to_set
-      @test_calls = @test_calls.to_set
+      @calls = @calls.to_set.freeze
+      @test_calls = @test_calls.to_set.freeze
     end
 
     def collect_file(filename)
