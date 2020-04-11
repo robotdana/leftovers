@@ -42,7 +42,7 @@ module Leftovers
       ruby = preprocess_file
       parse_and_process(ruby)
     rescue Parser::SyntaxError => e
-      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Metrics/LineLength
+      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Layout/LineLength
     end
 
     def preprocess_file # rubocop:disable Metrics/MethodLength

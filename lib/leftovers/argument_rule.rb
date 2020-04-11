@@ -18,7 +18,7 @@ module Leftovers
       end
     end
 
-    def initialize( # rubocop:disable Mertics/ParameterLists, Metrics/MethodLength, Metrics/CyclomaticComplexity
+    def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength, Metrics/CyclomaticComplexity
       argument: nil,
       arguments: nil,
       key: nil,
