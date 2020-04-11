@@ -57,9 +57,10 @@ rules:
       add_suffix: '='
   - name: attr_accessor
     defines:
-      - add_suffix: '='
-        argument: '*'
       - argument: '*'
+        transforms:
+          - original
+          - add_suffix: '='
     calls:
       argument: '*'
       add_prefix: '@'

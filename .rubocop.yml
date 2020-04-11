@@ -206,3 +206,6 @@ Lint/StructNewOverride:
 # hey rubocop you even use parser which uses :true and :false types. no
 Lint/BooleanSymbol:
   Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false

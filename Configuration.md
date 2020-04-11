@@ -56,7 +56,7 @@ test_paths:
 This is the most complex part of configuration, and is a list of methods that define/call other methods/classes/etc.
 Each must have a `name:` or list of `names:`. and can optionally be limited to a `path:` or list of `paths:`.
 
-This rule can either `skip:` these names, or describe method/class `calls:` and definitions (`defines:`, `defines_group:`).
+This rule can either `skip:` these names, or describe method/class `calls:` and definitions (`defines:`).
 
 #### `name:`, `names:`
 
@@ -107,7 +107,7 @@ end
 
 will not report that you didn't directly use the initialize method
 
-#### `calls:`, `defines:`, `defines_group:`
+#### `calls:`, `defines:`
 
 Describe implicitly called and defined methods using these keys. they're structured the same way:
 

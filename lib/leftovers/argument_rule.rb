@@ -2,6 +2,7 @@
 
 require_relative 'definition'
 require_relative 'name_rule'
+require_relative 'transform_rule'
 
 module Leftovers
   class ArgumentRule # rubocop:disable Metrics/ClassLength
@@ -18,47 +19,58 @@ module Leftovers
       end
     end
 
+    ADDITIONAL_VALID_KEYS = Leftovers::TransformRule::VALID_TRANSFORMS + %i{if unless}
     def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength, Metrics/CyclomaticComplexity
       argument: nil,
       arguments: nil,
       key: nil,
       keys: nil,
       itself: false,
-      delete_after: nil,
-      delete_before: nil,
-      add_prefix: nil,
-      add_suffix: nil,
-      activesupport: nil,
-      delete_suffix: nil,
-      delete_prefix: nil,
-      replace_with: nil,
+      linked_transforms: nil,
+      transforms: nil,
       definer: false,
-      **reserved_kwargs
+      **options
     )
-      @if, @unless = extract_reserved_kwargs!(reserved_kwargs, if: nil, unless: nil)
-      @if = prepare_condition(@if)
-      @unless = prepare_condition(@unless)
+      assert_valid_keys(options, ADDITIONAL_VALID_KEYS)
       prepare_argument(argument, arguments)
       @key = prepare_key(key, keys)
-      @definer = definer
       @itself = itself
+
       unless @positions || @keywords || @all_positions || @all_keywords || @key || @itself
         raise ArgumentError, "require at least one of 'argument(s)', 'key(s)', itself"
       end
 
-      @transform = {
-        delete_before: delete_before,
-        delete_after: delete_after,
-        add_prefix: add_prefix,
-        add_suffix: add_suffix,
-        activesupport: Array(activesupport),
-        delete_prefix: Array(delete_prefix),
-        delete_suffix: Array(delete_suffix),
-        replace_with: replace_with
-      }
+      @if = prepare_condition(options.delete(:if))
+      @unless = prepare_condition(options.delete(:unless))
+      @transforms = prepare_transform(options, transforms, linked_transforms)
+      @definer = definer
     end
 
-    attr_reader :definer, :transform
+    attr_reader :definer
+
+    def prepare_transform(options, transforms, linked_transforms) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
+      if linked_transforms && transforms
+        raise ArgumentError, 'Only use one of linked_transforms/transforms'
+      end
+      return if !linked_transforms && !transforms && options.empty?
+
+      if !(linked_transforms || transforms)
+        @transform = TransformRule.new(options)
+      else
+        @linked = !!linked_transforms
+
+        transforms = (linked_transforms || transforms).map do |transform|
+          transform = { transform.to_sym => true } if transform.is_a?(String)
+          Leftovers::TransformRule.new(options.merge(transform))
+        end
+
+        if transforms.length <= 1
+          @transform = transforms.first
+        else
+          @transforms = transforms
+        end
+      end
+    end
 
     def prepare_condition(conditions)
       Leftovers.wrap_array(conditions).each do |cond|
@@ -96,19 +108,20 @@ module Leftovers
       @keywords = NameRule.new(keywords) unless @all_keywords || keywords.empty?
     end
 
-    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-      return [] unless all_conditions_match?(method_node)
+    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
+      return [].freeze unless all_conditions_match?(method_node)
 
       result = []
 
       if @all_positions
-        result += values(method_node.positional_arguments, method_node)
+        result.concat values(method_node.positional_arguments, method_node)
       elsif @positions
-        result += values(method_node.positional_arguments_at(@positions).compact, method_node)
+        result.concat values(method_node.positional_arguments_at(@positions).compact, method_node)
       end
 
-      result += hash_values(method_node.kwargs, method_node) if @keywords || @all_keywords || @key
-
+      if @keywords || @all_keywords || @key
+        result.concat hash_values(method_node.kwargs, method_node)
+      end
       result << method_value(method_node) if @itself
 
       result
@@ -141,15 +154,15 @@ module Leftovers
     end
 
     def hash_values(hash_node, method_node) # rubocop:disable Metrics/MethodLength
-      return [] unless hash_node
+      return [].freeze unless hash_node
 
       value_nodes = []
-      value_nodes += hash_node.keys if @key == '*'
+      value_nodes.concat hash_node.keys if @key == '*'
 
       if @all_keywords
-        value_nodes += hash_node.values
+        value_nodes.concat hash_node.values
       elsif @keywords
-        value_nodes += hash_node.values_at_match(@keywords)
+        value_nodes.concat hash_node.values_at_match(@keywords)
       end
 
       values(value_nodes, method_node)
@@ -169,76 +182,35 @@ module Leftovers
     end
 
     def symbol_values(symbol_node, method_node)
-      subnodes = symbol_node.to_s.split(/[.:]+/).map { |s| do_transform(s, method_node) }
-      return subnodes unless definer
+      subnodes = symbol_node.to_s.split(/[.:]+/).flat_map { |s| transform(s, method_node) }
+      return subnodes unless @definer
 
-      Leftovers::Definition.wrap(subnodes, symbol_node.loc.expression)
+      Leftovers::Definition.wrap(subnodes, symbol_node.loc.expression, link: @linked)
     end
 
     def method_value(method_node)
-      value = do_transform(method_node.name, method_node)
+      value = transform(method_node.to_s, method_node)
 
-      return value unless definer
+      return value unless @definer
 
       Leftovers::Definition.new(value, method_node.loc.expression)
     end
 
-    def do_transform(initial_string, method_node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      string = initial_string.to_s
-      string = transform[:replace_with] if transform[:replace_with]
-      string = string.split(transform[:delete_after], 2)[0] if transform[:delete_after]
-      string = string.split(transform[:delete_before], 2)[1] if transform[:delete_before]
-      string = process_activesupport(string, transform[:activesupport])
-      transform[:delete_suffix].each { |s| string = string.delete_suffix(s) }
-      transform[:delete_prefix].each { |s| string = string.delete_prefix(s) }
-      :"#{process_prefix(method_node, transform)}#{string}#{transform[:add_suffix]}"
+    def transform(string, method_node)
+      return string.to_sym unless @transform || @transforms
+      return @transform.transform(string, method_node) if @transform
+
+      @transforms.map do |transform|
+        transform.transform(string, method_node)
+      end
     end
 
-    def process_prefix(method_node, transform) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      return transform[:add_prefix] unless transform[:add_prefix].is_a?(Hash)
+    def assert_valid_keys(options, keys)
+      invalid = options.keys - keys
 
-      if transform[:add_prefix][:from_keyword]
-        prefix = method_node.kwargs[transform[:add_prefix][:from_keyword].to_sym].to_s
-      end
+      return if invalid.empty?
 
-      return unless prefix
-
-      prefix += transform[:add_prefix][:joiner] if transform[:add_prefix][:joiner]
-
-      prefix
-    end
-
-    def process_activesupport(string, activesupport) # rubocop:disable Metrics/MethodLength
-      return string if !activesupport || activesupport.empty?
-
-      Leftovers.try_require(
-        'active_support/core_ext/string', 'active_support/inflections',
-        message: <<~MESSAGE
-          Tried transforming a rails symbol file, but the activesupport gem was not available
-          `gem install activesupport`
-        MESSAGE
-      )
-
-      Leftovers.try_require(File.join(Dir.pwd, 'config', 'initializers', 'inflections.rb'))
-
-      activesupport.each do |method|
-        string = string.send(method)
-      end
-      string
-    end
-
-    def extract_reserved_kwargs!(options, **defaults) # rubocop:disable Metrics/MethodLength
-      invalid = options.keys - defaults.keys
-
-      unless invalid.empty?
-        raise ArgumentError, "unknown keyword#{'s' if invalid.length > 1}: #{invalid.join(', ')}"
-      end
-
-      values = defaults.merge(options).values
-
-      return values.first if values.length == 1
-
-      values
+      raise ArgumentError, "unknown keyword#{'s' if invalid.length > 1}: #{invalid.join(', ')}"
     end
   end
 end

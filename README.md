@@ -56,7 +56,7 @@ see the [complete config documentation](https://github.com/robotdana/leftovers/t
   - [`paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#paths:) _optional_
   - **action** _at least one is required_
   - [`skip:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#skip:)
-  - [`calls:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls:), [`defines:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#defines:), [`defines_group:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#defines_group:)
+  - [`calls:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls:), [`defines:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#defines:)
     - **source** _at least one is required_
     - [`arguments:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#arguments:)
     - [`keys:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#keys:)

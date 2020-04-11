@@ -9,7 +9,7 @@ module Leftovers
     def self.wrap(rules)
       case rules
       when Array then rules.flat_map { |r| wrap(r) }
-      when nil then []
+      when nil then [].freeze
       else new(**rules)
       end
     end
@@ -25,8 +25,6 @@ module Leftovers
       skip: false,
       defines: nil,
       define: nil,
-      define_group: nil,
-      defines_group: nil,
       path: nil,
       paths: nil
     )
@@ -34,10 +32,7 @@ module Leftovers
       raise ArgumentError, 'Only use one of path/paths' if path && paths
       raise ArgumentError, 'Only use one of call/calls' if call && calls
       raise ArgumentError, 'Only use one of define/defines' if define && defines
-      if define_group && defines_group
-        raise ArgumentError, 'Only use one of define_group/defines_group'
-      end
-      if skip && (defines || calls || defines_group)
+      if skip && (defines || calls)
         raise ArgumentError, "skip can't exist with defines or calls for #{name || names}"
       end
 
@@ -55,12 +50,6 @@ module Leftovers
         @defines = ArgumentRule.wrap(defines, definer: true)
       rescue ArgumentError => e
         raise e, "#{e.message} for defines for #{name}", e.backtrace
-      end
-
-      begin
-        @defines_group = ArgumentRule.wrap(defines_group, definer: true)
-      rescue ArgumentError => e
-        raise e, "#{e.message} for defines_group for #{name}", e.backtrace
       end
     end
 
@@ -83,9 +72,7 @@ module Leftovers
     end
 
     def definitions(node)
-      defines_group = @defines_group.flat_map { |m| m.matches(node) }
-      defines_group.each { |d| d.group = defines_group }
-      @defines.flat_map { |m| m.matches(node) } + defines_group
+      @defines.flat_map { |m| m.matches(node) }
     end
   end
 end

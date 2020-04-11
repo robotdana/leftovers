@@ -10,11 +10,11 @@ module Leftovers
     attr_accessor :test
     alias_method :test?, :test
 
-    def self.wrap(strings, location, filename: nil, test: false)
+    def self.wrap(strings, location, filename: nil, test: false, link: false)
       strings.each.with_object([]) do |string, group|
         d = new(string, location, filename: filename, test: test)
         group << d
-        d.group = group
+        d.group = group if link
       end
     end
 

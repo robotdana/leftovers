@@ -80,7 +80,7 @@ rules:
           - if
           - unless
       - keys: '*'
-        activesupport: camelize
+        camelize: true
         add_suffix: Validator
   - names:
       - validate
@@ -150,21 +150,21 @@ rules:
     path: config/routes*
     calls:
       argument: module # routes
-      activesupport: camelize
+      camelize: true
   - name: namespace
     calls:
       - argument: 1
-        activesupport: camelize
+        camelize: true
   - name:
       - attribute
       - alias_attribute
     path: app/models/*
-    defines_group:
-      - argument: 1
-      - argument: 1
-        add_suffix: '?'
-      - argument: 1
-        add_suffix: '='
+    defines:
+      argument: 1
+      linked_transforms:
+        - original
+        - add_suffix: '?'
+        - add_suffix: '='
   - name: alias_attribute
     calls:
       - argument: 2
@@ -177,7 +177,7 @@ rules:
     - belongs_to
     calls:
       argument: 1
-      activesupport: camelize
+      camelize: true
       unless:
         keyword: class_name
   - name:
@@ -185,7 +185,8 @@ rules:
     - has_and_belongs_to_many
     calls:
       argument: 1
-      activesupport: [singularize, camelize]
+      camelize: true
+      singularize: true
       unless:
         keyword: class_name
   - name:
@@ -199,10 +200,11 @@ rules:
       - has_many
       - belongs_to
       - has_and_belongs_to_many
-    defines_group:
+    defines:
       - argument: 1
-      - argument: 1
-        add_suffix: '='
+        linked_transforms:
+          - original
+          - add_suffix: '='
     calls:
       - argument:
           - through
@@ -231,8 +233,8 @@ rules:
         delete_before: '#'
       - argument: '**'
         delete_after: '#'
+        camelize: true
         add_suffix: Controller
-        activesupport: camelize
   - name: delegate
     defines:
       - argument: '*'
@@ -262,31 +264,30 @@ rules:
     calls:
       - argument: only
       - argument: controller
+        camelize: true
         add_suffix: Controller
-        activesupport: camelize
   - name:
       - resources
       - controller
       - namespace
     calls:
       - argument: 1
+        camelize: true
         add_suffix: Controller
-        activesupport: camelize
   - name: accepts_nested_attributes_for
-    defines_group:
-      - argument: '*'
-        add_suffix: _attributes
-      - argument: '*'
-        add_suffix: _attributes=
+    defines:
+      argument: '*'
+      linked_transforms:
+        - add_suffix: _attributes
+        - add_suffix: _attributes=
     calls:
       argument: reject_if
   - name: resource
     calls:
       - argument: 1
+        camelize: true
+        pluralize: true
         add_suffix: Controller
-        activesupport:
-          - pluralize
-          - camelize
   - name:
     - new
     - create
@@ -330,18 +331,19 @@ rules:
       - boolean
     path: config/db_schema.rb
     calls:
-      - argument: 1
-      - argument: 1
-        add_suffix: '='
-      - argument: 1
-        add_suffix: '?'
+      argument: 1
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: '?'
   - name:
       - cattr_accessor
       - mattr_accessor
     defines:
       - argument: '*'
-        add_suffix: '='
-      - argument: '*'
+        transforms:
+          - original
+          - add_suffix: '='
     calls:
       - argument: '*'
         add_prefix: '@'
@@ -364,20 +366,21 @@ rules:
     - thread_cattr_accessor
     - thread_mattr_accessor
     defines:
-      - argument: '*'
-      - argument: '*'
-        add_suffix: '='
+      argument: '*'
+      transforms:
+        - original
+        - add_suffix: '='
   - name:
     - thread_cattr_reader
     - thread_mattr_reader
     defines:
-      - argument: '*'
+      argument: '*'
   - name:
     - thread_cattr_writer
     - thread_mattr_writer
     defines:
-      - argument: '*'
-        add_suffix: '='
+      argument: '*'
+      add_suffix: '='
   - name: delegate_missing_to
     calls:
-      - argument: 1
+      argument: 1
