@@ -1,4 +1,6 @@
 require 'set'
+require_relative 'config'
+require 'fast_ignore'
 
 module Leftovers
   class MergedConfig

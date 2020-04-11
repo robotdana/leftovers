@@ -80,8 +80,8 @@ rules:
           - if
           - unless
       - keys: '*'
-        add_suffix: Validator
         activesupport: camelize
+        add_suffix: Validator
   - names:
       - validate
       - validate_associated
@@ -155,28 +155,23 @@ rules:
     calls:
       - argument: 1
         activesupport: camelize
-  - name: attribute
+  - name:
+      - attribute
+      - alias_attribute
     path: app/models/*
-    defines:
+    defines_group:
       - argument: 1
-        transforms:
-          - true
-          - add_suffix: '?'
-          - add_suffix: '='
+      - argument: 1
+        add_suffix: '?'
+      - argument: 1
+        add_suffix: '='
   - name: alias_attribute
-    path: app/models/*
-    defines:
-      - argument: 1
-        transforms:
-          - true
-          - add_suffix: '?'
-          - add_suffix: '='
     calls:
       - argument: 2
-        transforms:
-          - true
-          - add_suffix: '?'
-          - add_suffix: '='
+      - argument: 2
+        add_suffix: '?'
+      - argument: 2
+        add_suffix: '='
   - name:
     - has_one
     - belongs_to
@@ -204,11 +199,10 @@ rules:
       - has_many
       - belongs_to
       - has_and_belongs_to_many
-    defines:
+    defines_group:
       - argument: 1
-        transforms:
-          - true
-          - add_suffix: '='
+      - argument: 1
+        add_suffix: '='
     calls:
       - argument:
           - through
@@ -279,11 +273,11 @@ rules:
         add_suffix: Controller
         activesupport: camelize
   - name: accepts_nested_attributes_for
-    defines:
-      argument: '*'
-      transforms:
-        - add_suffix: _attributes
-        - add_suffix: _attributes=
+    defines_group:
+      - argument: '*'
+        add_suffix: _attributes
+      - argument: '*'
+        add_suffix: _attributes=
     calls:
       argument: reject_if
   - name: resource
@@ -336,11 +330,11 @@ rules:
       - boolean
     path: config/db_schema.rb
     calls:
-      argument: 1
-      transforms:
-        - true
-        - add_suffix: '='
-        - add_suffix: '?'
+      - argument: 1
+      - argument: 1
+        add_suffix: '='
+      - argument: 1
+        add_suffix: '?'
   - name:
       - cattr_accessor
       - mattr_accessor

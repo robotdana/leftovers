@@ -4,11 +4,11 @@ module Leftovers
     def initialize(patterns)
       patterns = Leftovers.wrap_array(patterns)
       regexps = []
-      @strings = Set.new
+      strings = Set.new
       patterns.each do |pattern|
         case pattern
         when String
-          @strings.merge(pattern.split(/\s+/).map(&:freeze))
+          strings.merge(pattern.split(/\s+/).map(&:freeze))
         when Hash
           if pattern[:match]
             regexps << /\A#{pattern[:match]}\z/
@@ -22,9 +22,10 @@ module Leftovers
         end
       end
 
-      if @strings.length <= 1
-        @string = @strings.first
-        @strings = nil
+      if strings.length <= 1
+        @string = strings.first
+      else
+        @strings = strings
       end
 
       @regexp = Regexp.union(regexps) unless regexps.empty?

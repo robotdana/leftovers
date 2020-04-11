@@ -3,6 +3,7 @@ rules:
   name:
     - add_insert_cmd # called by ::ERB::Compiler
     - add_put_cmd # called by ::ERB::Compiler
+    - Node
 
 gems:
   - parser

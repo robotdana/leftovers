@@ -41,223 +41,54 @@ lib/hello_world.rb:6:6 generated_method attr_accessor :generated_method
 The configuration is read from `.leftovers.yml` in your project root.
 Its presence is optional and all of these settings are optional:
 
-see [the built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
+see the [built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
+see the [complete config documentation](https://github.com/robotdana/leftovers/tree/master/Configuration.md) for details.
 
-### `include_paths:`
-
-List filenames/paths in the gitignore format of files to be checked using a [gitignore-esque format](https://github.com/robotdana/fast_ignore#using-an-includes-list).
-
-By default it checks the following:
-```yml
-include_paths:
-  - '*.rb'
-  - '*.rake'
-  - '*.ru'
-  - Rakefile
-  - Gemfile
-  - Capfile
-  - '*.haml'
-  - '*.erb'
-  - '*.builder'
-  - '*.jbuilder'
-  - '*.gemspec'
-```
-
-Also it will check files with no extension that have `ruby` in the shebang/hashbang, e.g. `#!/usr/bin/env ruby` or `#!/usr/bin/ruby` etc
-
-### `exclude_paths:`
-
-List filenames/paths that match the above that you might want to exclude, using the gitignore format.
-By default it will also read your project's .gitignore file and ignore anything there.
-
-```yml
-exclude_paths:
-  - /some/long/irrelevant/generated/file
-```
-
-### `test_paths:`
-
-list filenames/paths of test directories that will be used to determine if a method/etc is only tested but not otherwise used.
-Also in the gitignore format
-
-```yml
-test_paths:
-  - /test/
-  - /spec/
-```
-
-### `allowed:`
-
-list methods/classnames/etc that are considered unused by Leftovers
-but that you want to be allowed
-
-filtering is by exact match or `has_prefix:` and/or `has_suffix:` or regex pattern (`matches:`).
-
-```yml
-rules:
-  - name:
-      - method_name
-      - ConstantName
-      - has_suffix: Helper # will match Helper, LinkHelper FormHelper, etc
-      - has_prefix: be_ # will match be_equal, be_invalid, etc
-      - has_prefix: is_
-        has_suffx: ? # will match is_invalid?, is_equal? etc
-      - matches: '(?-mix:column_\d+)' # will match column_1, column_2, column_99, etc
-```
-
-### `rules:`
-
-This is the most complex part of configuration, and is a list of methods that define/call other methods/classes/etc.
-each must have a `name:` list (which can use the same prefix/suffix/match matching that the allowed list does above),
-a `calls:` list and/or `defines:` list, and optionally a `path:` list that limits what paths this method rule can apply to.
-
-any of the `name:`, `calls:`, `defines:`, and `path:` lists can be single values instead of lists if there's only one.
-e.g.
-
-```yml
-rules:
-  - name:
-      - send
-      - public_send
-    calls:
-      argument: 1
-```
-
-This describes how to handle `send()` and `public_send()`. it considers the first positional argument to be a called method.
-
-
-the `calls:` and `defines:` list objects are structured the same way, but have many keywords:
-
-It must have at least one of `position:`, `keyword:`, or `keys: '*'` which points to the implied method definition/call.
-This value must be a literal string, symbol, or array of strings or symbols.
-
-#### `argument:`
-
-the positional or keyword argument that is the method/class name being called/defined.
-`*` means all positional arguments. `**` means all keyword arguments
-
-e.g
-```yml
-rules:
-  # `send(:my_method, arg)` is equivalent to `my_method(arg)`
-  - name: send
-    calls:
-      argument: 1
-  # `attr_reader :my_attr` is equivalent to `def my_attr; @my_attr; end`
-  - name: attr_reader
-    defines:
-      argument: '*'
-```
-#### `argument:`
-
-the keyword argument value that is the method/class name being called/defined.
-`**` means all values of keyword arguments
-```yml
-rules:
-  - name: validate
-  calls:
-    - arguments: ['*', if, unless]
-```
-
-#### `keys: '*'`
-
-the keyword argument **keywords** are the method/class_name being called/defined.
-```yml
-rules:
-  - name: permit
-      calls:
-        arguments: ['*', '**']
-        keys: '*'
-```
-(this example, incidentally, is how you get all the positional arguments and nested hashes and arrays that rails likes to use)
-
-#### `transforms:`
-
-Sometimes the method being called is modified from the literal argument, sometimes that's just appending an `=` and sometimes it's more complex:
-
-Transforms can be grouped together, any one of these calls would count as a call for any other. e.g
-```yml
-- name: attribute
-    defines:
-      - argument: 1
-        transforms:
-          - true # no transformation
-          - add_suffix: '?'
-          - add_suffix: '='
-```
-
-If these transforms shouldn't be grouped together, then they can be listed separately for different (or the same) arguments.
-e.g. attr_accessor, which can be replaced with attr_reader/writer if only one is used.
-```yml
-- name: attr_accessor
-  defines:
-    - argument: '*'
-      add_suffix: '='
-    - argument: '*'
-```
-
-| transform | effect | examples |
-| --- | --- | --- |
-| `add_suffix:` | Adds a suffix | `add_suffix: '='`, `add_suffix: _attributes` |
-| `add_prefix:` | Adds a prefix | `add_prefix: be_`, `add_prefix: '@'` |
-| `delete_suffix:` | Removes a suffix if it's there | `delete_suffix: _html` |
-| `delete_prefix:` | Removes a prefix if it's there | `delete_prefix: have_, add_prefix: has_` |
-| `delete_after:` | keep only the text before this string (e.g. for splitting "controller#action") | `delete_after: '#'` |
-| `delete_before:` | keep only the text after this string | `delete_before: '#"` |
-| `replace_with:` | replace the string with whole different string | `replace_with: html` |
-| `activesupport:` | A list of rails' activesupport transformations. requires the activesupport gem | `activesupport: [singularize, camelize]` |
-
-`add_prefix:` has some additional options, rather than just being a literal string it could be a further set of keywords,
-for example delegate in the next section:
-
-#### `if:` and `unless:`
-
-Sometimes what to do depends on other arguments than the ones looked at:
-e.g. rails' `delegate` method has a `prefix:` argument of its own that is used when defining methods:
-
-`if:` and `unless:` work the same way, and are currently limited to looking at keyword arguments and their values.
-```yml
-rules:
-  - name: delegate
-    defines:
-      - argument: '*'
-        if:
-          keyword:
-            prefix: true # if the value of the prefix keyword argument is literal true value
-        add_prefix:
-          from_keyword: to # use the value of the "to" keyword as the prefix
-          joiner: '_' # joining with _ to the original string
-      - argument: '*'
-        if: # if the method call has a prefix keyword argument that is not a literal true value
-          keyword: prefix
-        unless:
-          keyword:
-            prefix: true
-        add_prefix:
-          from_keyword: prefix # use the value of the "prefix" keyword as the prefix
-          joiner: '_' # joining with _ to the original string
-    calls:
-      - argument: to # consider the to argument called.
-      - argument: '*'
-        if:
-          keyword: prefix # if there is a prefix, consider the original method called.
-```
-
-### `gems:`
-
-list the gems your project uses whose default config you want to load.
-
-See [the built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for which gem config is available. Please submit a PR or issues at the [Leftovers github project](https://github.com/robotdana/leftovers) if your favourite gem is missing
-
-(ruby.yml will always be loaded.)
-```yml
-gems:
-  - rails
-  - rspec
-```
-
-
-```
+- [`include_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#include_paths:) _optional_
+- [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#exclude_paths:) _optional_
+- [`test_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#test_paths:) _optional_
+- [`gems:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#gems:) _optional_
+- [`rules:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#rules:) _optional_
+  - [`names:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#names:) _required_
+    - [`has_prefix](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix:) _optional_
+    - [`has_suffix](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_suffix:) _optional_
+    - [`matches](https://github.com/robotdana/leftovers/tree/master/Configuration.md#matches:) _optional_
+  - [`paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#paths:) _optional_
+  - **action** _at least one is required_
+  - [`skip:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#skip:)
+  - [`calls:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls:), [`defines:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#defines:), [`defines_group:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#defines_group:)
+    - **source** _at least one is required_
+    - [`arguments:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#arguments:)
+    - [`keys:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#keys:)
+    - [`itself:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#itself:)
+    - **transformation** _optional_
+    - [`add_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#add_prefix:)
+      - [`from_argument:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#from_argument:)
+      - [`joiner:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#joiner:)
+    - [`add_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#add_suffix:)
+      - `from_argument:`
+      - `joiner:`
+    - [`delete_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_suffix:)
+    - [`delete_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_prefix:)
+    - [`delete_before:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_before:)
+    - [`delete_after:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_after:)
+    - [`replace_with:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#replace_with:)
+    - [`activesupport:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#activesupport:)
+    **condition** _optional_
+    - [`has_argument:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
+      - `has_prefix:`
+      - `has_suffix:`
+      - `matches:`
+      - [`key`:]
+      - [`value:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
+        - [`type:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
+    - [`unless:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#unless:)
+      - **conditions** _at least one is required_
+      - `has_argument:`
+        - `has_prefix:`
+        - `has_suffix:`
+        - `matches:`
+        - `with_value:`
 
 ## Limitations
 

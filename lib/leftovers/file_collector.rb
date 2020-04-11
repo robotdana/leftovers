@@ -2,8 +2,10 @@ require 'fast_ignore'
 require 'set'
 require 'parser'
 require 'parser/current'
+require_relative 'node'
 require_relative 'erb'
 require_relative 'haml'
+require_relative 'definition'
 
 module Leftovers
   class FileCollector < Parser::AST::Processor
@@ -132,14 +134,19 @@ module Leftovers
       puts "#{e.message} #{filename}:#{node.loc.expression}"
       raise
     end
-    alias_method :on_const, :on_send
     alias_method :on_csend, :on_send
+
+    def on_const(node)
+      super
+
+      add_call(node.children[1])
+    end
 
     # grab e.g. :to_s in each(&:to_s)
     def on_block_pass(node)
       super
 
-      collect_symbol_call(node.children.first)
+      add_call(node.children.first.to_sym) if node.children.first&.string_or_symbol?
     end
 
     # grab class Constant or module Constant
@@ -161,7 +168,7 @@ module Leftovers
     end
 
     def add_definition(name, loc)
-      definitions << Definition.new(name, loc, filename: filename, test: test?)
+      definitions << Leftovers::Definition.new(name, loc, filename: filename, test: test?)
     end
 
     def add_call(name)
@@ -206,18 +213,9 @@ module Leftovers
       end
     end
 
-    def collect_symbol_call(node)
-      return unless node
-      return unless [:sym, :str].include?(node.type)
-
-      add_call(node.children.first)
-    end
-
     def collect_method_rules(node)
-      node = SendNode.new(node)
-
       Leftovers.config.rules.each do |rule|
-        next unless rule.match?(node.name_s, filename)
+        next unless rule.match?(node.to_s, filename)
         next if rule.skip?
 
         calls.concat(rule.calls(node))

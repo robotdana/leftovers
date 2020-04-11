@@ -3,7 +3,7 @@ module Leftovers
   module Haml
     module_function
     def precompile(file)
-      Leftovers.try_require('haml', "Skipped parsing a haml file, because the haml gem was not available\n`gem install haml`")
+      Leftovers.try_require('haml', message: "Skipped parsing a haml file, because the haml gem was not available\n`gem install haml`")
       if defined?(::Haml)
         begin
           ::Haml::Engine.new(file).precompiled

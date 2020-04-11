@@ -877,4 +877,43 @@ RSpec.describe Leftovers::Collector do
     expect(subject.definitions).to be_empty
     expect(subject.calls).to contain_exactly(:flow, :whatever, :method)
   end
+
+  it "doesn't collect position or keyword lvars" do
+    temp_file 'foo.rb', <<~RUBY
+      b = 1
+      my_method(b, my_keyword: b)
+    RUBY
+
+    temp_file '.leftovers.yml', <<~YML
+      rules:
+        - name: my_method
+          calls:
+            argument: [1, my_keyword]
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:my_method)
+  end
+
+  it "doesn't collect rest kwargs" do
+    temp_file 'foo.rb', <<~RUBY
+      b = 1
+      args = {}
+      my_method(b, my_keyword: b, **args)
+    RUBY
+
+    temp_file '.leftovers.yml', <<~YML
+      rules:
+        - name: my_method
+          calls:
+            argument: [1, my_keyword]
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to contain_exactly(:my_method)
+  end
 end

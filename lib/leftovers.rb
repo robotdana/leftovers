@@ -1,15 +1,25 @@
-require_relative "./leftovers/version"
-require_relative "./leftovers/definition"
-require_relative "./leftovers/argument_rule"
-require_relative "./leftovers/rule"
 require_relative "./leftovers/collector"
-require_relative "./leftovers/file_list"
 require_relative "./leftovers/merged_config"
-require_relative "./leftovers/config"
 require_relative "./leftovers/reporter"
 
 module Leftovers
   module_function
+
+  class << self
+    attr_accessor :parallel
+    alias_method :parallel?, :parallel
+
+    attr_accessor :quiet
+    alias_method :quiet?, :quiet
+  end
+
+  def stdout
+    @stdout ||= StringIO.new
+  end
+
+  def stderr
+    @stderr ||= StringIO.new
+  end
 
   def config
     @config ||= Leftovers::MergedConfig.new
@@ -32,8 +42,10 @@ module Leftovers
     end
   end
 
-  def run
+  def run(stdout: StringIO.new, stderr: StringIO.new)
     reset
+    @stdout = stdout
+    @stderr = stderr
     return 0 if leftovers.empty?
 
     only_test = []
@@ -65,19 +77,37 @@ module Leftovers
     remove_instance_variable(:@reporter) if defined?(@reporter)
     remove_instance_variable(:@leftovers) if defined?(@leftovers)
     remove_instance_variable(:@try_require) if defined?(@try_require)
+    remove_instance_variable(:@stdout) if defined?(@stdout)
+    remove_instance_variable(:@stderr) if defined?(@stderr)
+    remove_instance_variable(:@parallel) if defined?(@parallel)
+    remove_instance_variable(:@quiet) if defined?(@quiet)
   end
 
   def warn(message)
-    $stderr.puts("\e[2K#{message}")
+    stderr.puts("\e[2K#{message}") unless quiet?
   end
 
-  def try_require(requirable, message = nil)
+  def puts(message)
+    stdout.puts("\e[2K#{message}") unless quiet?
+  end
+
+  def print(message)
+    stdout.print(message) unless quiet?
+  end
+
+  def newline
+    stdout.puts('')
+  end
+
+  def try_require(*requirables, message: nil)
     @try_require ||= {}
-    return @try_require[requirable] if @try_require.key?(requirable)
-    @try_require[requirable] = require requirable
-  rescue LoadError
-    warn message if message
-    @try_require[requirable] = false
+    requirables.each do |requirable|
+      return @try_require[requirable] if @try_require.key?(requirable)
+      @try_require[requirable] = require requirable
+    rescue LoadError
+      warn message if message
+      @try_require[requirable] = false
+    end
   end
 
   def wrap_array(value)

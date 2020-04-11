@@ -1,5 +1,6 @@
-require_relative 'nodes/send_node'
-require_relative 'nodes/hash_node'
+require_relative 'definition'
+require_relative 'name_rule'
+
 module Leftovers
   class ArgumentRule
     attr_accessor :group
@@ -30,8 +31,6 @@ module Leftovers
       delete_prefix: nil,
       replace_with: nil,
       definer: false,
-      transform: nil,
-      transforms: nil,
       **reserved_kwargs)
       @if, @unless = extract_reserved_kwargs!(reserved_kwargs, if: nil, unless: nil)
       @if = prepare_condition(@if)
@@ -41,7 +40,7 @@ module Leftovers
       @definer = definer
       @itself = itself
       raise ArgumentError, "require at least one of 'argument(s)', 'key(s)', itself" unless @positions || @keywords || @all_positions || @all_keywords || @key || @itself
-      @transforms = prepare_transforms({
+      @transform = {
         delete_before: delete_before,
         delete_after: delete_after,
         add_prefix: add_prefix,
@@ -50,19 +49,10 @@ module Leftovers
         delete_prefix: Array(delete_prefix),
         delete_suffix: Array(delete_suffix),
         replace_with: replace_with,
-      }, transform, transforms)
+      }
     end
 
-    attr_reader :position, :keyword, :transforms
-    attr_reader :definer
-
-    def prepare_transforms(base, transform, transforms)
-      raise ArgumentError, "Only use one of transform/transforms" if transform && transforms
-
-      Array(transform || transforms || true).map do |t|
-        t == true ? base : base.merge(t)
-      end
-    end
+    attr_reader :definer, :transform
 
     def prepare_condition(conditions)
       Leftovers.wrap_array(conditions).each do |cond|
@@ -88,7 +78,7 @@ module Leftovers
         when '**'
           @all_keywords = true
         when Integer
-          positions << arg
+          positions << arg - 1
         when String, Symbol, Hash
           keywords << arg
         end
@@ -100,25 +90,30 @@ module Leftovers
 
     def matches(method_node)
       return [] unless all_conditions_match?(method_node)
-      values = []
+      result = []
+
+      # require 'pry'
+      # binding.pry
 
       if @all_positions
-        values << method_node.arguments.flat_map { |s| value(s, method_node) }
+        result += values(method_node.positional_arguments, method_node)
       elsif @positions
-        @positions.each do |n|
-          values << value(method_node.arguments[n - 1], method_node)
-        end
+        result += values(method_node.positional_arguments.values_at(*@positions).compact, method_node)
       end
 
       if @keywords || @all_keywords || @key
-        values << hash_values(method_node.kwargs, method_node)
+        result += hash_values(method_node.kwargs, method_node)
       end
 
       if @itself
-        values << method_value(method_node)
+        result << method_value(method_node)
       end
 
-      values.flatten.compact
+      result
+    end
+
+    def values(value_nodes, method_node)
+      value_nodes.flat_map { |value_node| value(value_node, method_node) }.compact
     end
 
     def all_conditions_match?(method_node)
@@ -134,7 +129,8 @@ module Leftovers
       condition[:keyword].all? do |kw|
         if kw.is_a?(Hash)
           kw.all? do |k, v|
-            hash_node[k] == v
+            value_node = hash_node[k]
+            value_node.to_scalar_value == v if value_node&.scalar?
           end
         else
           hash_node.key?(kw)
@@ -143,79 +139,62 @@ module Leftovers
     end
 
     def hash_values(hash_node, method_node)
-      return unless hash_node
+      return [] unless hash_node
 
-      out = if @key == '*'
-        hash_node.keys.map { |k| value(k, method_node) }
-      else
-        []
-      end
+      value_nodes = []
+      value_nodes += hash_node.keys if @key == '*'
 
-      value_nodes = if @all_keywords
-        hash_node.value_nodes
+      if @all_keywords
+        value_nodes += hash_node.values
       elsif @keywords
-        hash_node.value_nodes_match(@keywords)
+        value_nodes += hash_node.values_at_match(@keywords)
       end
 
-      value_nodes&.each do |v|
-        out << value(v, method_node)
-      end
-
-      out.flatten
-    end
-
-    def array_values(value_node, method_node)
-      value_node.children.flat_map { |v| value(v, method_node) }
+      values(value_nodes, method_node)
     end
 
     def value(value_node, method_node)
       return unless value_node
 
-      case value_node
-      when Symbol
-        symbol_or_string(value_node, method_node)
-      else
-        case value_node.type
-        when :array
-          array_values(value_node, method_node)
-        when :hash
-          hash_values(HashNode.new(value_node), method_node)
-        when :str, :sym
-          symbol_or_string(value_node, method_node)
-        end
+      case value_node.type
+      when :array
+        values(value_node.values, method_node)
+      when :hash
+        hash_values(value_node, method_node)
+      when :str, :sym
+        symbol_values(value_node, method_node)
       end
     end
 
-    def symbol_or_string(symbol_node, method_node)
-      subnodes = StringSymbolNode.try(symbol_node).parts.flat_map { |s| do_transform(s, method_node) }
+    def symbol_values(symbol_node, method_node)
+      subnodes = symbol_node.to_s.split(/[.:]+/).map { |s| do_transform(s, method_node) }
       return subnodes unless definer
 
-      Definition.wrap(subnodes, symbol_node.loc.expression)
+      Leftovers::Definition.wrap(subnodes, symbol_node.loc.expression)
     end
 
     def method_value(method_node)
-      values = do_transform(method_node.name, method_node)
+      value = do_transform(method_node.name, method_node)
 
-      return values unless definer
+      return value unless definer
 
-      Definition.wrap(values, method_node.loc.expression)
+      Leftovers::Definition.new(value, method_node.loc.expression)
     end
 
     def do_transform(initial_string, method_node)
-      transforms.map do |transform|
-        string = initial_string.to_s
-        string = transform[:replace_with] if transform[:replace_with]
-        string = string.split(transform[:delete_after], 2)[0] if transform[:delete_after]
-        string = string.split(transform[:delete_before], 2)[1] if transform[:delete_before]
-        string = process_activesupport(string, transform[:activesupport])
-        transform[:delete_suffix].each { |s| string = string.delete_suffix(s) }
-        transform[:delete_prefix].each { |s| string = string.delete_prefix(s) }
-        :"#{process_prefix(method_node, transform)}#{string}#{transform[:add_suffix]}"
-      end
+      string = initial_string.to_s
+      string = transform[:replace_with] if transform[:replace_with]
+      string = string.split(transform[:delete_after], 2)[0] if transform[:delete_after]
+      string = string.split(transform[:delete_before], 2)[1] if transform[:delete_before]
+      string = process_activesupport(string, transform[:activesupport])
+      transform[:delete_suffix].each { |s| string = string.delete_suffix(s) }
+      transform[:delete_prefix].each { |s| string = string.delete_prefix(s) }
+      :"#{process_prefix(method_node, transform)}#{string}#{transform[:add_suffix]}"
     end
 
     def process_prefix(method_node, transform)
       return transform[:add_prefix] unless transform[:add_prefix].is_a?(Hash)
+
 
       if transform[:add_prefix][:from_keyword]
         prefix = method_node.kwargs[transform[:add_prefix][:from_keyword].to_sym].to_s
@@ -233,8 +212,11 @@ module Leftovers
     def process_activesupport(string, activesupport)
       return string if !activesupport || activesupport.empty?
 
-      Leftovers.try_require('active_support/core_ext/string', "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`")
-      Leftovers.try_require('active_support/inflections', "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`")
+      Leftovers.try_require(
+        'active_support/core_ext/string',
+        'active_support/inflections',
+        message: "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`"
+      )
       Leftovers.try_require(File.join(Dir.pwd, 'config', 'initializers', 'inflections.rb'))
 
       activesupport.each do |method|

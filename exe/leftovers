@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/leftovers'
+require_relative '../lib/leftovers/cli'
 
-exit Leftovers.run
+Leftovers::CLI.new(argv: ARGV, stdout: $stdout, stderr: $stderr)
