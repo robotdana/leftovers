@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'set'
 require_relative 'config'
 require 'fast_ignore'
 
 module Leftovers
   class MergedConfig
-    def initialize
+    def initialize # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       @configs = []
       @configs << Leftovers::Config.new('ruby')
       @configs << Leftovers::Config.new('project', path: File.join(Dir.pwd, '.leftovers.yml'))
@@ -14,12 +16,13 @@ module Leftovers
       until gem_config_to_load.empty?
         gem = gem_config_to_load.pop
         next if gem_config_loaded.include?(gem)
+
         gem_config = Leftovers::Config.new(gem)
-        if gem_config.exist?
-          @configs << gem_config
-          gem_config_loaded << gem
-          gem_config_to_load += gem_config.gems
-        end
+        next unless gem_config.exist?
+
+        @configs << gem_config
+        gem_config_loaded << gem
+        gem_config_to_load += gem_config.gems
       end
     end
 
@@ -32,7 +35,10 @@ module Leftovers
     end
 
     def test_paths
-      @test_paths ||= FastIgnore.new(include_rules: @configs.flat_map(&:test_paths), gitignore: false)
+      @test_paths ||= FastIgnore.new(
+        include_rules: @configs.flat_map(&:test_paths),
+        gitignore: false
+      )
     end
 
     def skip_rules

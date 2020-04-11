@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fast_ignore'
 require 'set'
 require 'parser'
@@ -8,7 +10,7 @@ require_relative 'haml'
 require_relative 'definition'
 
 module Leftovers
-  class FileCollector < Parser::AST::Processor
+  class FileCollector < Parser::AST::Processor # rubocop:disable Metrics/ClassLength
     attr_reader :calls
     attr_reader :definitions
 
@@ -39,12 +41,11 @@ module Leftovers
     def collect
       ruby = preprocess_file
       parse_and_process(ruby)
-
     rescue Parser::SyntaxError => e
-      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}"
+      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Metrics/LineLength
     end
 
-    def preprocess_file
+    def preprocess_file # rubocop:disable Metrics/MethodLength
       file = File.read(filename)
 
       case File.extname(filename)
@@ -71,7 +72,7 @@ module Leftovers
     CONSTANT_NAME_RE = /[[:upper:]][[:alnum:]_]*\b/.freeze
     NAME_RE = Regexp.union(METHOD_NAME_RE, NON_ALNUM_METHOD_NAME_RE, CONSTANT_NAME_RE)
     LEFTOVERS_RE = /\bleftovers:(?:call|allow) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
-    def process_comments(comments)
+    def process_comments(comments) # rubocop:disable Metrics/MethodLength
       comments.each do |comment|
         match = comment.text.match(LEFTOVERS_RE)
 
@@ -124,7 +125,7 @@ module Leftovers
     end
 
     # grab method calls
-    def on_send(node)
+    def on_send(node) # rubocop:disable Metrics/MethodLength
       super
 
       add_call(node.children[1])
@@ -151,7 +152,8 @@ module Leftovers
 
     # grab class Constant or module Constant
     def on_class(node)
-      # don't call super so we don't process the class name (# wtf does this mean dana? what would happen instead?)
+      # don't call super so we don't process the class name
+      # !!! (# wtf does this mean dana? what would happen instead?)
       process_all(node.children.drop(1))
 
       node = node.children.first
@@ -168,7 +170,7 @@ module Leftovers
     end
 
     def add_definition(name, loc)
-      definitions << Leftovers::Definition.new(name, loc, filename: filename, test: test?).freeze
+      definitions << Leftovers::Definition.new(name, loc, filename: filename, test: test?)
     end
 
     def add_call(name)
@@ -213,7 +215,7 @@ module Leftovers
       end
     end
 
-    def collect_method_rules(node)
+    def collect_method_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       Leftovers.config.rules.each do |rule|
         next unless rule.match?(node.to_s, filename)
         next if rule.skip?

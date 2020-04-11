@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'parser'
 
 module Parser
   module AST
-    class Node
+    class Node # rubocop:disable Metrics/ClassLength
       def initialize(type, children = [], properties = {})
         # ::AST::Node#initialize freezes itself.
         # so can't use normal memoizations
@@ -15,7 +17,7 @@ module Parser
         children.first
       end
 
-      def to_scalar_value
+      def to_scalar_value # rubocop:disable Metrics/MethodLength
         case type
         when :sym
           first
@@ -32,7 +34,7 @@ module Parser
         end
       end
 
-      def to_s
+      def to_s # rubocop:disable Metrics/MethodLength
         @memo[:to_s] ||= if scalar?
           to_scalar_value
         elsif named?
@@ -50,7 +52,7 @@ module Parser
         end
       end
 
-      SCALAR_TYPES=%i{sym str true false nil}
+      SCALAR_TYPES = %i{sym str true false nil}.freeze
       def scalar?
         SCALAR_TYPES.include?(type)
       end
@@ -85,11 +87,11 @@ module Parser
       end
 
       def keys
-        each_pair.map { |k,_| k }
+        each_pair.map { |k, _| k }
       end
 
       def key?(key)
-        each_pair.find do |k, v|
+        each_pair.find do |k, _v|
           next unless k.string_or_symbol?
 
           k.to_sym == key
@@ -98,7 +100,7 @@ module Parser
 
       def values
         @memo[:kwargs] ||= case type
-        when :hash then each_pair.map { |_,v| v }
+        when :hash then each_pair.map { |_, v| v }
         when :array then children
         else []
         end
@@ -110,15 +112,17 @@ module Parser
         end
       end
 
+      def positional_arguments_at(positions)
+        positional_arguments.values_at(*positions).compact
+      end
+
       def each_pair
         raise "not hash node (#{type})" unless type == :hash
 
         return enum_for(:each_pair) unless block_given?
 
         children.each do |pair|
-          next unless pair.type == :pair
-
-          yield(*pair.children)
+          yield(*pair.children) if pair.type == :pair
         end
       end
 
@@ -132,7 +136,7 @@ module Parser
         @memo[:name_s] ||= name.to_s.freeze
       end
 
-      def [](index)
+      def [](index) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
         case type
         when :send, :csend
           index.is_a?(Integer) ? arguments[index] : kwargs && kwargs[index]

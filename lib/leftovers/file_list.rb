@@ -11,14 +11,22 @@ module Leftovers
 
       return if File.empty?(file)
 
-      File.foreach(file).first&.chomp&.match(%r{\A#!.*\bruby$})
+      File.foreach(file).first&.chomp&.match(/\A#!.*\bruby$/)
     rescue ArgumentError, Errno::ENOENT
       # if it's a binary file we can't open it
     end
 
+    def fast_ignore
+      FastIgnore.new(
+        ignore_rules: Leftovers.config.exclude_paths,
+        include_rules: Leftovers.config.include_paths
+      )
+    end
+
     def each
-      FastIgnore.new(ignore_rules: Leftovers.config.exclude_paths, include_rules: Leftovers.config.include_paths).each do |file|
+      fast_ignore.each do |file|
         next if File.extname(file).empty? && !ruby_hashbang?(file)
+
         yield(file)
       end
     end

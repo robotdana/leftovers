@@ -1,6 +1,8 @@
-require_relative "./leftovers/collector"
-require_relative "./leftovers/merged_config"
-require_relative "./leftovers/reporter"
+# frozen_string_literal: true
+
+require_relative './leftovers/collector'
+require_relative './leftovers/merged_config'
+require_relative './leftovers/reporter'
 
 module Leftovers
   module_function
@@ -33,16 +35,16 @@ module Leftovers
     @reporter ||= Leftovers::Reporter.new
   end
 
-  def leftovers
+  def leftovers # rubocop:disable Metrics/MethodLength
     @leftovers ||= begin
       collector.collect
-      leftovers = collector.definitions.reject do |definition|
+      collector.definitions.reject do |definition|
         definition.any_skipped? || definition.any_in_collection?
       end
     end
   end
 
-  def run(stdout: StringIO.new, stderr: StringIO.new)
+  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     reset
     @stdout = stdout
     @stderr = stderr
@@ -71,7 +73,7 @@ module Leftovers
     1
   end
 
-  def reset
+  def reset # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     remove_instance_variable(:@config) if defined?(@config)
     remove_instance_variable(:@collector) if defined?(@collector)
     remove_instance_variable(:@reporter) if defined?(@reporter)
@@ -99,18 +101,21 @@ module Leftovers
     stdout.puts('')
   end
 
-  def try_require(*requirables, message: nil)
+  def try_require(*requirables, message: nil) # rubocop:disable Metrics/MethodLength
     @try_require ||= {}
     requirables.each do |requirable|
-      return @try_require[requirable] if @try_require.key?(requirable)
-      @try_require[requirable] = require requirable
-    rescue LoadError
-      warn message if message
-      @try_require[requirable] = false
+      begin
+        return @try_require[requirable] if @try_require.key?(requirable)
+
+        @try_require[requirable] = require requirable
+      rescue LoadError
+        warn message if message
+        @try_require[requirable] = false
+      end
     end
   end
 
-  def wrap_array(value)
+  def wrap_array(value) # rubocop:disable Metrics/MethodLength
     case value
     when Hash
       [value]

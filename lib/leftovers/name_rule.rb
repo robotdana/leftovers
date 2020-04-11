@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 require 'set'
 module Leftovers
   class NameRule
-    def initialize(patterns)
+    def initialize(patterns) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
       patterns = Leftovers.wrap_array(patterns)
       regexps = []
       strings = Set.new
-      patterns.each do |pattern|
-        case pattern
+      patterns.each do |pat|
+        case pat
         when String
-          strings.merge(pattern.split(/\s+/).map(&:freeze))
+          strings.merge(pat.split(/\s+/).map(&:freeze))
         when Hash
-          if pattern[:match]
+          if pat[:match]
             regexps << /\A#{pattern[:match]}\z/
-          elsif pattern[:has_prefix] && pattern[:has_suffix]
-            regexps << /\A#{Regexp.escape(pattern[:has_prefix])}.*#{Regexp.escape(pattern[:has_suffix])}\z/
-          elsif pattern[:has_prefix]
-            regexps << /\A#{Regexp.escape(pattern[:has_prefix])}/
-          elsif pattern[:has_suffix]
-            regexps << /#{Regexp.escape(pattern[:has_suffix])}\z/
+          elsif pat[:has_prefix] && pat[:has_suffix]
+            regexps << /\A#{Regexp.escape(pat[:has_prefix])}.*#{Regexp.escape(pat[:has_suffix])}\z/
+          elsif pat[:has_prefix]
+            regexps << /\A#{Regexp.escape(pat[:has_prefix])}/
+          elsif pat[:has_suffix]
+            regexps << /#{Regexp.escape(pat[:has_suffix])}\z/
           end
         end
       end

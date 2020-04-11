@@ -1,0 +1,208 @@
+require: rubocop-rspec
+
+# Reference:
+# https://rubocop.readthedocs.io/en/latest/
+
+# Keep this in alphabetical order.
+# Each override should have a comment (even if it's just "default is bad")
+
+AllCops:
+  Exclude:
+    - db/schema*
+    - .bundle/**/*
+    - tmp/**/*
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  TargetRubyVersion: 2.4
+
+# all of our layout customisations are because we prefer indentation to be
+# always consistently 2 spaces, for blocks, scopes, multiline expressions, etc
+# e.g.
+# class Klass
+#   def method(arg1,
+#     arg2)
+#     value = if arg1 == 'value' && arg2 == 'value'
+#       method2
+#         .method(arg_a, arg_b,
+#           arg_c, arg_d, keyword1: true,
+#           keyword2: true) do
+#             @last = [
+#               arg_a, arg_b,
+#               arg_c, arg_d
+#             ]
+#           end
+#     end
+#     value
+#   end
+# end
+
+# to match our preference for consistent indentation
+Layout/HashAlignment:
+  EnforcedLastArgumentHashStyle: always_ignore
+
+# to match our preference for consistent indentation
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+# to match our preference for consistent indentation
+Layout/BlockAlignment:
+  EnforcedStyleAlignWith: start_of_block
+
+# to match our preference for consistent indentation
+Layout/CaseIndentation:
+  EnforcedStyle: end
+
+# to match our preference for consistent indentation
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: start_of_line
+
+# Aligning Assignments, etc makes diffs noisy
+Layout/ExtraSpacing:
+  AllowForAlignment: false
+
+# to match our preference for consistent indentation
+Layout/FirstArrayElementLineBreak:
+  Enabled: true
+
+# to match our preference for consistent indentation
+Layout/FirstHashElementLineBreak:
+  Enabled: true
+
+# to match our preference for consistent indentation
+Layout/FirstArgumentIndentation:
+  EnforcedStyle: consistent
+
+# to match our preference for consistent indentation
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+# to match our preference for consistent indentation
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+# to match our preference for consistent indentation
+# and hanging assignment looks lost
+Layout/MultilineAssignmentLayout:
+  EnforcedStyle: same_line
+
+# this changes our preferred:
+#   value = if thing1 &&
+#     thing2
+# to:
+#   value = if thing1 &&
+#       thing2
+# even though the IndentationWidth is 2
+# but it's right most of the time so I put up with it
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+# Temporarily disable this spec as a recent change has broken it for us:
+# https://github.com/rubocop-hq/rubocop/issues/6254
+Layout/RescueEnsureAlignment:
+  Enabled: false
+
+Metrics:
+  CountComments: false
+
+Metrics/BlockLength:
+  ExcludedMethods:
+    - configure
+    - describe
+    - context
+    - it
+
+Layout/LineLength:
+  Max: 100
+  IgnoreCopDirectives: true
+
+Metrics/MethodLength:
+  Max: 5
+
+Naming/MethodParameterName:
+  AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
+
+RSpec:
+  Enabled: true
+  Include:
+    - spec/**/*.rb
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+# I misuse matchers often
+RSpec/ExpectActual:
+  Enabled: false
+
+RSpec/FilePath:
+  Enabled: false
+
+# Multiple expectations are useful
+# checking you've partially achieved something on the way to completely achieving it is useful for debugging failures
+RSpec/MultipleExpectations:
+  Enabled: false
+
+# It should be obvious from context. Chill out rubocop
+RSpec/NamedSubject:
+  Enabled: false
+
+
+# This matches the style we've been using all along (ever so slightly more frequently)
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+Style/CollectionMethods:
+  Enabled: true
+
+# we don't rdoc
+Style/Documentation:
+  Enabled: false
+
+# [a, b].include?(x) is more unclear than a == x || b == x
+Style/MultipleComparison:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+# we use %w{} pretty frequently
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: '{}'
+    '%w': '{}'
+    '%W': '{}'
+    '%i': '{}'
+    '%I': '{}'
+    '%r': '{}'
+
+# We want this to warn to force consistency within the codebase.
+Style/SafeNavigation:
+  Enabled: true
+
+# different methods calls that do exactly the same thing are a smell, regardless of semantics
+Style/SignalException:
+  EnforcedStyle: only_raise
+
+# this wants less descriptive names
+Style/SingleLineBlockParams:
+  Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
+
+# hey rubocop you even use parser which uses :true and :false types. no
+Lint/BooleanSymbol:
+  Enabled: false

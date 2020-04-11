@@ -42,13 +42,13 @@ module Leftovers
       @yaml ||= load_yaml(path)
     end
 
-    def load_yaml(*path)
+    def load_yaml(*path) # rubocop:disable Metrics/MethodLength
       file = ::File.join(*path)
       return {} unless ::File.exist?(file)
 
       YAML.safe_load(::File.read(file), symbolize_names: true)
     rescue Psych::SyntaxError => e
-      $stderr.puts "\e[31mError with config #{path}: #{e.message}\e[0m"
+      warn "\e[31mError with config #{path}: #{e.message}\e[0m"
       exit 1
     end
   end

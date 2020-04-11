@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Leftovers
   class Definition
     attr_reader :name
@@ -25,8 +27,16 @@ module Leftovers
 
     def <=>(other)
       (filename <=> other.filename).nonzero? ||
-        (location.line <=> other.location.line).nonzero? ||
-        (location.column <=> other.location.column)
+        (line <=> other.line).nonzero? ||
+        (column <=> other.column)
+    end
+
+    def line
+      location.line
+    end
+
+    def column
+      location.column
     end
 
     def name_s
@@ -38,7 +48,7 @@ module Leftovers
       "#{filename}:#{location.line}:#{location.column}"
     end
 
-    def highlighted_source(highlight = "\e[31m", normal = "\e[0m")
+    def highlighted_source(highlight = "\e[31m", normal = "\e[0m") # rubocop:disable Metrics/AbcSize
       location.source_line.to_s[0...(location.column_range.begin)].lstrip +
         highlight + location.source.to_s + normal +
         location.source_line.to_s[(location.column_range.end)..-1].rstrip
@@ -46,13 +56,13 @@ module Leftovers
 
     def any_in_collection?
       if group?
-        group.any? { |d| d.in_collection? }
+        group.any?(&:in_collection?)
       else
         in_collection?
       end
     end
 
-    def in_collection?
+    def in_collection? # rubocop:disable Metrics/MethodLength
       return @in_collection if defined?(@in_collection)
 
       @in_collection = if test?
@@ -64,7 +74,7 @@ module Leftovers
 
     def any_in_test_collection?
       if group?
-        group.any? { |d| d.in_test_collection? }
+        group.any?(&:in_test_collection?)
       else
         in_collection?
       end
@@ -78,7 +88,7 @@ module Leftovers
 
     def any_skipped?
       if group?
-        group.any? { |d| d.skipped? }
+        group.any?(&:skipped?)
       else
         skipped?
       end

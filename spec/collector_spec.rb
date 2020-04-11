@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec::Matchers.define_negated_matcher :exclude, :include
@@ -297,13 +299,15 @@ RSpec.describe Leftovers::Collector do
       expect(subject.calls).to contain_exactly :before_action, :method_one, :method_two
     end
 
-    it 'collects method calls using a method that calls multiple methods' do
+    it 'collects method calls using a method that calls multiple methods with keyword arguments' do
       temp_file 'foo.rb', 'skip_before_action :method_one, :method_two, if: :other_method?'
 
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly :skip_before_action, :method_one, :method_two, :other_method?
+      expect(subject.calls).to contain_exactly(
+        :skip_before_action, :method_one, :method_two, :other_method?
+      )
     end
 
     it 'collects method calls passed to before_save if:' do
@@ -321,9 +325,10 @@ RSpec.describe Leftovers::Collector do
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly :before_save, :do_a_thing, :thing_to_be_done?, :another_thing?
+      expect(subject.calls).to contain_exactly(
+        :before_save, :do_a_thing, :thing_to_be_done?, :another_thing?
+      )
     end
-
 
     it 'collects method calls in route values' do
       temp_file 'foo.rb', 'patch :thing, to: "users#logout"'
@@ -349,10 +354,12 @@ RSpec.describe Leftovers::Collector do
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(:TestValidator, :validates, :OtherValidator, :PresenceValidator)
+      expect(subject.calls).to contain_exactly(
+        :TestValidator, :validates, :OtherValidator, :PresenceValidator
+      )
     end
 
-    it 'collects hash key calls' do
+    it 'collects non-restful route calls' do
       temp_file 'foo.rb', "get '/logout' => 'users#logout'"
 
       subject.collect
@@ -375,7 +382,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects routes resource calls' do
-      temp_file 'foo.rb', "resource :user"
+      temp_file 'foo.rb', 'resource :user'
 
       subject.collect
 
@@ -383,26 +390,18 @@ RSpec.describe Leftovers::Collector do
       expect(subject.calls).to contain_exactly(:resource, :UsersController)
     end
 
-    it 'collects routes controller calls' do
-      temp_file 'foo.rb', "resources :users"
-
-      subject.collect
-
-      expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(:resources, :UsersController)
-    end
-
     it 'collects delegation definitions and calls' do
-      temp_file 'foo.rb', "delegate :foo, to: :bar"
+      temp_file 'foo.rb', 'delegate :foo, to: :bar'
 
       subject.collect
 
-      expect(subject.definitions).to be_empty # it's not a definiton because it doesn't create any new method names
+      # it's not a definiton because it doesn't create any new method names
+      expect(subject.definitions).to be_empty
       expect(subject.calls).to contain_exactly(:delegate, :bar)
     end
 
     it 'collects delegation definitions and calls when prefix is defined' do
-      temp_file 'foo.rb', "delegate :foo, :few, prefix: :bar, to: :baz"
+      temp_file 'foo.rb', 'delegate :foo, :few, prefix: :bar, to: :baz'
 
       subject.collect
 
@@ -411,7 +410,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects delegation definitions and calls when prefix is true' do
-      temp_file 'foo.rb', "delegate :foo, :few, prefix: true, to: :bar"
+      temp_file 'foo.rb', 'delegate :foo, :few, prefix: true, to: :bar'
 
       subject.collect
 
@@ -428,7 +427,7 @@ RSpec.describe Leftovers::Collector do
       expect(subject.calls).to contain_exactly(:User, :new, :first_name=, :last_name=)
     end
 
-    it 'collects attribute assignment args' do
+    it 'collects bang methods' do
       temp_file 'foo.rb', 'User.create!'
 
       subject.collect
@@ -452,16 +451,23 @@ RSpec.describe Leftovers::Collector do
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(:permit, :names=, :first_name=, :last_name=, :age=, :years=)
+      expect(subject.calls).to contain_exactly(
+        :permit, :names=, :first_name=, :last_name=, :age=, :years=
+      )
     end
 
     it 'collects deep permit args' do
-      temp_file 'foo.rb', 'permit(person_attributes: { names: [:first_name, :last_name, { deep: :hash}], age: :years })'
+      temp_file 'foo.rb', <<~RUBY
+        permit person_attributes: { names: [:first_name, :last_name, { deep: :hash}], age: :years }
+      RUBY
 
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(:permit, :names=, :first_name=, :last_name=, :age=, :years=, :person_attributes=, :deep=, :hash=)
+      expect(subject.calls).to contain_exactly(
+        :permit, :names=, :first_name=, :last_name=,
+        :age=, :years=, :person_attributes=, :deep=, :hash=
+      )
     end
 
     it 'collects routes scope' do
@@ -474,7 +480,9 @@ RSpec.describe Leftovers::Collector do
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(:Rails, :application, :routes, :draw, :scope, :Whichever)
+      expect(subject.calls).to contain_exactly(
+        :Rails, :application, :routes, :draw, :scope, :Whichever
+      )
     end
 
     it 'collects AR scope' do
@@ -491,32 +499,42 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects validation calls' do
-      temp_file 'foo.rb', 'validate :validator_method_name, if: :condition_method?'
+      temp_file 'foo.rb', 'validate :validator_method_name, if: :condition?'
 
       subject.collect
 
       expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(:validate, :validator_method_name, :condition_method?)
+      expect(subject.calls).to contain_exactly(:validate, :validator_method_name, :condition?)
     end
 
     it 'collects validations calls inclusion method' do
-      temp_file 'foo.rb', 'validates :name, presence: true, inclusion: :inclusion_method, if: :condition_method?'
+      temp_file 'foo.rb', <<~RUBY
+        validates :name, presence: true, inclusion: :inclusion_method, if: :condition?
+      RUBY
 
       subject.collect
 
       expect(subject.definitions).to be_empty
       # IfValidator is awkward, but fine
-      expect(subject.calls).to contain_exactly(:validates, :name, :PresenceValidator, :IfValidator, :InclusionValidator, :inclusion_method, :condition_method?)
+      expect(subject.calls).to contain_exactly(
+        :validates, :name, :inclusion_method, :condition?,
+        :PresenceValidator, :IfValidator, :InclusionValidator
+      )
     end
 
     it 'collects validations calls with inclusion hash' do
-      temp_file 'foo.rb', 'validates :name, presence: true, inclusion: { in: :inclusion_method }, if: :condition_method?'
+      temp_file 'foo.rb', <<~RUBY
+        validates :name, presence: true, inclusion: { in: :inclusion_method }, if: :condition?
+      RUBY
 
       subject.collect
 
       expect(subject.definitions).to be_empty
       # IfValidator is awkward, but fine
-      expect(subject.calls).to contain_exactly(:validates, :name, :PresenceValidator, :IfValidator, :InclusionValidator, :inclusion_method, :condition_method?)
+      expect(subject.calls).to contain_exactly(
+        :validates, :name, :inclusion_method, :condition?,
+        :PresenceValidator, :IfValidator, :InclusionValidator
+      )
     end
   end
 
@@ -530,7 +548,9 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'copes with method calls using send with interpolated lvars' do
-    temp_file 'foo.rb', 'send("foo#{bar}")'
+    temp_file 'foo.rb', <<~RUBY
+      send("foo\#{bar}")
+    RUBY
 
     subject.collect
 
@@ -611,7 +631,9 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files string interpolation' do
-    temp_file 'foo.haml', 'before#{a}after'
+    temp_file 'foo.haml', <<~RUBY
+      before\#{a}after
+    RUBY
 
     subject.collect
 
@@ -624,7 +646,6 @@ RSpec.describe Leftovers::Collector do
       :ruby
         a(1)
     HAML
-
 
     subject.collect
 

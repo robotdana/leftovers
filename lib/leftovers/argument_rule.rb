@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require_relative 'definition'
 require_relative 'name_rule'
 
 module Leftovers
-  class ArgumentRule
+  class ArgumentRule # rubocop:disable Metrics/ClassLength
     attr_accessor :group
 
-    def self.wrap(rules, definer: false)
+    def self.wrap(rules, definer: false) # rubocop:disable Metrics/MethodLength
       case rules
       when Array
         rules.flat_map { |r| wrap(r, definer: definer) }
@@ -16,7 +18,7 @@ module Leftovers
       end
     end
 
-    def initialize(
+    def initialize( # rubocop:disable Mertics/ParameterLists, Metrics/MethodLength, Metrics/CyclomaticComplexity
       argument: nil,
       arguments: nil,
       key: nil,
@@ -31,7 +33,8 @@ module Leftovers
       delete_prefix: nil,
       replace_with: nil,
       definer: false,
-      **reserved_kwargs)
+      **reserved_kwargs
+    )
       @if, @unless = extract_reserved_kwargs!(reserved_kwargs, if: nil, unless: nil)
       @if = prepare_condition(@if)
       @unless = prepare_condition(@unless)
@@ -39,7 +42,10 @@ module Leftovers
       @key = prepare_key(key, keys)
       @definer = definer
       @itself = itself
-      raise ArgumentError, "require at least one of 'argument(s)', 'key(s)', itself" unless @positions || @keywords || @all_positions || @all_keywords || @key || @itself
+      unless @positions || @keywords || @all_positions || @all_keywords || @key || @itself
+        raise ArgumentError, "require at least one of 'argument(s)', 'key(s)', itself"
+      end
+
       @transform = {
         delete_before: delete_before,
         delete_after: delete_after,
@@ -48,7 +54,7 @@ module Leftovers
         activesupport: Array(activesupport),
         delete_prefix: Array(delete_prefix),
         delete_suffix: Array(delete_suffix),
-        replace_with: replace_with,
+        replace_with: replace_with
       }
     end
 
@@ -56,18 +62,20 @@ module Leftovers
 
     def prepare_condition(conditions)
       Leftovers.wrap_array(conditions).each do |cond|
-        cond[:keyword] = Leftovers.wrap_array(cond[:keyword]).map { |k| k.is_a?(Hash) ? k : k.to_sym }
+        cond[:keyword] = Leftovers.wrap_array(cond[:keyword])
+          .map { |k| k.is_a?(Hash) ? k : k.to_sym }
       end
     end
 
     def prepare_key(key, keys)
-      raise ArgumentError, "Only use one of key/keys" if key && keys
+      raise ArgumentError, 'Only use one of key/keys' if key && keys
 
       key || keys
     end
 
-    def prepare_argument(argument, arguments)
-      raise ArgumentError, "Only use one of argument/arguments" if argument && arguments
+    def prepare_argument(argument, arguments) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+      raise ArgumentError, 'Only use one of argument/arguments' if argument && arguments
+
       positions = Set.new
       keywords = []
 
@@ -88,26 +96,20 @@ module Leftovers
       @keywords = NameRule.new(keywords) unless @all_keywords || keywords.empty?
     end
 
-    def matches(method_node)
+    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       return [] unless all_conditions_match?(method_node)
-      result = []
 
-      # require 'pry'
-      # binding.pry
+      result = []
 
       if @all_positions
         result += values(method_node.positional_arguments, method_node)
       elsif @positions
-        result += values(method_node.positional_arguments.values_at(*@positions).compact, method_node)
+        result += values(method_node.positional_arguments_at(@positions).compact, method_node)
       end
 
-      if @keywords || @all_keywords || @key
-        result += hash_values(method_node.kwargs, method_node)
-      end
+      result += hash_values(method_node.kwargs, method_node) if @keywords || @all_keywords || @key
 
-      if @itself
-        result << method_value(method_node)
-      end
+      result << method_value(method_node) if @itself
 
       result
     end
@@ -121,7 +123,7 @@ module Leftovers
         @unless.all? { |c| !condition_match?(c, method_node) }
     end
 
-    def condition_match?(condition, method_name)
+    def condition_match?(condition, method_name) # rubocop:disable Metrics/MethodLength
       hash_node = method_name.kwargs
 
       return false unless hash_node
@@ -138,7 +140,7 @@ module Leftovers
       end
     end
 
-    def hash_values(hash_node, method_node)
+    def hash_values(hash_node, method_node) # rubocop:disable Metrics/MethodLength
       return [] unless hash_node
 
       value_nodes = []
@@ -153,7 +155,7 @@ module Leftovers
       values(value_nodes, method_node)
     end
 
-    def value(value_node, method_node)
+    def value(value_node, method_node) # rubocop:disable Metrics/MethodLength
       return unless value_node
 
       case value_node.type
@@ -181,7 +183,7 @@ module Leftovers
       Leftovers::Definition.new(value, method_node.loc.expression)
     end
 
-    def do_transform(initial_string, method_node)
+    def do_transform(initial_string, method_node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       string = initial_string.to_s
       string = transform[:replace_with] if transform[:replace_with]
       string = string.split(transform[:delete_after], 2)[0] if transform[:delete_after]
@@ -192,9 +194,8 @@ module Leftovers
       :"#{process_prefix(method_node, transform)}#{string}#{transform[:add_suffix]}"
     end
 
-    def process_prefix(method_node, transform)
+    def process_prefix(method_node, transform) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       return transform[:add_prefix] unless transform[:add_prefix].is_a?(Hash)
-
 
       if transform[:add_prefix][:from_keyword]
         prefix = method_node.kwargs[transform[:add_prefix][:from_keyword].to_sym].to_s
@@ -202,21 +203,22 @@ module Leftovers
 
       return unless prefix
 
-      if transform[:add_prefix][:joiner]
-        prefix += transform[:add_prefix][:joiner]
-      end
+      prefix += transform[:add_prefix][:joiner] if transform[:add_prefix][:joiner]
 
       prefix
     end
 
-    def process_activesupport(string, activesupport)
+    def process_activesupport(string, activesupport) # rubocop:disable Metrics/MethodLength
       return string if !activesupport || activesupport.empty?
 
       Leftovers.try_require(
-        'active_support/core_ext/string',
-        'active_support/inflections',
-        message: "Tried transforming a rails symbol file, but the activesupport gem was not available\n`gem install activesupport`"
+        'active_support/core_ext/string', 'active_support/inflections',
+        message: <<~MESSAGE
+          Tried transforming a rails symbol file, but the activesupport gem was not available
+          `gem install activesupport`
+        MESSAGE
       )
+
       Leftovers.try_require(File.join(Dir.pwd, 'config', 'initializers', 'inflections.rb'))
 
       activesupport.each do |method|
@@ -225,11 +227,11 @@ module Leftovers
       string
     end
 
-    def extract_reserved_kwargs!(options, **defaults)
-      invalid_options = options.keys - defaults.keys
+    def extract_reserved_kwargs!(options, **defaults) # rubocop:disable Metrics/MethodLength
+      invalid = options.keys - defaults.keys
 
-      unless invalid_options.empty?
-        raise ArgumentError, "unknown keyword#{invalid_options.length > 1 ? 's' : ''}: #{invalid_options.join(', ')}"
+      unless invalid.empty?
+        raise ArgumentError, "unknown keyword#{'s' if invalid.length > 1}: #{invalid.join(', ')}"
       end
 
       values = defaults.merge(options).values

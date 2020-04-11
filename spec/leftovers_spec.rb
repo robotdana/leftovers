@@ -7,7 +7,9 @@ RSpec.describe Leftovers do
 
   describe '.config.rules' do
     around { |example| with_temp_dir { example.run } }
+
     before { described_class.reset }
+
     it 'can load all default config' do
       files = Pathname.glob("#{__dir__}/../lib/config/*.yml")
       files = files.map { |f| f.basename.sub_ext('').to_s }
@@ -16,18 +18,19 @@ RSpec.describe Leftovers do
         gems: #{files.inspect}
       YML
 
-      Leftovers.config.include_paths
-      Leftovers.config.exclude_paths
-      Leftovers.config.test_paths
-      Leftovers.config.rules
+      described_class.config.include_paths
+      described_class.config.exclude_paths
+      described_class.config.test_paths
+      described_class.config.rules
     end
   end
 
   describe '.leftovers' do
-    around { |example| with_temp_dir { example.run } }
-    before { described_class.reset }
-
     subject { described_class }
+
+    around { |example| with_temp_dir { example.run } }
+
+    before { described_class.reset }
 
     it "doesn't care about using one of multiple simultaneous defined methods" do
       temp_file '.leftovers.yml', <<~YML
@@ -69,7 +72,8 @@ RSpec.describe Leftovers do
       RUBY
 
       expect(subject.leftovers.map(&:name)).to contain_exactly :EmailActions
-      expect(subject.collector.definitions.map(&:name)).to contain_exactly(:EmailActions, :initialize, :email_params_from_order, :address_params)
+      expect(subject.collector.definitions.map(&:name))
+        .to contain_exactly(:EmailActions, :initialize, :email_params_from_order, :address_params)
 
       expect(subject.collector.calls).to contain_exactly(:address_params, :email_params_from_order)
     end
