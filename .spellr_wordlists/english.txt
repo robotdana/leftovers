@@ -1,0 +1,14 @@
+affixxed
+classnames
+codebase
+esque
+hashbang
+lorem
+noninfringement
+precompiled
+readme
+requirables
+rspec
+sherson
+wtf
+yml

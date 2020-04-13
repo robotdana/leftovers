@@ -8,13 +8,13 @@ rules:
     calls:
       - argument: 1
         unless:
-          keyword: method
+          has_argument: method
       - argument: method
   - name: argument
     calls:
       - argument: 1
         add_suffix: '='
         unless:
-          keyword: as
+          has_argument: as
       - argument: as
         add_suffix: '='

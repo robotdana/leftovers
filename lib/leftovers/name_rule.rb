@@ -23,13 +23,17 @@ module Leftovers
         end
       end
 
-      if syms.length <= 1
+      case syms.length
+      when 0 then nil
+      when 1
         @sym = syms.first
       else
         @syms = syms
       end
 
       @regexp = Regexp.union(regexps) unless regexps.empty?
+
+      freeze
     end
 
     def match?(sym, string)

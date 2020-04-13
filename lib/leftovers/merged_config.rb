@@ -9,7 +9,7 @@ module Leftovers
     def initialize # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       @configs = []
       @configs << Leftovers::Config.new('ruby')
-      @configs << Leftovers::Config.new('project', path: File.join(Dir.pwd, '.leftovers.yml'))
+      @configs << Leftovers::Config.new('project', path: Leftovers.pwd + '.leftovers.yml')
       gem_config_loaded = Set.new
       gem_config_to_load = @configs.flat_map(&:gems)
 

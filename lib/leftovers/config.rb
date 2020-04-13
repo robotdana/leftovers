@@ -5,13 +5,13 @@ require_relative 'rule'
 
 module Leftovers
   class Config
-    def initialize(name, path: File.join(__dir__, '..', 'config', "#{name}.yml"))
+    def initialize(name, path: ::File.join(__dir__, '..', 'config', "#{name}.yml"))
       @name = name
       @path = path
     end
 
     def exist?
-      File.exist?(path)
+      ::File.exist?(path)
     end
 
     def gems

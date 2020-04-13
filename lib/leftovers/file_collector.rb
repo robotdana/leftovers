@@ -5,63 +5,38 @@ require 'set'
 require 'parser'
 require 'parser/current'
 require_relative 'node'
-require_relative 'erb'
-require_relative 'haml'
 require_relative 'definition'
 
 module Leftovers
   class FileCollector < Parser::AST::Processor # rubocop:disable Metrics/ClassLength
     attr_reader :calls
     attr_reader :definitions
+    attr_reader :file
 
-    def initialize(filename)
+    def initialize(file)
       @calls = []
       @definitions = []
-      @path = filename
+      @file = file
     end
 
     def filename
-      @filename ||= @path.delete_prefix(Dir.pwd + '/')
+      @filename ||= file.relative_path
     end
 
     def to_h
       {
-        test?: test?,
+        test?: file.test?,
         calls: calls,
         definitions: definitions
       }
     end
 
-    def test?
-      return @test if defined?(@test)
-
-      @test = Leftovers.config.test_paths.allowed?(filename)
-    end
-
-    def collect
-      ruby = preprocess_file
-      parse_and_process(ruby)
-    rescue Parser::SyntaxError => e
-      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Layout/LineLength
-    end
-
-    def preprocess_file # rubocop:disable Metrics/MethodLength
-      file = File.read(filename)
-
-      case File.extname(filename)
-      when '.haml'
-        Leftovers::Haml.precompile(file)
-      when '.rhtml', '.rjs', '.erb'
-        Leftovers::ERB.precompile(file)
-      else
-        file
-      end
-    end
-
-    def parse_and_process(ruby)
-      ast, comments = Parser::CurrentRuby.parse_with_comments(ruby)
+    def collect # rubocop:disable Metrics/AbcSize
+      ast, comments = Parser::CurrentRuby.parse_with_comments(file.ruby)
       process(ast)
       process_comments(comments)
+    rescue Parser::SyntaxError => e
+      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Layout/LineLength
     end
 
     METHOD_NAME_RE = /[[:lower:]_][[:alnum:]_]*\b[\?!=]?/.freeze
@@ -168,7 +143,7 @@ module Leftovers
     end
 
     def add_definition(name, loc)
-      definitions << Leftovers::Definition.new(name, location: loc, filename: filename, test: test?)
+      definitions << Leftovers::Definition.new(name, location: loc, file: file, test: file.test?)
     end
 
     def add_call(name)
@@ -220,8 +195,8 @@ module Leftovers
 
         calls.concat(rule.calls(node))
 
-        node.filename = filename
-        node.test = test?
+        node.file = file
+        node.test = file.test?
         definitions.concat(rule.definitions(node))
       end
     end

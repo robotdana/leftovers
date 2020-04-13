@@ -84,6 +84,7 @@ module Leftovers
     remove_instance_variable(:@stderr) if defined?(@stderr)
     remove_instance_variable(:@parallel) if defined?(@parallel)
     remove_instance_variable(:@quiet) if defined?(@quiet)
+    remove_instance_variable(:@pwd) if defined?(@pwd)
   end
 
   def warn(message)
@@ -100,6 +101,10 @@ module Leftovers
 
   def newline
     stdout.puts('')
+  end
+
+  def pwd
+    @pwd ||= Dir.pwd + '/'
   end
 
   def try_require(*requirables, message: nil) # rubocop:disable Metrics/MethodLength

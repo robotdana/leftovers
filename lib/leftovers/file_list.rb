@@ -1,31 +1,19 @@
 # frozen_string_literal: true
 
 require 'fast_ignore'
+require_relative 'file'
 
 module Leftovers
   class FileList
     include Enumerable
 
-    def ruby_hashbang?(file)
-      return unless File.extname(file).empty?
-
-      return if File.empty?(file)
-
-      File.foreach(file).first&.chomp&.match(/\A#!.*\bruby$/)
-    rescue ArgumentError, Errno::ENOENT
-      # if it's a binary file we can't open it
-    end
-
-    def fast_ignore
+    def each # rubocop:disable Metrics/MethodLength
       FastIgnore.new(
         ignore_rules: Leftovers.config.exclude_paths,
         include_rules: Leftovers.config.include_paths
-      )
-    end
-
-    def each
-      fast_ignore.each do |file|
-        next if File.extname(file).empty? && !ruby_hashbang?(file)
+      ).each do |file|
+        file = Leftovers::File.new(file)
+        next unless !file.extname.empty? || file.ruby_shebang?
 
         yield(file)
       end

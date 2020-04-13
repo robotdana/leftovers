@@ -42,7 +42,8 @@ module Leftovers
       freeze
     end
 
-    def transform(string, method_node)
+    def transform(original_string, method_node)
+      string = original_string
       @transforms.each { |proc| string = proc.call(string, method_node) }
 
       string.to_sym
@@ -67,7 +68,7 @@ module Leftovers
     end
 
     HASH_VALUE_TRANSFORMS = %i{add_prefix add_suffix}.freeze
-    HASH_VALUE_KEYS = %i{from_keyword joiner}.freeze
+    HASH_VALUE_KEYS = %i{from_argument joiner}.freeze
     def prepare_hash_value(method, hash) # rubocop:disable Metrics/MethodLength
       raise ArgumentError, <<~MESSAGE unless HASH_VALUE_TRANSFORMS.include?(method)
         invalid transform value (#{key}: #{value}).
@@ -118,7 +119,7 @@ module Leftovers
     end
 
     def delete_before(string, _method_node)
-      string.split(@delete_before, 2)[1]
+      string.split(@delete_before, 2)[1] || string
     end
 
     def delete_after(string, _method_node)
@@ -146,7 +147,7 @@ module Leftovers
     end
 
     def dynamic_value(value, method_node)
-      method_node.kwargs[value[:from_keyword]].to_s if value[:from_keyword]
+      method_node.kwargs[value[:from_argument]].to_s if value[:from_argument]
     end
 
     def activesupport_available?(method) # rubocop:disable Metrics/MethodLength
@@ -158,7 +159,7 @@ module Leftovers
         MESSAGE
       )
 
-      Leftovers.try_require(File.join(Dir.pwd, 'config', 'initializers', 'inflections.rb'))
+      Leftovers.try_require(::File.join(Leftovers.pwd, 'config', 'initializers', 'inflections.rb'))
 
       defined?(ActiveSupport)
     end

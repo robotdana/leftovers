@@ -101,7 +101,7 @@ rules:
     - color_field
     - date_field
     - datetime_field
-    - dattime_local_field
+    - datetime_local_field
     - email_field
     - month_field
     - number_field
@@ -179,7 +179,7 @@ rules:
       argument: 1
       camelize: true
       unless:
-        keyword: class_name
+        has_argument: class_name
   - name:
     - has_many
     - has_and_belongs_to_many
@@ -188,7 +188,7 @@ rules:
       camelize: true
       singularize: true
       unless:
-        keyword: class_name
+        has_argument: class_name
   - name:
     - has_many
     - has_one
@@ -212,10 +212,10 @@ rules:
           - inverse_of
       - argument: 1
         if:
-          keyword: dependent
+          has_argument: dependent
       - argument: 1
         if:
-          keyword: inverse_of
+          has_argument: inverse_of
   - name:
       - rescue_from
     calls:
@@ -239,25 +239,26 @@ rules:
     defines:
       - argument: '*'
         if:
-          keyword:
-            prefix: true
+          has_argument:
+            keyword: prefix
+            value: true
         add_prefix:
-          from_keyword: to
+          from_argument: to
           joiner: '_'
       - argument: '*'
         if:
-          keyword: prefix
-        unless:
-          keyword:
-            prefix: true
+          has_argument:
+            keyword: prefix
+            value:
+              type: [String, Symbol]
         add_prefix:
-          from_keyword: prefix
+          from_argument: prefix
           joiner: '_'
     calls:
       - argument: to
       - argument: '*'
         if:
-          keyword: prefix
+          has_argument: prefix
   - name:
       - resource
       - resources

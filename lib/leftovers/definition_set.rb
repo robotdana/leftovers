@@ -7,16 +7,16 @@ module Leftovers
       names,
       method_node: nil,
       location: method_node.loc.expression,
-      filename: method_node.filename,
+      file: method_node.file,
       test: method_node.test?
     )
       @definitions = names.map do |name|
-        Leftovers::Definition.new(name, test: test, location: location, filename: filename)
+        Leftovers::Definition.new(name, test: test, location: location, file: file)
       end
 
       @test = test
       @location = location
-      @filename = filename
+      @file = file
 
       freeze
     end

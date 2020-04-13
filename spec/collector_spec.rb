@@ -395,7 +395,7 @@ RSpec.describe Leftovers::Collector do
 
       subject.collect
 
-      # it's not a definiton because it doesn't create any new method names
+      # it's not a definition because it doesn't create any new method names
       expect(subject.definitions).to be_empty
       expect(subject.calls).to contain_exactly(:delegate, :bar)
     end
@@ -978,5 +978,68 @@ RSpec.describe Leftovers::Collector do
 
     expect(subject.definitions).to have_names :RUBY_STRING_METHODS
     expect(subject.calls).to contain_exactly(:downcase, :upcase, :freeze)
+  end
+
+  it 'collects constant hash assignment keys' do
+    temp_file 'foo.rb', <<~RUBY
+      RUBY_STRING_METHODS = {
+        downcase: true,
+        upcase: true
+      }
+    RUBY
+
+    temp_file '.leftovers.yml', <<~YML
+      rules:
+        - name: RUBY_STRING_METHODS
+          calls:
+            keys: true
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.calls).to contain_exactly(:downcase, :upcase)
+  end
+
+  it 'collects constant hash assignment keys with freeze' do
+    temp_file 'foo.rb', <<~RUBY
+      RUBY_STRING_METHODS = {
+        downcase: true,
+        upcase: true
+      }.freeze
+    RUBY
+
+    temp_file '.leftovers.yml', <<~YML
+      rules:
+        - name: RUBY_STRING_METHODS
+          calls:
+            keys: true
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.calls).to contain_exactly(:downcase, :upcase, :freeze)
+  end
+
+  it 'collects nested hash assignment values' do
+    temp_file 'foo.rb', <<~RUBY
+      RUBY_STRING_METHODS = {
+        body: { process: :downcase },
+        title: { process: :upcase }
+      }
+    RUBY
+
+    temp_file '.leftovers.yml', <<~YML
+      rules:
+        - name: RUBY_STRING_METHODS
+          calls:
+            arguments: '**'
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.calls).to contain_exactly(:downcase, :upcase)
   end
 end

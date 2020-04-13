@@ -72,7 +72,7 @@ rules:
       - ConstantName
       - has_suffix: Helper # will match Helper, LinkHelper FormHelper, etc
       - has_prefix: be_ # will match be_equal, be_invalid, etc
-      - { has_prefix: is_, has_suffx: '?' } # will match is_invalid?, is_equal? etc
+      - { has_prefix: is_, has_suffix: '?' } # will match is_invalid?, is_equal? etc
       - matches: '(?-mix:column_\d+)' # will match column_1, column_2, column_99, etc
     skip: true
 ```
@@ -116,7 +116,7 @@ This value must be a literal string, symbol, or array of strings or symbols.
 
 #### `argument:`, `arguments:`
 
-the position or keyword of the value being implictly called/defined.
+the position or keyword of the value being implicitly called/defined.
 This value must be itself a literal String, Symbol, or Array or Hash whose values are Strings and Symbols or more nested Arrays and Hashes.
 Variables and other method calls returning values will be ignored.
 
@@ -221,32 +221,33 @@ rules:
     defines:
       - argument: '*'
         if:
-          keyword:
-            prefix: true # if the value of the prefix keyword argument is literal true value
+          has_argument:
+            keyword: prefix
+            value: true # if the value of the prefix keyword argument is literal true value
         add_prefix:
-          from_keyword: to # use the value of the "to" keyword as the prefix
+          from_argument: to # use the value of the "to" keyword as the prefix
           joiner: '_' # joining with _ to the original string
       - argument: '*'
         if: # if the method call has a prefix keyword argument that is not a literal true value
-          keyword: prefix
-        unless:
-          keyword:
-            prefix: true
+          has_argument:
+            keyword: prefix
+            value:
+              type: [String, Symbol]
         add_prefix:
-          from_keyword: prefix # use the value of the "prefix" keyword as the prefix
+          from_argument: prefix # use the value of the "prefix" keyword as the prefix
           joiner: '_' # joining with _ to the original string
     calls:
       - argument: to # consider the to argument called.
       - argument: '*'
         if:
-          keyword: prefix # if there is a prefix, consider the original method called.
+          has_argument: prefix # if there is a prefix, consider the original method called.
 ```
 
 ### `gems:`
 
 list the gems your project uses whose default config you want to load.
 
-See [the built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for which gem config is available. Please submit a PR or issues at the [Leftovers github project](https://github.com/robotdana/leftovers) if your favourite gem is missing
+See [the built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for which gem config is available. Please submit a PR or issues at the [Leftovers github project](https://github.com/robotdana/leftovers) if your favorite gem is missing
 
 (ruby.yml will always be loaded.)
 ```yml

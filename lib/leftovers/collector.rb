@@ -33,12 +33,12 @@ module Leftovers
       if Leftovers.parallel?
         Parallel.each(list, finish: method(:finish_parallel), &method(:collect_file))
       else
-        list.each { |filename| finish_parallel(nil, nil, collect_file(filename)) }
+        list.each { |file| finish_parallel(nil, nil, collect_file(file)) }
       end
     end
 
-    def collect_file(filename)
-      file_collector = Leftovers::FileCollector.new(filename)
+    def collect_file(file)
+      file_collector = Leftovers::FileCollector.new(file)
       file_collector.collect
 
       file_collector.to_h

@@ -17,12 +17,12 @@ module Parser
         children.first
       end
 
-      def filename
-        @memo[:filename]
+      def file
+        @memo[:file]
       end
 
-      def filename=(value)
-        @memo[:filename] = value
+      def file=(value)
+        @memo[:file] = value
       end
 
       def test
@@ -35,7 +35,7 @@ module Parser
       end
 
       def to_scalar_value # rubocop:disable Metrics/MethodLength
-        case type
+        @memo[:scalar_value] ||= case type
         when :sym
           first
         when :str
@@ -88,7 +88,7 @@ module Parser
 
       def arguments
         @memo[:arguments] ||= case type
-        when :send then children.drop(2)
+        when :send, :csend then children.drop(2)
         when :casgn then [children[2]]
         else raise "Not argument node (#{type})"
         end
@@ -98,9 +98,15 @@ module Parser
         @memo[:positional_arguments] ||= kwargs ? arguments[0...-1] : arguments
       end
 
+      def unwrap_freeze
+        return self unless type == :send && name == :freeze
+
+        first
+      end
+
       def kwargs
         @memo.fetch(:kwargs) do
-          last_arg = arguments[-1]
+          last_arg = arguments[-1]&.unwrap_freeze
           @memo[:kwargs] = (last_arg if last_arg&.type == :hash)
         end
       end

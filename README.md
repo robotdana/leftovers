@@ -41,8 +41,8 @@ lib/hello_world.rb:6:6 generated_method attr_accessor :generated_method
 The configuration is read from `.leftovers.yml` in your project root.
 Its presence is optional and all of these settings are optional:
 
-see the [built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
 see the [complete config documentation](https://github.com/robotdana/leftovers/tree/master/Configuration.md) for details.
+see the [built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
 
 - [`include_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#include_paths:) _optional_
 - [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#exclude_paths:) _optional_
@@ -57,54 +57,34 @@ see the [complete config documentation](https://github.com/robotdana/leftovers/t
   - **action** _at least one is required_
   - [`skip:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#skip:)
   - [`calls:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls:), [`defines:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#defines:)
-    - **source** _at least one is required_
-    - [`arguments:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#arguments:)
-    - [`keys:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#keys:)
-    - [`itself:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#itself:)
-    - **transformation** _optional_
-    - [`add_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#add_prefix:)
-      - [`from_argument:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#from_argument:)
-      - [`joiner:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#joiner:)
-    - [`add_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#add_suffix:)
-      - `from_argument:`
-      - `joiner:`
-    - [`delete_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_suffix:)
-    - [`delete_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_prefix:)
-    - [`delete_before:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_before:)
-    - [`delete_after:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#delete_after:)
-    - [`replace_with:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#replace_with:)
-    - [`activesupport:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#activesupport:)
-    **condition** _optional_
-    - [`has_argument:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
-      - `has_prefix:`
-      - `has_suffix:`
-      - `matches:`
-      - [`key`:]
-      - [`value:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
-        - [`type:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
-    - [`unless:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#unless:)
-      - **conditions** _at least one is required_
-      - `has_argument:`
+    - [`arguments:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#arguments:), [`keys:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#keys:), [`itself:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#itself:) _at least one is required_
+    - [`transforms:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#transforms) _optional_
+        - `downcase:`, `upcase:`, `capitalize:`, `swapcase:`, `original:`, `delete_before:`, `delete_after:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
+        - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize` _requires activesupport_
+    - [`if:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#if:), [`unless:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#unless:)
+      - [`has_argument:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
         - `has_prefix:`
         - `has_suffix:`
         - `matches:`
-        - `with_value:`
+        - [`key`:]
+        - [`value:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
+          - [`type:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
 
 ## Limitations
 
-- Leftovers will report methods you define that are called outside your code (perhaps by gems) as unused
+- Leftovers will report methods/constants you define that are called outside your code (perhaps by gems) as unused
 
-  Add the method to the `allowed:` list in the `.leftovers.yml` or add an inline comment with `# leftovers:allow my_method_name`
+  Add these names to the `rules:` list with `skip: true` in the `.leftovers.yml` or add an inline comment with `# leftovers:allow my_method_name`
 - Leftovers doesn't execute your code so isn't aware of dynamic calls to `send` (e.g. `send(variable_method_name)`). (it is aware of static calls (e.g. `send(:my_method_name)`), so using send to bypass method privacy is "fine")
 
-  Add the method/pattern to the `allowed:` list in the `.leftovers.yml`, or add an inline comment with the list of possibilities `# leftovers:allow my_method_1 my_method_2`.
-- Leftovers compares by name, so multiple methods with the same name will count as used even if only one is.
-- haml & erb line and column numbers will be somewhat off.
+  Add the method/pattern to the `rules:` list with `skip: true` in the `.leftovers.yml`, or add an inline comment with the list of possibilities `# leftovers:call my_method_1, my_method_2`.
+- Leftovers compares by name only, so multiple methods with the same name will count as used even if only one is.
+- haml & erb line and column numbers will be wrong as the files have to be precompiled before checking.
 
 ## Other tools
 
 - [rubocop](https://github.com/rubocop-hq/rubocop) has a cop that will alert for unused local variables and method arguments
-- [coverband](https://github.com/danmayer/coverband) will report which methods are _actually_ called by your _actual_ production code.
+- [coverband](https://github.com/danmayer/coverband) will report which methods are _actually_ called by your _actual_ production code
 
 ## Development
 

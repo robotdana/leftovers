@@ -4,6 +4,7 @@ require_relative 'definition'
 require_relative 'definition_set'
 require_relative 'name_rule'
 require_relative 'transform_rule'
+require_relative 'hash_rule'
 
 module Leftovers
   class ArgumentRule # rubocop:disable Metrics/ClassLength
@@ -71,8 +72,7 @@ module Leftovers
 
     def prepare_condition(conditions)
       Array.wrap(conditions).each do |cond|
-        cond[:keyword] = Array.wrap(cond[:keyword])
-          .map { |k| k.is_a?(Hash) ? k : k.to_sym }
+        cond[:has_argument] = HashRule.new(cond[:has_argument]) if cond[:has_argument]
       end
     end
 
@@ -133,28 +133,20 @@ module Leftovers
         @unless.all? { |c| !condition_match?(c, method_node) }
     end
 
-    def condition_match?(condition, method_name) # rubocop:disable Metrics/MethodLength
-      hash_node = method_name.kwargs
+    def condition_match?(condition, method_name)
+      return unless condition[:has_argument]
 
+      hash_node = method_name.kwargs
       return false unless hash_node
 
-      condition[:keyword].all? do |kw|
-        if kw.is_a?(Hash)
-          kw.all? do |k, v|
-            value_node = hash_node[k]
-            value_node.to_scalar_value == v if value_node&.scalar?
-          end
-        else
-          hash_node.key?(kw)
-        end
-      end
+      hash_node.each_pair.any? { |key, value| condition[:has_argument].match_pair?(key, value) }
     end
 
     def hash_values(hash_node, method_node) # rubocop:disable Metrics/MethodLength
       return unless hash_node
 
       value_nodes = []
-      value_nodes.concat hash_node.keys if @key == '*'
+      value_nodes.concat hash_node.keys if @key
 
       if @all_keywords
         value_nodes.concat(hash_node.values)
@@ -168,7 +160,7 @@ module Leftovers
     def value(value_node, method_node) # rubocop:disable Metrics/MethodLength
       return unless value_node
 
-      value_node = unwrap_freeze(value_node)
+      value_node = value_node.unwrap_freeze
 
       case value_node.type
       when :array
@@ -178,12 +170,6 @@ module Leftovers
       when :str, :sym
         symbol_values(value_node, method_node)
       end
-    end
-
-    def unwrap_freeze(node)
-      return node unless node.type == :send && node.name == :freeze
-
-      node.first
     end
 
     SPLIT = /[.:]+/.freeze

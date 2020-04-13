@@ -1,0 +1,11 @@
+languages:
+  english:
+    locale: [US, AU]
+  lorem:
+    includes:
+      - /spec/
+  ruby:
+    includes:
+      - README.md
+      - Configuration.md
+      - '*.yml'
