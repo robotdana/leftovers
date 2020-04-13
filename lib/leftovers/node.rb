@@ -17,6 +17,23 @@ module Parser
         children.first
       end
 
+      def filename
+        @memo[:filename]
+      end
+
+      def filename=(value)
+        @memo[:filename] = value
+      end
+
+      def test
+        @memo[:test]
+      end
+      alias_method :test?, :test
+
+      def test=(value)
+        @memo[:test] = value
+      end
+
       def to_scalar_value # rubocop:disable Metrics/MethodLength
         case type
         when :sym
@@ -66,13 +83,15 @@ module Parser
       end
 
       def named?
-        send?
+        send? || type == :casgn
       end
 
       def arguments
-        raise "Not send node (#{type})" unless send?
-
-        @memo[:arguments] ||= children.drop(2)
+        @memo[:arguments] ||= case type
+        when :send then children.drop(2)
+        when :casgn then [children[2]]
+        else raise "Not argument node (#{type})"
+        end
       end
 
       def positional_arguments
@@ -108,7 +127,7 @@ module Parser
 
       def values_at_match(matcher)
         each_pair.with_object([]) do |(key, value), values|
-          values << value if matcher.match?(key.to_s)
+          values << value if matcher.match?(key.to_sym, key.to_s)
         end
       end
 

@@ -13,7 +13,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :m
+    expect(subject.definitions).to have_names :m
   end
 
   it 'collects method calls in optional arguments' do
@@ -21,7 +21,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :m
+    expect(subject.definitions).to have_names :m
     expect(subject.calls).to contain_exactly :b
   end
 
@@ -30,7 +30,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :m
+    expect(subject.definitions).to have_names :m
     expect(subject.calls).to contain_exactly :a
   end
 
@@ -48,7 +48,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly(:cat)
+    expect(subject.definitions).to have_names(:cat)
     expect(subject.calls).to contain_exactly :attr_reader, :@cat
   end
 
@@ -57,7 +57,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly(:cat, :cat=)
+    expect(subject.definitions).to have_names(:cat, :cat=)
     expect(subject.calls).to contain_exactly :attr_accessor, :@cat
   end
 
@@ -66,7 +66,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly(:cat=)
+    expect(subject.definitions).to have_names(:cat=)
     expect(subject.calls).to contain_exactly :attr_writer
   end
 
@@ -138,7 +138,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.definitions).to have_names :@foo
     expect(subject.calls).to be_empty
   end
 
@@ -147,7 +147,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.definitions).to have_names :@foo
     expect(subject.calls).to contain_exactly :@foo
   end
 
@@ -156,7 +156,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.definitions).to have_names :@foo
     expect(subject.calls).to contain_exactly :@foo
   end
 
@@ -165,7 +165,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.definitions).to have_names :@foo
     expect(subject.calls).to contain_exactly :@foo
   end
 
@@ -174,7 +174,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@foo
+    expect(subject.definitions).to have_names :@foo
     expect(subject.calls).to contain_exactly :@foo
   end
 
@@ -183,7 +183,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.definitions).to have_names :$foo
     expect(subject.calls).to be_empty
   end
 
@@ -192,7 +192,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.definitions).to have_names :$foo
     expect(subject.calls).to contain_exactly :$foo
   end
 
@@ -201,7 +201,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.definitions).to have_names :$foo
     expect(subject.calls).to contain_exactly :$foo
   end
 
@@ -210,7 +210,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.definitions).to have_names :$foo
     expect(subject.calls).to contain_exactly :$foo
   end
 
@@ -219,7 +219,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :$foo
+    expect(subject.definitions).to have_names :$foo
     expect(subject.calls).to contain_exactly :$foo
   end
 
@@ -228,7 +228,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.definitions).to have_names :@@foo
     expect(subject.calls).to be_empty
   end
 
@@ -237,7 +237,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.definitions).to have_names :@@foo
     expect(subject.calls).to contain_exactly :@@foo
   end
 
@@ -246,7 +246,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.definitions).to have_names :@@foo
     expect(subject.calls).to contain_exactly :@@foo
   end
 
@@ -255,7 +255,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.definitions).to have_names :@@foo
     expect(subject.calls).to contain_exactly :@@foo
   end
 
@@ -264,7 +264,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :@@foo
+    expect(subject.definitions).to have_names :@@foo
     expect(subject.calls).to contain_exactly :@@foo
   end
 
@@ -344,7 +344,7 @@ RSpec.describe Leftovers::Collector do
 
       subject.collect
 
-      expect(subject.definitions.map(&:name)).to contain_exactly(:whatever, :whatever=)
+      expect(subject.definitions).to have_names(:whatever, :whatever=)
       expect(subject.calls).to contain_exactly(:has_many, :Which, :Ever)
     end
 
@@ -405,7 +405,7 @@ RSpec.describe Leftovers::Collector do
 
       subject.collect
 
-      expect(subject.definitions.map(&:name)).to contain_exactly(:bar_foo, :bar_few)
+      expect(subject.definitions).to have_names(:bar_foo, :bar_few)
       expect(subject.calls).to contain_exactly(:delegate, :baz, :foo, :few)
     end
 
@@ -414,7 +414,7 @@ RSpec.describe Leftovers::Collector do
 
       subject.collect
 
-      expect(subject.definitions.map(&:name)).to contain_exactly(:bar_foo, :bar_few)
+      expect(subject.definitions).to have_names(:bar_foo, :bar_few)
       expect(subject.calls).to contain_exactly(:delegate, :bar, :foo, :few)
     end
 
@@ -494,7 +494,7 @@ RSpec.describe Leftovers::Collector do
 
       subject.collect
 
-      expect(subject.definitions.map(&:name)).to contain_exactly(:User, :whatever)
+      expect(subject.definitions).to have_names(:User, :whatever)
       expect(subject.calls).to contain_exactly(:ApplicationRecord, :lambda, :scope, :order)
     end
 
@@ -563,7 +563,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :m
+    expect(subject.definitions).to have_names :m
     expect(subject.calls).to contain_exactly :a
   end
 
@@ -581,7 +581,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
+    expect(subject.definitions).to have_names :Whatever
     expect(subject.calls).to be_empty
   end
 
@@ -590,7 +590,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
+    expect(subject.definitions).to have_names :Whatever
     expect(subject.calls).to contain_exactly :SuperClass
   end
 
@@ -599,7 +599,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
+    expect(subject.definitions).to have_names :Whatever
     expect(subject.calls).to be_empty
   end
 
@@ -608,7 +608,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly :Whatever
+    expect(subject.definitions).to have_names :Whatever
     expect(subject.calls).to contain_exactly :Class, :new
   end
 
@@ -733,7 +733,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly(:new_method)
+    expect(subject.definitions).to have_names(:new_method)
     expect(subject.calls).to contain_exactly(:alias_method, :original_method)
   end
 
@@ -755,7 +755,7 @@ RSpec.describe Leftovers::Collector do
 
     subject.collect
 
-    expect(subject.definitions.map(&:name)).to contain_exactly(:new_method)
+    expect(subject.definitions).to have_names(:new_method)
     expect(subject.calls).to contain_exactly(:original_method)
   end
 
@@ -784,7 +784,7 @@ RSpec.describe Leftovers::Collector do
     RUBY
 
     subject.collect
-    expect(subject.definitions.map(&:name)).to contain_exactly(
+    expect(subject.definitions).to have_names(
       :method_name, :method_name?, :method_name=, :method_name!
     )
     expect(subject.calls).to contain_exactly(
@@ -801,7 +801,7 @@ RSpec.describe Leftovers::Collector do
     RUBY
 
     subject.collect
-    expect(subject.definitions.map(&:name)).to contain_exactly(
+    expect(subject.definitions).to have_names(
       :MyConstant, :OVERRIDDEN_CONSTANT
     )
     expect(subject.calls).to contain_exactly(
@@ -936,5 +936,47 @@ RSpec.describe Leftovers::Collector do
 
     expect(subject.definitions).to be_empty
     expect(subject.calls).to contain_exactly(:my_method)
+  end
+
+  it 'collects constant assignment values' do
+    temp_file 'foo.rb', <<~RUBY
+      RUBY_STRING_METHODS = %i{
+        downcase
+        upcase
+      }
+    RUBY
+
+    temp_file '.leftovers.yml', <<~YML
+      rules:
+        - name: RUBY_STRING_METHODS
+          calls:
+            argument: 1
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.calls).to contain_exactly(:downcase, :upcase)
+  end
+
+  it 'collects constant assignment values with freeze' do
+    temp_file 'foo.rb', <<~RUBY
+      RUBY_STRING_METHODS = %i{
+        downcase
+        upcase
+      }.freeze
+    RUBY
+
+    temp_file '.leftovers.yml', <<~YML
+      rules:
+        - name: RUBY_STRING_METHODS
+          calls:
+            argument: 1
+    YML
+
+    subject.collect
+
+    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.calls).to contain_exactly(:downcase, :upcase, :freeze)
   end
 end

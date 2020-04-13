@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative './leftovers/core_ext'
 require_relative './leftovers/collector'
 require_relative './leftovers/merged_config'
 require_relative './leftovers/reporter'
@@ -39,7 +40,7 @@ module Leftovers
     @leftovers ||= begin
       collector.collect
       collector.definitions.reject do |definition|
-        definition.any_skipped? || definition.any_in_collection?
+        definition.skipped? || definition.in_collection?
       end
     end
   end
@@ -53,7 +54,7 @@ module Leftovers
     only_test = []
     none = []
     leftovers.sort.each do |definition|
-      if !definition.test? && definition.any_in_test_collection?
+      if !definition.test? && definition.in_test_collection?
         only_test << definition
       else
         none << definition
@@ -112,17 +113,6 @@ module Leftovers
         warn message if message
         @try_require[requirable] = false
       end
-    end
-  end
-
-  def wrap_array(value) # rubocop:disable Metrics/MethodLength
-    case value
-    when Hash
-      [value]
-    when Array
-      value
-    else
-      Array(value)
     end
   end
 end

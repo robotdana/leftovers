@@ -15,3 +15,12 @@ RSpec.configure do |config|
   end
   require_relative './temp_file_helper'
 end
+
+RSpec::Matchers.define :have_names do |*expected|
+  match do |actual|
+    @actual = actual.flat_map(&:names)
+    expect(@actual).to contain_exactly(*expected)
+  end
+
+  diffable
+end

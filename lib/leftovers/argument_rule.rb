@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'definition'
+require_relative 'definition_set'
 require_relative 'name_rule'
 require_relative 'transform_rule'
 
 module Leftovers
   class ArgumentRule # rubocop:disable Metrics/ClassLength
-    attr_accessor :group
-
     def self.wrap(rules, definer: false) # rubocop:disable Metrics/MethodLength
       case rules
       when Array
@@ -46,8 +45,6 @@ module Leftovers
       @definer = definer
     end
 
-    attr_reader :definer
-
     def prepare_transform(options, transforms, linked_transforms) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
       if linked_transforms && transforms
         raise ArgumentError, 'Only use one of linked_transforms/transforms'
@@ -73,8 +70,8 @@ module Leftovers
     end
 
     def prepare_condition(conditions)
-      Leftovers.wrap_array(conditions).each do |cond|
-        cond[:keyword] = Leftovers.wrap_array(cond[:keyword])
+      Array.wrap(conditions).each do |cond|
+        cond[:keyword] = Array.wrap(cond[:keyword])
           .map { |k| k.is_a?(Hash) ? k : k.to_sym }
       end
     end
@@ -91,7 +88,7 @@ module Leftovers
       positions = Set.new
       keywords = []
 
-      Leftovers.wrap_array(argument || arguments).each do |arg|
+      Array.each_or_self(argument || arguments) do |arg|
         case arg
         when '*'
           @all_positions = true
@@ -108,19 +105,19 @@ module Leftovers
       @keywords = NameRule.new(keywords) unless @all_keywords || keywords.empty?
     end
 
-    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      return [].freeze unless all_conditions_match?(method_node)
+    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+      return Array::EMPTY unless all_conditions_match?(method_node)
 
       result = []
 
       if @all_positions
-        result.concat values(method_node.positional_arguments, method_node)
+        result.gather values(method_node.positional_arguments, method_node)
       elsif @positions
-        result.concat values(method_node.positional_arguments_at(@positions).compact, method_node)
+        result.gather values(method_node.positional_arguments_at(@positions).compact, method_node)
       end
 
       if @keywords || @all_keywords || @key
-        result.concat hash_values(method_node.kwargs, method_node)
+        result.gather hash_values(method_node.kwargs, method_node)
       end
       result << method_value(method_node) if @itself
 
@@ -154,15 +151,15 @@ module Leftovers
     end
 
     def hash_values(hash_node, method_node) # rubocop:disable Metrics/MethodLength
-      return [].freeze unless hash_node
+      return unless hash_node
 
       value_nodes = []
       value_nodes.concat hash_node.keys if @key == '*'
 
       if @all_keywords
-        value_nodes.concat hash_node.values
+        value_nodes.concat(hash_node.values)
       elsif @keywords
-        value_nodes.concat hash_node.values_at_match(@keywords)
+        value_nodes.concat(hash_node.values_at_match(@keywords))
       end
 
       values(value_nodes, method_node)
@@ -170,6 +167,8 @@ module Leftovers
 
     def value(value_node, method_node) # rubocop:disable Metrics/MethodLength
       return unless value_node
+
+      value_node = unwrap_freeze(value_node)
 
       case value_node.type
       when :array
@@ -181,11 +180,26 @@ module Leftovers
       end
     end
 
-    def symbol_values(symbol_node, method_node)
-      subnodes = symbol_node.to_s.split(/[.:]+/).flat_map { |s| transform(s, method_node) }
+    def unwrap_freeze(node)
+      return node unless node.type == :send && node.name == :freeze
+
+      node.first
+    end
+
+    SPLIT = /[.:]+/.freeze
+    def symbol_values(symbol_node, method_node) # rubocop:disable Metrics/MethodLength
+      subnodes = symbol_node.to_s.split(SPLIT).flat_map { |s| transform(s, method_node) }
+
       return subnodes unless @definer
 
-      Leftovers::Definition.wrap(subnodes, symbol_node.loc.expression, link: @linked)
+      location = symbol_node.loc.expression
+      if @linked
+        Leftovers::DefinitionSet.new(subnodes, location: location, method_node: method_node)
+      else
+        subnodes.map do |subnode|
+          Leftovers::Definition.new(subnode, location: location, method_node: method_node)
+        end
+      end
     end
 
     def method_value(method_node)
@@ -193,7 +207,7 @@ module Leftovers
 
       return value unless @definer
 
-      Leftovers::Definition.new(value, method_node.loc.expression)
+      Leftovers::Definition.new(value, method_node: method_node)
     end
 
     def transform(string, method_node)

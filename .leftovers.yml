@@ -1,10 +1,19 @@
 rules:
-  skip: true
-  name:
-    - add_insert_cmd # called by ::ERB::Compiler
-    - add_put_cmd # called by ::ERB::Compiler
-    - Node
-
+  - skip: true
+    name:
+      - add_insert_cmd # called by ::ERB::Compiler
+      - add_put_cmd # called by ::ERB::Compiler
+      - Node
+  - name:
+      - RUBY_STRING_METHODS
+      - ACTIVESUPPORT_STRING_METHODS
+      - CUSTOM_TRANSFORMS
+    calls:
+      argument: 1
+  - name: HASH_VALUE_TRANSFORMS
+    calls:
+      argument: 1
+      add_suffix: _dynamic
 gems:
   - parser
   - rspec

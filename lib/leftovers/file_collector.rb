@@ -125,15 +125,12 @@ module Leftovers
     end
 
     # grab method calls
-    def on_send(node) # rubocop:disable Metrics/MethodLength
+    def on_send(node)
       super
 
       add_call(node.children[1])
 
-      collect_method_rules(node)
-    rescue StandardError => e
-      puts "#{e.message} #{filename}:#{node.loc.expression}"
-      raise
+      collect_rules(node)
     end
     alias_method :on_csend, :on_send
 
@@ -167,10 +164,11 @@ module Leftovers
       super
 
       add_definition(node.children[1], node.loc.name)
+      collect_rules(node)
     end
 
     def add_definition(name, loc)
-      definitions << Leftovers::Definition.new(name, loc, filename: filename, test: test?)
+      definitions << Leftovers::Definition.new(name, location: loc, filename: filename, test: test?)
     end
 
     def add_call(name)
@@ -215,18 +213,16 @@ module Leftovers
       end
     end
 
-    def collect_method_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def collect_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       Leftovers.config.rules.each do |rule|
-        next unless rule.match?(node.to_s, filename)
+        next unless rule.match?(node.name, node.name_s, filename)
         next if rule.skip?
 
         calls.concat(rule.calls(node))
-        definitions.concat(
-          rule.definitions(node).each do |d|
-            d.filename = filename
-            d.test = test?
-          end
-        )
+
+        node.filename = filename
+        node.test = test?
+        definitions.concat(rule.definitions(node))
       end
     end
   end

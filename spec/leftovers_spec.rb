@@ -45,8 +45,8 @@ RSpec.describe Leftovers do
         end
       RUBY
 
-      expect(subject.leftovers.map(&:name)).to contain_exactly :check_foo
-      expect(subject.collector.definitions.map(&:name)).to contain_exactly(
+      expect(subject.leftovers).to have_names :check_foo
+      expect(subject.collector.definitions).to have_names(
         :foo, :foo?, :foo=, :check_foo
       )
       expect(subject.collector.calls).to contain_exactly(:attribute, :foo?)
@@ -71,9 +71,9 @@ RSpec.describe Leftovers do
         end
       RUBY
 
-      expect(subject.leftovers.map(&:name)).to contain_exactly :EmailActions
-      expect(subject.collector.definitions.map(&:name))
-        .to contain_exactly(:EmailActions, :initialize, :email_params_from_order, :address_params)
+      expect(subject.leftovers).to have_names :EmailActions
+      expect(subject.collector.definitions)
+        .to have_names(:EmailActions, :initialize, :email_params_from_order, :address_params)
 
       expect(subject.collector.calls).to contain_exactly(:address_params, :email_params_from_order)
     end

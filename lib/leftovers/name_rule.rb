@@ -4,13 +4,12 @@ require 'set'
 module Leftovers
   class NameRule
     def initialize(patterns) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      patterns = Leftovers.wrap_array(patterns)
       regexps = []
-      strings = Set.new
-      patterns.each do |pat|
+      syms = Set.new.compare_by_identity
+      Array.each_or_self(patterns) do |pat|
         case pat
         when String
-          strings.merge(pat.split(/\s+/).map(&:freeze))
+          syms.merge(pat.split(/\s+/).map(&:to_sym))
         when Hash
           if pat[:match]
             regexps << /\A#{pattern[:match]}\z/
@@ -24,17 +23,17 @@ module Leftovers
         end
       end
 
-      if strings.length <= 1
-        @string = strings.first
+      if syms.length <= 1
+        @sym = syms.first
       else
-        @strings = strings
+        @syms = syms
       end
 
       @regexp = Regexp.union(regexps) unless regexps.empty?
     end
 
-    def match?(string)
-      @string&.==(string) || @strings&.include?(string) || @regexp&.match?(string)
+    def match?(sym, string)
+      @sym&.equal?(sym) || @syms&.include?(sym) || @regexp&.match?(string)
     end
   end
 end

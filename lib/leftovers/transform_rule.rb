@@ -94,6 +94,7 @@ module Leftovers
       RUBY
     end
 
+    # leftovers:call activesupport_available?
     ACTIVESUPPORT_STRING_METHODS.each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(string, _method_node)
@@ -117,17 +118,11 @@ module Leftovers
     end
 
     def delete_before(string, _method_node)
-      index = string.index(@delete_before)
-      return string unless index
-
-      string.slice((index + 1)..-1)
+      string.split(@delete_before, 2)[1]
     end
 
     def delete_after(string, _method_node)
-      index = string.index(@delete_after)
-      return string unless index
-
-      string.slice(0, index)
+      string.split(@delete_after, 2).first
     end
 
     def replace_with(_string, _method_node)

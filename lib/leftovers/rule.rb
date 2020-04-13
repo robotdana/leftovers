@@ -53,18 +53,14 @@ module Leftovers
       end
     end
 
-    def name?(name)
-      @name_matcher.match?(name)
-    end
-
     def filename?(filename)
       return true unless @path
 
       @path.allowed?(filename)
     end
 
-    def match?(name, filename)
-      name?(name) && filename?(filename)
+    def match?(name, name_s, filename)
+      @name_matcher.match?(name, name_s) && filename?(filename)
     end
 
     def calls(node)
