@@ -23,7 +23,7 @@ module Leftovers
 
     def collect
       collect_file_list(Leftovers::FileList.new)
-
+      print_progress
       Leftovers.newline
       @calls = @calls.to_set.freeze
       @test_calls = @test_calls.to_set.freeze
@@ -44,8 +44,17 @@ module Leftovers
       file_collector.to_h
     end
 
+    def print_progress
+      Leftovers.print(
+        "checked #{@count} files, collected #{@count_calls} calls, #{@count_definitions} definitions\r" # rubocop:disable Layout/LineLength
+      )
+    end
+
     def finish_parallel(_, _, result) # rubocop:disable Metrics/MethodLength
-      Leftovers.print "checked #{@count += 1} files, collected #{@count_calls += result[:calls].length} calls, #{@count_definitions += result[:definitions].length} definitions\r" # rubocop:disable Layout/LineLength
+      @count += 1
+      @count_calls += result[:calls].length
+      @count_definitions += result[:definitions].length
+      print_progress if Leftovers.progress?
       if result[:test?]
         @test_calls.concat(result[:calls])
       else

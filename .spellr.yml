@@ -1,3 +1,5 @@
+excludes:
+  - vendor
 languages:
   english:
     locale: [US, AU]

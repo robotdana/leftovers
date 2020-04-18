@@ -4,11 +4,13 @@ require 'spec_helper'
 
 RSpec::Matchers.define_negated_matcher :exclude, :include
 RSpec.describe Leftovers::FileCollector do
+  subject { described_class.new(@ruby, file) }
+
   before { Leftovers.reset }
+
   after { Leftovers.reset }
 
   let(:file) { Leftovers::File.new(Leftovers.pwd + (@path || 'foo.rb')) }
-  subject { described_class.new(@ruby, file) }
 
   it 'collects method definitions' do
     @ruby = 'def m(a) a end'
@@ -472,6 +474,7 @@ RSpec.describe Leftovers::FileCollector do
 
     context 'with temp_dir' do
       around { |example| with_temp_dir { example.run } }
+
       it 'collects routes scope' do
         # need the files to actually exist or fast_ignore doesn't work.
         temp_file 'config/routes.rb'

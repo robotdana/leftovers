@@ -7,10 +7,12 @@ require: rubocop-rspec
 # Each override should have a comment (even if it's just "default is bad")
 
 AllCops:
+  NewCops: enable
   Exclude:
     - db/schema*
     - .bundle/**/*
     - tmp/**/*
+    - vendor/**/*
   DisplayCopNames: true
   DisplayStyleGuide: true
   TargetRubyVersion: 2.4
@@ -209,3 +211,6 @@ Lint/BooleanSymbol:
 
 Style/DoubleNegation:
   Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false # I'll figure it out soon

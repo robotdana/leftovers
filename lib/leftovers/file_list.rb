@@ -11,7 +11,7 @@ module Leftovers
       FastIgnore.new(
         ignore_rules: Leftovers.config.exclude_paths,
         include_rules: Leftovers.config.include_paths,
-        include_shebangs: ['ruby']
+        include_shebangs: :ruby
       ).each do |file|
         yield(Leftovers::File.new(file))
       end

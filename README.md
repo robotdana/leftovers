@@ -1,4 +1,5 @@
 # Leftovers
+[![travis](https://travis-ci.org/robotdana/leftovers.svg?branch=master)](https://travis-ci.org/robotdana/leftovers)
 
 Find unused methods, Classes, CONSTANTS, @instance_variables, @@class_variables, and $global_variables in your ruby projects
 
@@ -104,7 +105,7 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/mast
 
 ## Other tools
 
-- [rubocop](https://github.com/rubocop-hq/rubocop) has a cop that will alert for unused local variables and method arguments
+- [rubocop](https://github.com/rubocop-hq/rubocop) has a cop that will alert for unused local variables and method arguments, and a cop that will report unreachable code.
 - [coverband](https://github.com/danmayer/coverband) will report which methods are _actually_ called by your _actual_ production code
 
 ## Development

@@ -14,6 +14,9 @@ module Leftovers
 
     attr_accessor :quiet
     alias_method :quiet?, :quiet
+
+    attr_accessor :progress
+    alias_method :progress?, :progress
   end
 
   def stdout

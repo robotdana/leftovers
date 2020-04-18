@@ -2,6 +2,7 @@ affixxed
 classnames
 codebase
 esque
+gemfile
 hashbang
 lorem
 noninfringement
@@ -9,6 +10,8 @@ precompiled
 readme
 requirables
 rspec
+rubo
+rvm
 sherson
 todo
 unmemoize
