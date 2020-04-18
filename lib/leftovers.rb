@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative './leftovers/core_ext'
+require_relative './leftovers/backports'
 require_relative './leftovers/collector'
 require_relative './leftovers/merged_config'
 require_relative './leftovers/reporter'
@@ -107,7 +108,7 @@ module Leftovers
   end
 
   def pwd
-    @pwd ||= Dir.pwd + '/'
+    @pwd ||= Pathname.new(Dir.pwd + '/')
   end
 
   def try_require(*requirables, message: nil) # rubocop:disable Metrics/MethodLength

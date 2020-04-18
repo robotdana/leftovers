@@ -1,10 +1,12 @@
 affixxed
+backports
 classnames
 codebase
 esque
 gemfile
 hashbang
 lorem
+nocov
 noninfringement
 precompiled
 readme

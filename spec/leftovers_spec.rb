@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 RSpec.describe Leftovers do
+  before { described_class.reset }
+
+  after { described_class.reset }
+
   it 'has a version number' do
     expect(Leftovers::VERSION).not_to be nil
   end
 
   describe '.config.rules' do
     around { |example| with_temp_dir { example.run } }
-
-    before { described_class.reset }
-
-    after { described_class.reset }
 
     it 'can load all default config' do
       files = Pathname.glob("#{__dir__}/../lib/config/*.yml")
@@ -31,8 +31,6 @@ RSpec.describe Leftovers do
     subject { described_class }
 
     around { |example| with_temp_dir { example.run } }
-
-    before { described_class.reset }
 
     it "doesn't care about using one of multiple simultaneous defined methods" do
       temp_file '.leftovers.yml', <<~YML

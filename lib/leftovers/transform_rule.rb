@@ -2,6 +2,10 @@
 
 module Leftovers
   class TransformRule # rubocop:disable Metrics/ClassLength
+    # :nocov:
+    using ::Leftovers::StringDeletePrefixSuffix if defined?(::Leftovers::StringDeletePrefixSuffix)
+    # :nocov:
+
     RUBY_STRING_METHODS = %i{
       downcase
       upcase

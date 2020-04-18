@@ -5,6 +5,10 @@ require_relative 'rule'
 
 module Leftovers
   class Config
+    # :nocov:
+    using ::Leftovers::YAMLSymbolizeNames if defined?(::Leftovers::YAMLSymbolizeNames)
+    # :nocov:
+
     attr_reader :name
 
     def initialize(
