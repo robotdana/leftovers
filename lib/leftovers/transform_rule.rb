@@ -88,7 +88,7 @@ module Leftovers
     end
 
     RUBY_STRING_METHODS.each do |method|
-      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+      class_eval <<~RUBY, __FILE__, __LINE__ + 1
         def #{method}(string, _method_node)
           string.#{method}
         end

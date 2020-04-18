@@ -10,12 +10,10 @@ module Leftovers
     def each # rubocop:disable Metrics/MethodLength
       FastIgnore.new(
         ignore_rules: Leftovers.config.exclude_paths,
-        include_rules: Leftovers.config.include_paths
+        include_rules: Leftovers.config.include_paths,
+        include_shebangs: ['ruby']
       ).each do |file|
-        file = Leftovers::File.new(file)
-        next unless !file.extname.empty? || file.ruby_shebang?
-
-        yield(file)
+        yield(Leftovers::File.new(file))
       end
     end
 

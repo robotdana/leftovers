@@ -23,6 +23,7 @@ dsym
 eflipflop
 encryptor
 gitignore
+guardfile
 gvasgn
 haml
 hrule
@@ -46,6 +47,7 @@ precompile
 preexe
 preload
 procarg
+pryrc
 regexps
 resbody
 restarg
@@ -54,6 +56,7 @@ rjs
 rspec
 rubocop
 shadowarg
+simplecov
 strikethrough
 subnodes
 syms

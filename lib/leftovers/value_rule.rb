@@ -2,7 +2,7 @@
 
 module Leftovers
   class ValueRule
-    def initialize(values) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize,
+    def initialize(values) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
       literal_values = Set.new
       value_types = Set.new
 
@@ -25,19 +25,19 @@ module Leftovers
         end
       end
 
-      case literal_values.length
-      when 0 then nil
-      when 1
+      if literal_values.length <= 1
         @literal_value = literal_values.first
+        @literal_values = nil
       else
+        @literal_value = nil
         @literal_values = literal_values
       end
 
-      case value_types.length
-      when 0 then nil
-      when 1
+      if value_types.length <= 1
         @value_type = value_types.first
+        @value_types = nil
       else
+        @value_type = nil
         @value_types = value_types
       end
 

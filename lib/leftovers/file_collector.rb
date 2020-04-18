@@ -13,9 +13,10 @@ module Leftovers
     attr_reader :definitions
     attr_reader :file
 
-    def initialize(file)
+    def initialize(ruby, file)
       @calls = []
       @definitions = []
+      @ruby = ruby
       @file = file
     end
 
@@ -31,30 +32,30 @@ module Leftovers
       }
     end
 
-    def collect # rubocop:disable Metrics/AbcSize
-      ast, comments = Parser::CurrentRuby.parse_with_comments(file.ruby)
+    def collect
+      ast, comments = Parser::CurrentRuby.parse_with_comments(@ruby)
       process(ast)
       process_comments(comments)
     rescue Parser::SyntaxError => e
       Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Layout/LineLength
     end
 
-    METHOD_NAME_RE = /[[:lower:]_][[:alnum:]_]*\b[\?!=]?/.freeze
+    METHOD_NAME_RE = /[[:alpha:]_][[:alnum:]_]*\b[\?!=]?/.freeze
     NON_ALNUM_METHOD_NAME_RE = Regexp.union(%w{
       []= [] ** ~ +@ -@ * / % + - >> << &
       ^ | <=> <= >= < > === == != =~ !~ !
     }.map { |op| /#{Regexp.escape(op)}/ })
     CONSTANT_NAME_RE = /[[:upper:]][[:alnum:]_]*\b/.freeze
     NAME_RE = Regexp.union(METHOD_NAME_RE, NON_ALNUM_METHOD_NAME_RE, CONSTANT_NAME_RE)
-    LEFTOVERS_RE = /\bleftovers:(?:call|allow) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
+    LEFTOVERS_RE = /\bleftovers:(call|allow) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
     def process_comments(comments) # rubocop:disable Metrics/MethodLength
       comments.each do |comment|
         match = comment.text.match(LEFTOVERS_RE)
 
         next unless match
-        next unless match[1]
+        next unless match[2]
 
-        match[1].scan(NAME_RE).each { |s| add_call(s.to_sym) }
+        match[2].scan(NAME_RE).each { |s| add_call(s.to_sym) }
       end
     end
 
@@ -139,6 +140,7 @@ module Leftovers
       super
 
       add_definition(node.children[1], node.loc.name)
+
       collect_rules(node)
     end
 
@@ -176,7 +178,6 @@ module Leftovers
 
       return unless name
 
-      add_call(name)
       add_call(:"#{name}=")
     end
 

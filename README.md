@@ -2,6 +2,27 @@
 
 Find unused methods, Classes, CONSTANTS, @instance_variables, @@class_variables, and $global_variables in your ruby projects
 
+## Why?
+
+Code that never gets executed is code that you shouldn't need to maintain.
+
+- Leftovers from refactoring
+- Partially removed features
+- Typos and THIS NEVER WOULD HAVE WORKED code
+- Code that you only keep around because there are tests of it.
+
+Leftovers will use static analysis to find these bits of code for you.
+
+It's aware of how some gems call methods for you, including (still somewhat incomplete) support for rails.
+
+## Features
+
+- Fully configurable handling of methods that call other methods with literal arguments, and constant assignment
+- magic comments
+- designed to be run as a CI step
+- optimised for speed
+- built in config for some gems. (please make PRs with more gems)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -24,7 +45,6 @@ Run `leftovers` in your terminal in the root of your project.
 This will output progress as it collects the calls/references and definitions in your project.
 Then it will output any defined methods (or classes etc) which are not called.
 
-file path : line number : column number, the method/etc name, the line of code that defined the method.
 ```
 $ leftovers
 checked 25 files, collected 2473 calls, 262 definitions
@@ -58,15 +78,16 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/mast
   - [`skip:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#skip:)
   - [`calls:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls:), [`defines:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#defines:)
     - [`arguments:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#arguments:), [`keys:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#keys:), [`itself:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#itself:) _at least one is required_
-    - [`transforms:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#transforms) _optional_
-        - `downcase:`, `upcase:`, `capitalize:`, `swapcase:`, `original:`, `delete_before:`, `delete_after:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
+    - [`transforms:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#transforms), [`linked_transforms:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#linked_transforms) _optional_
+        - `original:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
+        - `delete_before:`, `delete_after:`, `downcase:`, `upcase:`, `capitalize:`, `swapcase:`
         - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize` _requires activesupport_
     - [`if:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#if:), [`unless:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#unless:)
       - [`has_argument:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
-        - `has_prefix:`
-        - `has_suffix:`
-        - `matches:`
-        - [`key`:]
+        - [`keyword`:]
+          - `has_prefix:`
+          - `has_suffix:`
+          - `matches:`
         - [`value:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
           - [`type:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument:)
 

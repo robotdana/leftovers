@@ -3,11 +3,17 @@
 require 'set'
 module Leftovers
   class NameRule
+    attr_reader :sym, :syms, :regexp
+
     def initialize(patterns) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
       regexps = []
-      syms = Set.new.compare_by_identity
+      syms = Set.new
       Array.each_or_self(patterns) do |pat|
         case pat
+        when Leftovers::NameRule
+          syms.merge(pat.sym) if pat.sym
+          syms.merge(pat.syms) if pat.syms
+          regexps.concat(pat.regexp) if pat.regexp
         when String
           syms.merge(pat.split(/\s+/).map(&:to_sym))
         when Hash
@@ -23,21 +29,25 @@ module Leftovers
         end
       end
 
-      case syms.length
-      when 0 then nil
-      when 1
+      if syms.length <= 0
         @sym = syms.first
+        @syms = nil
       else
+        @sym = nil
         @syms = syms
       end
 
-      @regexp = Regexp.union(regexps) unless regexps.empty?
+      @regexp = if regexps.empty?
+        nil
+      else
+        Regexp.union(regexps)
+      end
 
       freeze
     end
 
     def match?(sym, string)
-      @sym&.equal?(sym) || @syms&.include?(sym) || @regexp&.match?(string)
+      @sym&.==(sym) || @syms&.include?(sym) || @regexp&.match?(string)
     end
   end
 end

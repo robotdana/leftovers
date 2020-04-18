@@ -1,20 +1,13 @@
 ---
 include_paths:
-  - '*'
-  - '!*.*'
   - '*.rb'
-  - '*.rake'
-  - '*.ru'
-  - Rakefile
   - Gemfile
-  - Capfile
-  - '*.haml'
   - '*.erb'
-  - '*.builder'
-  - '*.jbuilder'
   - '*.gemspec'
-  - '*.rjs'
-  - '*.rhtml'
+  - .irbrc
+  - irb.rc
+  - _irbrc
+  - $irbrc
 
 test_paths:
   - /tests/

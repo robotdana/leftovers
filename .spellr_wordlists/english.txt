@@ -10,5 +10,7 @@ readme
 requirables
 rspec
 sherson
+todo
+unmemoize
 wtf
 yml

@@ -5,17 +5,20 @@ require_relative 'rule'
 
 module Leftovers
   class Config
-    def initialize(name, path: ::File.join(__dir__, '..', 'config', "#{name}.yml"))
-      @name = name
-      @path = path
-    end
+    attr_reader :name
 
-    def exist?
-      ::File.exist?(path)
+    def initialize(
+      name,
+      path: ::File.join(__dir__, '..', 'config', "#{name}.yml"),
+      content: (::File.exist?(path) ? ::File.read(path) : '')
+    )
+      @name = name.to_sym
+      @path = path
+      @content = content
     end
 
     def gems
-      @gems ||= Array(yaml[:gems])
+      @gems ||= Array(yaml[:gems]).map(&:to_sym)
     end
 
     def exclude_paths
@@ -36,17 +39,8 @@ module Leftovers
 
     private
 
-    attr_reader :name, :path
-
     def yaml
-      @yaml ||= load_yaml(path)
-    end
-
-    def load_yaml(*path) # rubocop:disable Metrics/MethodLength
-      file = ::File.join(*path)
-      return {} unless ::File.exist?(file)
-
-      YAML.safe_load(::File.read(file), symbolize_names: true)
+      @yaml ||= YAML.safe_load(@content, symbolize_names: true) || {}
     rescue Psych::SyntaxError => e
       warn "\e[31mError with config #{path}: #{e.message}\e[0m"
       exit 1

@@ -6,24 +6,32 @@ require 'fast_ignore'
 
 module Leftovers
   class MergedConfig
-    def initialize # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def initialize
       @configs = []
-      @configs << Leftovers::Config.new('ruby')
-      @configs << Leftovers::Config.new('project', path: Leftovers.pwd + '.leftovers.yml')
-      gem_config_loaded = Set.new
-      gem_config_to_load = @configs.flat_map(&:gems)
+      @loaded_configs = Set.new
+      self.<< Leftovers::Config.new(:ruby)
+      self.<< project_config
+      load_bundled_gem_config
+    end
 
-      until gem_config_to_load.empty?
-        gem = gem_config_to_load.pop
-        next if gem_config_loaded.include?(gem)
+    def <<(config)
+      return if @loaded_configs.include?(config.name)
 
-        gem_config = Leftovers::Config.new(gem)
-        next unless gem_config.exist?
+      unmemoize
+      @configs << config
+      @loaded_configs << config.name
+      config.gems.each { |gem| self.<< Leftovers::Config.new(gem) }
+    end
 
-        @configs << gem_config
-        gem_config_loaded << gem
-        gem_config_to_load += gem_config.gems
-      end
+    def project_config
+      Leftovers::Config.new(:'.leftovers.yml', path: Leftovers.pwd + '.leftovers.yml')
+    end
+
+    def unmemoize
+      remove_instance_variable(:@exclude_paths) if defined?(@exclude_paths)
+      remove_instance_variable(:@include_paths) if defined?(@include_paths)
+      remove_instance_variable(:@test_paths) if defined?(@test_paths)
+      remove_instance_variable(:@rules) if defined?(@rules)
     end
 
     def exclude_paths
@@ -47,6 +55,17 @@ module Leftovers
 
     def rules
       @rules ||= @configs.flat_map(&:rules)
+    end
+
+    private
+
+    def load_bundled_gem_config
+      Leftovers.try_require('bundler')
+      return unless defined?(Bundler)
+
+      Bundler.locked_gems.specs.each do |spec|
+        self.<< Leftovers::Config.new(spec.name.to_sym)
+      end
     end
   end
 end

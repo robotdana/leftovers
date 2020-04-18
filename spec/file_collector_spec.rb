@@ -3,13 +3,15 @@
 require 'spec_helper'
 
 RSpec::Matchers.define_negated_matcher :exclude, :include
-RSpec.describe Leftovers::Collector do
-  around { |example| with_temp_dir { example.run } }
-
+RSpec.describe Leftovers::FileCollector do
   before { Leftovers.reset }
+  after { Leftovers.reset }
+
+  let(:file) { Leftovers::File.new(Leftovers.pwd + (@path || 'foo.rb')) }
+  subject { described_class.new(@ruby, file) }
 
   it 'collects method definitions' do
-    temp_file 'foo.rb', 'def m(a) a end'
+    @ruby = 'def m(a) a end'
 
     subject.collect
 
@@ -17,7 +19,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls in optional arguments' do
-    temp_file 'foo.rb', 'def m(a = b) a end'
+    @ruby = 'def m(a = b) a end'
 
     subject.collect
 
@@ -26,7 +28,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls that match a previously defined lvar' do
-    temp_file 'foo.rb', 'def m(a) self.a end'
+    @ruby = 'def m(a) self.a end'
 
     subject.collect
 
@@ -35,7 +37,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using send' do
-    temp_file 'foo.rb', 'send(:foo)'
+    @ruby = 'send(:foo)'
 
     subject.collect
 
@@ -44,7 +46,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method definitions using attr_reader' do
-    temp_file 'foo.rb', 'attr_reader(:cat)'
+    @ruby = 'attr_reader(:cat)'
 
     subject.collect
 
@@ -53,7 +55,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method definitions using attr_accessor' do
-    temp_file 'foo.rb', 'attr_accessor(:cat)'
+    @ruby = 'attr_accessor(:cat)'
 
     subject.collect
 
@@ -62,7 +64,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method definitions using attr_writer' do
-    temp_file 'foo.rb', 'attr_writer(:cat)'
+    @ruby = 'attr_writer(:cat)'
 
     subject.collect
 
@@ -71,7 +73,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using send with strings' do
-    temp_file 'foo.rb', 'send("foo")'
+    @ruby = 'send("foo")'
 
     subject.collect
 
@@ -80,7 +82,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using Symbol#to_proc' do
-    temp_file 'foo.rb', 'array.each(&:foo)'
+    @ruby = 'array.each(&:foo)'
 
     subject.collect
 
@@ -89,7 +91,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using =' do
-    temp_file 'foo.rb', 'self.foo = 1'
+    @ruby = 'self.foo = 1'
 
     subject.collect
 
@@ -98,7 +100,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using +=' do
-    temp_file 'foo.rb', 'self.foo += 1'
+    @ruby = 'self.foo += 1'
 
     subject.collect
 
@@ -107,7 +109,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using *=' do
-    temp_file 'foo.rb', 'self.foo *= 1'
+    @ruby = 'self.foo *= 1'
 
     subject.collect
 
@@ -116,7 +118,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using ||=' do
-    temp_file 'foo.rb', 'self.foo ||= 1'
+    @ruby = 'self.foo ||= 1'
 
     subject.collect
 
@@ -125,7 +127,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls using &&=' do
-    temp_file 'foo.rb', 'self.foo &&= 1'
+    @ruby = 'self.foo &&= 1'
 
     subject.collect
 
@@ -134,7 +136,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects ivar definitions' do
-    temp_file 'foo.rb', '@foo = 1'
+    @ruby = '@foo = 1'
 
     subject.collect
 
@@ -143,7 +145,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects ivar calls using +=' do
-    temp_file 'foo.rb', '@foo += 1'
+    @ruby = '@foo += 1'
 
     subject.collect
 
@@ -152,7 +154,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects ivar calls using *=' do
-    temp_file 'foo.rb', '@foo *= 1'
+    @ruby = '@foo *= 1'
 
     subject.collect
 
@@ -161,7 +163,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects ivar calls using ||=' do
-    temp_file 'foo.rb', '@foo ||= 1'
+    @ruby = '@foo ||= 1'
 
     subject.collect
 
@@ -170,7 +172,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects ivar calls using &&=' do
-    temp_file 'foo.rb', '@foo &&= 1'
+    @ruby = '@foo &&= 1'
 
     subject.collect
 
@@ -179,7 +181,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects gvar definitions' do
-    temp_file 'foo.rb', '$foo = 1'
+    @ruby = '$foo = 1'
 
     subject.collect
 
@@ -188,7 +190,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects gvar calls using +=' do
-    temp_file 'foo.rb', '$foo += 1'
+    @ruby = '$foo += 1'
 
     subject.collect
 
@@ -197,7 +199,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects gvar calls using *=' do
-    temp_file 'foo.rb', '$foo *= 1'
+    @ruby = '$foo *= 1'
 
     subject.collect
 
@@ -206,7 +208,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects gvar calls using ||=' do
-    temp_file 'foo.rb', '$foo ||= 1'
+    @ruby = '$foo ||= 1'
 
     subject.collect
 
@@ -215,7 +217,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects gvar calls using &&=' do
-    temp_file 'foo.rb', '$foo &&= 1'
+    @ruby = '$foo &&= 1'
 
     subject.collect
 
@@ -224,7 +226,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects cvar definitions' do
-    temp_file 'foo.rb', '@@foo = 1'
+    @ruby = '@@foo = 1'
 
     subject.collect
 
@@ -233,7 +235,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects cvar calls using +=' do
-    temp_file 'foo.rb', '@@foo += 1'
+    @ruby = '@@foo += 1'
 
     subject.collect
 
@@ -242,7 +244,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects cvar calls using *=' do
-    temp_file 'foo.rb', '@@foo *= 1'
+    @ruby = '@@foo *= 1'
 
     subject.collect
 
@@ -251,7 +253,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects cvar calls using ||=' do
-    temp_file 'foo.rb', '@@foo ||= 1'
+    @ruby = '@@foo ||= 1'
 
     subject.collect
 
@@ -260,7 +262,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects cvar calls using &&=' do
-    temp_file 'foo.rb', '@@foo &&= 1'
+    @ruby = '@@foo &&= 1'
 
     subject.collect
 
@@ -270,12 +272,11 @@ RSpec.describe Leftovers::Collector do
 
   context 'when rspec' do
     before do
-      temp_file '.leftovers.yml', "---\ngems: rspec"
-      Leftovers.reset
+      Leftovers.config << Leftovers::Config.new('rspec')
     end
 
     it 'collects method calls using be_' do
-      temp_file 'foo.rb', 'expect(array).to be_empty'
+      @ruby = 'expect(array).to be_empty'
 
       subject.collect
 
@@ -286,12 +287,11 @@ RSpec.describe Leftovers::Collector do
 
   context 'when rails' do
     before do
-      temp_file '.leftovers.yml', "---\ngems: rails"
-      Leftovers.reset
+      Leftovers.config << Leftovers::Config.new('rails')
     end
 
     it 'collects method calls using a method that calls multiple methods' do
-      temp_file 'foo.rb', 'before_action :method_one, :method_two'
+      @ruby = 'before_action :method_one, :method_two'
 
       subject.collect
 
@@ -300,7 +300,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects method calls using a method that calls multiple methods with keyword arguments' do
-      temp_file 'foo.rb', 'skip_before_action :method_one, :method_two, if: :other_method?'
+      @ruby = 'skip_before_action :method_one, :method_two, if: :other_method?'
 
       subject.collect
 
@@ -311,7 +311,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects method calls passed to before_save if:' do
-      temp_file 'foo.rb', 'before_save :do_a_thing, if: :thing_to_be_done?'
+      @ruby = 'before_save :do_a_thing, if: :thing_to_be_done?'
 
       subject.collect
 
@@ -320,7 +320,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects method calls passed in an array to a before_save if:' do
-      temp_file 'foo.rb', 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]'
+      @ruby = 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]'
 
       subject.collect
 
@@ -331,7 +331,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects method calls in route values' do
-      temp_file 'foo.rb', 'patch :thing, to: "users#logout"'
+      @ruby = 'patch :thing, to: "users#logout"'
 
       subject.collect
 
@@ -340,7 +340,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects scoped constant calls in class_name symbol keys' do
-      temp_file 'foo.rb', 'has_many :whatever, class_name: "Which::Ever"'
+      @ruby = 'has_many :whatever, class_name: "Which::Ever"'
 
       subject.collect
 
@@ -349,7 +349,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects hash key calls' do
-      temp_file 'foo.rb', 'validates test: true, other: :bar, presence: true'
+      @ruby = 'validates test: true, other: :bar, presence: true'
 
       subject.collect
 
@@ -360,7 +360,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects non-restful route calls' do
-      temp_file 'foo.rb', "get '/logout' => 'users#logout'"
+      @ruby = "get '/logout' => 'users#logout'"
 
       subject.collect
 
@@ -369,7 +369,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects routes controller calls' do
-      temp_file 'foo.rb', <<~RUBY
+      @ruby = <<~RUBY
         controller :users do
           get :new
         end
@@ -382,7 +382,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects routes resource calls' do
-      temp_file 'foo.rb', 'resource :user'
+      @ruby = 'resource :user'
 
       subject.collect
 
@@ -391,7 +391,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects delegation definitions and calls' do
-      temp_file 'foo.rb', 'delegate :foo, to: :bar'
+      @ruby = 'delegate :foo, to: :bar'
 
       subject.collect
 
@@ -401,7 +401,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects delegation definitions and calls when prefix is defined' do
-      temp_file 'foo.rb', 'delegate :foo, :few, prefix: :bar, to: :baz'
+      @ruby = 'delegate :foo, :few, prefix: :bar, to: :baz'
 
       subject.collect
 
@@ -410,7 +410,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects delegation definitions and calls when prefix is true' do
-      temp_file 'foo.rb', 'delegate :foo, :few, prefix: true, to: :bar'
+      @ruby = 'delegate :foo, :few, prefix: true, to: :bar'
 
       subject.collect
 
@@ -419,7 +419,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects attribute assignment args' do
-      temp_file 'foo.rb', 'User.new(first_name: "Jane", last_name: "Smith")'
+      @ruby = 'User.new(first_name: "Jane", last_name: "Smith")'
 
       subject.collect
 
@@ -428,7 +428,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects bang methods' do
-      temp_file 'foo.rb', 'User.create!'
+      @ruby = 'User.create!'
 
       subject.collect
 
@@ -437,7 +437,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects basic permit args' do
-      temp_file 'foo.rb', 'permit(:first_name, :last_name)'
+      @ruby = 'permit(:first_name, :last_name)'
 
       subject.collect
 
@@ -446,7 +446,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects hash permit args' do
-      temp_file 'foo.rb', 'permit(names: [:first_name, :last_name], age: :years)'
+      @ruby = 'permit(names: [:first_name, :last_name], age: :years)'
 
       subject.collect
 
@@ -457,7 +457,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects deep permit args' do
-      temp_file 'foo.rb', <<~RUBY
+      @ruby = <<~RUBY
         permit person_attributes: { names: [:first_name, :last_name, { deep: :hash}], age: :years }
       RUBY
 
@@ -470,36 +470,48 @@ RSpec.describe Leftovers::Collector do
       )
     end
 
-    it 'collects routes scope' do
-      temp_file 'config/routes.rb', <<~RUBY
-        Rails.application.routes.draw do
-          scope '/whatever', module: :whichever
-        end
-      RUBY
+    context 'with temp_dir' do
+      around { |example| with_temp_dir { example.run } }
+      it 'collects routes scope' do
+        # need the files to actually exist or fast_ignore doesn't work.
+        temp_file 'config/routes.rb'
+        temp_file 'app/models/user.rb'
 
-      subject.collect
+        @path = 'config/routes.rb'
+        @ruby = <<~RUBY
+          Rails.application.routes.draw do
+            scope '/whatever', module: :whichever
+          end
+        RUBY
 
-      expect(subject.definitions).to be_empty
-      expect(subject.calls).to contain_exactly(
-        :Rails, :application, :routes, :draw, :scope, :Whichever
-      )
-    end
+        subject.collect
 
-    it 'collects AR scope' do
-      temp_file 'app/models/user.rb', <<~RUBY
-        class User < ApplicationRecord
-          scope :whatever, -> { order(:whichever) }
-        end
-      RUBY
+        expect(subject.definitions).to be_empty
+        expect(subject.calls).to contain_exactly(
+          :Rails, :application, :routes, :draw, :scope, :Whichever
+        )
+      end
 
-      subject.collect
+      it 'collects AR scope' do
+        temp_file 'config/routes.rb'
+        temp_file 'app/models/user.rb'
 
-      expect(subject.definitions).to have_names(:User, :whatever)
-      expect(subject.calls).to contain_exactly(:ApplicationRecord, :lambda, :scope, :order)
+        @path = 'app/models/user.rb'
+        @ruby = <<~RUBY
+          class User < ApplicationRecord
+            scope :whatever, -> { order(:whichever) }
+          end
+        RUBY
+
+        subject.collect
+
+        expect(subject.definitions).to have_names(:User, :whatever)
+        expect(subject.calls).to contain_exactly(:ApplicationRecord, :lambda, :scope, :order)
+      end
     end
 
     it 'collects validation calls' do
-      temp_file 'foo.rb', 'validate :validator_method_name, if: :condition?'
+      @ruby = 'validate :validator_method_name, if: :condition?'
 
       subject.collect
 
@@ -508,7 +520,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects validations calls inclusion method' do
-      temp_file 'foo.rb', <<~RUBY
+      @ruby = <<~RUBY
         validates :name, presence: true, inclusion: :inclusion_method, if: :condition?
       RUBY
 
@@ -523,7 +535,7 @@ RSpec.describe Leftovers::Collector do
     end
 
     it 'collects validations calls with inclusion hash' do
-      temp_file 'foo.rb', <<~RUBY
+      @ruby = <<~RUBY
         validates :name, presence: true, inclusion: { in: :inclusion_method }, if: :condition?
       RUBY
 
@@ -539,7 +551,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'copes with method calls using send with lvars' do
-    temp_file 'foo.rb', 'send(foo)'
+    @ruby = 'send(foo)'
 
     subject.collect
 
@@ -548,7 +560,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'copes with method calls using send with interpolated lvars' do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       send("foo\#{bar}")
     RUBY
 
@@ -559,7 +571,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls that match a previously defined lvar in a different context' do
-    temp_file 'foo.rb', 'def m(a) nil end; a'
+    @ruby = 'def m(a) nil end; a'
 
     subject.collect
 
@@ -568,7 +580,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects constant references' do
-    temp_file 'foo.rb', 'Whatever.new'
+    @ruby = 'Whatever.new'
 
     subject.collect
 
@@ -577,7 +589,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects class definitions' do
-    temp_file 'foo.rb', 'class Whatever; end'
+    @ruby = 'class Whatever; end'
 
     subject.collect
 
@@ -586,7 +598,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects class definitions and constant calls to the inheritance class' do
-    temp_file 'foo.rb', 'class Whatever < SuperClass; end'
+    @ruby = 'class Whatever < SuperClass; end'
 
     subject.collect
 
@@ -595,7 +607,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects module definitions' do
-    temp_file 'foo.rb', 'module Whatever; end'
+    @ruby = 'module Whatever; end'
 
     subject.collect
 
@@ -604,7 +616,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects constant assignment' do
-    temp_file 'foo.rb', 'Whatever = Class.new'
+    @ruby = 'Whatever = Class.new'
 
     subject.collect
 
@@ -613,7 +625,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files' do
-    temp_file 'foo.haml', '= a'
+    @ruby = Leftovers::Haml.precompile '= a'
 
     subject.collect
 
@@ -622,7 +634,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files with hidden scripts' do
-    temp_file 'foo.haml', '- a'
+    @ruby = Leftovers::Haml.precompile '- a'
 
     subject.collect
 
@@ -631,9 +643,9 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files string interpolation' do
-    temp_file 'foo.haml', <<~RUBY
+    @ruby = Leftovers::Haml.precompile <<~HAML
       before\#{a}after
-    RUBY
+    HAML
 
     subject.collect
 
@@ -642,7 +654,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files with ruby blocks' do
-    temp_file 'foo.haml', <<~HAML
+    @ruby = Leftovers::Haml.precompile <<~HAML
       :ruby
         a(1)
     HAML
@@ -654,7 +666,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files with dynamic attributes' do
-    temp_file 'foo.haml', '%div{id: a}'
+    @ruby = Leftovers::Haml.precompile '%div{id: a}'
 
     subject.collect
 
@@ -663,7 +675,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files with whitespace-significant blocks' do
-    temp_file 'foo.haml', <<~HAML
+    @ruby = Leftovers::Haml.precompile <<~HAML
       - foo.each do |bar|
         = bar
     HAML
@@ -675,7 +687,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects haml files with echoed whitespace-significant blocks' do
-    temp_file 'foo.haml', <<~HAML
+    @ruby = Leftovers::Haml.precompile <<~HAML
       = form_for(whatever) do |bar|
         = bar
     HAML
@@ -687,7 +699,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects erb files' do
-    temp_file 'foo.erb', '<a href="<%= whatever %>">label</a>'
+    @ruby = Leftovers::ERB.precompile '<a href="<%= whatever %>">label</a>'
 
     subject.collect
 
@@ -697,7 +709,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects erb files when newline trimmed' do
-    temp_file 'foo.erb', <<~ERB
+    @ruby = Leftovers::ERB.precompile <<~ERB
       <%- if foo.present? -%>
         <a href="<%= foo %>">label</a>
       <%- end -%>
@@ -711,7 +723,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects method calls in hash values' do
-    temp_file 'foo.rb', '{ call: this }'
+    @ruby = '{ call: this }'
 
     subject.collect
 
@@ -720,7 +732,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects used in scope as calls' do
-    temp_file 'foo.rb', 'A::B'
+    @ruby = 'A::B'
 
     subject.collect
 
@@ -729,7 +741,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects alias method arguments' do
-    temp_file 'foo.rb', 'alias_method :new_method, :original_method'
+    @ruby = 'alias_method :new_method, :original_method'
 
     subject.collect
 
@@ -738,7 +750,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it "doesn't collect alias method arguments that aren't symbols" do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       a = :whatever
       b = :whichever
       alias_method a, b
@@ -751,7 +763,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects alias arguments' do
-    temp_file 'foo.rb', 'alias new_method original_method'
+    @ruby = 'alias new_method original_method'
 
     subject.collect
 
@@ -760,7 +772,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects lazy method calls' do
-    temp_file 'foo.rb', 'this&.that'
+    @ruby = 'this&.that'
 
     subject.collect
 
@@ -769,7 +781,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects inline comment allows' do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       def method_name # leftovers:call method_name
       end
 
@@ -793,7 +805,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects inline comment allows for constants' do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       OVERRIDDEN_CONSTANT='trash' # leftovers:call OVERRIDDEN_CONSTANT
 
       class MyConstant # leftovers:call MyConstant
@@ -810,7 +822,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects multiple inline comment allows' do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       method_names = [
         :method_name_1,
         :method_name_1?,
@@ -830,7 +842,7 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects multiple inline comment allows for non alpha methods' do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       # leftovers:call [] []= ** ! ~ +@ -@ * / % + - >> <<
       # leftovers:call & ^ | <= < > >= <=> == === != =~ !~
     RUBY
@@ -844,9 +856,9 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects affixxed methods' do
-    temp_file 'foo.rb', 'test_html'
+    @ruby = 'test_html'
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       ---
       rules:
         - name:
@@ -865,9 +877,9 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects array values' do
-    temp_file 'foo.rb', 'flow(whatever, [:method_1, :method_2])'
+    @ruby = 'flow(whatever, [:method_1, :method_2])'
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       ---
       rules:
         - name: flow
@@ -882,9 +894,9 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects matched keyword arguments' do
-    temp_file 'foo.rb', 'flow(whatever, some_values: :method)'
+    @ruby = 'flow(whatever, some_values: :method)'
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       ---
       rules:
         - name: flow
@@ -900,12 +912,12 @@ RSpec.describe Leftovers::Collector do
   end
 
   it "doesn't collect position or keyword lvars" do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       b = 1
       my_method(b, my_keyword: b)
     RUBY
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
           calls:
@@ -919,13 +931,13 @@ RSpec.describe Leftovers::Collector do
   end
 
   it "doesn't collect rest kwargs" do
-    temp_file 'foo.rb', <<~RUBY
+    @ruby = <<~RUBY
       b = 1
       args = {}
       my_method(b, my_keyword: b, **args)
     RUBY
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
           calls:
@@ -939,107 +951,107 @@ RSpec.describe Leftovers::Collector do
   end
 
   it 'collects constant assignment values' do
-    temp_file 'foo.rb', <<~RUBY
-      RUBY_STRING_METHODS = %i{
+    @ruby = <<~RUBY
+      STRING_TRANSFORMS = %i{
         downcase
         upcase
       }
     RUBY
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
-        - name: RUBY_STRING_METHODS
+        - name: STRING_TRANSFORMS
           calls:
             argument: 1
     YML
 
     subject.collect
 
-    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.definitions).to have_names :STRING_TRANSFORMS
     expect(subject.calls).to contain_exactly(:downcase, :upcase)
   end
 
   it 'collects constant assignment values with freeze' do
-    temp_file 'foo.rb', <<~RUBY
-      RUBY_STRING_METHODS = %i{
+    @ruby = <<~RUBY
+      STRING_TRANSFORMS = %i{
         downcase
         upcase
       }.freeze
     RUBY
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
-        - name: RUBY_STRING_METHODS
+        - name: STRING_TRANSFORMS
           calls:
             argument: 1
     YML
 
     subject.collect
 
-    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.definitions).to have_names :STRING_TRANSFORMS
     expect(subject.calls).to contain_exactly(:downcase, :upcase, :freeze)
   end
 
   it 'collects constant hash assignment keys' do
-    temp_file 'foo.rb', <<~RUBY
-      RUBY_STRING_METHODS = {
+    @ruby = <<~RUBY
+      STRING_TRANSFORMS = {
         downcase: true,
         upcase: true
       }
     RUBY
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
-        - name: RUBY_STRING_METHODS
+        - name: STRING_TRANSFORMS
           calls:
             keys: true
     YML
 
     subject.collect
 
-    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.definitions).to have_names :STRING_TRANSFORMS
     expect(subject.calls).to contain_exactly(:downcase, :upcase)
   end
 
   it 'collects constant hash assignment keys with freeze' do
-    temp_file 'foo.rb', <<~RUBY
-      RUBY_STRING_METHODS = {
+    @ruby = <<~RUBY
+      STRING_TRANSFORMS = {
         downcase: true,
         upcase: true
       }.freeze
     RUBY
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
-        - name: RUBY_STRING_METHODS
+        - name: STRING_TRANSFORMS
           calls:
             keys: true
     YML
 
     subject.collect
 
-    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.definitions).to have_names :STRING_TRANSFORMS
     expect(subject.calls).to contain_exactly(:downcase, :upcase, :freeze)
   end
 
   it 'collects nested hash assignment values' do
-    temp_file 'foo.rb', <<~RUBY
-      RUBY_STRING_METHODS = {
+    @ruby = <<~RUBY
+      STRING_TRANSFORMS = {
         body: { process: :downcase },
         title: { process: :upcase }
       }
     RUBY
 
-    temp_file '.leftovers.yml', <<~YML
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
-        - name: RUBY_STRING_METHODS
+        - name: STRING_TRANSFORMS
           calls:
             arguments: '**'
     YML
 
     subject.collect
 
-    expect(subject.definitions).to have_names :RUBY_STRING_METHODS
+    expect(subject.definitions).to have_names :STRING_TRANSFORMS
     expect(subject.calls).to contain_exactly(:downcase, :upcase)
   end
 end

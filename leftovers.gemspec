@@ -35,8 +35,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
-  spec.add_development_dependency 'spellr', '~> 0.6.0'
-  spec.add_dependency 'fast_ignore', '~> 0.5.2'
+  spec.add_development_dependency 'spellr', '>= 0.7.1'
+  spec.add_dependency 'fast_ignore', '~> 0.8.0'
   spec.add_dependency 'parallel'
   spec.add_dependency 'parser'
 end

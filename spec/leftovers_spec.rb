@@ -10,6 +10,8 @@ RSpec.describe Leftovers do
 
     before { described_class.reset }
 
+    after { described_class.reset }
+
     it 'can load all default config' do
       files = Pathname.glob("#{__dir__}/../lib/config/*.yml")
       files = files.map { |f| f.basename.sub_ext('').to_s }
@@ -54,28 +56,28 @@ RSpec.describe Leftovers do
 
     it "doesn't think method calls in the same file are leftovers" do
       temp_file 'foo.rb', <<~RUBY
-        class EmailActions
-          def initialize(order_params)
-            email_params_from_order(order_params)
+        class Actions
+          def initialize(params)
+            prepare_params(params)
           end
 
-          def email_params_from_order(order_params)
+          def prepare_params(params)
             {
-              address_attributes: address_params(order_params)
+              attributes: sub_params(params)
             }
           end
 
-          def address_params(order_params)
+          def sub_params(params)
             true
           end
         end
       RUBY
 
-      expect(subject.leftovers).to have_names :EmailActions
+      expect(subject.leftovers).to have_names :Actions
       expect(subject.collector.definitions)
-        .to have_names(:EmailActions, :initialize, :email_params_from_order, :address_params)
+        .to have_names(:Actions, :initialize, :prepare_params, :sub_params)
 
-      expect(subject.collector.calls).to contain_exactly(:address_params, :email_params_from_order)
+      expect(subject.collector.calls).to contain_exactly(:sub_params, :prepare_params)
     end
   end
 end
