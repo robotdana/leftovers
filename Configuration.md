@@ -5,36 +5,37 @@ Its presence is optional and all of these settings are optional:
 
 see the [built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
 
-- [`include_paths:`](#include_paths:) _optional_
-- [`exclude_paths:`](#exclude_paths:) _optional_
-- [`test_paths:`](#test_paths:) _optional_
-- [`gems:`](#gems:) _optional_
-- [`rules:`](#rules:) _optional_
-  - [`names:`](#names:) _required_
-    - [`has_prefix](#has_prefix:) _optional_
-    - [`has_suffix](#has_suffix:) _optional_
-    - [`matches](#matches:) _optional_
-  - [`paths:`](#paths:) _optional_
-  - **action** _at least one is required_
-  - [`skip:`](#skip:)
-  - [`calls:`](#calls:), [`defines:`](#defines:)
-    - [`arguments:`](#arguments:), [`keys:`](#keys:), [`itself:`](#itself:) _at least one is required_
-    - [`transforms:`](#transforms), [`linked_transforms:`](#linked_transforms) _optional_
+- [`include_paths:`](#include_paths)
+- [`exclude_paths:`](#exclude_paths)
+- [`test_paths:`](#test_paths)
+- [`gems:`](#gems)
+- [`rules:`](#rules)
+  - [`names:`](#names)
+    - [`has_prefix](#has_prefix-has_suffix)
+    - [`has_suffix](#has_prefix-has_suffix)
+    - [`matches](#matches)
+  - [`paths:`](#paths)
+  - [`skip:`](#skip)
+  - [`calls:`](#calls-defines), [`defines:`](#calls-defines)
+    - [`arguments:`](#arguments), [`keys:`](#keys-), [`itself:`](#itself-true)
+    - [`transforms:`](#transforms), [`linked_transforms:`](#linked_transforms)
         - `original:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
         - `delete_before:`, `delete_after:`, `downcase:`, `upcase:`, `capitalize:`, `swapcase:`
-        - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize` _requires activesupport_
-    - [`if:`](#if:), [`unless:`](#unless:)
-      - [`has_argument:`](#has_argument:)
-        - [`keyword`:]
-          - `has_prefix:`
-          - `has_suffix:`
-          - `matches:`
-        - [`value:`](#has_argument:)
-          - [`type:`](#has_argument:)
+        - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize`
+    - [`if:`](#if-unless), [`unless:`](#if-unless)
+      - [`has_argument:`](#has_argument)
+        - `keyword:`
+          - [`has_prefix:`](#has_prefix-has_suffix)
+          - [`has_suffix:`](#has_prefix-has_suffix)
+          - [`matches:`](#matches)
+        - `value:`
+          - [`has_prefix:`](#has_prefix-has_suffix)
+          - [`has_suffix:`](#has_prefix-has_suffix)
+          - [`matches:`](#matches)
+          - `type:`
 
 
 ## `include_paths:`
-**optional**
 
 List filenames/paths in the gitignore format of files to be checked using a [gitignore-esque format](https://github.com/robotdana/fast_ignore#using-an-includes-list).
 
@@ -48,7 +49,6 @@ include_paths:
 Also it will check files with no extension that have `ruby` in the shebang/hashbang, e.g. `#!/usr/bin/env ruby` or `#!/usr/bin/ruby` etc
 
 ## `exclude_paths:`
-**optional**
 
 List filenames/paths that match the above that you might want to exclude, using the gitignore format.
 By default it will also read your project's .gitignore file and ignore anything there.
@@ -59,7 +59,6 @@ exclude_paths:
 ```
 
 ## `test_paths:`
-**optional**
 
 list filenames/paths of test directories that will be used to determine if a method/etc is only tested but not otherwise used.
 Also in the gitignore format
@@ -71,7 +70,6 @@ test_paths:
 ```
 
 ## `gems:`
-**optional**
 
 By default Leftovers will look at your Gemfile.lock file to find all gem dependencies
 
@@ -83,7 +81,6 @@ gems:
 ```
 
 ## `rules:`
-**optional**
 
 This is the most complex part of configuration, and is a list of methods that define/call other methods/classes/etc.
 Each must have a list of `names:`. and can optionally be limited to a list of `paths:`.
@@ -108,7 +105,6 @@ rules:
 ```
 
 #### `has_prefix:`, `has_suffix:`
-**optional**
 
 To match names other than exact strings, you can use has_suffix or has_prefix or both if you're feeling fancy.
 
@@ -123,7 +119,6 @@ rules:
 
 
 #### `matches:`
-**optional**
 
 if `has_suffix:` and `has_prefix:` isn't enough, you can use `matches:` to supply a regexp.
 This string is automatically converted into a ruby regexp and must match the whole method/constant name.
@@ -148,11 +143,10 @@ rules:
 ```
 
 ### `skip:`
-**optional**
 
 Skip methods that are called on your behalf by code outside your project, or called dynamically using send with variables.
 
-You can also skip method calls and definitions in place using [magic comments](#magic_comments).
+You can also skip method calls and definitions in place using [magic comments](https://github.com/robotdana/leftovers/tree/master/README.md#magic-comments).
 
 ```yml
 rules:
@@ -375,13 +369,35 @@ end
 ```
 will count as a definition of `first_name`, `first_name=` and `first_name?`, and because of `linked_transforms` the call to `first_name=` also counts as a call to `first_name?` and `first_name`
 
-#### `if:` and `unless:`
+#### `if:`, `unless:`
 
 Sometimes what to do depends on other arguments than the ones looked at:
 e.g. rails' `delegate` method has a `prefix:` argument of its own that is used when defining methods:
 
-`if:` and `unless:` work the same way, and are currently limited to looking at keyword arguments and their values.
+`if:` and `unless:` work the same way and can be given a list or single value of conditions. For a list, all conditions must be met.
 
+```yml
+rules:
+  - name: field
+    calls:
+      - argument: 1
+        unless:
+          has_argument: method
+      - argument: method
+```
+```ruby
+field :first_name
+field :family_name, method: :surname
+```
+would count calls to `first_name`, and `surname`, but not `family_name`
+
+##### `has_argument:`
+
+has_argument can be given a keyword or list of keywords. or a list of patterns like name.
+or to check either the exact value or type of value it can be given `keyword:` and `value:` which also match the patterns like `name:`.
+instead of an exact value `value:` can be given a type or list of type.
+
+This all comes together to give the most complex rule, rails delegate method.
 ```yml
 rules:
   - name: delegate
