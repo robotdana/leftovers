@@ -1,7 +1,7 @@
 # Leftovers
 [![travis](https://travis-ci.org/robotdana/leftovers.svg?branch=master)](https://travis-ci.org/robotdana/leftovers)
 
-Find unused methods, Classes, CONSTANTS, @instance_variables, @@class_variables, and $global_variables in your ruby projects
+Find unused `methods`, `Classes`, `CONSTANTS`, `@instance_variables`, `@@class_variables`, and `$global_variables` in your ruby projects.
 
 ## Why?
 
@@ -115,9 +115,9 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/mast
 - [`gems:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#gems)
 - [`rules:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#rules)
   - [`names:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#names)
-    - [`has_prefix](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-    - [`has_suffix](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-    - [`matches](https://github.com/robotdana/leftovers/tree/master/Configuration.md#matches)
+    - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
+    - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
+    - [`matches:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#matches)
   - [`paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#paths)
   - [`skip:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#skip)
   - [`calls:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls-defines), [`defines:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls-defines)
@@ -156,9 +156,9 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/mast
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Contributing
 
