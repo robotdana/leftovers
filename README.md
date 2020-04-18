@@ -57,6 +57,50 @@ lib/hello_world.rb:6:6 generated_method= attr_accessor :generated_method
 lib/hello_world.rb:6:6 generated_method attr_accessor :generated_method
 ```
 
+## Magic comments
+
+### `# leftovers:keep`
+To mark a method definition as not unused, add the comment `# leftovers:keep` on the same line as the definition
+
+```ruby
+class MyClass
+  def my_method # leftovers:keep
+    true
+  end
+end
+```
+This would report `MyClass` is unused, but not my_method
+To do this for all definitions of this name, add the name with `skip: true` in the configuration file.
+
+### `# leftovers:test`
+
+To mark a definition from a non-test dir, as intentionally only used by tests, use `leftovers:test`
+```ruby
+# app/my_class.rb
+class MyClass
+  def my_method # leftovers:test
+    true
+  end
+end
+```
+```ruby
+# spec/my_class_spec.rb
+describe MyClass do
+  it { expect(subject.my_method).to be true }
+end
+```
+
+This would consider `my_method` to be used, even though it is only called by tests.
+
+### `# leftovers:call`
+To mark a dynamic call that doesn't use literal values, use `leftovers:call` with the method name listed
+```ruby
+method = [:puts, :warn].sample
+send(method, 'text') # leftovers:call puts, warn
+```
+
+This would consider `puts` and `warn` to both have been called
+
 ## Configuration
 
 The configuration is read from `.leftovers.yml` in your project root.

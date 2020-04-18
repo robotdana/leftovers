@@ -11,22 +11,23 @@ module Leftovers
   class FileCollector < Parser::AST::Processor # rubocop:disable Metrics/ClassLength
     attr_reader :calls
     attr_reader :definitions
-    attr_reader :file
 
-    def initialize(ruby, file)
+    def initialize(ruby, file) # rubocop:disable Metrics/MethodLength
       @calls = []
       @definitions = []
+      @allow_lines = Set.new.compare_by_identity
+      @test_lines = Set.new.compare_by_identity
       @ruby = ruby
       @file = file
     end
 
     def filename
-      @filename ||= file.relative_path
+      @filename ||= @file.relative_path
     end
 
     def to_h
       {
-        test?: file.test?,
+        test?: @file.test?,
         calls: calls,
         definitions: definitions
       }
@@ -34,8 +35,8 @@ module Leftovers
 
     def collect
       ast, comments = Parser::CurrentRuby.parse_with_comments(@ruby)
-      process(ast)
       process_comments(comments)
+      process(ast)
     rescue Parser::SyntaxError => e
       Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Layout/LineLength
     end
@@ -47,15 +48,19 @@ module Leftovers
     }.map { |op| /#{Regexp.escape(op)}/ })
     CONSTANT_NAME_RE = /[[:upper:]][[:alnum:]_]*\b/.freeze
     NAME_RE = Regexp.union(METHOD_NAME_RE, NON_ALNUM_METHOD_NAME_RE, CONSTANT_NAME_RE)
-    LEFTOVERS_RE = /\bleftovers:(call|allow) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
-    def process_comments(comments) # rubocop:disable Metrics/MethodLength
+    LEFTOVERS_CALL_RE = /\bleftovers:call(?:s|ed|er|ers|) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
+    LEFTOVERS_ALLOW_RE = /\bleftovers:(?:keeps?|skip(?:s|ped|)|allow(?:s|ed|))\b/.freeze
+    LEFTOVERS_TEST_RE = /\bleftovers:(?:for_tests?|tests?|testing)\b/.freeze
+    def process_comments(comments) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       comments.each do |comment|
-        match = comment.text.match(LEFTOVERS_RE)
+        @allow_lines << comment.loc.line if comment.text.match?(LEFTOVERS_ALLOW_RE)
 
-        next unless match
-        next unless match[2]
+        @test_lines << comment.loc.line if comment.text.match?(LEFTOVERS_TEST_RE)
 
-        match[2].scan(NAME_RE).each { |s| add_call(s.to_sym) }
+        next unless (match = comment.text.match(LEFTOVERS_CALL_RE))
+        next unless match[1]
+
+        match[1].scan(NAME_RE).each { |s| add_call(s.to_sym) }
       end
     end
 
@@ -144,14 +149,6 @@ module Leftovers
       collect_rules(node)
     end
 
-    def add_definition(name, loc)
-      definitions << Leftovers::Definition.new(name, location: loc, file: file, test: file.test?)
-    end
-
-    def add_call(name)
-      calls << name
-    end
-
     # grab calls to `alias new_method original_method`
     def on_alias(node)
       super
@@ -163,6 +160,20 @@ module Leftovers
     end
 
     private
+
+    def test?(loc)
+      @file.test? || @test_lines.include?(loc.line)
+    end
+
+    def add_definition(name, loc)
+      return if @allow_lines.include?(loc.line)
+
+      definitions << Leftovers::Definition.new(name, location: loc, file: @file, test: test?(loc))
+    end
+
+    def add_call(name)
+      calls << name
+    end
 
     # just collects the call, super will collect the definition
     def collect_var_op_asgn(node)
@@ -196,8 +207,10 @@ module Leftovers
 
         calls.concat(rule.calls(node))
 
-        node.file = file
-        node.test = file.test?
+        next if @allow_lines.include?(node.loc.line)
+
+        node.file = @file
+        node.test = test?(node.loc)
         definitions.concat(rule.definitions(node))
       end
     end

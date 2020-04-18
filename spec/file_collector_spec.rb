@@ -785,6 +785,49 @@ RSpec.describe Leftovers::FileCollector do
 
   it 'collects inline comment allows' do
     @ruby = <<~RUBY
+      def method_name # leftovers:allow
+      end
+
+      def method_name=(value) # leftovers:allows
+      end
+
+      def method_name? # leftovers:allowed
+      end
+
+      def method_name! # leftovers:skip
+      end
+    RUBY
+
+    subject.collect
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to be_empty
+  end
+
+  it 'collects inline comment test' do
+    @ruby = <<~RUBY
+      def method_name # leftovers:for_test
+      end
+
+      def method_name=(value) # leftovers:for_tests
+      end
+
+      def method_name? # leftovers:testing
+      end
+
+      def method_name! # leftovers:test
+      end
+    RUBY
+
+    subject.collect
+    expect(subject.definitions).to have_names(
+      :method_name, :method_name?, :method_name=, :method_name!
+    )
+    expect(subject.definitions.map(&:test?)).to eq([true, true, true, true])
+    expect(subject.calls).to be_empty
+  end
+
+  it 'collects inline comment calls' do
+    @ruby = <<~RUBY
       def method_name # leftovers:call method_name
       end
 
@@ -807,7 +850,7 @@ RSpec.describe Leftovers::FileCollector do
     )
   end
 
-  it 'collects inline comment allows for constants' do
+  it 'collects inline comment calls for constants' do
     @ruby = <<~RUBY
       OVERRIDDEN_CONSTANT='trash' # leftovers:call OVERRIDDEN_CONSTANT
 
@@ -822,6 +865,19 @@ RSpec.describe Leftovers::FileCollector do
     expect(subject.calls).to contain_exactly(
       :MyConstant, :OVERRIDDEN_CONSTANT
     )
+  end
+
+  it 'collects inline comment allows for constants' do
+    @ruby = <<~RUBY
+      OVERRIDDEN_CONSTANT='trash' # leftovers:allow
+
+      class MyConstant # leftovers:allow
+      end
+    RUBY
+
+    subject.collect
+    expect(subject.definitions).to be_empty
+    expect(subject.calls).to be_empty
   end
 
   it 'collects multiple inline comment allows' do
