@@ -129,7 +129,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     case value
     when nil then nil
     when Array then value.each(&block)
-    else block.call(value)
+    else yield(value)
     end
   end
 

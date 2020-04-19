@@ -1,4 +1,6 @@
-require: rubocop-rspec
+require:
+  - rubocop-rspec
+  - rubocop-performance
 
 # Reference:
 # https://rubocop.readthedocs.io/en/latest/
