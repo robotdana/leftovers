@@ -9,7 +9,7 @@ module Leftovers
     def initialize(patterns) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
       keys = []
       pairs = []
-      Array.each_or_self(patterns) do |pat|
+      Leftovers.each_or_self(patterns) do |pat|
         if pat.is_a?(Hash) && pat[:value]
           pairs << [
             (NameRule.new(pat[:keyword]) if pat[:keyword]),

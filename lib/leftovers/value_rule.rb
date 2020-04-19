@@ -6,7 +6,7 @@ module Leftovers
       literal_values = Set.new
       value_types = Set.new
 
-      Array.each_or_self(values) do |value|
+      Leftovers.each_or_self(values) do |value|
         case value
         when Hash
           raise ArgumentError, "invalid value #{value.inspect}" unless value[:type]

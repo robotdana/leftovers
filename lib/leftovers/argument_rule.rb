@@ -71,7 +71,7 @@ module Leftovers
     end
 
     def prepare_condition(conditions)
-      Array.wrap(conditions).each do |cond|
+      Leftovers.array_wrap(conditions).each do |cond|
         cond[:has_argument] = HashRule.new(cond[:has_argument]) if cond[:has_argument]
       end
     end
@@ -88,7 +88,7 @@ module Leftovers
       positions = Set.new
       keywords = []
 
-      Array.each_or_self(argument || arguments) do |arg|
+      Leftovers.each_or_self(argument || arguments) do |arg|
         case arg
         when '*'
           @all_positions = true
@@ -105,19 +105,21 @@ module Leftovers
       @keywords = NameRule.new(keywords) unless @all_keywords || keywords.empty?
     end
 
-    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-      return Array::EMPTY unless all_conditions_match?(method_node)
+    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
+      return [].freeze unless all_conditions_match?(method_node)
 
       result = []
 
       if @all_positions
-        result.gather values(method_node.positional_arguments, method_node)
+        result.leftovers_append values(method_node.positional_arguments, method_node)
       elsif @positions
-        result.gather values(method_node.positional_arguments_at(@positions).compact, method_node)
+        result.leftovers_append(
+          values(method_node.positional_arguments_at(@positions).compact, method_node)
+        )
       end
 
       if @keywords || @all_keywords || @key
-        result.gather hash_values(method_node.kwargs, method_node)
+        result.leftovers_append hash_values(method_node.kwargs, method_node)
       end
       result << method_value(method_node) if @itself
 

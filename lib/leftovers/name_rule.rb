@@ -8,7 +8,7 @@ module Leftovers
     def initialize(patterns) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
       regexps = []
       syms = Set.new
-      Array.each_or_self(patterns) do |pat|
+      Leftovers.each_or_self(patterns) do |pat|
         case pat
         when Leftovers::NameRule
           syms.merge(pat.sym) if pat.sym

@@ -2,9 +2,9 @@
 
 require 'parser'
 
-module Parser
+module Leftovers
   module AST
-    class Node # rubocop:disable Metrics/ClassLength
+    class Node < Parser::AST::Node # rubocop:disable Metrics/ClassLength
       def initialize(type, children = [], properties = {})
         # ::AST::Node#initialize freezes itself.
         # so can't use normal memoizations

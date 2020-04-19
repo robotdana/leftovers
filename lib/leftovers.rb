@@ -6,7 +6,7 @@ require_relative './leftovers/collector'
 require_relative './leftovers/merged_config'
 require_relative './leftovers/reporter'
 
-module Leftovers
+module Leftovers # rubocop:disable Metrics/ModuleLength
   module_function
 
   class << self
@@ -122,6 +122,22 @@ module Leftovers
         warn message if message
         @try_require[requirable] = false
       end
+    end
+  end
+
+  def each_or_self(value, &block)
+    case value
+    when nil then nil
+    when Array then value.each(&block)
+    else block.call(value)
+    end
+  end
+
+  def array_wrap(value)
+    case value
+    when nil then [].freeze
+    when Array then value
+    else [value]
     end
   end
 end
