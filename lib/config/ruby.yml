@@ -29,6 +29,10 @@ rules:
       - marshal_load # called by Marshal.load
       - _dump # called by Marshal.dump
       - _load # called by Marshal.load
+      - inherited # called by Subclass < Klass or Class.new(Klass)
+      - extended # called by extend Module
+      - included # called by include Module
+      - $VERBOSE # called by whatever is outputting warnings i guess
   - name:
       - send
       - public_send
