@@ -1,4 +1,4 @@
 .rspec_status
 Gemfile.lock
 /pkg/
-
+.ruby-version

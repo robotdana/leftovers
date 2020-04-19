@@ -10,7 +10,7 @@ require_relative 'lib/leftovers/rake_task'
 # RuboCop::RakeTask.new
 RSpec::Core::RakeTask.new(:spec)
 Spellr::RakeTask.generate_task
-Leftovers::RakeTask.generate_task(:leftovers, '--no-progress')
+Leftovers::RakeTask.generate_task
 
 # rubocop is misbehaving currently
 task default: %i{spec spellr leftovers}
