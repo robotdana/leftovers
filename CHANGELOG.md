@@ -1,3 +1,6 @@
+# v0.2.2
+- update fast_ignore dependency
+
 # v0.2.1
 
 - Fix route arguments with '/' handling (e.g get `'/admin', to: 'admin/dashboard#index'`)

@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec', '~> 1.35'
 
   spec.add_development_dependency 'spellr', '>= 0.8.1'
-  spec.add_dependency 'fast_ignore', '>= 0.9.0'
+  spec.add_dependency 'fast_ignore', '>= 0.10.0'
   spec.add_dependency 'parallel'
   spec.add_dependency 'parser'
 end
