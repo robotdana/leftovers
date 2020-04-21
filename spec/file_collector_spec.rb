@@ -341,6 +341,26 @@ RSpec.describe Leftovers::FileCollector do
       expect(subject.calls).to contain_exactly(:patch, :thing, :UsersController, :logout)
     end
 
+    it 'collects method calls in route root values' do
+      @ruby = 'root to: "home#index"'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(:root, :HomeController, :index)
+    end
+
+    it 'collects method calls in namespaced route values' do
+      @ruby = 'get :admin, to: "administration/dashboard#index"'
+
+      subject.collect
+
+      expect(subject.definitions).to be_empty
+      expect(subject.calls).to contain_exactly(
+        :get, :Administration, :admin, :DashboardController, :index
+      )
+    end
+
     it 'collects scoped constant calls in class_name symbol keys' do
       @ruby = 'has_many :whatever, class_name: "Which::Ever"'
 

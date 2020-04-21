@@ -18,10 +18,16 @@ rules:
       - validate_each # ActiveModel::EachValidator
       - format_message # ActiveSupport::Logger
       - ssl_configured? # ApplicationController
+      - APP_PATH
+      - APP_ROOT
   - skip: true
     names:
       has_suffix: Helper
     path: /app/helpers
+  - skip: true
+    names:
+      has_suffix: Preview
+    path: '**/mailers/previews/**/*_preview.rb'
   - names:
       - after_initialize
       - after_find
@@ -227,6 +233,7 @@ rules:
       - patch
       - post
       - put
+      - root
     calls:
       - arguments: [1, action]
       - argument: '**'
