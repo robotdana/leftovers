@@ -1,0 +1,4 @@
+rules:
+  name: current_user_method=
+  calls:
+    argument: 1

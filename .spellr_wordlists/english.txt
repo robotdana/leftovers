@@ -6,6 +6,7 @@ esque
 gemfile
 hashbang
 lorem
+namespaced
 nocov
 noninfringement
 precompiled

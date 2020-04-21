@@ -176,7 +176,8 @@ module Leftovers
 
     SPLIT = /[.:]+/.freeze
     def symbol_values(symbol_node, method_node) # rubocop:disable Metrics/MethodLength
-      subnodes = symbol_node.to_s.split(SPLIT).flat_map { |s| transform(s, method_node) }
+      subnodes = Array(transform(symbol_node.to_s, method_node))
+        .flat_map { |s| s.to_s.split(SPLIT).map(&:to_sym) }
 
       return subnodes unless @definer
 
@@ -199,7 +200,7 @@ module Leftovers
     end
 
     def transform(string, method_node)
-      return string.to_sym unless @transform || @transforms
+      return string unless @transform || @transforms
       return @transform.transform(string, method_node) if @transform
 
       @transforms.map do |transform|

@@ -21,6 +21,10 @@ module Leftovers
       freeze
     end
 
+    def full_name
+      names.join(', ')
+    end
+
     def names
       @definitions.map(&:names)
     end

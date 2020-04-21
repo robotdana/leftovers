@@ -2,14 +2,11 @@
 
 require 'fast_ignore'
 require 'set'
-require 'parser'
-require 'parser/current'
-require_relative 'ast/builder'
-require_relative 'ast/node'
+require_relative 'parser'
 require_relative 'definition'
 
 module Leftovers
-  class FileCollector < Parser::AST::Processor # rubocop:disable Metrics/ClassLength
+  class FileCollector < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength
     attr_reader :calls
     attr_reader :definitions
 
@@ -34,33 +31,8 @@ module Leftovers
       }
     end
 
-    # mostly copied from https://github.com/whitequark/parser/blob/master/lib/parser/base.rb
-    # but with our builder
-    def self.parser # rubocop:disable Metrics/MethodLength
-      p = ::Parser::CurrentRuby.new(Leftovers::AST::Builder.new)
-      p.diagnostics.all_errors_are_fatal = true
-      p.diagnostics.ignore_warnings = true
-
-      p.diagnostics.consumer = lambda do |diagnostic|
-        warn(diagnostic.render)
-      end
-
-      p
-    end
-    PARSER = parser
-
-    # mostly copied from https://github.com/whitequark/parser/blob/master/lib/parser/base.rb
-    # but with our parser
-    def parse_with_comments(string, file = '(string)', line = 1)
-      PARSER.reset
-      source_buffer = ::Parser::CurrentRuby.send(
-        :setup_source_buffer, file, line, string, PARSER.default_encoding
-      )
-      PARSER.parse_with_comments(source_buffer)
-    end
-
     def collect
-      ast, comments = parse_with_comments(@ruby, @file)
+      ast, comments = Leftovers::Parser.parse_with_comments(@ruby, @file)
       process_comments(comments)
       process(ast)
     rescue Parser::SyntaxError => e
