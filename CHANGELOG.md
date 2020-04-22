@@ -1,3 +1,7 @@
+# v0.2.4
+- use the right name for selenium-webdriver gem, so the bundler magic can work
+- handle yaml syntax errors.
+
 # v0.2.3
 - restore ability to handle syntax errors. I really need to add coverage to this project
 - Fix bug with delete_after on an empty string

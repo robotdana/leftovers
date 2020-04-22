@@ -9,24 +9,6 @@ RSpec.describe Leftovers do
     expect(Leftovers::VERSION).not_to be nil
   end
 
-  describe '.config.rules' do
-    around { |example| with_temp_dir { example.run } }
-
-    it 'can load all default config' do
-      files = Pathname.glob("#{__dir__}/../lib/config/*.yml")
-      files = files.map { |f| f.basename.sub_ext('').to_s }
-
-      temp_file '.leftovers.yml', <<~YML
-        gems: #{files.inspect}
-      YML
-
-      described_class.config.include_paths
-      described_class.config.exclude_paths
-      described_class.config.test_paths
-      described_class.config.rules
-    end
-  end
-
   describe '.leftovers' do
     subject { described_class }
 

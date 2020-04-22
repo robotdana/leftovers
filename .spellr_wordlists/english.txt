@@ -20,6 +20,8 @@ sherson
 sidekiq
 todo
 unmemoize
+webdriver
 whatevers
 wtf
+yaml
 yml

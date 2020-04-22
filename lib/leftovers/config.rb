@@ -13,7 +13,7 @@ module Leftovers
 
     def initialize(
       name,
-      path: ::File.join(__dir__, '..', 'config', "#{name}.yml"),
+      path: ::File.expand_path("../config/#{name}.yml", __dir__),
       content: (::File.exist?(path) ? ::File.read(path) : '')
     )
       @name = name.to_sym
@@ -44,9 +44,9 @@ module Leftovers
     private
 
     def yaml
-      @yaml ||= YAML.safe_load(@content, symbolize_names: true) || {}
-    rescue Psych::SyntaxError => e
-      warn "\e[31mError with config #{path}: #{e.message}\e[0m"
+      @yaml ||= YAML.safe_load(@content, symbolize_names: true, filename: @path) || {}
+    rescue ::Psych::SyntaxError => e
+      warn "\e[31mConfig SyntaxError: #{e.message}\e[0m"
       exit 1
     end
   end
