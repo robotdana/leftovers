@@ -362,11 +362,13 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it 'collects scoped constant calls in class_name symbol keys' do
-      @ruby = 'has_many :whatever, class_name: "Which::Ever"'
+      @ruby = 'has_many :whatevers, class_name: "Which::Ever"'
 
       subject.collect
 
-      expect(subject.definitions).to have_names(:whatever, :whatever=)
+      expect(subject.definitions).to have_names(
+        :whatevers, :whatevers=, :whatever_ids, :whatever_ids=
+      )
       expect(subject.calls).to contain_exactly(:has_many, :Which, :Ever)
     end
 
@@ -1132,5 +1134,33 @@ RSpec.describe Leftovers::FileCollector do
 
     expect(subject.definitions).to have_names :STRING_TRANSFORMS
     expect(subject.calls).to contain_exactly(:downcase, :upcase)
+  end
+
+  it 'reports syntax errors' do
+    @ruby = <<~RUBY
+      true
+      a(b,c
+    RUBY
+
+    expect { subject.collect }.to output(
+      "\e[2K\e[31mfoo.rb:3:0 SyntaxError: unexpected token $end\e[0m\n"
+    ).to_stderr
+  end
+
+  it 'can call delete_after and delete_before on an empty string' do
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name: my_method
+          calls:
+            arguments: 1
+            delete_after: x
+            delete_before: y
+    YML
+
+    @ruby = <<~RUBY
+      my_method('')
+    RUBY
+
+    expect { subject.collect }.not_to raise_error
   end
 end

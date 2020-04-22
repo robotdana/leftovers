@@ -3,4 +3,4 @@
 
 require_relative '../lib/leftovers/cli'
 
-Leftovers::CLI.new(argv: ARGV, stdout: $stdout, stderr: $stderr)
+Leftovers::CLI.new(argv: ARGV)

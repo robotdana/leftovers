@@ -8,7 +8,7 @@ module Leftovers
   class CLI
     attr_reader :argv, :stdout, :stderr
 
-    def initialize(argv: [], stdout: StringIO.new, stderr: StringIO.new)
+    def initialize(argv: [], stdout: $stdout, stderr: $stderr)
       @argv = argv
       @stdout = stdout
       @stderr = stderr

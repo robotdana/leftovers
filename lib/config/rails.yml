@@ -20,6 +20,7 @@ rules:
       - ssl_configured? # ApplicationController
       - APP_PATH
       - APP_ROOT
+      - default_url_options # called by url_for
   - skip: true
     names:
       has_suffix: Helper
@@ -190,38 +191,81 @@ rules:
     - has_many
     - has_and_belongs_to_many
     calls:
-      argument: 1
-      camelize: true
-      singularize: true
-      unless:
-        has_argument: class_name
-  - name:
-    - has_many
-    - has_one
-    - has_and_belongs_to_many
-    calls:
-      argument: as
-  - name:
-      - has_one
-      - has_many
-      - belongs_to
-      - has_and_belongs_to_many
+      - argument: 1
+        camelize: true
+        singularize: true
+        unless:
+          has_argument: class_name
     defines:
       - argument: 1
         linked_transforms:
           - original
           - add_suffix: '='
+          - singularize: true
+            add_suffix: _ids
+          - singularize: true
+            add_suffix: _ids=
+  - name:
+    - has_many
+    - has_one
+    - has_and_belongs_to_many
+    calls:
+      argument:
+        - as
+  - name:
+    - has_one
+    - has_many
     calls:
       - argument:
+          - source_type
+          - source
           - through
+  - name:
+      - has_one
+      - belongs_to
+    defines:
+      - argument: 1
+        linked_transforms:
+          - original
+          - add_suffix: '='
+          - add_prefix: build_
+          - add_prefix: create_
+          - add_prefix: create_
+            add_suffix: '!'
+          - add_prefix: reload
+  - name: belongs_to
+    calls:
+      argument: 1
+      unless:
+        has_argument:
+          keyword: optional
+          value: true
+
+  - name:
+     - has_one
+     - has_many
+     - belongs_to
+     - has_and_belongs_to_many
+    calls:
+      - argument:
           - class_name
           - inverse_of
+      - argument: touch
+        add_suffix: '='
       - argument: 1
         if:
           has_argument: dependent
       - argument: 1
         if:
           has_argument: inverse_of
+      - argument: 1
+        if:
+          has_argument: touch
+      - argument: 1
+        if:
+          has_argument:
+            keyword: validate
+            value: true
   - name:
       - rescue_from
     calls:

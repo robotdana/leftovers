@@ -127,7 +127,7 @@ module Leftovers
     end
 
     def delete_after(string, _method_node)
-      string.split(@delete_after, 2).first
+      string.split(@delete_after, 2).first || string
     end
 
     def replace_with(_string, _method_node)

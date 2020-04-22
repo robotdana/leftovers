@@ -45,6 +45,8 @@ RSpec.describe Leftovers do
         end
       RUBY
 
+      allow(subject).to receive(:stdout).and_return(StringIO.new) # rubocop:disable RSpec/SubjectStub
+
       expect(subject.leftovers).to have_names :check_foo
       expect(subject.collector.definitions).to have_names(
         :foo, :foo?, :foo=, :check_foo

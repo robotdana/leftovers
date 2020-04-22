@@ -17,7 +17,9 @@ rubo
 rubocop
 rvm
 sherson
+sidekiq
 todo
 unmemoize
+whatevers
 wtf
 yml

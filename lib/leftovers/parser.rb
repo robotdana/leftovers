@@ -29,7 +29,7 @@ module Leftovers
         p.diagnostics.ignore_warnings = true
 
         p.diagnostics.consumer = lambda do |diagnostic|
-          warn(diagnostic.render)
+          diagnostic
         end
 
         p

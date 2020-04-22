@@ -1,3 +1,9 @@
+# v0.2.3
+- restore ability to handle syntax errors. I really need to add coverage to this project
+- Fix bug with delete_after on an empty string
+- Support more of rails
+- Support parts of sidekiq
+
 # v0.2.2
 - update fast_ignore dependency
 

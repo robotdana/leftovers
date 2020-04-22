@@ -49,7 +49,7 @@ module Leftovers
     end
 
     def run(argv)
-      Leftovers::CLI.new(argv: argv, stdout: $stdout, stderr: $stderr)
+      Leftovers::CLI.new(argv: argv)
     rescue SystemExit => e
       raise unless e.status == 0
     end

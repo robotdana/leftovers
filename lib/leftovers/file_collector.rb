@@ -35,8 +35,8 @@ module Leftovers
       ast, comments = Leftovers::Parser.parse_with_comments(@ruby, @file)
       process_comments(comments)
       process(ast)
-    rescue Parser::SyntaxError => e
-      Leftovers.warn "#{e.class}: #{e.message} #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}" # rubocop:disable Layout/LineLength
+    rescue ::Parser::SyntaxError => e
+      Leftovers.warn "\e[31m#{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column} SyntaxError: #{e.message}\e[0m" # rubocop:disable Layout/LineLength
     end
 
     METHOD_NAME_RE = /[[:alpha:]_][[:alnum:]_]*\b[\?!=]?/.freeze
@@ -212,6 +212,8 @@ module Leftovers
         node.test = test?(node.loc)
         definitions.concat(rule.definitions(node))
       end
+    rescue StandardError => e
+      raise e.class, "#{e.message}\nwhen processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace # rubocop:disable Layout/LineLength
     end
   end
 end

@@ -21,11 +21,11 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   end
 
   def stdout
-    @stdout ||= StringIO.new
+    @stdout ||= $stdout
   end
 
   def stderr
-    @stderr ||= StringIO.new
+    @stderr ||= $stderr
   end
 
   def config
