@@ -37,7 +37,7 @@ module Leftovers
       @itself = itself
 
       unless @positions || @keywords || @all_positions || @all_keywords || @key || @itself
-        raise ArgumentError, "require at least one of 'argument(s)', 'key(s)', itself"
+        raise Leftovers::ConfigError, "require at least one of 'argument(s)', 'key(s)', itself"
       end
 
       @if = prepare_condition(options.delete(:if))
@@ -48,7 +48,7 @@ module Leftovers
 
     def prepare_transform(options, transforms, linked_transforms) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
       if linked_transforms && transforms
-        raise ArgumentError, 'Only use one of linked_transforms/transforms'
+        raise Leftovers::ConfigError, 'Only use one of linked_transforms/transforms'
       end
       return if !linked_transforms && !transforms && options.empty?
 
@@ -57,7 +57,7 @@ module Leftovers
       else
         @linked = !!linked_transforms
 
-        transforms = (linked_transforms || transforms).map do |transform|
+        transforms = Leftovers.array_wrap(linked_transforms || transforms).map do |transform|
           transform = { transform.to_sym => true } if transform.is_a?(String)
           Leftovers::TransformRule.new(options.merge(transform))
         end
@@ -70,20 +70,26 @@ module Leftovers
       end
     end
 
-    def prepare_condition(conditions)
+    def prepare_condition(conditions) # rubocop:disable Metrics/MethodLength
       Leftovers.array_wrap(conditions).each do |cond|
-        cond[:has_argument] = HashRule.new(cond[:has_argument]) if cond[:has_argument]
+        unless cond.is_a?(Hash) && cond.keys == [:has_argument]
+          raise Leftovers::ConfigError, <<~MESSAGE
+            Invalid condition #{cond.inspect}. Valid condition keys are: has_argument
+          MESSAGE
+        end
+
+        cond[:has_argument] = HashRule.new(cond[:has_argument])
       end
     end
 
     def prepare_key(key, keys)
-      raise ArgumentError, 'Only use one of key/keys' if key && keys
+      raise Leftovers::ConfigError, 'Only use one of key/keys' if key && keys
 
       key || keys
     end
 
     def prepare_argument(argument, arguments) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      raise ArgumentError, 'Only use one of argument/arguments' if argument && arguments
+      raise Leftovers::ConfigError, 'Only use one of argument/arguments' if argument && arguments
 
       positions = Set.new
       keywords = []
@@ -98,11 +104,15 @@ module Leftovers
           positions << arg - 1
         when String, Symbol, Hash
           keywords << arg
+        else
+          raise Leftovers::ConfigError, <<~MESSAGE
+            Invalid value for argument: #{arg.inspect}. Must by a string ('*', '**', or a keyword), or a hash with the name match rules, or an integer, or an array of these
+          MESSAGE
         end
       end
 
       @positions = positions unless @all_positions || positions.empty? || @all_positions
-      @keywords = NameRule.new(keywords) unless @all_keywords || keywords.empty?
+      @keywords = NameRule.wrap(keywords) unless @all_keywords || keywords.empty?
     end
 
     def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
@@ -135,13 +145,12 @@ module Leftovers
         @unless.all? { |c| !condition_match?(c, method_node) }
     end
 
-    def condition_match?(condition, method_name)
-      return unless condition[:has_argument]
-
-      hash_node = method_name.kwargs
-      return false unless hash_node
-
-      hash_node.each_pair.any? { |key, value| condition[:has_argument].match_pair?(key, value) }
+    def condition_match?(condition, method_node)
+      method_node.positional_arguments.each.with_index(1).any? do |value, index|
+        condition[:has_argument].match_pair?(index, value)
+      end || method_node.kwargs&.each_pair&.any? do |key, value|
+        condition[:has_argument].match_pair?(key.to_sym, value)
+      end
     end
 
     def hash_values(hash_node, method_node) # rubocop:disable Metrics/MethodLength
@@ -160,8 +169,6 @@ module Leftovers
     end
 
     def value(value_node, method_node) # rubocop:disable Metrics/MethodLength
-      return unless value_node
-
       value_node = value_node.unwrap_freeze
 
       case value_node.type
@@ -208,12 +215,15 @@ module Leftovers
       end
     end
 
-    def assert_valid_keys(options, keys)
+    def assert_valid_keys(options, keys) # rubocop:disable Metrics/MethodLength
       invalid = options.keys - keys
 
       return if invalid.empty?
 
-      raise ArgumentError, "unknown keyword#{'s' if invalid.length > 1}: #{invalid.join(', ')}"
+      raise(
+        Leftovers::ConfigError,
+        "unknown keyword#{'s' if invalid.length > 1}: #{invalid.join(', ')}"
+      )
     end
   end
 end

@@ -6,34 +6,36 @@ require_relative 'name_rule'
 
 module Leftovers
   class HashRule
-    def initialize(patterns) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
+    # :nocov:
+    using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
+    # :nocov:
+
+    def initialize(patterns) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       keys = []
       pairs = []
       Leftovers.each_or_self(patterns) do |pat|
         if pat.is_a?(Hash) && pat[:value]
           pairs << [
-            (NameRule.new(pat[:keyword]) if pat[:keyword]),
-            (ValueRule.new(pat[:value]) if pat[:value])
+            NameRule.wrap(pat[:keyword] || pat[:index]),
+            ValueRule.new(pat[:value])
           ]
         else
-          keys << NameRule.new(pat)
+          keys << NameRule.wrap(pat)
         end
       end
 
-      @keys = (NameRule.new(keys) if keys)
+      @keys = NameRule.wrap(keys, false)
 
       @pairs = (pairs unless pairs.empty?)
 
       freeze
     end
 
-    def match_pair?(key_node, value_node)
-      return true if @keys&.match?(key_node.to_sym, key_node.to_s)
+    def match_pair?(key, value_node)
+      return true if @keys === key
 
       @pairs&.any? do |(key_rule, value_rule)|
-        next unless !key_rule || key_rule.match?(key_node.to_sym, key_node.to_s)
-
-        (!value_rule || value_rule.match?(value_node))
+        key_rule === key && value_rule.match?(value_node)
       end
     end
   end

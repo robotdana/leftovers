@@ -49,9 +49,9 @@ module Leftovers
     end
 
     def run(argv)
-      Leftovers::CLI.new(argv: argv)
-    rescue SystemExit => e
-      raise unless e.status == 0
+      exitstatus = Leftovers::CLI.new(argv: argv).run
+
+      exit exitstatus unless exitstatus == 0
     end
 
     def argv_or_default(task_argv)

@@ -5,6 +5,10 @@ require 'parser'
 module Leftovers
   module AST
     class Node < Parser::AST::Node # rubocop:disable Metrics/ClassLength
+      # :nocov:
+      using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
+      # :nocov:
+
       def initialize(type, children = [], properties = {})
         # ::AST::Node#initialize freezes itself.
         # so can't use normal memoizations
@@ -17,6 +21,7 @@ module Leftovers
         children.first
       end
 
+      # TODO: move file to loc.
       def file
         @memo[:file]
       end
@@ -35,62 +40,51 @@ module Leftovers
       end
 
       def to_scalar_value # rubocop:disable Metrics/MethodLength
-        @memo[:scalar_value] ||= case type
-        when :sym
+        case type
+        when :sym, :int, :float, :str
           first
-        when :str
-          first.to_s.freeze
         when :true
           true
         when :false
           false
         when :nil
           nil
-        else
-          raise "Not scalar node, (#{type})"
         end
       end
 
-      def to_s # rubocop:disable Metrics/MethodLength
-        @memo[:to_s] ||= if scalar?
-          to_scalar_value
-        elsif named?
-          name
-        else
-          raise "No to_s, (#{type})"
-        end.to_s.freeze
+      def scalar?
+        case type
+        when :sym, :int, :float, :str, :true, :false, :nil
+          true
+        else false
+        end
+      end
+
+      def to_s
+        @memo[:to_s] ||= name&.to_s || to_scalar_value.to_s || ''
       end
 
       def to_sym
         case type
-        when :str, :sym then first
+        when :sym then first
         when :nil, :true, :false then type
         else to_s.to_sym
         end
-      end
-
-      SCALAR_TYPES = %i{sym str true false nil}.freeze
-      def scalar?
-        SCALAR_TYPES.include?(type)
       end
 
       def string_or_symbol?
         type == :str || type == :sym
       end
 
-      def send?
-        type == :send || type == :csend
-      end
-
-      def named?
-        send? || type == :casgn
-      end
-
-      def arguments
+      def arguments # rubocop:disable Metrics/MethodLength
         @memo[:arguments] ||= case type
         when :send, :csend then children.drop(2)
         when :casgn then [children[2]]
-        else raise "Not argument node (#{type})"
+        when :ivasgn, :cvasgn, :gvasgn then [children[1]]
+        else
+          # :nocov: # these are all the nodes with collect_rules
+          raise "Not argument node (#{type})"
+          # :nocov:
         end
       end
 
@@ -115,25 +109,18 @@ module Leftovers
         each_pair.map { |k, _| k }
       end
 
-      def key?(key)
-        each_pair.find do |k, _v|
-          next unless k.string_or_symbol?
-
-          k.to_sym == key
-        end
-      end
-
       def values
+        # :nocov:
         @memo[:kwargs] ||= case type
+        # :nocov:
         when :hash then each_pair.map { |_, v| v }
         when :array then children
-        else []
         end
       end
 
       def values_at_match(matcher)
         each_pair.with_object([]) do |(key, value), values|
-          values << value if matcher.match?(key.to_sym, key.to_s)
+          values << value if matcher === key.to_sym
         end
       end
 
@@ -142,8 +129,6 @@ module Leftovers
       end
 
       def each_pair
-        raise "not hash node (#{type})" unless type == :hash
-
         return enum_for(:each_pair) unless block_given?
 
         children.each do |pair|
@@ -151,22 +136,23 @@ module Leftovers
         end
       end
 
-      def name
-        return "Not named node (#{type})" unless named?
-
-        @memo[:name] ||= children[1]
-      end
-
-      def name_s
-        @memo[:name_s] ||= name.to_s.freeze
+      def name # rubocop:disable Metrics/MethodLength
+        @memo[:name] ||= case type
+        when :send, :csend, :casgn, :const
+          children[1]
+        when :def, :ivasgn, :ivar, :gvar, :cvar, :gvasgn, :cvasgn
+          first
+        when :module, :class
+          first.name
+        end
       end
 
       def [](index) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+        # :nocov:
         case type
-        when :send, :csend
-          index.is_a?(Integer) ? arguments[index] : kwargs && kwargs[index]
-        when :array
-          children[index]
+        # :nocov:
+        when :send, :csend, :casgn, :cvasgn, :ivasgn, :gvasgn
+          index.is_a?(Integer) ? arguments[index - 1] : kwargs && kwargs[index]
         when :hash
           each_pair do |key, value|
             next unless key.string_or_symbol?

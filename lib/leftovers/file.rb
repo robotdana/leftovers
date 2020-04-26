@@ -19,7 +19,7 @@ module Leftovers
     def ruby # rubocop:disable Metrics/MethodLength
       case extname
       when '.haml'
-        Leftovers::Haml.precompile(read)
+        Leftovers::Haml.precompile(read, self)
       when '.rhtml', '.rjs', '.erb'
         Leftovers::ERB.precompile(read)
       else

@@ -31,9 +31,9 @@ module Leftovers
 
     def collect_file_list(list)
       if Leftovers.parallel?
-        Parallel.each(list, finish: method(:finish_parallel), &method(:collect_file))
+        Parallel.each(list, finish: method(:finish_file), &method(:collect_file))
       else
-        list.each { |file| finish_parallel(nil, nil, collect_file(file)) }
+        list.each { |file| finish_file(nil, nil, collect_file(file)) }
       end
     end
 
@@ -46,11 +46,11 @@ module Leftovers
 
     def print_progress
       Leftovers.print(
-        "checked #{@count} files, collected #{@count_calls} calls, #{@count_definitions} definitions\r" # rubocop:disable Layout/LineLength
+        "\e[2Kchecked #{@count} files, collected #{@count_calls} calls, #{@count_definitions} definitions\r" # rubocop:disable Layout/LineLength
       )
     end
 
-    def finish_parallel(_, _, result) # rubocop:disable Metrics/MethodLength
+    def finish_file(_, _, result) # rubocop:disable Metrics/MethodLength
       @count += 1
       @count_calls += result[:calls].length
       @count_definitions += result[:definitions].length

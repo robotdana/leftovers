@@ -9,18 +9,19 @@ module Leftovers
     def initialize
       @configs = []
       @loaded_configs = Set.new
-      self.<< Leftovers::Config.new(:ruby)
-      self.<< project_config
+      self << :ruby
+      self << project_config
       load_bundled_gem_config
     end
 
-    def <<(config)
+    def <<(config) # rubocop:disable Metrics/MethodLength
+      config = Leftovers::Config.new(config) unless config.is_a?(Leftovers::Config)
       return if @loaded_configs.include?(config.name)
 
       unmemoize
       @configs << config
       @loaded_configs << config.name
-      config.gems.each { |gem| self.<< Leftovers::Config.new(gem) }
+      config.gems.each { |gem| self << gem }
     end
 
     def project_config
@@ -45,7 +46,8 @@ module Leftovers
     def test_paths
       @test_paths ||= FastIgnore.new(
         include_rules: @configs.flat_map(&:test_paths),
-        gitignore: false
+        gitignore: false,
+        root: Leftovers.pwd
       )
     end
 
@@ -60,11 +62,10 @@ module Leftovers
     private
 
     def load_bundled_gem_config
-      Leftovers.try_require('bundler')
-      return unless defined?(Bundler)
+      return unless Leftovers.try_require('bundler')
 
       Bundler.locked_gems.specs.each do |spec|
-        self.<< Leftovers::Config.new(spec.name.to_sym)
+        self << spec.name
       end
     end
   end

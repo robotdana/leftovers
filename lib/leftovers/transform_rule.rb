@@ -37,9 +37,7 @@ module Leftovers
       replace_with
     }.freeze
 
-    VALID_TRANSFORMS = RUBY_STRING_METHODS + ACTIVESUPPORT_STRING_METHODS + CUSTOM_TRANSFORMS
-    # more possible transformations
-    # gsub sub tr tr_s
+    VALID_TRANSFORMS = CUSTOM_TRANSFORMS + RUBY_STRING_METHODS + ACTIVESUPPORT_STRING_METHODS
     def initialize(transforms)
       @transforms = prepare_transforms(transforms)
 
@@ -58,9 +56,9 @@ module Leftovers
     def prepare_transforms(transforms) # rubocop:disable Metrics/MethodLength
       transforms.map do |key, value|
         unless VALID_TRANSFORMS.include?(key)
-          raise ArgumentError, <<~MESSAGE
-            invalid transform key: (#{key}: #{value}).
-            Valid transform keys are #{ALL_VALID_TRANSFORMS}"
+          raise Leftovers::ConfigError, <<~MESSAGE
+            invalid transform key: (#{key}: #{value})
+            Valid transform keys are #{VALID_TRANSFORMS.join(', ')}
           MESSAGE
         end
 
@@ -74,18 +72,18 @@ module Leftovers
     HASH_VALUE_TRANSFORMS = %i{add_prefix add_suffix}.freeze
     HASH_VALUE_KEYS = %i{from_argument joiner}.freeze
     def prepare_hash_value(method, hash) # rubocop:disable Metrics/MethodLength
-      raise ArgumentError, <<~MESSAGE unless HASH_VALUE_TRANSFORMS.include?(method)
-        invalid transform value (#{key}: #{value}).
-        Hash values are only valid for #{HASH_VALUE_TRANSFORMS}
+      raise Leftovers::ConfigError, <<~MESSAGE unless HASH_VALUE_TRANSFORMS.include?(method)
+        invalid transform value (#{method}: #{hash.inspect}).
+        Hash values are only valid for #{HASH_VALUE_TRANSFORMS.join(', ')}
       MESSAGE
 
       hash = hash.map do |k, v|
-        raise ArgumentError, <<~MESSAGE unless HASH_VALUE_KEYS.include?(k)
+        raise Leftovers::ConfigError, <<~MESSAGE unless HASH_VALUE_KEYS.include?(k)
           invalid transform value argument (#{method}: { #{k}: #{v} }).
-          Hash values are only valid for #{HASH_VALUE_TRANSFORMS}
+          Valid keys are #{HASH_VALUE_KEYS.join(', ')}
         MESSAGE
 
-        [k, v.to_sym]
+        [k, (v.respond_to?(:to_sym) ? v.to_sym : v)]
       end.to_h
 
       ["#{method}_dynamic", hash]
@@ -143,26 +141,26 @@ module Leftovers
     end
 
     def add_prefix_dynamic(string, method_node)
-      "#{dynamic_value(@add_prefix_dynamic, method_node)}#{@add_prefix_dynamic[:joiner]}#{string}"
+      prefix = dynamic_value(@add_prefix_dynamic, method_node)
+      "#{prefix}#{@add_prefix_dynamic[:joiner] if prefix}#{string}"
     end
 
     def add_suffix_dynamic(string, method_node)
-      "#{string}#{@add_suffix_dynamic[:joiner]}#{dynamic_value(@add_suffix_dynamic, method_node)}"
+      suffix = dynamic_value(@add_suffix_dynamic, method_node)
+      "#{string}#{@add_suffix_dynamic[:joiner] if suffix}#{suffix}"
     end
 
     def dynamic_value(value, method_node)
-      method_node.kwargs[value[:from_argument]].to_s if value[:from_argument]
+      method_node[value[:from_argument]] if value[:from_argument]
     end
 
     def activesupport_available?(method) # rubocop:disable Metrics/MethodLength
-      Leftovers.try_require(
-        'active_support/core_ext/string', 'active_support/inflections',
-        message: <<~MESSAGE
-          Tried transforming a string using an activesupport method (#{method}), but the activesupport gem was not available
-          `gem install activesupport`
-        MESSAGE
-      )
-
+      message = <<~MESSAGE
+        Tried transforming a string using an activesupport method (#{method}), but the activesupport gem was not available
+        `gem install activesupport`
+      MESSAGE
+      Leftovers.try_require('active_support/core_ext/string', message: message)
+      Leftovers.try_require('active_support/inflections', message: message)
       Leftovers.try_require(::File.join(Leftovers.pwd, 'config', 'initializers', 'inflections.rb'))
 
       defined?(ActiveSupport)

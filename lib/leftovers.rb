@@ -7,14 +7,14 @@ require_relative './leftovers/merged_config'
 require_relative './leftovers/reporter'
 
 module Leftovers # rubocop:disable Metrics/ModuleLength
+  class Error < StandardError; end
+  class ConfigError < Error; end
+
   module_function
 
   class << self
     attr_accessor :parallel
     alias_method :parallel?, :parallel
-
-    attr_accessor :quiet
-    alias_method :quiet?, :quiet
 
     attr_accessor :progress
     alias_method :progress?, :progress
@@ -50,7 +50,6 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   end
 
   def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    reset
     @stdout = stdout
     @stderr = stderr
     return 0 if leftovers.empty?
@@ -87,20 +86,19 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     remove_instance_variable(:@stdout) if defined?(@stdout)
     remove_instance_variable(:@stderr) if defined?(@stderr)
     remove_instance_variable(:@parallel) if defined?(@parallel)
-    remove_instance_variable(:@quiet) if defined?(@quiet)
     remove_instance_variable(:@pwd) if defined?(@pwd)
   end
 
   def warn(message)
-    stderr.puts("\e[2K#{message}") unless quiet?
+    stderr.puts("\e[2K#{message}")
   end
 
   def puts(message)
-    stdout.puts("\e[2K#{message}") unless quiet?
+    stdout.puts("\e[2K#{message}")
   end
 
   def print(message)
-    stdout.print(message) unless quiet?
+    stdout.print(message)
   end
 
   def newline
@@ -111,18 +109,25 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     @pwd ||= Pathname.new(Dir.pwd + '/')
   end
 
-  def try_require(*requirables, message: nil) # rubocop:disable Metrics/MethodLength
-    @try_require ||= {}
-    requirables.each do |requirable|
-      begin
-        return @try_require[requirable] if @try_require.key?(requirable)
+  def exit(status = 0)
+    throw :leftovers_exit, status
+  end
 
-        @try_require[requirable] = require requirable
-      rescue LoadError
-        warn message if message
-        @try_require[requirable] = false
+  def try_require(requirable, message: nil) # rubocop:disable Metrics/MethodLength
+    @try_require ||= {}
+
+    @try_require[requirable] = begin
+      if @try_require.key?(requirable)
+        @try_require[requirable]
+      else
+        require requirable
+        true
       end
+    rescue LoadError
+      false
     end
+    warn message if !@try_require[requirable] && message
+    @try_require[requirable]
   end
 
   def each_or_self(value, &block)

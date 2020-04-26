@@ -1,13 +1,14 @@
 ---
 include_paths:
-  - '*.rb'
-  - Gemfile
-  - '*.erb'
+  - '#!:ruby'
   - '*.gemspec'
   - .irbrc
   - irb.rc
   - _irbrc
   - $irbrc
+  - Gemfile
+  - '*.erb'
+  - '*.rb'
 
 test_paths:
   - /tests/
@@ -61,7 +62,8 @@ rules:
   - name: attr_writer
     defines:
       argument: '*'
-      add_suffix: '='
+      transforms:
+        - add_suffix: '='
   - name: attr_accessor
     defines:
       - argument: '*'
@@ -70,7 +72,8 @@ rules:
           - add_suffix: '='
     calls:
       argument: '*'
-      add_prefix: '@'
+      transforms:
+        add_prefix: '@'
   - name: define_method
     defines:
       argument: 1

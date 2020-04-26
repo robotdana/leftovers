@@ -9,10 +9,19 @@ RSpec.describe Leftovers do
     expect(Leftovers::VERSION).not_to be nil
   end
 
+  describe '.leftovers_append' do
+    it 'appends things' do
+      expect([1, 2, 3].leftovers_append(4)).to eq [1, 2, 3, 4]
+      expect([1, 2, 3].leftovers_append(nil)).to eq [1, 2, 3]
+      expect([1, 2, 3].leftovers_append([4, 5])).to eq [1, 2, 3, 4, 5]
+      expect([1, 2, 3].leftovers_append([4, 5].to_set)).to eq [1, 2, 3, 4, 5]
+    end
+  end
+
   describe '.leftovers' do
     subject { described_class }
 
-    around { |example| with_temp_dir { example.run } }
+    before { with_temp_dir }
 
     it "doesn't care about using one of multiple simultaneous defined methods" do
       temp_file '.leftovers.yml', <<~YML

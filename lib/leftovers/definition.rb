@@ -4,13 +4,10 @@ module Leftovers
   class Definition
     attr_reader :name
     alias_method :names, :name
-    alias_method :full_name, :name
-    attr_reader :name_s
-    alias_method :to_s, :name_s
     attr_reader :test
     alias_method :test?, :test
 
-    def initialize( # rubocop:disable Metrics/MethodLength
+    def initialize(
       name,
       method_node: nil,
       location: method_node.loc.expression,
@@ -18,7 +15,6 @@ module Leftovers
       test: method_node.test?
     )
       @name = name
-      @name_s = name.to_s.freeze
 
       @location = location
       @file = file
@@ -37,6 +33,10 @@ module Leftovers
       @file.relative_path
     end
 
+    def to_s
+      @name.to_s
+    end
+
     def line
       @location.line
     end
@@ -46,7 +46,7 @@ module Leftovers
     end
 
     def full_location
-      "#{path}:#{@location.line}:#{@location.column}"
+      "#{path}:#{line}:#{column}"
     end
 
     def highlighted_source(highlight = "\e[31m", normal = "\e[0m") # rubocop:disable Metrics/AbcSize
@@ -64,7 +64,7 @@ module Leftovers
     end
 
     def skipped?
-      Leftovers.config.skip_rules.any? { |r| r.match?(@name, @name_s, path) }
+      Leftovers.config.skip_rules.any? { |r| r.match?(@name, path) }
     end
   end
 end

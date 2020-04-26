@@ -214,5 +214,11 @@ Lint/BooleanSymbol:
 Style/DoubleNegation:
   Enabled: false
 
-RSpec/InstanceVariable:
-  Enabled: false # I'll figure it out soon
+Style/CaseEquality:
+  Enabled: false # no
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/MessageSpies:
+  Enabled: false

@@ -35,9 +35,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry', '~> 0.1'
   spec.add_development_dependency 'rake', '>= 13'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '~> 0.74'
+  spec.add_development_dependency 'rubocop', '~> 0.82'
   spec.add_development_dependency 'rubocop-performance', '~> 1.4'
   spec.add_development_dependency 'rubocop-rspec', '~> 1.35'
+  spec.add_development_dependency 'simplecov', '>= 0.18.5'
+  spec.add_development_dependency 'simplecov-console'
+  spec.add_development_dependency 'tty_string', '>= 0.2.1'
 
   spec.add_development_dependency 'spellr', '>= 0.8.1'
   spec.add_dependency 'fast_ignore', '>= 0.10.0'

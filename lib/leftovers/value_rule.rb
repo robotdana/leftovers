@@ -9,19 +9,20 @@ module Leftovers
       Leftovers.each_or_self(values) do |value|
         case value
         when Hash
-          raise ArgumentError, "invalid value #{value.inspect}" unless value[:type]
+          raise Leftovers::ConfigError, "invalid value #{value.inspect}" unless value[:type]
 
           value_types.merge(
             Array(value[:type]).map do |v|
               case v
-              when 'String', :String then :str
-              when 'Symbol', :Symbol then :sym
+              when 'String' then :str
+              when 'Symbol' then :sym
+              when 'Integer' then :int
               else v.to_s.downcase.to_sym
               end
             end
           )
         else
-          (literal_values << value) if value
+          literal_values << value
         end
       end
 

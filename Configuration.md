@@ -21,7 +21,7 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/mast
     - [`transforms:`](#transforms), [`linked_transforms:`](#linked_transforms)
         - `original:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
         - `delete_before:`, `delete_after:`, `downcase:`, `upcase:`, `capitalize:`, `swapcase:`
-        - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize`
+        - `pluralize:`, `singularize:`, `camelize:`, `underscore:`, `demodulize:`, `deconstantize:`
     - [`if:`](#if-unless), [`unless:`](#if-unless)
       - [`has_argument:`](#has_argument)
         - `keyword:`

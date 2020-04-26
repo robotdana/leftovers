@@ -1,4 +1,5 @@
 .rspec_status
 Gemfile.lock
 /pkg/
+/coverage/
 .ruby-version

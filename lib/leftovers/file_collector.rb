@@ -52,11 +52,9 @@ module Leftovers
     def process_comments(comments) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       comments.each do |comment|
         @allow_lines << comment.loc.line if comment.text.match?(LEFTOVERS_ALLOW_RE)
-
         @test_lines << comment.loc.line if comment.text.match?(LEFTOVERS_TEST_RE)
 
         next unless (match = comment.text.match(LEFTOVERS_CALL_RE))
-        next unless match[1]
 
         match[1].scan(NAME_RE).each { |s| add_call(s.to_sym) }
       end
@@ -64,13 +62,15 @@ module Leftovers
 
     # grab method definitions
     def on_def(node)
-      add_definition(node.children.first, node.loc.name)
+      add_definition(node.name, node.loc.name)
 
       super
     end
 
     def on_ivasgn(node)
-      add_definition(node.children.first, node.loc.name)
+      add_definition(node.name, node.loc.name)
+
+      collect_rules(node)
 
       super
     end
@@ -78,7 +78,7 @@ module Leftovers
     alias_method :on_cvasgn, :on_ivasgn
 
     def on_ivar(node)
-      add_call(node.children.first)
+      add_call(node.name)
 
       super
     end
@@ -107,8 +107,7 @@ module Leftovers
     def on_send(node)
       super
 
-      add_call(node.children[1])
-
+      add_call(node.name)
       collect_rules(node)
     end
     alias_method :on_csend, :on_send
@@ -116,14 +115,14 @@ module Leftovers
     def on_const(node)
       super
 
-      add_call(node.children[1])
+      add_call(node.name)
     end
 
     # grab e.g. :to_s in each(&:to_s)
     def on_block_pass(node)
       super
 
-      add_call(node.children.first.to_sym) if node.children.first&.string_or_symbol?
+      add_call(node.children.first.to_sym) if node.children.first.string_or_symbol?
     end
 
     # grab class Constant or module Constant
@@ -134,7 +133,7 @@ module Leftovers
 
       node = node.children.first
 
-      add_definition(node.children[1], node.loc.name)
+      add_definition(node.name, node.loc.name)
     end
     alias_method :on_module, :on_class
 
@@ -142,7 +141,7 @@ module Leftovers
     def on_casgn(node)
       super
 
-      add_definition(node.children[1], node.loc.name)
+      add_definition(node.name, node.loc.name)
 
       collect_rules(node)
     end
@@ -177,22 +176,20 @@ module Leftovers
     def collect_var_op_asgn(node)
       name = node.children.first
 
-      return unless name
-
       add_call(name)
     end
 
     def collect_send_op_asgn(node)
       name = node.children[1]
 
-      return unless name
-
       add_call(:"#{name}=")
     end
 
     def collect_op_asgn(node)
       node = node.children.first
+      # :nocov: # don't need else, it's exhaustive for callers
       case node.type
+      # :nocov:
       when :send then collect_send_op_asgn(node)
       when :ivasgn, :gvasgn, :cvasgn then collect_var_op_asgn(node)
       end
@@ -200,7 +197,7 @@ module Leftovers
 
     def collect_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       Leftovers.config.rules.each do |rule|
-        next unless rule.match?(node.name, node.name_s, filename)
+        next unless rule.match?(node.name, filename)
 
         next if rule.skip?
 
