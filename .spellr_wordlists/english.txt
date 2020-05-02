@@ -24,6 +24,7 @@ rubocop
 rvm
 sherson
 sidekiq
+simplecov
 todo
 unmemoize
 webdriver

@@ -1,3 +1,7 @@
+# v0.3.0
+- Add simplecov, fix a handful of bugs it found
+- update fast_ignore
+
 # v0.2.4
 - use the right name for selenium-webdriver gem, so the bundler magic can work
 - handle yaml syntax errors.
