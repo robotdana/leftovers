@@ -29,7 +29,7 @@ It's aware of how some gems call methods for you, including (still somewhat inco
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'leftovers'
+gem 'leftovers', require: false
 ```
 
 And then execute:
@@ -42,7 +42,7 @@ Or install it yourself as:
 
 ## Usage
 
-Run `leftovers` in your terminal in the root of your project.
+Run `leftovers` in your command line in the root of your project.
 This will output progress as it collects the calls/references and definitions in your project.
 Then it will output any defined methods (or classes etc) which are not called.
 

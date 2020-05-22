@@ -345,7 +345,13 @@ RSpec.describe Leftovers::FileCollector do
 
   context 'when rspec' do
     before do
+      with_temp_dir
       Leftovers.config << :rspec
+    end
+
+    let(:file) do
+      temp_file 'spec/file_spec.rb' # the file needs to exist
+      Leftovers::File.new(Leftovers.pwd + 'spec/file_spec.rb')
     end
 
     it 'collects method calls using be_' do
