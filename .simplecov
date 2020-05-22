@@ -1,15 +1,13 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 SimpleCov.print_error_status = false
-if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.5')
-  SimpleCov.enable_coverage(:branch)
-end
+SimpleCov.enable_coverage(:branch) if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.5')
 SimpleCov.root __dir__
 SimpleCov.formatter SimpleCov::Formatter::SimpleFormatter
 SimpleCov.minimum_coverage 0
-SimpleCov.add_filter '/backports'
+SimpleCov.add_filter '/backports.rb'
 SimpleCov.add_filter '/spec/'
-SimpleCov.add_filter '/bin/generate' # because i have to skip and mock some of it for expediency reasons
 require 'parallel'
 
 # internals of Parallel i'm sure it's fine
@@ -17,7 +15,7 @@ require 'parallel'
 # without modifying my code in ugly ways
 
 module Parallel
-  def self.worker(job_factory, options, &block)
+  def self.worker(job_factory, options, &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     child_read, parent_write = IO.pipe
     parent_read, child_write = IO.pipe
 
