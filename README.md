@@ -1,5 +1,5 @@
 # Leftovers
-[![travis](https://travis-ci.org/robotdana/leftovers.svg?branch=master)](https://travis-ci.org/robotdana/leftovers)
+[![travis](https://travis-ci.com/robotdana/leftovers.svg?branch=master)](https://travis-ci.com/robotdana/leftovers)
 [![Gem Version](https://badge.fury.io/rb/leftovers.svg)](https://rubygems.org/gems/leftovers)
 
 Find unused `methods`, `Classes`, `CONSTANTS`, `@instance_variables`, `@@class_variables`, and `$global_variables` in your ruby projects.
