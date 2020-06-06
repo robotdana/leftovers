@@ -39,7 +39,7 @@ module Leftovers
       Leftovers.warn "\e[31m#{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column} SyntaxError: #{e.message}\e[0m" # rubocop:disable Layout/LineLength
     end
 
-    METHOD_NAME_RE = /[[:alpha:]_][[:alnum:]_]*\b[\?!=]?/.freeze
+    METHOD_NAME_RE = /[[:alpha:]_][[:alnum:]_]*\b[?!=]?/.freeze
     NON_ALNUM_METHOD_NAME_RE = Regexp.union(%w{
       []= [] ** ~ +@ -@ * / % + - >> << &
       ^ | <=> <= >= < > === == != =~ !~ !
