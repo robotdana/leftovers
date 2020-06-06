@@ -21,7 +21,7 @@ RSpec.describe Leftovers::MergedConfig do
   describe 'new' do
     it 'can work without bundler' do
       allow(Leftovers).to receive(:try_require).with('bundler').and_return(false)
-      expect_any_instance_of(described_class).to receive(:<<).twice # rubocop:disable Rspec/AnyInstance
+      expect_any_instance_of(described_class).to receive(:<<).twice # rubocop:disable RSpec/AnyInstance
       # not sure how i can expect a particular instance because it's called in the initializer
 
       subject
