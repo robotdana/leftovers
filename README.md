@@ -1,5 +1,5 @@
 # Leftovers
-[![travis](https://travis-ci.com/robotdana/leftovers.svg?branch=master)](https://travis-ci.com/robotdana/leftovers)
+[![travis](https://travis-ci.com/robotdana/leftovers.svg?branch=main)](https://travis-ci.com/robotdana/leftovers)
 [![Gem Version](https://badge.fury.io/rb/leftovers.svg)](https://rubygems.org/gems/leftovers)
 
 Find unused `methods`, `Classes`, `CONSTANTS`, `@instance_variables`, `@@class_variables`, and `$global_variables` in your ruby projects.
@@ -107,36 +107,36 @@ This would consider `puts` and `warn` to both have been called
 The configuration is read from `.leftovers.yml` in your project root.
 Its presence is optional and all of these settings are optional:
 
-see the [complete config documentation](https://github.com/robotdana/leftovers/tree/master/Configuration.md) for details.
-see the [built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
+see the [complete config documentation](https://github.com/robotdana/leftovers/tree/main/Configuration.md) for details.
+see the [built in config files](https://github.com/robotdana/leftovers/tree/main/lib/config) for examples.
 
-- [`include_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#include_paths)
-- [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#exclude_paths)
-- [`test_paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#test_paths)
-- [`gems:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#gems)
-- [`rules:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#rules)
-  - [`names:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#names)
-    - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-    - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-    - [`matches:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#matches)
-  - [`paths:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#paths)
-  - [`skip:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#skip)
-  - [`calls:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls-defines), [`defines:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#calls-defines)
-    - [`arguments:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#arguments), [`keys:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#keys-), [`itself:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#itself-true)
-    - [`transforms:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#transforms), [`linked_transforms:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#linked_transforms)
+- [`include_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#include_paths)
+- [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#exclude_paths)
+- [`test_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#test_paths)
+- [`gems:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#gems)
+- [`rules:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#rules)
+  - [`names:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#names)
+    - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
+    - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
+    - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
+  - [`paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#paths)
+  - [`skip:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#skip)
+  - [`calls:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#calls-defines), [`defines:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#calls-defines)
+    - [`arguments:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#arguments), [`keys:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#keys-), [`itself:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#itself-true)
+    - [`transforms:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#transforms), [`linked_transforms:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#linked_transforms)
         - `original:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
         - `delete_before:`, `delete_after:`, `downcase:`, `upcase:`, `capitalize:`, `swapcase:`
         - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize`
-    - [`if:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#if-unless), [`unless:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#if-unless)
-      - [`has_argument:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_argument)
+    - [`if:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#if-unless), [`unless:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#if-unless)
+      - [`has_argument:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_argument)
         - `keyword:`
-          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-          - [`matches:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#matches)
+          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
+          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
+          - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
         - `value:`
-          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#has_prefix-has_suffix)
-          - [`matches:`](https://github.com/robotdana/leftovers/tree/master/Configuration.md#matches)
+          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
+          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
+          - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
           - `type:`
 
 ## Limitations

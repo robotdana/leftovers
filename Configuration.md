@@ -3,7 +3,7 @@
 The configuration is read from `.leftovers.yml` in your project root.
 Its presence is optional and all of these settings are optional:
 
-see the [built in config files](https://github.com/robotdana/leftovers/tree/master/lib/config) for examples.
+see the [built in config files](https://github.com/robotdana/leftovers/tree/main/lib/config) for examples.
 
 - [`include_paths:`](#include_paths)
 - [`exclude_paths:`](#exclude_paths)
@@ -146,7 +146,7 @@ rules:
 
 Skip methods that are called on your behalf by code outside your project, or called dynamically using send with variables.
 
-You can also skip method calls and definitions in place using [magic comments](https://github.com/robotdana/leftovers/tree/master/README.md#magic-comments).
+You can also skip method calls and definitions in place using [magic comments](https://github.com/robotdana/leftovers/tree/main/README.md#magic-comments).
 
 ```yml
 rules:
