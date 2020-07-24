@@ -2,9 +2,9 @@
 
 module Leftovers
   class Definition
-    attr_reader :name
+    attr_reader :name, :test
     alias_method :names, :name
-    attr_reader :test
+
     alias_method :test?, :test
 
     def initialize(

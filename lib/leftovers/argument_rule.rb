@@ -20,7 +20,7 @@ module Leftovers
     end
 
     ADDITIONAL_VALID_KEYS = Leftovers::TransformRule::VALID_TRANSFORMS + %i{if unless}
-    def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength, Metrics/CyclomaticComplexity
+    def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
       argument: nil,
       arguments: nil,
       key: nil,

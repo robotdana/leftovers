@@ -7,8 +7,7 @@ require_relative 'definition'
 
 module Leftovers
   class FileCollector < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength
-    attr_reader :calls
-    attr_reader :definitions
+    attr_reader :calls, :definitions
 
     def initialize(ruby, file) # rubocop:disable Metrics/MethodLength
       @calls = []

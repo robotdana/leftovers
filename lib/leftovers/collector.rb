@@ -8,9 +8,7 @@ require_relative 'file_list'
 
 module Leftovers
   class Collector
-    attr_reader :calls
-    attr_reader :test_calls
-    attr_reader :definitions
+    attr_reader :calls, :test_calls, :definitions
 
     def initialize # rubocop:disable Metrics/MethodLength
       @calls = []
