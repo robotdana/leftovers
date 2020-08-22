@@ -48,7 +48,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
+  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     @stdout = stdout
     @stderr = stderr
     return 0 if leftovers.empty?

@@ -8,9 +8,11 @@ gemfile
 hashbang
 i'm
 kchecked
+lhs
 lol
 lorem
 memoization
+memoized
 namespaced
 nocov
 noninfringement
@@ -18,6 +20,7 @@ precompiled
 qux
 readme
 requirables
+rhs
 rspec
 rubo
 rubocop

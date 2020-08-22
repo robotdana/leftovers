@@ -51,7 +51,7 @@ module Leftovers
       end
 
       def to_s
-        @memo[:to_s] ||= name&.to_s || to_scalar_value.to_s || ''
+        @memo[:to_s] ||= name ? name.to_s : to_scalar_value.to_s
       end
 
       def to_sym

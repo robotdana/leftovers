@@ -45,7 +45,7 @@ module Leftovers
       freeze
     end
 
-    def match?(value_node) # rubocop:disable Metrics/CyclomaticComplexity
+    def match?(value_node) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       return true if @value_type&.== value_node.type
       return true if @value_types&.include?(value_node.type)
       return false unless (@literal_value || @literal_values) && value_node.scalar?

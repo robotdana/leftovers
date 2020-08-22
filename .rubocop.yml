@@ -222,3 +222,15 @@ RSpec/NestedGroups:
 
 RSpec/MessageSpies:
   Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false # wrong when lhs is a Pathname
+
+Style/OptionalBooleanParameter:
+  Enabled: false # it's slower
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+Lint/RedundantSafeNavigation:
+  Enabled: false # i use it terrifyingly to shortcut rhs sometimes.

@@ -10,7 +10,7 @@ module Leftovers
     using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
     # :nocov:
 
-    def initialize(patterns) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def initialize(patterns) # rubocop:disable Metrics/MethodLength
       keys = []
       pairs = []
       Leftovers.each_or_self(patterns) do |pat|

@@ -115,7 +115,7 @@ module Leftovers
       @keywords = NameRule.wrap(keywords) unless @all_keywords || keywords.empty?
     end
 
-    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
+    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       return [].freeze unless all_conditions_match?(method_node)
 
       result = []

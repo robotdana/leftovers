@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'http://github.com/robotdana/leftovers'
   spec.metadata['changelog_uri'] = 'http://github.com/robotdana/leftovers/blob/main/CHANGELOG.md'
+  spec.required_ruby_version = '>= 2.4.0'
 
   spec.files = Dir.glob('{lib,exe}/**/{*,.*}') + %w{
     CHANGELOG.md
