@@ -9,7 +9,7 @@ module Leftovers
   class FileCollector < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength
     attr_reader :calls, :definitions
 
-    def initialize(ruby, file) # rubocop:disable Metrics/MethodLength
+    def initialize(ruby, file) # rubocop:disable Metrics/MethodLength, Lint/MissingSuper
       @calls = []
       @definitions = []
       @allow_lines = Set.new.compare_by_identity
@@ -31,7 +31,7 @@ module Leftovers
     end
 
     def collect
-      ast, comments = Leftovers::Parser.parse_with_comments(@ruby, @file)
+      ast, comments = Leftovers::Parser.parse_with_comments(@ruby, @file.relative_path)
       process_comments(comments)
       process(ast)
     rescue ::Parser::SyntaxError => e
@@ -62,65 +62,73 @@ module Leftovers
     # grab method definitions
     def on_def(node)
       add_definition(node.name, node.loc.name)
-
       super
     end
 
     def on_ivasgn(node)
-      add_definition(node.name, node.loc.name)
-
-      collect_rules(node)
-
+      collect_variable_assign(node)
       super
     end
-    alias_method :on_gvasgn, :on_ivasgn
-    alias_method :on_cvasgn, :on_ivasgn
+
+    def on_gvasgn(node)
+      collect_variable_assign(node)
+      super
+    end
+
+    def on_cvasgn(node)
+      collect_variable_assign(node)
+      super
+    end
 
     def on_ivar(node)
       add_call(node.name)
-
       super
     end
-    alias_method :on_gvar, :on_ivar
-    alias_method :on_cvar, :on_ivar
+
+    def on_gvar(node)
+      add_call(node.name)
+      super
+    end
+
+    def on_cvar(node)
+      add_call(node.name)
+      super
+    end
 
     def on_op_asgn(node)
       collect_op_asgn(node)
-
       super
     end
 
     def on_and_asgn(node)
       collect_op_asgn(node)
-
       super
     end
 
     def on_or_asgn(node)
       collect_op_asgn(node)
-
       super
     end
 
     # grab method calls
     def on_send(node)
       super
-
-      add_call(node.name)
-      collect_rules(node)
+      collect_send(node)
     end
-    alias_method :on_csend, :on_send
+
+    def on_csend(node)
+      super
+      collect_send(node)
+    end
 
     def on_const(node)
       super
-
       add_call(node.name)
     end
 
     # grab e.g. :to_s in each(&:to_s)
     def on_block_pass(node)
       super
-
       add_call(node.children.first.to_sym) if node.children.first.string_or_symbol?
     end
 
@@ -139,18 +147,14 @@ module Leftovers
     # grab Constant = Class.new or CONSTANT = 'string'.freeze
     def on_casgn(node)
       super
-
       add_definition(node.name, node.loc.name)
-
       collect_rules(node)
     end
 
     # grab calls to `alias new_method original_method`
     def on_alias(node)
       super
-
       new_method, original_method = node.children
-
       add_definition(new_method.children.first, new_method.loc.expression)
       add_call(original_method.children.first)
     end
@@ -164,11 +168,16 @@ module Leftovers
     def add_definition(name, loc)
       return if @allow_lines.include?(loc.line)
 
-      definitions << Leftovers::Definition.new(name, location: loc, file: @file, test: test?(loc))
+      definitions << Leftovers::Definition.new(name, location: loc, test: test?(loc))
     end
 
     def add_call(name)
       calls << name
+    end
+
+    def collect_send(node)
+      add_call(node.name)
+      collect_rules(node)
     end
 
     # just collects the call, super will collect the definition
@@ -182,6 +191,12 @@ module Leftovers
       name = node.children[1]
 
       add_call(:"#{name}=")
+    end
+
+    def collect_variable_assign(node)
+      add_definition(node.name, node.loc.name)
+
+      collect_rules(node)
     end
 
     def collect_op_asgn(node)
@@ -204,7 +219,6 @@ module Leftovers
 
         next if @allow_lines.include?(node.loc.line)
 
-        node.file = @file
         node.test = test?(node.loc)
         definitions.concat(rule.definitions(node))
       end

@@ -21,19 +21,9 @@ module Leftovers
         children.first
       end
 
-      # TODO: move file to loc.
-      def file
-        @memo[:file]
-      end
-
-      def file=(value)
-        @memo[:file] = value
-      end
-
-      def test
+      def test?
         @memo[:test]
       end
-      alias_method :test?, :test
 
       def test=(value)
         @memo[:test] = value

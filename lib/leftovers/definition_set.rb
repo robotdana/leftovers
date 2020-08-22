@@ -3,22 +3,17 @@
 require_relative 'definition'
 module Leftovers
   class DefinitionSet < Leftovers::Definition
-    def initialize( # rubocop:disable Metrics/MethodLength
+    def initialize(
       names,
       method_node: nil,
       location: method_node.loc.expression,
-      file: method_node.file,
       test: method_node.test?
     )
       @definitions = names.map do |name|
-        Leftovers::Definition.new(name, test: test, location: location, file: file)
+        Leftovers::Definition.new(name, test: test, location: location)
       end
 
-      @test = test
-      @location = location
-      @file = file
-
-      freeze
+      super
     end
 
     def names

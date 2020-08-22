@@ -2,7 +2,7 @@
 
 module Leftovers
   class Definition
-    attr_reader :name, :test
+    attr_reader :name, :test, :location, :location_s
     alias_method :names, :name
 
     alias_method :test?, :test
@@ -11,42 +11,22 @@ module Leftovers
       name,
       method_node: nil,
       location: method_node.loc.expression,
-      file: method_node.file,
       test: method_node.test?
     )
       @name = name
-
       @location = location
-      @file = file
+      @location_s = location.to_s
       @test = test
 
       freeze
     end
 
-    def <=>(other)
-      (path <=> other.path).nonzero? ||
-        (line <=> other.line).nonzero? ||
-        (column <=> other.column)
-    end
-
     def path
-      @file.relative_path
+      @location.source_buffer.name
     end
 
     def to_s
       @name.to_s
-    end
-
-    def line
-      @location.line
-    end
-
-    def column
-      @location.column
-    end
-
-    def full_location
-      "#{path}:#{line}:#{column}"
     end
 
     def highlighted_source(highlight = "\e[31m", normal = "\e[0m") # rubocop:disable Metrics/AbcSize

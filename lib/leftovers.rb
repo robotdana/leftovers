@@ -55,7 +55,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
 
     only_test = []
     none = []
-    leftovers.sort.each do |definition|
+    leftovers.sort_by(&:location_s).each do |definition|
       if !definition.test? && definition.in_test_collection?
         only_test << definition
       else
