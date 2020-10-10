@@ -44,7 +44,7 @@ module Leftovers
     end
 
     def skipped?
-      Leftovers.config.skip_rules.any? { |r| r.match?(@name, path) }
+      Leftovers.config.skip_rules.any? { |r| r.match?(self) }
     end
   end
 end

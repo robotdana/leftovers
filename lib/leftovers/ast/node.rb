@@ -21,6 +21,10 @@ module Leftovers
         children.first
       end
 
+      def path
+        @memo[:path] ||= loc.expression.source_buffer.name
+      end
+
       def test?
         @memo[:test]
       end

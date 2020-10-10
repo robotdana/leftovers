@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'matchers/name_builder'
+require_relative 'builders/rule_matcher'
 require_relative 'argument_rule'
 require 'fast_ignore'
 
@@ -40,10 +40,7 @@ module Leftovers
         raise Leftovers::ConfigError, "skip can't exist with defines or calls"
       end
 
-      @name_matcher = ::Leftovers::Matchers::NameBuilder.build(name || names)
-      if path || paths
-        @path = FastIgnore.new(include_rules: path || paths, gitignore: false, root: Leftovers.pwd)
-      end
+      @matcher = ::Leftovers::Builders::RuleMatcher.build(name || names, path || paths)
       @skip = skip
 
       begin
@@ -61,14 +58,8 @@ module Leftovers
       raise e, "#{e.message} for #{Array(name || names).map(&:to_s).join(', ')}", e.backtrace
     end
 
-    def filename?(file)
-      return true unless @path
-
-      @path.allowed?(file)
-    end
-
-    def match?(name, file)
-      @name_matcher === name && filename?(file)
+    def match?(node)
+      @matcher === node
     end
 
     def calls(node)

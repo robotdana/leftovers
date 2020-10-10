@@ -6,6 +6,8 @@ module Leftovers
       def self.===(_value)
         false
       end
+
+      freeze
     end
   end
 end

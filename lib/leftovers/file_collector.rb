@@ -211,7 +211,7 @@ module Leftovers
 
     def collect_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       Leftovers.config.rules.each do |rule|
-        next unless rule.match?(node.name, filename)
+        next unless rule.match?(node)
 
         next if rule.skip?
 

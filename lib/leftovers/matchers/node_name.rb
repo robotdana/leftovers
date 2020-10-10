@@ -2,22 +2,19 @@
 
 module Leftovers
   module Matchers
-    class Symbol
+    class NodeName
       # :nocov:
       using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
       # :nocov:
 
-      attr_reader :syms, :regexp
-
-      def initialize(syms, regexp)
-        @syms = syms
-        @regexp = regexp
+      def initialize(name_matcher)
+        @name_matcher = name_matcher
 
         freeze
       end
 
-      def ===(sym)
-        @syms === sym || @regexp === sym
+      def ===(node)
+        @name_matcher === node.name
       end
 
       freeze

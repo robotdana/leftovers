@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 require 'set'
-require_relative 'nothing'
-require_relative 'anything'
-require_relative 'symbol'
+require_relative '../matchers/nothing'
+require_relative '../matchers/anything'
+require_relative '../matchers/symbol'
+require_relative 'fallback_matcher'
 
 module Leftovers
-  module Matchers
-    module NameBuilder
+  module Builders
+    module NameMatcher
       def self.build(patterns, default = true) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
         regexps = []
         syms = Set.new
@@ -69,9 +70,7 @@ module Leftovers
         if syms && regexp
           ::Leftovers::Matchers::Symbol.new(syms, regexp)
         else
-          syms || regexp || (
-            default ? ::Leftovers::Matchers::Anything : ::Leftovers::Matchers::Nothing
-          )
+          syms || regexp || ::Leftovers::Builders::FallbackMatcher.build(default)
         end
       end
     end

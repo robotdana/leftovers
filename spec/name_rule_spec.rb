@@ -8,8 +8,8 @@ RSpec::Matchers.define :case_eq do |expected|
     actual === expected
   end
 end
-require_relative '../lib/leftovers/matchers/name_builder'
-RSpec.describe Leftovers::Matchers::NameBuilder do
+require_relative '../lib/leftovers/builders/name_matcher'
+RSpec.describe Leftovers::Builders::NameMatcher do
   subject { described_class.build(value, default) }
 
   let(:default) { true }
