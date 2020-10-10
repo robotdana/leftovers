@@ -7,6 +7,7 @@ esque
 gemfile
 hashbang
 i'm
+ips
 kchecked
 lhs
 lol
@@ -30,6 +31,7 @@ sidekiq
 simplecov
 todo
 unmemoize
+warmup
 webdriver
 whatevers
 wtf

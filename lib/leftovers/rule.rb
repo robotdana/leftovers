@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'name_rule'
+require_relative 'matchers/name_builder'
 require_relative 'argument_rule'
 require 'fast_ignore'
 
@@ -40,7 +40,7 @@ module Leftovers
         raise Leftovers::ConfigError, "skip can't exist with defines or calls"
       end
 
-      @name_matcher = NameRule.wrap(name || names)
+      @name_matcher = ::Leftovers::Matchers::NameBuilder.build(name || names)
       if path || paths
         @path = FastIgnore.new(include_rules: path || paths, gitignore: false, root: Leftovers.pwd)
       end

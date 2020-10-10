@@ -2,7 +2,7 @@
 
 require 'set'
 require_relative 'value_rule'
-require_relative 'name_rule'
+require_relative 'matchers/name_builder'
 
 module Leftovers
   class HashRule
@@ -16,15 +16,15 @@ module Leftovers
       Leftovers.each_or_self(patterns) do |pat|
         if pat.is_a?(Hash) && pat[:value]
           pairs << [
-            NameRule.wrap(pat[:keyword] || pat[:index]),
+            ::Leftovers::Matchers::NameBuilder.build(pat[:keyword] || pat[:index]),
             ValueRule.new(pat[:value])
           ]
         else
-          keys << NameRule.wrap(pat)
+          keys << ::Leftovers::Matchers::NameBuilder.build(pat)
         end
       end
 
-      @keys = NameRule.wrap(keys, false)
+      @keys = ::Leftovers::Matchers::NameBuilder.build(keys, false)
 
       @pairs = (pairs unless pairs.empty?)
 

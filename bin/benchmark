@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'benchmark/ips'
+require 'tempfile'
+require 'stringio'
+
+# from benchmark/ips readme
+class GCSuite
+  def warming(*) # leftovers:allow
+    run_gc
+  end
+
+  def running(*) # leftovers:allow
+    run_gc
+  end
+
+  def warmup_stats(*); end # leftovers:allow
+
+  def add_report(*); end # leftovers:allow
+
+  private
+
+  def run_gc
+    GC.enable
+    GC.start
+    GC.disable
+  end
+end
+
+GC.disable
+
+config = { suite: GCSuite.new, time: 3, warmup: 0.1 }
+
+def benchmark(label)
+  return unless ARGV.empty? || ARGV.include?(label)
+
+  puts "\n#{label}:"
+
+  yield
+  puts ''
+end
+
+module AnythingMatcher
+  def self.===(_value)
+    true
+  end
+end
+benchmark('method-vs-ancestors') do
+  a_proc = proc { true }
+  method = AnythingMatcher.method(:===)
+
+  raise unless AnythingMatcher === rand
+  raise unless BasicObject === rand
+  raise unless a_proc === rand
+  raise unless method === rand
+
+  Benchmark.ips do |x|
+    x.config(config)
+
+    x.report(:method_object) { method === rand }
+    x.report(:ancestor) { Object === rand }
+    x.report(:'=== method') { AnythingMatcher === rand }
+    x.report(:proc) { a_proc === rand }
+
+    x.compare!
+  end
+end

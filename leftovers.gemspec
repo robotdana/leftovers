@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'activesupport'
+  spec.add_development_dependency 'benchmark-ips'
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'haml'
   spec.add_development_dependency 'pry', '~> 0.1'

@@ -234,3 +234,6 @@ RSpec/MultipleMemoizedHelpers:
 
 Lint/RedundantSafeNavigation:
   Enabled: false # i use it terrifyingly to shortcut rhs sometimes.
+
+Style/CommentedKeyword:
+  Enabled: false # i will

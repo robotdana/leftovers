@@ -2,7 +2,7 @@
 
 require_relative 'definition'
 require_relative 'definition_set'
-require_relative 'name_rule'
+require_relative 'matchers/name_builder'
 require_relative 'transform_rule'
 require_relative 'hash_rule'
 
@@ -112,7 +112,9 @@ module Leftovers
       end
 
       @positions = positions unless @all_positions || positions.empty? || @all_positions
-      @keywords = NameRule.wrap(keywords) unless @all_keywords || keywords.empty?
+      return if @all_keywords || keywords.empty?
+
+      @keywords = ::Leftovers::Matchers::NameBuilder.build(keywords)
     end
 
     def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity

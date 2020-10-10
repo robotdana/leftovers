@@ -8,9 +8,9 @@ RSpec::Matchers.define :case_eq do |expected|
     actual === expected
   end
 end
-require_relative '../lib/leftovers/name_rule'
-RSpec.describe Leftovers::NameRule do
-  subject { described_class.wrap(value, default) }
+require_relative '../lib/leftovers/matchers/name_builder'
+RSpec.describe Leftovers::Matchers::NameBuilder do
+  subject { described_class.build(value, default) }
 
   let(:default) { true }
 
@@ -221,9 +221,9 @@ RSpec.describe Leftovers::NameRule do
   end
 
   describe 'nesting' do
-    subject { described_class.wrap([base, 'new_value']) }
+    subject { described_class.build([base, 'new_value']) }
 
-    let(:base) { described_class.wrap(value, default) }
+    let(:base) { described_class.build(value, default) }
 
     context 'with nil value' do
       let(:value) { nil }
