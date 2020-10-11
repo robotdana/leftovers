@@ -1,27 +1,28 @@
 # frozen_string_literal: true
-# frozen_string_literal: true
 
 require 'fileutils'
 require 'bundler/setup'
 
-FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))
+if RSpec.configuration.instance_variable_get(:@files_or_directories_to_run) == ['spec']
+  FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))
 
-require 'simplecov'
-require 'simplecov-console'
+  require 'simplecov'
+  require 'simplecov-console'
 
-SimpleCov.print_error_status = true
-if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.5')
-  SimpleCov.minimum_coverage line: 100, branch: 100
-else
-  SimpleCov.minimum_coverage 100
+  SimpleCov.print_error_status = true
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.5')
+    SimpleCov.minimum_coverage line: 100, branch: 100
+  else
+    SimpleCov.minimum_coverage 100
+  end
+
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::Console
+  ])
+
+  SimpleCov.start
 end
-
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::Console
-])
-
-SimpleCov.start
 
 require_relative '../lib/leftovers'
 

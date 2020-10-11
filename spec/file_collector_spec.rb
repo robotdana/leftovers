@@ -1426,6 +1426,50 @@ RSpec.describe Leftovers::FileCollector do
     expect(collector.calls).to contain_exactly(:downcase, :upcase)
   end
 
+  it 'collects names unless names' do
+    ruby = <<~RUBY
+      my_magic_call(:my_method_one)
+      non_magic_call(:my_method_two)
+    RUBY
+
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name:
+            has_suffix: _magic_call
+          unless:
+            name: non_magic_call
+          calls: { arguments: 1 }
+    YML
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls).to contain_exactly(:my_magic_call, :non_magic_call, :my_method_one)
+  end
+
+  it 'collects names unless names when the name is unless' do
+    ruby = <<~RUBY
+      my_magic_call(:my_method_one)
+      non_magic_call(:my_method_two)
+    RUBY
+
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name:
+            has_suffix: _magic_call
+            unless:
+              - non_magic_call
+          calls: { arguments: 1 }
+    YML
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls).to contain_exactly(:my_magic_call, :non_magic_call, :my_method_one)
+  end
+
   it 'reports syntax errors' do
     ruby = <<~RUBY
       true
@@ -1531,37 +1575,37 @@ RSpec.describe Leftovers::FileCollector do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
+          has_argument:
+            value: foo
           calls:
             arguments: 1
-            if:
-              has_argument:
-                value: foo
     YML
 
     ruby = <<~RUBY
       my_method('baz', kw: 'qux')
       my_method('bar', kw: 'foo')
-      my_method('lol')
+      my_method('lol', 'foo')
+      my_method('beep')
     RUBY
 
     collector = described_class.new(ruby, file)
     collector.collect
 
     expect(collector.definitions).to be_empty
-    expect(collector.calls).to contain_exactly(:bar, :my_method, :my_method, :my_method)
+    expect(collector.calls)
+      .to contain_exactly(:bar, :lol, :my_method, :my_method, :my_method, :my_method)
   end
 
   it 'can call find has_argument with only value types' do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
+          has_argument:
+            keyword: kw
+            value:
+              type: [String, Symbol, Integer, Float]
           calls:
             arguments: 1
-            if:
-              has_argument:
-                keyword: kw
-                value:
-                  type: [String, Symbol, Integer, Float]
     YML
 
     ruby = <<~RUBY
@@ -1583,13 +1627,12 @@ RSpec.describe Leftovers::FileCollector do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
+          has_argument:
+            keyword: kw
+            value:
+              type: String
           calls:
             arguments: 1
-            if:
-              has_argument:
-                keyword: kw
-                value:
-                  type: String
     YML
 
     ruby = <<~RUBY
@@ -1611,11 +1654,10 @@ RSpec.describe Leftovers::FileCollector do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
+          has_argument:
+            value: [foo, bar]
           calls:
             arguments: 1
-            if:
-              has_argument:
-                value: [foo, bar]
     YML
 
     ruby = <<~RUBY
@@ -1631,14 +1673,79 @@ RSpec.describe Leftovers::FileCollector do
     expect(collector.calls).to contain_exactly(:bar, :baz, :my_method, :my_method, :my_method)
   end
 
+  it 'can call find has_argument' do
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name: my_method
+          has_argument: kw
+          calls:
+            arguments: 1
+    YML
+
+    ruby = <<~RUBY
+      my_method('bar', kw: 'foo')
+      my_method('lol', 1 => true)
+    RUBY
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls).to contain_exactly(:bar, :my_method, :my_method)
+  end
+
+  it 'can call find has_argument with keyword param' do
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name: my_method
+          has_argument:
+            keyword: kw
+          calls:
+            arguments: 1
+    YML
+
+    ruby = <<~RUBY
+      my_method('bar', kw: 'foo')
+      my_method('lol', 1 => true)
+    RUBY
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls).to contain_exactly(:bar, :my_method, :my_method)
+  end
+
+  it 'can call find has_argument with keyword and value literal param' do
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name: my_method
+          has_argument:
+            keyword: kw
+            value: true
+          calls:
+            arguments: 1
+    YML
+
+    ruby = <<~RUBY
+      my_method('bar', kw: true)
+      my_method('lol', kw: false)
+    RUBY
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls).to contain_exactly(:bar, :my_method, :my_method)
+  end
+
   it 'can call find has_argument with string keys' do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
+          has_argument: kw
           calls:
             arguments: 1
-            if:
-              has_argument: kw
     YML
 
     ruby = <<~RUBY
@@ -1657,13 +1764,13 @@ RSpec.describe Leftovers::FileCollector do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
+          has_argument: 2
           calls:
             arguments: 1
-            if:
-              has_argument: 2
     YML
 
     ruby = <<~RUBY
+      my_method('baz', 'foo', 'bar')
       my_method('bar', 'foo')
       my_method('lol')
     RUBY
@@ -1672,7 +1779,32 @@ RSpec.describe Leftovers::FileCollector do
     collector.collect
 
     expect(collector.definitions).to be_empty
-    expect(collector.calls).to contain_exactly(:bar, :my_method, :my_method)
+    expect(collector.calls).to contain_exactly(:bar, :baz, :my_method, :my_method, :my_method)
+  end
+
+  it 'can call find has_argument with an index and value' do
+    pending
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name: my_method
+          has_argument:
+            index: 2
+            value: 'foo'
+          calls:
+            arguments: 1
+    YML
+
+    ruby = <<~RUBY
+      my_method('baz', 'bar', 'foo')
+      my_method('bar', 'foo')
+      my_method('foo')
+    RUBY
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls).to contain_exactly(:bar, :my_method, :my_method, :my_method)
   end
 
   it 'can call find from_argument with an index' do

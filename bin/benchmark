@@ -68,3 +68,21 @@ benchmark('method-vs-ancestors') do
     x.compare!
   end
 end
+
+
+benchmark('remove-and-return-2-from-array') do
+  Benchmark.ips do |x|
+    x.config(config)
+
+    x.report(:pop) { a = [1,2,3]; a.pop; a.pop }
+    x.report(:shift) { a = [1,2,3]; a.shift; a.shift }
+    x.report(:first_drop) do
+      a = [1,2,3]
+      a.first
+      a[1]
+      a = a.drop(2)
+    end
+
+    x.compare!
+  end
+end

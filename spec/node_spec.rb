@@ -76,8 +76,8 @@ RSpec.describe Leftovers::AST::Node do
       expect(true_node.name).to eq nil
       expect(false_node.name).to eq nil
       expect(nil_node.name).to eq nil
-      expect(str_node.name).to eq nil
-      expect(sym_node.name).to eq nil
+      expect(str_node.name).to eq :foo
+      expect(sym_node.name).to eq :foo
       expect(constant_node.name).to eq :FOO
       expect(def_node.name).to eq :foo
       expect(ivar_node.name).to eq :@foo

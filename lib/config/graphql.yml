@@ -6,15 +6,27 @@ rules:
       - sliced_nodes
   - name: field
     calls:
-      - argument: 1
-        unless:
-          has_argument: method
-      - argument: method
+      argument: method
+  - name: field
+    unless:
+      has_argument: method
+    calls:
+      argument: 1
   - name: argument
     calls:
       - argument: 1
         add_suffix: '='
         unless:
           has_argument: as
+      - argument: as
+        add_suffix: '='
+  - name: argument
+    unless:
+      has_argument: as
+    calls:
+      - argument: 1
+        add_suffix: '='
+  - name: argument
+    calls:
       - argument: as
         add_suffix: '='

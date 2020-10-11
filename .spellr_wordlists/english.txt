@@ -30,6 +30,7 @@ sherson
 sidekiq
 simplecov
 todo
+uncompactable
 unmemoize
 warmup
 webdriver

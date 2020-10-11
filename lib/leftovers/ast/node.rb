@@ -21,6 +21,10 @@ module Leftovers
         children.first
       end
 
+      def second
+        children[1]
+      end
+
       def path
         @memo[:path] ||= loc.expression.source_buffer.name
       end
@@ -74,7 +78,7 @@ module Leftovers
         @memo[:arguments] ||= case type
         when :send, :csend then children.drop(2)
         when :casgn then [children[2]]
-        when :ivasgn, :cvasgn, :gvasgn then [children[1]]
+        when :ivasgn, :cvasgn, :gvasgn then [second]
         else
           # :nocov: # these are all the nodes with collect_rules
           raise "Not argument node (#{type})"
@@ -112,6 +116,10 @@ module Leftovers
         end
       end
 
+      def pair_value
+        second if type == :pair
+      end
+
       def values_at_match(matcher)
         each_pair.with_object([]) do |(key, value), values|
           values << value if matcher === key.to_sym
@@ -133,10 +141,12 @@ module Leftovers
       def name # rubocop:disable Metrics/MethodLength
         @memo[:name] ||= case type
         when :send, :csend, :casgn, :const
-          children[1]
-        when :def, :ivasgn, :ivar, :gvar, :cvar, :gvasgn, :cvasgn
+          second
+        when :def, :ivasgn, :ivar, :gvar, :cvar, :gvasgn, :cvasgn, :sym
           first
-        when :module, :class
+        when :str
+          first.to_sym
+        when :module, :class, :pair
           first.name
         end
       end

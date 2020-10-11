@@ -183,20 +183,24 @@ rules:
   - name:
     - has_one
     - belongs_to
+    unless:
+      has_argument: class_name
     calls:
       argument: 1
       camelize: true
-      unless:
-        has_argument: class_name
+
   - name:
     - has_many
     - has_and_belongs_to_many
+    unless:
+      has_argument: class_name
     calls:
       - argument: 1
         camelize: true
         singularize: true
-        unless:
-          has_argument: class_name
+  - name:
+    - has_many
+    - has_and_belongs_to_many
     defines:
       - argument: 1
         linked_transforms:
@@ -235,12 +239,12 @@ rules:
             add_suffix: '!'
           - add_prefix: reload
   - name: belongs_to
+    unless:
+      has_argument:
+        keyword: optional
+        value: true
     calls:
       argument: 1
-      unless:
-        has_argument:
-          keyword: optional
-          value: true
 
   - name:
      - has_one
@@ -253,20 +257,18 @@ rules:
           - inverse_of
       - argument: touch
         add_suffix: '='
-      - argument: 1
-        if:
-          has_argument: dependent
-      - argument: 1
-        if:
-          has_argument: inverse_of
-      - argument: 1
-        if:
-          has_argument: touch
-      - argument: 1
-        if:
-          has_argument:
-            keyword: validate
-            value: true
+  - name:
+     - has_one
+     - has_many
+     - belongs_to
+     - has_and_belongs_to_many
+    has_argument:
+      keyword: [dependent, inverse_of, touch, validate]
+      value:
+        not: false
+    calls:
+      argument: 1
+
   - name:
       - rescue_from
     calls:
@@ -288,29 +290,39 @@ rules:
         camelize: true
         add_suffix: Controller
   - name: delegate
+    has_argument:
+      keyword: prefix
+      value: true
     defines:
       - argument: '*'
-        if:
-          has_argument:
-            keyword: prefix
-            value: true
         add_prefix:
           from_argument: to
           joiner: '_'
+    calls:
+      - argument: to
       - argument: '*'
-        if:
-          has_argument:
-            keyword: prefix
-            value:
-              type: [String, Symbol]
+  - name: delegate
+    has_argument:
+      keyword: prefix
+      value:
+        type: [String, Symbol]
+    defines:
+      - argument: '*'
         add_prefix:
           from_argument: prefix
           joiner: '_'
     calls:
       - argument: to
       - argument: '*'
-        if:
-          has_argument: prefix
+  - name: delegate
+    unless:
+      has_argument:
+        keyword: prefix
+        value:
+          - true
+          - type: [String, Symbol]
+    calls:
+      - argument: to
   - name:
       - resource
       - resources

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'builders/rule_matcher'
+require_relative 'matcher_builders/rule'
 require_relative 'argument_rule'
 require 'fast_ignore'
 
@@ -22,25 +22,21 @@ module Leftovers
     alias_method :skip?, :skip
 
     def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      name: nil,
-      names: nil,
       calls: nil,
       call: nil,
       skip: false,
       defines: nil,
       define: nil,
-      path: nil,
-      paths: nil
+      **matcher_args
     )
-      raise Leftovers::ConfigError, 'Only use one of name/names' if name && names
-      raise Leftovers::ConfigError, 'Only use one of path/paths' if path && paths
       raise Leftovers::ConfigError, 'Only use one of call/calls' if call && calls
       raise Leftovers::ConfigError, 'Only use one of define/defines' if define && defines
       if skip && (defines || calls || define || call)
         raise Leftovers::ConfigError, "skip can't exist with defines or calls"
       end
 
-      @matcher = ::Leftovers::Builders::RuleMatcher.build(name || names, path || paths)
+      @matcher = ::Leftovers::MatcherBuilders::Rule.build(**matcher_args)
+
       @skip = skip
 
       begin
@@ -55,7 +51,8 @@ module Leftovers
         raise e, "#{e.message} for defines", e.backtrace
       end
     rescue ArgumentError, Leftovers::ConfigError => e
-      raise e, "#{e.message} for #{Array(name || names).map(&:to_s).join(', ')}", e.backtrace
+      names = Array(matcher_args[:name] || matcher_args[:names]).map(&:to_s).join(', ')
+      raise e, "#{e.message} for #{names}", e.backtrace
     end
 
     def match?(node)

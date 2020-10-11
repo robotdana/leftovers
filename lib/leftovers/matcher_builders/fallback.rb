@@ -5,8 +5,8 @@ require_relative '../matchers/anything'
 require_relative '../matchers/nothing'
 
 module Leftovers
-  module Builders
-    module FallbackMatcher
+  module MatcherBuilders
+    module Fallback
       def self.build(default) # rubocop:disable Metrics/MethodLength
         case default
         when true then ::Leftovers::Matchers::Anything
