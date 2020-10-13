@@ -11,7 +11,8 @@ module Leftovers
       end
 
       def ===(node)
-        @matcher === node.positional_arguments[position]
+        value_node = node.positional_arguments[@position]
+        @matcher === value_node if value_node
       end
 
       freeze

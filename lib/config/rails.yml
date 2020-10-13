@@ -241,7 +241,7 @@ rules:
   - name: belongs_to
     unless:
       has_argument:
-        keyword: optional
+        at: optional
         value: true
     calls:
       argument: 1
@@ -263,7 +263,7 @@ rules:
      - belongs_to
      - has_and_belongs_to_many
     has_argument:
-      keyword: [dependent, inverse_of, touch, validate]
+      at: [dependent, inverse_of, touch, validate]
       value:
         not: false
     calls:
@@ -291,7 +291,7 @@ rules:
         add_suffix: Controller
   - name: delegate
     has_argument:
-      keyword: prefix
+      at: prefix
       value: true
     defines:
       - argument: '*'
@@ -303,7 +303,7 @@ rules:
       - argument: '*'
   - name: delegate
     has_argument:
-      keyword: prefix
+      at: prefix
       value:
         type: [String, Symbol]
     defines:
@@ -317,7 +317,7 @@ rules:
   - name: delegate
     unless:
       has_argument:
-        keyword: prefix
+        at: prefix
         value:
           - true
           - type: [String, Symbol]

@@ -6,6 +6,7 @@ require_relative 'and'
 require_relative '../matchers/node_has_keyword_argument'
 require_relative '../matchers/node_has_positional_argument_length_minimum'
 require_relative '../matchers/node_has_positional_argument'
+require_relative '../matchers/node_has_positional_argument_at_position'
 require_relative '../matchers/node_pair_value'
 
 module Leftovers
@@ -28,22 +29,41 @@ module Leftovers
         end
       end
 
-      def self.build_from_hash(keyword: nil, value: nil, **reserved_kw) # rubocop:disable Metrics/MethodLength
+      def self.build_from_hash(at: nil, value: nil, **reserved_kw) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
         unless_arg = reserved_kw.delete(:unless) # keywords as kwargs when
+        at = Array(at)
+        keys = at.reject { |k| k.is_a?(Integer) }
+        index = at.select { |i| i.is_a?(Integer) }
+        keys = nil if keys.empty?
+        index = nil if index.empty?
+
         unless reserved_kw.empty?
           rest_kw = reserved_kw.keys.join(', ')
           raise Leftovers::ConfigError, "Unrecognized has_argument keyword(s) #{rest_kw}"
         end
 
-        keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keyword, nil)
+        keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keys, nil)
         value_matcher = ::Leftovers::MatcherBuilders::Node.build(value, nil)
 
-        has_keyword_argument = build_node_has_keyword_argument(keyword_matcher, value_matcher)
-        unless keyword_matcher
-          has_argument = build_node_has_any_argument(has_keyword_argument, value_matcher)
+        has_positional_argument = build_node_has_argument_at_position(index, value_matcher) if index
+        unless index && !keys
+          has_keyword_argument = build_node_has_keyword_argument(keyword_matcher, value_matcher)
         end
 
-        matcher = has_argument || has_keyword_argument
+        matcher = if index && !keys
+          has_positional_argument
+        elsif keys && !index
+          has_keyword_argument
+        elsif keys && index
+          x = ::Leftovers::MatcherBuilders::Or.build([
+            has_keyword_argument,
+            has_positional_argument
+          ], nil)
+
+          x
+        else
+          build_node_has_any_argument(has_keyword_argument, value_matcher)
+        end
 
         if unless_arg
           ::Leftovers::MatcherBuilders::And.build([
@@ -54,6 +74,14 @@ module Leftovers
           ])
         else
           matcher
+        end
+      end
+
+      def self.build_node_has_argument_at_position(index, value_matcher)
+        ::Leftovers::MatcherBuilders::Or.each_or_self(index, nil) do |position|
+          ::Leftovers::Matchers::NodeHasPositionalArgumentAtPosition.new(
+            position - 1, value_matcher
+          )
         end
       end
 
