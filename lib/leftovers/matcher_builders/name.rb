@@ -42,7 +42,7 @@ module Leftovers
               ::Leftovers::MatcherBuilders::And.build([
                 re,
                 ::Leftovers::Matchers::Not.new(
-                  ::Leftovers::MatcherBuilders::Name.build(pat[:unless])
+                  ::Leftovers::MatcherBuilders::Name.build(pat[:unless], nil)
                 )
               ])
             else

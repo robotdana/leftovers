@@ -28,14 +28,36 @@ module Leftovers
         end
       end
 
-      def self.build_from_hash(keyword: nil, value: nil) # rubocop:disable Metrics/MethodLength
+      def self.build_from_hash(keyword: nil, value: nil, **reserved_kw) # rubocop:disable Metrics/MethodLength
+        unless_arg = reserved_kw.delete(:unless) # keywords as kwargs when
+        unless reserved_kw.empty?
+          rest_kw = reserved_kw.keys.join(', ')
+          raise Leftovers::ConfigError, "Unrecognized has_argument keyword(s) #{rest_kw}"
+        end
+
         keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keyword, nil)
         value_matcher = ::Leftovers::MatcherBuilders::Node.build(value, nil)
 
         has_keyword_argument = build_node_has_keyword_argument(keyword_matcher, value_matcher)
+        unless keyword_matcher
+          has_argument = build_node_has_any_argument(has_keyword_argument, value_matcher)
+        end
 
-        return has_keyword_argument if keyword_matcher
+        matcher = has_argument || has_keyword_argument
 
+        if unless_arg
+          ::Leftovers::MatcherBuilders::And.build([
+            matcher,
+            ::Leftovers::Matchers::Not.new(
+              ::Leftovers::MatcherBuilders::NodeHasArgument.build(unless_arg, nil)
+            )
+          ])
+        else
+          matcher
+        end
+      end
+
+      def self.build_node_has_any_argument(has_keyword_argument, value_matcher)
         ::Leftovers::MatcherBuilders::Or.build([
           has_keyword_argument,
           ::Leftovers::Matchers::NodeHasPositionalArgument.new(value_matcher)

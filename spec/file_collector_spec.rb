@@ -1623,6 +1623,61 @@ RSpec.describe Leftovers::FileCollector do
       .to contain_exactly(:bar, :no, :baz, :foo, :my_method, :my_method, :my_method, :my_method)
   end
 
+  it 'can call find has_argument with unless' do
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name: my_method
+          has_argument:
+            value:
+              type: [String, Symbol, Integer, Float]
+            unless: kw
+          calls:
+            arguments: 1
+    YML
+
+    ruby = <<~RUBY
+      my_method('baz', 'qux')
+      my_method('bar', kw: 1)
+      my_method('lol', kw: 1.0)
+      my_method('foo', 1.0)
+    RUBY
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls)
+      .to contain_exactly(:baz, :foo, :my_method, :my_method, :my_method, :my_method)
+  end
+
+  it 'can call find has_argument with unless value' do
+    Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
+      rules:
+        - name: my_method
+          has_argument:
+            value:
+              type: Integer
+            unless:
+              value: 0
+          calls:
+            arguments: 1
+    YML
+
+    ruby = <<~RUBY
+      my_method('baz', 0)
+      my_method('bar', 1, 0)
+      my_method('lol', 1)
+      my_method('foo')
+    RUBY
+
+    collector = described_class.new(ruby, file)
+    collector.collect
+
+    expect(collector.definitions).to be_empty
+    expect(collector.calls)
+      .to contain_exactly(:lol, :my_method, :my_method, :my_method, :my_method)
+  end
+
   it 'can call find has_argument with only value type' do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
