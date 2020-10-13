@@ -9,11 +9,9 @@ require_relative 'or'
 module Leftovers
   module MatcherBuilders
     module Node
-      def self.build(pattern, default) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-        or_matchers = []
-
-        ::Leftovers.each_or_self(pattern) do |pat|
-          or_matchers << case pat
+      def self.build(pattern, default) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+        ::Leftovers::MatcherBuilders::Or.each_or_self(pattern, default) do |pat|
+          case pat
           when ::Integer, true, false, nil
             ::Leftovers::Matchers::NodeScalarValue.new(pat)
           when ::String
@@ -28,8 +26,6 @@ module Leftovers
             ::Leftovers::MatcherBuilders::And.build([type, not_value], nil)
           end
         end
-
-        ::Leftovers::MatcherBuilders::Or.build(or_matchers, default)
       end
     end
   end

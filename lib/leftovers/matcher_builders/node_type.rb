@@ -8,20 +8,17 @@ module Leftovers
   module MatcherBuilders
     module NodeType
       def self.build(types_pattern, default = true) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
-        types = []
-        ::Leftovers.each_or_self(types_pattern) do |type|
+        matcher = ::Leftovers::MatcherBuilders::Or.each_or_self(types_pattern, nil) do |type|
           case type
-          when 'Symbol' then types << :sym
-          when 'String' then types << :str
-          when 'Integer' then types << :int
-          when 'Float' then types << :float
-          when 'Method' then types << Set[:send, :csend, :def]
-          when 'Constant' then types << Set[:const, :class, :const]
+          when 'Symbol' then :sym
+          when 'String' then :str
+          when 'Integer' then :int
+          when 'Float' then :float
+          when 'Method' then Set[:send, :csend, :def]
+          when 'Constant' then Set[:const, :class, :const]
           else raise ::Leftovers::ConfigError, "Unrecognized type #{type}"
           end
         end
-
-        matcher = ::Leftovers::MatcherBuilders::Or.build(types, nil)
 
         return ::Leftovers::Matchers::NodeType.new(matcher) if matcher
 

@@ -42,15 +42,6 @@ RSpec.describe Leftovers::MatcherBuilders::Name do
     end
   end
 
-  context 'with nil array value' do
-    let(:value) { [nil] }
-
-    it 'always matches nothing' do
-      expect(subject).to case_eq :whatever
-      expect(subject).to case_eq :whichever
-    end
-  end
-
   context 'with single string value' do
     let(:value) { 'what' }
 

@@ -10,8 +10,7 @@ module Leftovers
   module MatcherBuilders
     module Name
       def self.build(patterns, default = true) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-        or_matchers = []
-        ::Leftovers.each_or_self(patterns) do |pat| # rubocop:disable Metrics/BlockLength
+        ::Leftovers::MatcherBuilders::Or.each_or_self(patterns, default) do |pat| # rubocop:disable Metrics/BlockLength
           # can't have these as part of the case statement because case equality
           next if pat == ::Leftovers::Matchers::Anything
           next if pat == ::Leftovers::Matchers::Nothing
@@ -20,9 +19,9 @@ module Leftovers
           when nil
             nil # do nothing
           when ::String
-            or_matchers.concat(pat.split(/\s+/).map(&:to_sym))
+            pat.split(/\s+/).map(&:to_sym).to_set
           when ::Symbol, ::Integer, ::Set, ::Regexp, ::Leftovers::Matchers::Or
-            or_matchers << pat
+            pat
           when ::Hash
             re = if pat[:match]
               /\A#{pat[:match]}\z/
@@ -39,7 +38,7 @@ module Leftovers
                 'valid keys are matches, has_prefix, has_suffix, unless'
             end
 
-            or_matchers << if pat[:unless]
+            if pat[:unless]
               ::Leftovers::MatcherBuilders::And.build([
                 re,
                 ::Leftovers::Matchers::Not.new(
@@ -54,8 +53,6 @@ module Leftovers
               'valid types are a String, or an object with keys matches, has_prefix, has_suffix'
           end
         end
-
-        ::Leftovers::MatcherBuilders::Or.build(or_matchers, default)
       end
     end
   end

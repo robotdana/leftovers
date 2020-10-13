@@ -7,6 +7,14 @@ require_relative '../matchers/and'
 module Leftovers
   module MatcherBuilders
     module And
+      def self.each_or_self(value, default, &block)
+        case value
+        when nil then ::Leftovers::MatcherBuilders::Fallback.build(default)
+        when Array then build(value.map(&block), default)
+        else build([yield(value)], default)
+        end
+      end
+
       def self.build(matchers, default = true) # rubocop:disable Metrics/MethodLength
         matchers = matchers.compact
         case matchers.length

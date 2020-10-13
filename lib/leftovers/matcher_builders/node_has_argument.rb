@@ -12,9 +12,8 @@ module Leftovers
   module MatcherBuilders
     module NodeHasArgument
       def self.build(patterns, default = true) # rubocop:disable Metrics/MethodLength
-        and_matchers = []
-        ::Leftovers.each_or_self(patterns) do |pat|
-          and_matchers << case pat
+        ::Leftovers::MatcherBuilders::And.each_or_self(patterns, default) do |pat|
+          case pat
           when ::String
             ::Leftovers::Matchers::NodeHasKeywordArgument.new(
               ::Leftovers::MatcherBuilders::NodeName.build(pat)
@@ -27,20 +26,13 @@ module Leftovers
             raise 'no'
           end
         end
-
-        ::Leftovers::MatcherBuilders::And.build(and_matchers, default)
       end
 
       def self.build_from_hash(keyword: nil, value: nil) # rubocop:disable Metrics/MethodLength
         keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keyword, nil)
         value_matcher = ::Leftovers::MatcherBuilders::Node.build(value, nil)
 
-        has_keyword_argument = ::Leftovers::Matchers::NodeHasKeywordArgument.new(
-          ::Leftovers::MatcherBuilders::And.build([
-            keyword_matcher,
-            (::Leftovers::Matchers::NodePairValue.new(value_matcher) if value_matcher)
-          ])
-        )
+        has_keyword_argument = build_node_has_keyword_argument(keyword_matcher, value_matcher)
 
         return has_keyword_argument if keyword_matcher
 
@@ -48,6 +40,14 @@ module Leftovers
           has_keyword_argument,
           ::Leftovers::Matchers::NodeHasPositionalArgument.new(value_matcher)
         ])
+      end
+
+      def self.build_node_has_keyword_argument(keyword_matcher, value_matcher)
+        value_matcher = ::Leftovers::Matchers::NodePairValue.new(value_matcher) if value_matcher
+
+        ::Leftovers::Matchers::NodeHasKeywordArgument.new(
+          ::Leftovers::MatcherBuilders::And.build([keyword_matcher, value_matcher])
+        )
       end
     end
   end

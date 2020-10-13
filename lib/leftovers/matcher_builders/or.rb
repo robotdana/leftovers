@@ -8,6 +8,14 @@ require 'set'
 module Leftovers
   module MatcherBuilders
     module Or
+      def self.each_or_self(value, default, &block)
+        case value
+        when nil then ::Leftovers::MatcherBuilders::Fallback.build(default)
+        when Array then build(value.map(&block), default)
+        else build([yield(value)], default)
+        end
+      end
+
       def self.build(matchers, default = true, compact = true) # rubocop:disable Metrics/MethodLength
         matchers = compact(matchers) if compact
 

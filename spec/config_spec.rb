@@ -347,7 +347,7 @@ RSpec.describe Leftovers::Config do
         "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
         'Invalid value for name {:starts_with=>"my_method"}, ' \
         'valid keys are matches, has_prefix, has_suffix, unless for ' \
-        '[:starts_with, \"my_method\"]\e[0m\n'
+        "[:starts_with, \"my_method\"]\e[0m\n"
       ).to_stderr
     end
 
