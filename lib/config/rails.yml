@@ -264,8 +264,8 @@ rules:
      - has_and_belongs_to_many
     has_argument:
       at: [dependent, inverse_of, touch, validate]
-      value:
-        not: false
+      unless:
+        value: false
     calls:
       argument: 1
 

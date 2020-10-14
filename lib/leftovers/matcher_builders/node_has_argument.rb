@@ -31,6 +31,10 @@ module Leftovers
 
       def self.build_from_hash(at: nil, value: nil, **reserved_kw) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
         unless_arg = reserved_kw.delete(:unless) # keywords as kwargs when
+        unless reserved_kw.empty?
+          raise ::Leftovers::ConfigError "Invalid value #{reserved_kw.inspect}"
+        end
+
         at = Array(at)
         keys = at.reject { |k| k.is_a?(Integer) }
         index = at.select { |i| i.is_a?(Integer) }

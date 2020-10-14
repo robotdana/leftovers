@@ -214,16 +214,14 @@ RSpec.describe Leftovers::Config do
       config = described_class.new('invalid', content: <<~YML)
         rules:
           - names: my_method
+            tuesday: true
             calls:
               argument: 1
-              if:
-                tuesday: true
       YML
       expect { catch(:leftovers_exit) { config.rules } }.to output(
         "\e[31mConfig Error: " \
         "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Invalid condition {:tuesday=>true}. Valid condition keys are: has_argument\n" \
-        " for calls for my_method\e[0m\n"
+        "Unrecognized keyword(s) tuesday for my_method\e[0m\n"
       ).to_stderr
     end
 
@@ -369,17 +367,16 @@ RSpec.describe Leftovers::Config do
       config = described_class.new('invalid', content: <<~YML)
         rules:
           - names: fancy
+            has_argument:
+              value:
+                class: String
             calls:
               argument: 1
-              if:
-                has_argument:
-                  value:
-                    class: String
       YML
       expect { catch(:leftovers_exit) { config.rules } }.to output(
         "\e[31mConfig Error: " \
         "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "invalid value {:class=>\"String\"} for calls for fancy\e[0m\n"
+        "Invalid key class for fancy\e[0m\n"
       ).to_stderr
     end
   end

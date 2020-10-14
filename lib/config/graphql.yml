@@ -13,14 +13,6 @@ rules:
     calls:
       argument: 1
   - name: argument
-    calls:
-      - argument: 1
-        add_suffix: '='
-        unless:
-          has_argument: as
-      - argument: as
-        add_suffix: '='
-  - name: argument
     unless:
       has_argument: as
     calls:

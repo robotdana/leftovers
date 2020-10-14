@@ -9,7 +9,7 @@ require_relative 'or'
 module Leftovers
   module MatcherBuilders
     module Node
-      def self.build(pattern, default) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+      def self.build(pattern, default) # rubocop:disable Metrics/MethodLength
         ::Leftovers::MatcherBuilders::Or.each_or_self(pattern, default) do |pat|
           case pat
           when ::Integer, true, false, nil
@@ -17,15 +17,26 @@ module Leftovers
           when ::String
             ::Leftovers::MatcherBuilders::NodeName.build(pat, nil)
           when ::Hash
-            type = ::Leftovers::MatcherBuilders::NodeType.build(pat[:type] || pat[:types], nil)
-            not_value = if pat[:not] || pat[:unless]
-              ::Leftovers::Matchers::Not.new(
-                ::Leftovers::MatcherBuilders::Node.build(pat[:not] || pat[:unless])
-              )
-            end
-            ::Leftovers::MatcherBuilders::And.build([type, not_value], nil)
+            build_from_hash(**pat)
           end
         end
+      end
+
+      def self.build_from_hash(type: nil, **reserved_kw) # rubocop:disable Metrics/MethodLength
+        unless_arg = reserved_kw.delete(:unless)
+        unless reserved_kw.empty?
+          raise ::Leftovers::ConfigError, "Invalid key #{reserved_kw.keys.join(', ')}"
+        end
+
+        type_matcher = ::Leftovers::MatcherBuilders::NodeType.build(type, nil)
+
+        not_value = if unless_arg
+          ::Leftovers::Matchers::Not.new(
+            ::Leftovers::MatcherBuilders::Node.build(unless_arg)
+          )
+        end
+
+        ::Leftovers::MatcherBuilders::And.build([type_matcher, not_value], nil)
       end
     end
   end

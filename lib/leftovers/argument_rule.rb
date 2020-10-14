@@ -4,7 +4,6 @@ require_relative 'definition'
 require_relative 'definition_set'
 require_relative 'matcher_builders/name'
 require_relative 'transform_rule'
-require_relative 'hash_rule'
 
 module Leftovers
   class ArgumentRule # rubocop:disable Metrics/ClassLength
@@ -19,7 +18,7 @@ module Leftovers
       end
     end
 
-    ADDITIONAL_VALID_KEYS = Leftovers::TransformRule::VALID_TRANSFORMS + %i{if unless}
+    ADDITIONAL_VALID_KEYS = Leftovers::TransformRule::VALID_TRANSFORMS
     def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
       argument: nil,
       arguments: nil,
@@ -40,8 +39,6 @@ module Leftovers
         raise Leftovers::ConfigError, "require at least one of 'argument(s)', 'key(s)', itself"
       end
 
-      @if = prepare_condition(options.delete(:if))
-      @unless = prepare_condition(options.delete(:unless))
       @transforms = prepare_transform(options, transforms, linked_transforms)
       @definer = definer
     end
@@ -67,18 +64,6 @@ module Leftovers
         else
           @transforms = transforms
         end
-      end
-    end
-
-    def prepare_condition(conditions) # rubocop:disable Metrics/MethodLength
-      Leftovers.array_wrap(conditions).each do |cond|
-        unless cond.is_a?(Hash) && cond.keys == [:has_argument]
-          raise Leftovers::ConfigError, <<~MESSAGE
-            Invalid condition #{cond.inspect}. Valid condition keys are: has_argument
-          MESSAGE
-        end
-
-        cond[:has_argument] = HashRule.new(cond[:has_argument])
       end
     end
 
@@ -117,9 +102,7 @@ module Leftovers
       @keywords = ::Leftovers::MatcherBuilders::Name.build(keywords)
     end
 
-    def matches(method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-      return [].freeze unless all_conditions_match?(method_node)
-
+    def matches(method_node) # rubocop:disable Metrics/MethodLength
       result = []
 
       if @all_positions
@@ -140,19 +123,6 @@ module Leftovers
 
     def values(value_nodes, method_node)
       value_nodes.flat_map { |value_node| value(value_node, method_node) }.compact
-    end
-
-    def all_conditions_match?(method_node)
-      @if.all? { |c| condition_match?(c, method_node) } &&
-        @unless.all? { |c| !condition_match?(c, method_node) }
-    end
-
-    def condition_match?(condition, method_node)
-      method_node.positional_arguments.each.with_index(1).any? do |value, index|
-        condition[:has_argument].match_pair?(index, value)
-      end || method_node.kwargs&.each_pair&.any? do |key, value|
-        condition[:has_argument].match_pair?(key.to_sym, value)
-      end
     end
 
     def hash_values(hash_node, method_node) # rubocop:disable Metrics/MethodLength

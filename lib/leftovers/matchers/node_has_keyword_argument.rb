@@ -10,7 +10,10 @@ module Leftovers
       end
 
       def ===(node)
-        node.kwargs&.children&.any? do |pair|
+        kwargs = node.kwargs
+        return false unless kwargs
+
+        kwargs.children.any? do |pair|
           @pair_matcher === pair
         end
       end
