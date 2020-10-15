@@ -40,6 +40,12 @@ module Leftovers
       Leftovers.exit 1
     end
 
+    def validate
+      errors = ::Leftovers::ConfigValidator.validate(parse_yaml(symbolize_names: false))
+      warn errors.to_s unless errors.empty?
+      errors
+    end
+
     private
 
     def content
@@ -50,12 +56,17 @@ module Leftovers
       @path ||= ::File.expand_path("../config/#{name}.yml", __dir__)
     end
 
-    def yaml # rubocop:disable Metrics/MethodLength
+    def yaml
+      @yaml ||= parse_yaml
+    end
+
+    def parse_yaml(symbolize_names: true) # rubocop:disable Metrics/MethodLength
       # :nocov:
-      @yaml ||= if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
-        Psych.safe_load(content, symbolize_names: true, filename: path) || {}
+      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
+        Psych.safe_load(content, symbolize_names: symbolize_names, filename: path) || {}
       else
-        symbolize_names!(Psych.safe_load(content, [], [], false, path)) || {}
+        data = Psych.safe_load(content, [], [], false, path) || {}
+        symbolize_names ? symbolize_names!(data) : data
       end
       # :nocov:
     rescue ::Psych::SyntaxError => e

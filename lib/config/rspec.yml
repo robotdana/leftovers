@@ -1,6 +1,7 @@
 test_paths:
   - /spec/
 
+# split into gems too
 rules:
   - skip: true
     path: /spec/

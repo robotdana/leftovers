@@ -3,8 +3,10 @@ backports
 classnames
 codebase
 cov
+datagrid
 esque
 gemfile
+graphql
 hashbang
 i'm
 ips
@@ -17,9 +19,11 @@ memoized
 namespaced
 nocov
 noninfringement
+okcomputer
 precompiled
 qux
 readme
+redcarpet
 requirables
 rhs
 rspec
