@@ -7,16 +7,13 @@ module Leftovers
       using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
       # :nocov:
 
+      attr_reader :lhs, :rhs
+
       def initialize(lhs, rhs)
         @lhs = lhs
         @rhs = rhs
 
         freeze
-      end
-
-      # lets me use flatten
-      def to_ary
-        [@lhs, @rhs]
       end
 
       def ===(value)

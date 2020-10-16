@@ -2,6 +2,7 @@
 
 require 'yaml'
 require_relative 'rule'
+require_relative 'config_validator'
 
 module Leftovers
   class Config
@@ -40,12 +41,6 @@ module Leftovers
       Leftovers.exit 1
     end
 
-    def validate
-      errors = ::Leftovers::ConfigValidator.validate(parse_yaml(symbolize_names: false))
-      warn errors.to_s unless errors.empty?
-      errors
-    end
-
     private
 
     def content
@@ -56,36 +51,31 @@ module Leftovers
       @path ||= ::File.expand_path("../config/#{name}.yml", __dir__)
     end
 
-    def yaml
-      @yaml ||= parse_yaml
+    def yaml # rubocop:disable Metrics/MethodLength
+      @yaml ||= begin
+        obj = parse_yaml
+        errors = ::Leftovers::ConfigValidator.validate(obj)
+        unless errors.empty?
+          errors.each do |e|
+            warn "\e[31mConfig SchemaError: (#{path}): #{e}\e[0m"
+          end
+          Leftovers.exit 1
+        end
+        ::Leftovers::ConfigValidator.post_process!(obj)
+      end
     end
 
-    def parse_yaml(symbolize_names: true) # rubocop:disable Metrics/MethodLength
+    def parse_yaml # rubocop:disable Metrics/MethodLength
       # :nocov:
       if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
-        Psych.safe_load(content, symbolize_names: symbolize_names, filename: path) || {}
+        Psych.safe_load(content, filename: path) || {}
       else
-        data = Psych.safe_load(content, [], [], false, path) || {}
-        symbolize_names ? symbolize_names!(data) : data
+        Psych.safe_load(content, [], [], false, path) || {}
       end
       # :nocov:
     rescue ::Psych::SyntaxError => e
       warn "\e[31mConfig SyntaxError: #{e.message}\e[0m"
       Leftovers.exit 1
     end
-
-    # :nocov:
-    def symbolize_names!(obj) # rubocop:disable Metrics/MethodLength
-      case obj
-      when Hash
-        obj.keys.each do |key| # rubocop:disable Style/HashEachMethods # each_key never finishes.
-          obj[key.to_sym] = symbolize_names!(obj.delete(key))
-        end
-      when Array
-        obj.map! { |ea| symbolize_names!(ea) }
-      end
-      obj
-    end
-    # :nocov:
   end
 end

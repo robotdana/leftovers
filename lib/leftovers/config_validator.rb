@@ -357,13 +357,26 @@ module Leftovers
                 'argument' => { '$ref' => '#/definitions/argumentPositionList' },
                 'arguments' => { '$ref' => '#/definitions/argumentPositionList' },
                 'itself' => { '$ref' => '#/definitions/true' },
-                'keys' => true,
+                'key' => { '$ref' => '#/definitions/true' },
+                'keys' => { '$ref' => '#/definitions/true' },
                 'transforms' => { '$ref' => '#/definitions/transformList' },
                 'linked_transforms' => { '$ref' => '#/definitions/transformList' }
               },
               'additionalProperties' => false,
               'allOf' => [
-                { 'not' => { 'required' => %w{argument arguments} } }
+                # synonyms
+                { 'not' => { 'required' => %w{key keys} } },
+                { 'not' => { 'required' => %w{argument arguments} } },
+                # incompatible
+                { 'not' => { 'required' => %w{transforms linked_transforms} } },
+                # any of
+                { 'anyOf' => [
+                  { 'required' => ['argument'] },
+                  { 'required' => ['arguments'] },
+                  { 'required' => ['key'] },
+                  { 'required' => ['keys'] },
+                  { 'required' => ['itself'] }
+                ] }
               ]
             }
           ]
@@ -452,10 +465,41 @@ module Leftovers
         'rules' => { '$ref' => '#/definitions/ruleList' }
       }
     }.freeze
-    SCHEMA = JSONSchemer.schema(SCHEMA_HASH)
 
-    def self.validate(obj, validator = SCHEMA)
+    def self.default_schema
+      @default_schema ||= JSONSchemer.schema(SCHEMA_HASH)
+    end
+
+    def self.validate(obj, validator = default_schema)
       validator.validate(obj).map { |x| JSONSchemer::Errors.pretty(x) }
+    end
+
+    def self.post_process!(obj) # rubocop:disable Metrics/MethodLength
+      case obj
+      when Hash
+        obj.keys.each do |key| # rubocop:disable Style/HashEachMethods # each_key never finishes.
+          obj[symbolize_name(key)] = post_process!(obj.delete(key))
+        end
+      when Array
+        obj.map! { |ea| post_process!(ea) }
+      end
+      obj
+    end
+
+    def self.symbolize_name(name) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+      case name
+      when 'matches' then :match
+      when 'defines' then :define
+      when 'calls' then :call
+      when 'name' then :names
+      when 'key' then :keys
+      when 'argument' then :arguments
+      when 'has_argument' then :has_arguments
+      when 'path' then :paths
+      when 'not' then :unless_arg
+      when 'unless' then :unless_arg
+      else name.to_sym
+      end
     end
   end
 end

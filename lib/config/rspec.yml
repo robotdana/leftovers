@@ -29,7 +29,7 @@ rules:
       - has_attributes?
       - receive_messages
     calls:
-      - keys: '*'
+      - keys: true
     path: /spec/
   - name:
     - receive

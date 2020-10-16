@@ -28,6 +28,7 @@ RSpec.describe Leftovers::MergedConfig do
     end
 
     it 'only tries loading rspec once' do
+      skip 'redo this when rails is split up and builtin yaml files start requiring gems'
       with_temp_dir
       temp_file '.leftovers.yml', <<~YML
         gems:

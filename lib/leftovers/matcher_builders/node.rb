@@ -22,21 +22,16 @@ module Leftovers
         end
       end
 
-      def self.build_from_hash(type: nil, **reserved_kw) # rubocop:disable Metrics/MethodLength
-        unless_arg = reserved_kw.delete(:unless)
-        unless reserved_kw.empty?
-          raise ::Leftovers::ConfigError, "Invalid key #{reserved_kw.keys.join(', ')}"
-        end
-
+      def self.build_from_hash(type: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
         type_matcher = ::Leftovers::MatcherBuilders::NodeType.build(type, nil)
 
-        not_value = if unless_arg
+        not_matcher = if unless_arg
           ::Leftovers::Matchers::Not.new(
             ::Leftovers::MatcherBuilders::Node.build(unless_arg)
           )
         end
 
-        ::Leftovers::MatcherBuilders::And.build([type_matcher, not_value], nil)
+        ::Leftovers::MatcherBuilders::And.build([type_matcher, not_matcher], nil)
       end
     end
   end

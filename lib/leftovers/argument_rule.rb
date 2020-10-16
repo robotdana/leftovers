@@ -20,9 +20,7 @@ module Leftovers
 
     ADDITIONAL_VALID_KEYS = Leftovers::TransformRule::VALID_TRANSFORMS
     def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
-      argument: nil,
       arguments: nil,
-      key: nil,
       keys: nil,
       itself: false,
       linked_transforms: nil,
@@ -31,22 +29,15 @@ module Leftovers
       **options
     )
       assert_valid_keys(options, ADDITIONAL_VALID_KEYS)
-      prepare_argument(argument, arguments)
-      @key = prepare_key(key, keys)
+      prepare_argument(arguments)
+      @key = keys
       @itself = itself
-
-      unless @positions || @keywords || @all_positions || @all_keywords || @key || @itself
-        raise Leftovers::ConfigError, "require at least one of 'argument(s)', 'key(s)', itself"
-      end
 
       @transforms = prepare_transform(options, transforms, linked_transforms)
       @definer = definer
     end
 
     def prepare_transform(options, transforms, linked_transforms) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      if linked_transforms && transforms
-        raise Leftovers::ConfigError, 'Only use one of linked_transforms/transforms'
-      end
       return if !linked_transforms && !transforms && options.empty?
 
       if !(linked_transforms || transforms)
@@ -67,19 +58,11 @@ module Leftovers
       end
     end
 
-    def prepare_key(key, keys)
-      raise Leftovers::ConfigError, 'Only use one of key/keys' if key && keys
-
-      key || keys
-    end
-
-    def prepare_argument(argument, arguments) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      raise Leftovers::ConfigError, 'Only use one of argument/arguments' if argument && arguments
-
+    def prepare_argument(arguments) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
       positions = Set.new
       keywords = []
 
-      Leftovers.each_or_self(argument || arguments) do |arg|
+      Leftovers.each_or_self(arguments) do |arg|
         case arg
         when '*'
           @all_positions = true

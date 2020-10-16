@@ -185,19 +185,8 @@ RSpec.describe Leftovers::MatcherBuilders::Name do
     end
   end
 
-  context 'with matches' do
-    let(:value) { { matches: 'column\d+' } }
-
-    it 'always matches exact value' do
-      expect(subject).not_to case_eq :column_one
-      expect(subject).not_to case_eq :column
-      expect(subject).to case_eq :column1
-      expect(subject).to case_eq :column11
-    end
-  end
-
   context 'with a combination' do
-    let(:value) { ['which', nil, { has_prefix: 'what' }, { matches: 'column\d+' }] }
+    let(:value) { ['which', nil, { has_prefix: 'what' }, { match: 'column\d+' }] }
 
     it 'always matches exact value' do
       expect(subject).not_to case_eq :column_one
@@ -413,20 +402,8 @@ RSpec.describe Leftovers::MatcherBuilders::Name do
       end
     end
 
-    context 'with matches' do
-      let(:value) { { matches: 'column\d+' } }
-
-      it 'always matches exact value' do
-        expect(subject).not_to case_eq :column_one
-        expect(subject).to case_eq :new_value
-        expect(subject).not_to case_eq :column
-        expect(subject).to case_eq :column1
-        expect(subject).to case_eq :column11
-      end
-    end
-
     context 'with a combination' do
-      let(:value) { ['which', nil, { has_prefix: 'what' }, { matches: 'column\d+' }] }
+      let(:value) { ['which', nil, { has_prefix: 'what' }, { match: 'column\d+' }] }
 
       it 'always matches exact value' do
         expect(subject).not_to case_eq :column_one
@@ -442,7 +419,7 @@ RSpec.describe Leftovers::MatcherBuilders::Name do
     end
 
     context 'with another combination' do
-      let(:value) { ['which', 'what', { has_prefix: 'what' }, { matches: 'column\d+' }] }
+      let(:value) { ['which', 'what', { has_prefix: 'what' }, { match: 'column\d+' }] }
 
       it 'always matches exact value' do
         expect(subject).not_to case_eq :column_one

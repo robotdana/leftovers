@@ -35,6 +35,19 @@ module Leftovers
         end
       end
 
+      def self.flatten(value) # rubocop:disable Metrics/MethodLength
+        case value
+        when ::Leftovers::Matchers::Or
+          [*flatten(value.lhs), *flatten(value.rhs)]
+        when Array
+          ret = value.map { |v| flatten(v) }
+          ret.flatten!(1)
+          ret
+        else
+          value
+        end
+      end
+
       def self.compact(matchers) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize,
         return matchers if matchers.length <= 1
 
@@ -42,7 +55,7 @@ module Leftovers
         regexps = []
         uncompactable = []
 
-        matchers.flatten!
+        flatten(matchers)
         matchers.compact!
 
         if matchers.include?(::Leftovers::Matchers::Anything)

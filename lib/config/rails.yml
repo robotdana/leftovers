@@ -87,7 +87,7 @@ rules:
           - scope
           - if
           - unless
-      - keys: '*'
+      - keys: true
         camelize: true
         add_suffix: Validator
   - names:
@@ -361,12 +361,12 @@ rules:
     - update!
     - assign_attributes
     calls:
-      keys: '*'
+      keys: true
       add_suffix: '='
   - name: permit
     calls:
       arguments: ['*', '**']
-      keys: '*'
+      keys: true
       add_suffix: "="
   - name: layout
     calls:
@@ -380,7 +380,7 @@ rules:
       - left_outer_joins
     calls:
       arguments: ['*', '**']
-      keys: '*'
+      keys: true
   - name:
       - string
       - text

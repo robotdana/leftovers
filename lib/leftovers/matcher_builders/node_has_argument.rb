@@ -24,27 +24,17 @@ module Leftovers
           when ::Hash
             build_from_hash(**pat)
           else
-            raise 'no'
+            raise ::Leftovers::ConfigError, "Invalid value #{pat.inspect} for has_argument"
           end
         end
       end
 
-      def self.build_from_hash(at: nil, value: nil, **reserved_kw) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
-        unless_arg = reserved_kw.delete(:unless) # keywords as kwargs when
-        unless reserved_kw.empty?
-          raise ::Leftovers::ConfigError "Invalid value #{reserved_kw.inspect}"
-        end
-
+      def self.build_from_hash(at: nil, value: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
         at = Array(at)
         keys = at.reject { |k| k.is_a?(Integer) }
         index = at.select { |i| i.is_a?(Integer) }
         keys = nil if keys.empty?
         index = nil if index.empty?
-
-        unless reserved_kw.empty?
-          rest_kw = reserved_kw.keys.join(', ')
-          raise Leftovers::ConfigError, "Unrecognized has_argument keyword(s) #{rest_kw}"
-        end
 
         keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keys, nil)
         value_matcher = ::Leftovers::MatcherBuilders::Node.build(value, nil)

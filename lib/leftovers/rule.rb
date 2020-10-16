@@ -21,37 +21,29 @@ module Leftovers
     attr_reader :skip
     alias_method :skip?, :skip
 
-    def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
-      calls: nil,
+    def initialize( # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       call: nil,
       skip: false,
-      defines: nil,
       define: nil,
       **matcher_args
     )
-      raise Leftovers::ConfigError, 'Only use one of call/calls' if call && calls
-      raise Leftovers::ConfigError, 'Only use one of define/defines' if define && defines
-      if skip && (defines || calls || define || call)
-        raise Leftovers::ConfigError, "skip can't exist with defines or calls"
-      end
-
       @matcher = ::Leftovers::MatcherBuilders::Rule.build(**matcher_args)
 
       @skip = skip
 
       begin
-        @calls = ArgumentRule.wrap(calls)
+        @calls = ArgumentRule.wrap(call)
       rescue ArgumentError, Leftovers::ConfigError => e
         raise e, "#{e.message} for calls", e.backtrace
       end
 
       begin
-        @defines = ArgumentRule.wrap(defines, definer: true)
+        @defines = ArgumentRule.wrap(define, definer: true)
       rescue ArgumentError, Leftovers::ConfigError => e
         raise e, "#{e.message} for defines", e.backtrace
       end
     rescue ArgumentError, Leftovers::ConfigError => e
-      names = Array(matcher_args[:name] || matcher_args[:names]).map(&:to_s).join(', ')
+      names = Array(matcher_args[:names]).map(&:to_s).join(', ')
       raise e, "#{e.message} for #{names}", e.backtrace
     end
 

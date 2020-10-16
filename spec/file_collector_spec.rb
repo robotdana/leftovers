@@ -1217,6 +1217,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   it 'collects matched keyword arguments' do
+    skip
     ruby = 'flow(whatever, some_values: :method)'
 
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)

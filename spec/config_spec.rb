@@ -38,13 +38,9 @@ RSpec.describe Leftovers::Config do
                 get_the_keyword: foo
                 joiner: baz
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "invalid transform value argument (add_prefix: { get_the_keyword: foo }).\n" \
-        "Valid keys are from_argument, joiner\n" \
-        " for calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors with transform dynamic rules' do
@@ -57,13 +53,9 @@ RSpec.describe Leftovers::Config do
                 from_argument: foo
                 joiner: baz
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        'invalid transform value (delete_prefix: {:from_argument=>"foo", :joiner=>"baz"}).' \
-        "\nHash values are only valid for add_prefix, add_suffix\n" \
-        " for defines for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors with transform keys' do
@@ -77,16 +69,9 @@ RSpec.describe Leftovers::Config do
               transforms:
                 infix: how
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        'invalid transform key: (infix: how)' \
-        "\nValid transform keys are original, delete_before, delete_after, add_prefix, " \
-        'add_suffix, delete_prefix, delete_suffix, replace_with, downcase, upcase, capitalize, ' \
-        'swapcase, pluralize, singularize, camelize, camelcase, underscore, titleize, ' \
-        "titlecase, demodulize, deconstantize, parameterize\n" \
-        " for defines for my_method, my_other_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using name and names' do
@@ -96,11 +81,9 @@ RSpec.describe Leftovers::Config do
             skip: true
             names: my_other_method
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Only use one of name/names for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using path and paths' do
@@ -111,11 +94,9 @@ RSpec.describe Leftovers::Config do
             skip: true
             paths: ./lib
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Only use one of path/paths for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using call and calls' do
@@ -127,11 +108,9 @@ RSpec.describe Leftovers::Config do
             call:
               argument: 2
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Only use one of call/calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using define and defines' do
@@ -143,11 +122,9 @@ RSpec.describe Leftovers::Config do
             define:
               argument: 2
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Only use one of define/defines for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using skip with define' do
@@ -158,11 +135,9 @@ RSpec.describe Leftovers::Config do
             define:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "skip can't exist with defines or calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using skip with defines' do
@@ -173,11 +148,9 @@ RSpec.describe Leftovers::Config do
             defines:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "skip can't exist with defines or calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using skip with call' do
@@ -188,11 +161,9 @@ RSpec.describe Leftovers::Config do
             call:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "skip can't exist with defines or calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using skip with calls' do
@@ -203,11 +174,9 @@ RSpec.describe Leftovers::Config do
             calls:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "skip can't exist with defines or calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using invalid conditions' do
@@ -218,11 +187,9 @@ RSpec.describe Leftovers::Config do
             calls:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Unrecognized keyword(s) tuesday for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using invalid argument values' do
@@ -232,14 +199,9 @@ RSpec.describe Leftovers::Config do
             calls:
               argument: true
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        'Invalid value for argument: true. ' \
-        "Must by a string ('*', '**', or a keyword), or a hash with the name match rules, "\
-        "or an integer, or an array of these\n" \
-        " for calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using argument and arguments' do
@@ -250,11 +212,9 @@ RSpec.describe Leftovers::Config do
               argument: 1
               arguments: kw
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Only use one of argument/arguments for defines for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using key and keys' do
@@ -265,11 +225,9 @@ RSpec.describe Leftovers::Config do
               key: true
               keys: true
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Only use one of key/keys for defines for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using linked_transforms and transforms' do
@@ -283,11 +241,9 @@ RSpec.describe Leftovers::Config do
               transforms:
                 - add_suffix
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Only use one of linked_transforms/transforms for defines for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using missing argument etc' do
@@ -297,11 +253,9 @@ RSpec.describe Leftovers::Config do
             defines:
               add_suffix: foo
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "require at least one of 'argument(s)', 'key(s)', itself for defines for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using nonexistent keys for calls' do
@@ -311,11 +265,9 @@ RSpec.describe Leftovers::Config do
             calls:
               param: foo
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "unknown keyword: param for calls for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using nonexistent keys for defines' do
@@ -326,11 +278,9 @@ RSpec.describe Leftovers::Config do
               param: foo
               keyword: bar
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "unknown keywords: param, keyword for defines for my_method\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using nonexistent keys for name' do
@@ -340,13 +290,9 @@ RSpec.describe Leftovers::Config do
               starts_with: my_method
             skip: true
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        'Invalid value for name {:starts_with=>"my_method"}, ' \
-        'valid keys are matches, has_prefix, has_suffix, unless for ' \
-        "[:starts_with, \"my_method\"]\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using invalid vales for name' do
@@ -355,12 +301,9 @@ RSpec.describe Leftovers::Config do
           - names: 1.0
             skip: true
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        'Invalid value type for name 1.0, valid types are a String, '\
-        "or an object with keys matches, has_prefix, has_suffix for 1.0\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
     it 'can report errors when using invalid vales for value' do
@@ -373,11 +316,9 @@ RSpec.describe Leftovers::Config do
             calls:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.rules } }.to output(
-        "\e[31mConfig Error: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "Invalid key class for fancy\e[0m\n"
-      ).to_stderr
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.rules } }
+        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
   end
 end

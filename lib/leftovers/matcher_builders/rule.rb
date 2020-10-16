@@ -11,18 +11,11 @@ require_relative '../matchers/not'
 module Leftovers
   module MatcherBuilders
     module Rule
-      def self.build(name: nil, names: nil, path: nil, paths: nil, has_argument: nil, **reserved_kw) # rubocop:disable Metrics/ParameterLists, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength
-        unless_arg = reserved_kw.delete(:unless) # keywords as kwargs when
-        unless reserved_kw.empty?
-          raise Leftovers::ConfigError, "Unrecognized keyword(s) #{reserved_kw.keys.join(', ')}"
-        end
-        raise Leftovers::ConfigError, 'Only use one of name/names' if name && names
-        raise Leftovers::ConfigError, 'Only use one of path/paths' if path && paths
-
-        name_matcher = ::Leftovers::MatcherBuilders::NodeName.build(name || names, nil)
-        path_matcher = ::Leftovers::MatcherBuilders::NodePath.build(path || paths, nil)
+      def self.build(names: nil, paths: nil, has_arguments: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
+        name_matcher = ::Leftovers::MatcherBuilders::NodeName.build(names, nil)
+        path_matcher = ::Leftovers::MatcherBuilders::NodePath.build(paths, nil)
         has_argument_matcher = ::Leftovers::MatcherBuilders::NodeHasArgument.build(
-          has_argument, nil
+          has_arguments, nil
         )
         unless_matcher = if unless_arg
           ::Leftovers::Matchers::Not.new(

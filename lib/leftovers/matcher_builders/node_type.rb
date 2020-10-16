@@ -16,7 +16,7 @@ module Leftovers
           when 'Float' then :float
           when 'Method' then Set[:send, :csend, :def]
           when 'Constant' then Set[:const, :class, :const]
-          else raise ::Leftovers::ConfigError, "Unrecognized type #{type}"
+          else raise ::Leftovers::ConfigError, "Invalid value #{type.inspect} for type"
           end
         end
 
