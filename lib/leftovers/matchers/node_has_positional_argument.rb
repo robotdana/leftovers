@@ -3,16 +3,14 @@
 module Leftovers
   module Matchers
     class NodeHasPositionalArgument
-      def initialize(matcher)
-        @matcher = matcher
+      def initialize(position)
+        @position = position
 
         freeze
       end
 
       def ===(node)
-        node.positional_arguments.any? do |value|
-          @matcher === value
-        end
+        node.positional_arguments[@position]
       end
 
       freeze

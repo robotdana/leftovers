@@ -1,13 +1,10 @@
 # frozen-string-literal: true
 
+require_relative 'or'
+require_relative 'and_not'
 require_relative 'node'
-require_relative 'node_name'
-require_relative 'and'
-require_relative '../matchers/node_has_keyword_argument'
-require_relative '../matchers/node_has_positional_argument_length_minimum'
-require_relative '../matchers/node_has_positional_argument'
-require_relative '../matchers/node_has_positional_argument_at_position'
-require_relative '../matchers/node_pair_value'
+require_relative 'node_has_keyword_argument'
+require_relative 'node_has_positional_argument'
 
 module Leftovers
   module MatcherBuilders
@@ -16,11 +13,9 @@ module Leftovers
         ::Leftovers::MatcherBuilders::Or.each_or_self(patterns) do |pat|
           case pat
           when ::String
-            ::Leftovers::Matchers::NodeHasKeywordArgument.new(
-              ::Leftovers::MatcherBuilders::NodeName.build(pat)
-            )
+            ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(pat, nil)
           when ::Integer
-            ::Leftovers::Matchers::NodeHasPositionalArgumentLengthMinimum.new(pat)
+            ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(pat, nil)
           when ::Hash
             build_from_hash(**pat)
           else
@@ -29,66 +24,42 @@ module Leftovers
         end
       end
 
-      def self.build_from_hash(at: nil, value: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
-        at = Array(at)
-        keys = at.reject { |k| k.is_a?(Integer) }
-        index = at.select { |i| i.is_a?(Integer) }
+      def self.separate_argument_types(at) # rubocop:disable Metrics/MethodLength
+        keys = []
+        positions = []
+
+        # TODO: string matcher values
+        ::Leftovers.each_or_self(at) do |k|
+          case k
+          when ::String
+            keys << k
+          when ::Integer
+            positions << k
+          end
+        end
         keys = nil if keys.empty?
-        index = nil if index.empty?
+        positions = nil if positions.empty?
 
-        keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keys)
+        [keys, positions]
+      end
+
+      def self.build_from_hash(at: nil, value: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
+        keys, positions = separate_argument_types(at)
+
         value_matcher = ::Leftovers::MatcherBuilders::Node.build(value)
-
-        has_positional_argument = build_node_has_argument_at_position(index, value_matcher) if index
-        unless index && !keys
-          has_keyword_argument = build_node_has_keyword_argument(keyword_matcher, value_matcher)
-        end
-
-        matcher = if index && !keys
-          has_positional_argument
-        elsif keys && !index
-          has_keyword_argument
-        elsif keys && index
+        matcher = if (keys && positions) || (!keys && !positions)
           ::Leftovers::MatcherBuilders::Or.build([
-            has_keyword_argument,
-            has_positional_argument
+            ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher),
+            ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher)
           ])
-        else
-          build_node_has_any_argument(has_keyword_argument, value_matcher)
+        elsif keys
+          ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher)
+        elsif positions
+          ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher)
         end
 
-        if unless_arg
-          ::Leftovers::MatcherBuilders::And.build([
-            matcher,
-            ::Leftovers::Matchers::Not.new(
-              ::Leftovers::MatcherBuilders::NodeHasArgument.build(unless_arg)
-            )
-          ])
-        else
-          matcher
-        end
-      end
-
-      def self.build_node_has_argument_at_position(index, value_matcher)
-        ::Leftovers::MatcherBuilders::Or.each_or_self(index) do |position|
-          ::Leftovers::Matchers::NodeHasPositionalArgumentAtPosition.new(
-            position - 1, value_matcher
-          )
-        end
-      end
-
-      def self.build_node_has_any_argument(has_keyword_argument, value_matcher)
-        ::Leftovers::MatcherBuilders::Or.build([
-          has_keyword_argument,
-          ::Leftovers::Matchers::NodeHasPositionalArgument.new(value_matcher)
-        ])
-      end
-
-      def self.build_node_has_keyword_argument(keyword_matcher, value_matcher)
-        value_matcher = ::Leftovers::Matchers::NodePairValue.new(value_matcher) if value_matcher
-
-        ::Leftovers::Matchers::NodeHasKeywordArgument.new(
-          ::Leftovers::MatcherBuilders::And.build([keyword_matcher, value_matcher])
+        ::Leftovers::MatcherBuilders::AndNot.build(
+          matcher, ::Leftovers::MatcherBuilders::NodeHasArgument.build(unless_arg)
         )
       end
     end

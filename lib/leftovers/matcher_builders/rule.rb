@@ -17,11 +17,9 @@ module Leftovers
         has_argument_matcher = ::Leftovers::MatcherBuilders::NodeHasArgument.build(
           has_arguments
         )
-        unless_matcher = if unless_arg
-          ::Leftovers::Matchers::Not.new(
-            ::Leftovers::MatcherBuilders::Rule.build(**unless_arg)
-          )
-        end
+        unless_matcher = ::Leftovers::MatcherBuilders::Unless.build(
+          (::Leftovers::MatcherBuilders::Rule.build(**unless_arg) if unless_arg)
+        )
 
         ::Leftovers::MatcherBuilders::And.build([
           name_matcher, path_matcher, has_argument_matcher, unless_matcher

@@ -1,10 +1,10 @@
 # frozen-string-literal: true
 
 require_relative '../matchers/node_scalar_value'
-require_relative '../matchers/node_name'
 require_relative 'node_name'
 require_relative 'node_type'
 require_relative 'or'
+require_relative 'and_not'
 
 module Leftovers
   module MatcherBuilders
@@ -22,16 +22,11 @@ module Leftovers
         end
       end
 
-      def self.build_from_hash(type: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
-        type_matcher = ::Leftovers::MatcherBuilders::NodeType.build(type)
-
-        not_matcher = if unless_arg
-          ::Leftovers::Matchers::Not.new(
-            ::Leftovers::MatcherBuilders::Node.build(unless_arg)
-          )
-        end
-
-        ::Leftovers::MatcherBuilders::And.build([type_matcher, not_matcher])
+      def self.build_from_hash(type: nil, unless_arg: nil)
+        ::Leftovers::MatcherBuilders::AndNot.build(
+          ::Leftovers::MatcherBuilders::NodeType.build(type),
+          ::Leftovers::MatcherBuilders::Node.build(unless_arg)
+        )
       end
     end
   end

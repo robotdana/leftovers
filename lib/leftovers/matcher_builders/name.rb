@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'or'
-require_relative 'and'
-require_relative 'unless'
+require_relative 'and_not'
 require_relative 'string'
 require_relative 'string_pattern'
 
@@ -15,12 +14,12 @@ module Leftovers
           when ::String
             ::Leftovers::MatcherBuilders::String.build(pat)
           when ::Hash
-            ::Leftovers::MatcherBuilders::And.build([
-              ::Leftovers::MatcherBuilders::Unless.build(
-                ::Leftovers::MatcherBuilders::Name.build(pat.delete(:unless_arg))
-              ),
-              ::Leftovers::MatcherBuilders::StringPattern.build(**pat)
-            ])
+            unless_arg = pat.delete(:unless_arg)
+
+            ::Leftovers::MatcherBuilders::AndNot.build(
+              ::Leftovers::MatcherBuilders::StringPattern.build(**pat),
+              ::Leftovers::MatcherBuilders::Name.build(unless_arg)
+            )
           end
         end
       end

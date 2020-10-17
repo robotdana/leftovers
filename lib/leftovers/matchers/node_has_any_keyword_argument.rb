@@ -2,7 +2,7 @@
 
 module Leftovers
   module Matchers
-    class NodeHasKeywordArgument
+    class NodeHasAnyKeywordArgument
       def initialize(pair_matcher)
         @pair_matcher = pair_matcher
 
