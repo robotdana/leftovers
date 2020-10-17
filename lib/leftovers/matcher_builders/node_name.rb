@@ -1,17 +1,16 @@
 # frozen-string-literal: true
 
-require_relative 'fallback'
 require_relative 'name'
 require_relative '../matchers/node_name'
 
 module Leftovers
   module MatcherBuilders
     module NodeName
-      def self.build(name_pattern, default = true)
-        matcher = ::Leftovers::MatcherBuilders::Name.build(name_pattern, nil)
-        return ::Leftovers::Matchers::NodeName.new(matcher) if matcher
+      def self.build(name_pattern)
+        matcher = ::Leftovers::MatcherBuilders::Name.build(name_pattern)
+        return unless matcher
 
-        ::Leftovers::MatcherBuilders::Fallback.build(default)
+        ::Leftovers::Matchers::NodeName.new(matcher)
       end
     end
   end

@@ -69,6 +69,29 @@ benchmark('method-vs-ancestors') do
   end
 end
 
+benchmark('length-and-out-of-bounds-access') do
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:length_gte_one, '[1,2,3].length >= 4')
+    x.report(:length_gt_one, '[1,2,3].length > 3')
+    x.report(:access_one, '[1,2,3][3]')
+    x.report(:length_gte_thousand, '[1,2,3].length >= 1000')
+    x.report(:length_gt_thousand, '[1,2,3].length > 999')
+    x.report(:access_thousand, '[1,2,3][999]')
+    x.compare!
+  end
+end
+benchmark('not-empty') do
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:length_gte_empty, '[].length >= 1')
+    x.report(:length_gt_empty, '[].length > 1')
+    x.report(:first_empty, '[].first')
+    x.report(:not_empty, 'not [].empty?')
+    x.compare!
+  end
+end
+
 
 benchmark('remove-and-return-2-from-array') do
   Benchmark.ips do |x|

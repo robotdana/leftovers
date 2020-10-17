@@ -8,7 +8,7 @@ RSpec.describe ::Leftovers::ConfigValidator do
   describe ::Leftovers::ConfigValidator::SCHEMA_HASH do
     it 'validates itself' do
       schema_schema = JSONSchemer.schema(Pathname.new(__dir__).join('support/schema_schema.json'))
-      expect(::Leftovers::ConfigValidator.validate(described_class, schema_schema)).to eq []
+      expect(schema_schema.valid?(described_class)).to be true
     end
   end
 

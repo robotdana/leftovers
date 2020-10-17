@@ -1,24 +1,21 @@
 # frozen_string_literal: true
 
-require_relative 'fallback'
-
 require_relative '../matchers/and'
 
 module Leftovers
   module MatcherBuilders
     module And
-      def self.each_or_self(value, default, &block)
+      def self.each_or_self(value, &block)
         case value
-        when nil then ::Leftovers::MatcherBuilders::Fallback.build(default)
-        when Array then build(value.map(&block), default)
-        else build([yield(value)], default)
+        when Array then build(value.map(&block))
+        else build([yield(value)])
         end
       end
 
-      def self.build(matchers, default = true) # rubocop:disable Metrics/MethodLength
-        matchers = matchers.compact
+      def self.build(matchers, compact: true) # rubocop:disable Metrics/MethodLength
+        matchers = matchers.compact if compact
         case matchers.length
-        when 0 then ::Leftovers::MatcherBuilders::Fallback.build(default)
+        when 0 then nil
         when 1 then matchers.first
         when 2 then ::Leftovers::Matchers::And.new(matchers.first, matchers[1])
         else
@@ -29,7 +26,7 @@ module Leftovers
           next_last = matchers.pop
           matchers << ::Leftovers::Matchers::And.new(next_last, last)
           # recurse
-          ::Leftovers::MatcherBuilders::And.build(matchers, default, false)
+          ::Leftovers::MatcherBuilders::And.build(matchers, compact: false)
         end
       end
     end

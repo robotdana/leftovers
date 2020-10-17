@@ -2,7 +2,7 @@
 
 require_relative 'definition'
 require_relative 'definition_set'
-require_relative 'matcher_builders/name'
+require_relative 'matcher_builders/argument_rule_name'
 require_relative 'transform_rule'
 
 module Leftovers
@@ -18,22 +18,20 @@ module Leftovers
       end
     end
 
-    ADDITIONAL_VALID_KEYS = Leftovers::TransformRule::VALID_TRANSFORMS
-    def initialize( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
+    def initialize( # rubocop:disable Metrics/ParameterLists
       arguments: nil,
       keys: nil,
       itself: false,
       linked_transforms: nil,
       transforms: nil,
       definer: false,
-      **options
+      **transform_keys
     )
-      assert_valid_keys(options, ADDITIONAL_VALID_KEYS)
       prepare_argument(arguments)
       @key = keys
       @itself = itself
 
-      @transforms = prepare_transform(options, transforms, linked_transforms)
+      @transforms = prepare_transform(transform_keys, transforms, linked_transforms)
       @definer = definer
     end
 
@@ -82,7 +80,7 @@ module Leftovers
       @positions = positions unless @all_positions || positions.empty? || @all_positions
       return if @all_keywords || keywords.empty?
 
-      @keywords = ::Leftovers::MatcherBuilders::Name.build(keywords)
+      @keywords = ::Leftovers::MatcherBuilders::ArgumentRuleName.build(keywords, default: true)
     end
 
     def matches(method_node) # rubocop:disable Metrics/MethodLength
@@ -168,17 +166,6 @@ module Leftovers
       @transforms.map do |transform|
         transform.transform(string, method_node)
       end
-    end
-
-    def assert_valid_keys(options, keys) # rubocop:disable Metrics/MethodLength
-      invalid = options.keys - keys
-
-      return if invalid.empty?
-
-      raise(
-        Leftovers::ConfigError,
-        "unknown keyword#{'s' if invalid.length > 1}: #{invalid.join(', ')}"
-      )
     end
   end
 end

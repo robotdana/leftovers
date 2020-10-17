@@ -1910,7 +1910,7 @@ RSpec.describe Leftovers::FileCollector do
     expect(collector.calls).to contain_exactly(:bar, :baz, :my_method, :my_method, :my_method)
   end
 
-  it 'can call find has_argument with a mix of kw and index array acts like and' do
+  it 'can call find has_argument with a mix of kw and index array acts like or' do
     Leftovers.config << Leftovers::Config.new('test', content: <<~YML)
       rules:
         - name: my_method
@@ -1922,14 +1922,16 @@ RSpec.describe Leftovers::FileCollector do
     ruby = <<~RUBY
       my_method('baz', 'bar', kw: 'foo')
       my_method('bar', 'bar', 'foo')
-      my_method('foo', kw: 'foo')
+      my_method('bit', kw: 'foo')
+      my_method('lol', wk: 'foo')
     RUBY
 
     collector = described_class.new(ruby, file)
     collector.collect
 
     expect(collector.definitions).to be_empty
-    expect(collector.calls).to contain_exactly(:baz, :my_method, :my_method, :my_method)
+    expect(collector.calls)
+      .to contain_exactly(:baz, :bar, :bit, :my_method, :my_method, :my_method, :my_method)
   end
 
   it 'can call find from_argument with an index' do

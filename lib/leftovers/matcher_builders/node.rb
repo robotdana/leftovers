@@ -9,13 +9,13 @@ require_relative 'or'
 module Leftovers
   module MatcherBuilders
     module Node
-      def self.build(pattern, default) # rubocop:disable Metrics/MethodLength
-        ::Leftovers::MatcherBuilders::Or.each_or_self(pattern, default) do |pat|
+      def self.build(pattern) # rubocop:disable Metrics/MethodLength
+        ::Leftovers::MatcherBuilders::Or.each_or_self(pattern) do |pat|
           case pat
           when ::Integer, true, false, nil
             ::Leftovers::Matchers::NodeScalarValue.new(pat)
           when ::String
-            ::Leftovers::MatcherBuilders::NodeName.build(pat, nil)
+            ::Leftovers::MatcherBuilders::NodeName.build(pat)
           when ::Hash
             build_from_hash(**pat)
           end
@@ -23,7 +23,7 @@ module Leftovers
       end
 
       def self.build_from_hash(type: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
-        type_matcher = ::Leftovers::MatcherBuilders::NodeType.build(type, nil)
+        type_matcher = ::Leftovers::MatcherBuilders::NodeType.build(type)
 
         not_matcher = if unless_arg
           ::Leftovers::Matchers::Not.new(
@@ -31,7 +31,7 @@ module Leftovers
           )
         end
 
-        ::Leftovers::MatcherBuilders::And.build([type_matcher, not_matcher], nil)
+        ::Leftovers::MatcherBuilders::And.build([type_matcher, not_matcher])
       end
     end
   end

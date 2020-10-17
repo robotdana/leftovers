@@ -12,8 +12,8 @@ require_relative '../matchers/node_pair_value'
 module Leftovers
   module MatcherBuilders
     module NodeHasArgument
-      def self.build(patterns, default = true) # rubocop:disable Metrics/MethodLength
-        ::Leftovers::MatcherBuilders::And.each_or_self(patterns, default) do |pat|
+      def self.build(patterns) # rubocop:disable Metrics/MethodLength
+        ::Leftovers::MatcherBuilders::Or.each_or_self(patterns) do |pat|
           case pat
           when ::String
             ::Leftovers::Matchers::NodeHasKeywordArgument.new(
@@ -36,8 +36,8 @@ module Leftovers
         keys = nil if keys.empty?
         index = nil if index.empty?
 
-        keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keys, nil)
-        value_matcher = ::Leftovers::MatcherBuilders::Node.build(value, nil)
+        keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keys)
+        value_matcher = ::Leftovers::MatcherBuilders::Node.build(value)
 
         has_positional_argument = build_node_has_argument_at_position(index, value_matcher) if index
         unless index && !keys
@@ -49,12 +49,10 @@ module Leftovers
         elsif keys && !index
           has_keyword_argument
         elsif keys && index
-          x = ::Leftovers::MatcherBuilders::Or.build([
+          ::Leftovers::MatcherBuilders::Or.build([
             has_keyword_argument,
             has_positional_argument
-          ], nil)
-
-          x
+          ])
         else
           build_node_has_any_argument(has_keyword_argument, value_matcher)
         end
@@ -63,7 +61,7 @@ module Leftovers
           ::Leftovers::MatcherBuilders::And.build([
             matcher,
             ::Leftovers::Matchers::Not.new(
-              ::Leftovers::MatcherBuilders::NodeHasArgument.build(unless_arg, nil)
+              ::Leftovers::MatcherBuilders::NodeHasArgument.build(unless_arg)
             )
           ])
         else
@@ -72,7 +70,7 @@ module Leftovers
       end
 
       def self.build_node_has_argument_at_position(index, value_matcher)
-        ::Leftovers::MatcherBuilders::Or.each_or_self(index, nil) do |position|
+        ::Leftovers::MatcherBuilders::Or.each_or_self(index) do |position|
           ::Leftovers::Matchers::NodeHasPositionalArgumentAtPosition.new(
             position - 1, value_matcher
           )

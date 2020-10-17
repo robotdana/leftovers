@@ -51,18 +51,8 @@ module Leftovers
       @path ||= ::File.expand_path("../config/#{name}.yml", __dir__)
     end
 
-    def yaml # rubocop:disable Metrics/MethodLength
-      @yaml ||= begin
-        obj = parse_yaml
-        errors = ::Leftovers::ConfigValidator.validate(obj)
-        unless errors.empty?
-          errors.each do |e|
-            warn "\e[31mConfig SchemaError: (#{path}): #{e}\e[0m"
-          end
-          Leftovers.exit 1
-        end
-        ::Leftovers::ConfigValidator.post_process!(obj)
-      end
+    def yaml
+      @yaml ||= ::Leftovers::ConfigValidator.validate_and_process!(parse_yaml, path)
     end
 
     def parse_yaml # rubocop:disable Metrics/MethodLength

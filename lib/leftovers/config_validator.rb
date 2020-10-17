@@ -471,7 +471,20 @@ module Leftovers
     end
 
     def self.validate(obj, validator = default_schema)
-      validator.validate(obj).map { |x| JSONSchemer::Errors.pretty(x) }
+      validator.validate(obj)
+    end
+
+    def self.validate_and_process!(yaml, path)
+      errors = validate(yaml)
+      print_validation_errors_and_exit(errors, path) unless errors.first.nil?
+      post_process!(yaml)
+    end
+
+    def self.print_validation_errors_and_exit(errors, path)
+      errors.each do |e|
+        warn "\e[31mConfig SchemaError: (#{path}): #{JSONSchemer::Errors.pretty(e)}\e[0m"
+      end
+      Leftovers.exit 1
     end
 
     def self.post_process!(obj) # rubocop:disable Metrics/MethodLength

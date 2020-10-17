@@ -1,14 +1,13 @@
 # frozen-string-literal: true
 
-require_relative 'fallback'
 require_relative 'path'
 require_relative '../matchers/node_type'
 
 module Leftovers
   module MatcherBuilders
     module NodeType
-      def self.build(types_pattern, default = true) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
-        matcher = ::Leftovers::MatcherBuilders::Or.each_or_self(types_pattern, nil) do |type|
+      def self.build(types_pattern) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+        matcher = ::Leftovers::MatcherBuilders::Or.each_or_self(types_pattern) do |type|
           case type
           when 'Symbol' then :sym
           when 'String' then :str
@@ -20,9 +19,9 @@ module Leftovers
           end
         end
 
-        return ::Leftovers::Matchers::NodeType.new(matcher) if matcher
+        return unless matcher
 
-        ::Leftovers::MatcherBuilders::Fallback.build(default)
+        ::Leftovers::Matchers::NodeType.new(matcher)
       end
     end
   end
