@@ -41,10 +41,61 @@ RSpec.configure do |config|
   require_relative './support/cli_helper'
 end
 
+RSpec::Matchers.define_negated_matcher :exclude, :include
 RSpec::Matchers.define :have_names do |*expected|
   match do |actual|
     @actual = actual.flat_map(&:names)
     expect(@actual).to contain_exactly(*expected)
+  end
+
+  diffable
+end
+
+RSpec::Matchers.define :have_definitions do |*expected|
+  match do |actual|
+    @actual = actual.definitions.flat_map(&:names).uniq
+    expect(@actual).to contain_exactly(*expected)
+  end
+
+  diffable
+end
+RSpec::Matchers.define :have_calls do |*expected|
+  match do |actual|
+    @actual = actual.calls.uniq
+    expect(@actual).to contain_exactly(*expected)
+  end
+
+  diffable
+end
+RSpec::Matchers.define :have_calls_including do |*expected|
+  match do |actual|
+    @actual = actual.calls.uniq
+    expect(@actual).to include(*expected)
+  end
+
+  diffable
+end
+RSpec::Matchers.define :have_calls_excluding do |*expected|
+  match do |actual|
+    @actual = actual.calls.uniq
+    expect(@actual).to exclude(*expected)
+  end
+
+  diffable
+end
+RSpec::Matchers.define :have_no_definitions do
+  match do |actual|
+    @actual = actual.definitions
+    expect(@actual).to be_empty
+  end
+
+  diffable
+end
+
+RSpec::Matchers.define :have_no_calls do
+  match do |actual|
+    @actual = actual.calls
+    expect(@actual).to be_empty
   end
 
   diffable
