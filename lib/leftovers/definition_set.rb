@@ -3,6 +3,8 @@
 require_relative 'definition'
 module Leftovers
   class DefinitionSet < Leftovers::Definition
+    attr_reader :definitions
+
     def initialize(
       names,
       method_node: nil,
@@ -30,10 +32,6 @@ module Leftovers
 
     def in_test_collection?
       @definitions.any?(&:in_test_collection?)
-    end
-
-    def skipped?
-      @definitions.any?(&:skipped?)
     end
   end
 end

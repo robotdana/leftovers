@@ -66,7 +66,7 @@ RSpec.describe Leftovers do
 
       expect(subject.leftovers).to have_names :Actions
       expect(subject.collector.definitions)
-        .to have_names(:Actions, :initialize, :prepare_params, :sub_params)
+        .to have_names(:Actions, :prepare_params, :sub_params)
 
       expect(subject.collector.calls).to contain_exactly(:sub_params, :prepare_params)
     end

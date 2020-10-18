@@ -61,7 +61,7 @@ module Leftovers
 
     # grab method definitions
     def on_def(node)
-      add_definition(node.name, node.loc.name)
+      add_definition(node)
       super
     end
 
@@ -140,14 +140,14 @@ module Leftovers
 
       node = node.children.first
 
-      add_definition(node.name, node.loc.name)
+      add_definition(node)
     end
     alias_method :on_module, :on_class
 
     # grab Constant = Class.new or CONSTANT = 'string'.freeze
     def on_casgn(node)
       super
-      add_definition(node.name, node.loc.name)
+      add_definition(node)
       collect_rules(node)
     end
 
@@ -155,7 +155,7 @@ module Leftovers
     def on_alias(node)
       super
       new_method, original_method = node.children
-      add_definition(new_method.children.first, new_method.loc.expression)
+      add_definition(new_method, name: new_method.children.first, loc: new_method.loc.expression)
       add_call(original_method.children.first)
     end
 
@@ -165,8 +165,9 @@ module Leftovers
       @file.test? || @test_lines.include?(loc.line)
     end
 
-    def add_definition(name, loc)
+    def add_definition(node, name: node.name, loc: node.loc.name)
       return if @allow_lines.include?(loc.line)
+      return if Leftovers.config.keep === node
 
       definitions << Leftovers::Definition.new(name, location: loc, test: test?(loc))
     end
@@ -194,7 +195,7 @@ module Leftovers
     end
 
     def collect_variable_assign(node)
-      add_definition(node.name, node.loc.name)
+      add_definition(node)
 
       collect_rules(node)
     end
@@ -212,8 +213,6 @@ module Leftovers
     def collect_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       Leftovers.config.rules.each do |rule|
         next unless rule.match?(node)
-
-        next if rule.skip?
 
         calls.concat(rule.calls(node))
 

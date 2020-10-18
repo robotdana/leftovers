@@ -42,9 +42,5 @@ module Leftovers
     def in_test_collection?
       Leftovers.collector.test_calls.include?(@name)
     end
-
-    def skipped?
-      Leftovers.config.skip_rules.any? { |r| r.match?(self) }
-    end
   end
 end

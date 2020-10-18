@@ -135,7 +135,7 @@ module Leftovers
     end
 
     SPLIT = /[.:]+/.freeze
-    def symbol_values(symbol_node, method_node) # rubocop:disable Metrics/MethodLength
+    def symbol_values(symbol_node, method_node) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
       subnodes = Array(transform(symbol_node.to_s, method_node))
         .flat_map { |s| s.to_s.split(SPLIT).map(&:to_sym) }
 
@@ -143,11 +143,17 @@ module Leftovers
 
       location = symbol_node.loc.expression
       if @linked
-        Leftovers::DefinitionSet.new(subnodes, location: location, method_node: method_node)
+        set = Leftovers::DefinitionSet.new(subnodes, location: location, method_node: method_node)
+        return if set.definitions.any? { |definition| ::Leftovers.config.keep === definition }
+
+        set
       else
-        subnodes.map do |subnode|
-          Leftovers::Definition.new(subnode, location: location, method_node: method_node)
-        end
+        subnodes.map do |str|
+          definition = Leftovers::Definition.new(str, location: location, method_node: method_node)
+          next if ::Leftovers.config.keep === definition
+
+          definition
+        end.compact
       end
     end
 

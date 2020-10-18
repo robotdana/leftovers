@@ -18,18 +18,12 @@ module Leftovers
       end
     end
 
-    attr_reader :skip
-    alias_method :skip?, :skip
-
     def initialize( # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       call: nil,
-      skip: false,
       define: nil,
       **matcher_args
     )
       @matcher = ::Leftovers::MatcherBuilders::Rule.build(**matcher_args)
-
-      @skip = skip
 
       begin
         @calls = ArgumentRule.wrap(call)

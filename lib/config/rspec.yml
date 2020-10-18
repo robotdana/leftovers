@@ -2,9 +2,9 @@ test_paths:
   - /spec/
 
 # split into gems too
-rules:
-  - skip: true
-    path: /spec/
+
+keep:
+  - path: /spec/
     name:
       # matchers
       - diffable?
@@ -24,6 +24,7 @@ rules:
       - dump_summary
       - seed
       - close
+rules:
   - name:
       - have_attributes
       - has_attributes?

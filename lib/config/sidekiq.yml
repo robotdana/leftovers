@@ -1,7 +1,5 @@
+keep: on_complete
 rules:
-  - skip: true
-    names:
-      - on_complete
   - names:
       - perform_async
     calls:

@@ -76,9 +76,8 @@ RSpec.describe Leftovers::Config do
 
     it 'can report errors when using name and names' do
       config = described_class.new('invalid', content: <<~YML)
-        rules:
+        keep:
           - name: my_method
-            skip: true
             names: my_other_method
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
@@ -88,10 +87,9 @@ RSpec.describe Leftovers::Config do
 
     it 'can report errors when using path and paths' do
       config = described_class.new('invalid', content: <<~YML)
-        rules:
+        keep:
           - names: my_method
             path: ./app
-            skip: true
             paths: ./lib
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
@@ -121,58 +119,6 @@ RSpec.describe Leftovers::Config do
               argument: 1
             define:
               argument: 2
-      YML
-      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
-      expect { catch(:leftovers_exit) { config.rules } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
-    end
-
-    it 'can report errors when using skip with define' do
-      config = described_class.new('invalid', content: <<~YML)
-        rules:
-          - names: my_method
-            skip: true
-            define:
-              argument: 1
-      YML
-      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
-      expect { catch(:leftovers_exit) { config.rules } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
-    end
-
-    it 'can report errors when using skip with defines' do
-      config = described_class.new('invalid', content: <<~YML)
-        rules:
-          - names: my_method
-            skip: true
-            defines:
-              argument: 1
-      YML
-      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
-      expect { catch(:leftovers_exit) { config.rules } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
-    end
-
-    it 'can report errors when using skip with call' do
-      config = described_class.new('invalid', content: <<~YML)
-        rules:
-          - names: my_method
-            skip: true
-            call:
-              argument: 1
-      YML
-      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
-      expect { catch(:leftovers_exit) { config.rules } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
-    end
-
-    it 'can report errors when using skip with calls' do
-      config = described_class.new('invalid', content: <<~YML)
-        rules:
-          - names: my_method
-            skip: true
-            calls:
-              argument: 1
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.rules } }
@@ -285,10 +231,9 @@ RSpec.describe Leftovers::Config do
 
     it 'can report errors when using nonexistent keys for name' do
       config = described_class.new('invalid', content: <<~YML)
-        rules:
+        keep:
           - names:
               starts_with: my_method
-            skip: true
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.rules } }
@@ -297,9 +242,8 @@ RSpec.describe Leftovers::Config do
 
     it 'can report errors when using invalid vales for name' do
       config = described_class.new('invalid', content: <<~YML)
-        rules:
+        keep:
           - names: 1.0
-            skip: true
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.rules } }

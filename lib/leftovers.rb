@@ -39,12 +39,10 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     @reporter ||= Leftovers::Reporter.new
   end
 
-  def leftovers # rubocop:disable Metrics/MethodLength
+  def leftovers
     @leftovers ||= begin
       collector.collect
-      collector.definitions.reject do |definition|
-        definition.skipped? || definition.in_collection?
-      end
+      collector.definitions.reject(&:in_collection?)
     end
   end
 

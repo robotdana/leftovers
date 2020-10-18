@@ -1,9 +1,8 @@
+keep:
+  - cursor_from_node
+  - paged_nodes
+  - sliced_nodes
 rules:
-  - skip: true
-    names:
-      - cursor_from_node
-      - paged_nodes
-      - sliced_nodes
   - name: field
     calls:
       argument: method

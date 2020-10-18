@@ -10,25 +10,23 @@ include_paths:
 # some is currently impossible to handle (with_options).
 # Some is just corners of rails I haven't hit yet.
 # TODO: split this up by the actual gems
-rules:
-  - skip: true
-    names:
-      - ClassMethods # ActiveSupport::Concern
-      - process_action # ActiveSupport::LogSubscriber
-      - validate_each # ActiveModel::EachValidator
-      - format_message # ActiveSupport::Logger
-      - ssl_configured? # ApplicationController
-      - APP_PATH
-      - APP_ROOT
-      - default_url_options # called by url_for
-  - skip: true
-    names:
+keep:
+  - ClassMethods # ActiveSupport::Concern
+  - process_action # ActiveSupport::LogSubscriber
+  - validate_each # ActiveModel::EachValidator
+  - format_message # ActiveSupport::Logger
+  - ssl_configured? # ApplicationController
+  - APP_PATH
+  - APP_ROOT
+  - default_url_options # called by url_for
+  - names:
       has_suffix: Helper
     path: /app/helpers
-  - skip: true
-    names:
+  - names:
       has_suffix: Preview
     path: '**/mailers/previews/**/*_preview.rb'
+
+rules:
   - names:
       - after_initialize
       - after_find

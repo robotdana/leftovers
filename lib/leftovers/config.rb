@@ -3,6 +3,7 @@
 require 'yaml'
 require_relative 'rule'
 require_relative 'config_validator'
+require_relative 'matcher_builders/keep'
 
 module Leftovers
   class Config
@@ -36,6 +37,13 @@ module Leftovers
 
     def rules
       @rules ||= Rule.wrap(yaml[:rules])
+    rescue Leftovers::ConfigError => e
+      warn "\e[31mConfig Error: (#{path}): #{e.message}\e[0m"
+      Leftovers.exit 1
+    end
+
+    def keep
+      @keep ||= ::Leftovers::MatcherBuilders::Keep.build(yaml[:keep])
     rescue Leftovers::ConfigError => e
       warn "\e[31mConfig Error: (#{path}): #{e.message}\e[0m"
       Leftovers.exit 1

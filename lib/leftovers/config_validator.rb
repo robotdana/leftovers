@@ -398,8 +398,7 @@ module Leftovers
             'call' => { '$ref' => '#/definitions/actionList' },
             'calls' => { '$ref' => '#/definitions/actionList' },
             'define' => { '$ref' => '#/definitions/actionList' },
-            'defines' => { '$ref' => '#/definitions/actionList' },
-            'skip' => { '$ref' => '#/definitions/true' }
+            'defines' => { '$ref' => '#/definitions/actionList' }
           },
           'additionalProperties' => true,
           'minProperties' => 1,
@@ -407,17 +406,10 @@ module Leftovers
             # synonyms
             { 'not' => { 'required' => %w{call calls} } },
             { 'not' => { 'required' => %w{define defines} } },
-            { 'not' => { 'required' => %w{skip skips} } },
-            # incompatible groups
-            { 'not' => { 'required' => %w{skip call} } },
-            { 'not' => { 'required' => %w{skip calls} } },
-            { 'not' => { 'required' => %w{skip defines} } },
-            { 'not' => { 'required' => %w{skip define} } },
             # At least one of
             { 'anyOf' => [
               { 'required' => ['call'] }, { 'required' => ['calls'] },
-              { 'required' => ['define'] }, { 'required' => ['defines'] },
-              { 'required' => ['skip'] }
+              { 'required' => ['define'] }, { 'required' => ['defines'] }
             ] }
           ]
         },
@@ -434,8 +426,7 @@ module Leftovers
                 'unless' => true, 'not' => true,
 
                 'call' => true, 'calls' => true,
-                'define' => true, 'defines' => true,
-                'skip' => true
+                'define' => true, 'defines' => true
               },
               'additionalProperties' => false,
               'minProperties' => 2
@@ -452,6 +443,38 @@ module Leftovers
             },
             { '$ref' => '#/definitions/rule' }
           ]
+        },
+        'keep' => {
+          'anyOf' => [
+            { '$ref' => '#/definitions/name' },
+            {
+              'allOf' => [
+                { '$ref' => '#/definitions/ruleMatcher' },
+                {
+                  'properties' => {
+                    # unfortunately this repetition is necessary to use additionalProperties: false
+                    'name' => true, 'names' => true,
+                    'path' => true, 'paths' => true,
+                    'has_argument' => true, 'has_arguments' => true,
+                    'unless' => true, 'not' => true
+                  },
+                  'additionalProperties' => false,
+                  'minProperties' => 1
+                }
+              ]
+            }
+          ]
+        },
+        'keepList' => {
+          'anyOf' => [
+            {
+              'type' => 'array',
+              'items' => { '$ref' => '#/definitions/keep' },
+              'minItems' => 1,
+              'uniqueItems' => true
+            },
+            { '$ref' => '#/definitions/keep' }
+          ]
         }
       },
       'properties' => {
@@ -462,6 +485,7 @@ module Leftovers
           'type' => 'string',
           'enum' => AVAILABLE_GEMS
         },
+        'keep' => { '$ref' => '#/definitions/keepList' },
         'rules' => { '$ref' => '#/definitions/ruleList' }
       }
     }.freeze
