@@ -88,6 +88,7 @@ rules:
       - keys: true
         camelize: true
         add_suffix: Validator
+        split: '::'
   - names:
       - validate
       - validate_associated
@@ -157,17 +158,19 @@ rules:
     calls:
       argument: module # routes
       camelize: true
+      split: '::'
   - name: namespace
     calls:
       - argument: 1
         camelize: true
+        split: '::'
   - name:
       - attribute
       - alias_attribute
     path: app/models/*
     defines:
       argument: 1
-      linked_transforms:
+      transforms:
         - original
         - add_suffix: '?'
         - add_suffix: '='
@@ -186,6 +189,7 @@ rules:
     calls:
       argument: 1
       camelize: true
+      split: '::'
 
   - name:
     - has_many
@@ -196,12 +200,13 @@ rules:
       - argument: 1
         camelize: true
         singularize: true
+        split: '::'
   - name:
     - has_many
     - has_and_belongs_to_many
     defines:
       - argument: 1
-        linked_transforms:
+        transforms:
           - original
           - add_suffix: '='
           - singularize: true
@@ -228,7 +233,7 @@ rules:
       - belongs_to
     defines:
       - argument: 1
-        linked_transforms:
+        transforms:
           - original
           - add_suffix: '='
           - add_prefix: build_
@@ -250,9 +255,9 @@ rules:
      - belongs_to
      - has_and_belongs_to_many
     calls:
-      - argument:
-          - class_name
-          - inverse_of
+      - argument: class_name
+        split: '::'
+      - argument: inverse_of
       - argument: touch
         add_suffix: '='
   - name:
@@ -287,6 +292,7 @@ rules:
         delete_after: '#'
         camelize: true
         add_suffix: Controller
+        split: '::'
   - name: delegate
     has_argument:
       at: prefix
@@ -294,8 +300,8 @@ rules:
     defines:
       - argument: '*'
         add_prefix:
-          from_argument: to
-          joiner: '_'
+          argument: to
+          add_suffix: '_'
     calls:
       - argument: to
       - argument: '*'
@@ -307,8 +313,8 @@ rules:
     defines:
       - argument: '*'
         add_prefix:
-          from_argument: prefix
-          joiner: '_'
+          argument: prefix
+          add_suffix: '_'
     calls:
       - argument: to
       - argument: '*'
@@ -329,6 +335,7 @@ rules:
       - argument: controller
         camelize: true
         add_suffix: Controller
+        split: '::'
   - name:
       - resources
       - controller
@@ -337,10 +344,11 @@ rules:
       - argument: 1
         camelize: true
         add_suffix: Controller
+        split: '::'
   - name: accepts_nested_attributes_for
     defines:
       argument: '*'
-      linked_transforms:
+      transforms:
         - add_suffix: _attributes
         - add_suffix: _attributes=
     calls:
@@ -351,6 +359,7 @@ rules:
         camelize: true
         pluralize: true
         add_suffix: Controller
+        split: '::'
   - name:
     - new
     - create
@@ -404,9 +413,8 @@ rules:
       - mattr_accessor
     defines:
       - argument: '*'
-        transforms:
-          - original
-          - add_suffix: '='
+      - argument: '*'
+        add_suffix: '='
     calls:
       - argument: '*'
         add_prefix: '@'
@@ -429,10 +437,9 @@ rules:
     - thread_cattr_accessor
     - thread_mattr_accessor
     defines:
-      argument: '*'
-      transforms:
-        - original
-        - add_suffix: '='
+      - argument: '*'
+      - argument: '*'
+        add_suffix: '='
   - name:
     - thread_cattr_reader
     - thread_mattr_reader

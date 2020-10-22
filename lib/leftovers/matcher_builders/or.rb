@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative '../matchers/or'
+require_relative '../matchers/anything'
+require_relative '../matchers/nothing'
 
 require 'set'
 
@@ -34,7 +36,7 @@ module Leftovers
         end
       end
 
-      def self.flatten(value) # rubocop:disable Metrics/MethodLength
+      def self.flatten(value)
         case value
         when ::Leftovers::Matchers::Or
           [*flatten(value.lhs), *flatten(value.rhs)]
@@ -54,7 +56,7 @@ module Leftovers
         regexps = []
         uncompactable = []
 
-        flatten(matchers)
+        matchers = flatten(matchers)
         matchers.compact!
 
         if matchers.include?(::Leftovers::Matchers::Anything)

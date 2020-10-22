@@ -86,7 +86,8 @@ module Leftovers
         'argumentPosition' => {
           'anyOf' => [
             { '$ref' => '#/definitions/string' },
-            { 'type' => 'integer', 'minimum' => 1 }
+            { 'type' => 'integer', 'minimum' => 1 },
+            { '$ref' => '#/definitions/name' }
           ]
         },
         'argumentPositionList' => {
@@ -219,19 +220,6 @@ module Leftovers
             ] }
           ]
         },
-        'dynamicString' => {
-          'anyOf' => [
-            { '$ref' => '#/definitions/string' },
-            {
-              'type' => 'object',
-              'properties' => {
-                'from_argument' => { '$ref' => '#/definitions/argumentPosition' },
-                'joiner' => { '$ref' => '#/definitions/string' }
-              },
-              'additionalProperties' => false
-            }
-          ]
-        },
         'transformProperties' => {
           'type' => 'object',
           'properties' => {
@@ -251,9 +239,10 @@ module Leftovers
             'capitalize' => { '$ref' => '#/definitions/true' },
             'swapcase' => { '$ref' => '#/definitions/true' },
 
-            'add_prefix' => { '$ref' => '#/definitions/dynamicString' },
-            'add_suffix' => { '$ref' => '#/definitions/dynamicString' },
+            'add_prefix' => { '$ref' => '#/definitions/actionList' },
+            'add_suffix' => { '$ref' => '#/definitions/actionList' },
 
+            'split' => { '$ref' => '#/definitions/string' },
             'delete_prefix' => { '$ref' => '#/definitions/string' },
             'delete_suffix' => { '$ref' => '#/definitions/string' },
             'delete_before' => { '$ref' => '#/definitions/string' },
@@ -304,6 +293,7 @@ module Leftovers
                   'swapcase' => true,
                   'add_prefix' => true,
                   'add_suffix' => true,
+                  'split' => true,
                   'delete_prefix' => true,
                   'delete_suffix' => true,
                   'delete_before' => true,
@@ -327,58 +317,64 @@ module Leftovers
           ]
         },
         'action' => {
-          'allOf' => [
-            { '$ref' => '#/definitions/transformProperties' },
-            {
-              'type' => 'object',
-              'properties' => {
-                'original' => true,
-                'pluralize' => true,
-                'singularize' => true,
-                'camelize' => true,
-                'camelcase' => true,
-                'underscore' => true,
-                'titleize' => true,
-                'titlecase' => true,
-                'demodulize' => true,
-                'deconstantize' => true,
-                'parameterize' => true,
-                'downcase' => true,
-                'upcase' => true,
-                'capitalize' => true,
-                'swapcase' => true,
-                'add_prefix' => true,
-                'add_suffix' => true,
-                'delete_prefix' => true,
-                'delete_suffix' => true,
-                'delete_before' => true,
-                'delete_after' => true,
-                'replace_with' => true,
-                'argument' => { '$ref' => '#/definitions/argumentPositionList' },
-                'arguments' => { '$ref' => '#/definitions/argumentPositionList' },
-                'itself' => { '$ref' => '#/definitions/true' },
-                'key' => { '$ref' => '#/definitions/true' },
-                'keys' => { '$ref' => '#/definitions/true' },
-                'transforms' => { '$ref' => '#/definitions/transformList' },
-                'linked_transforms' => { '$ref' => '#/definitions/transformList' }
-              },
-              'additionalProperties' => false,
-              'allOf' => [
-                # synonyms
-                { 'not' => { 'required' => %w{key keys} } },
-                { 'not' => { 'required' => %w{argument arguments} } },
-                # incompatible
-                { 'not' => { 'required' => %w{transforms linked_transforms} } },
-                # any of
-                { 'anyOf' => [
-                  { 'required' => ['argument'] },
-                  { 'required' => ['arguments'] },
-                  { 'required' => ['key'] },
-                  { 'required' => ['keys'] },
-                  { 'required' => ['itself'] }
-                ] }
-              ]
-            }
+          'anyOf' => [
+            { '$ref' => '#/definitions/argumentPosition' },
+            { 'allOf' => [
+              { '$ref' => '#/definitions/transformProperties' },
+              {
+                'type' => 'object',
+                'properties' => {
+                  'original' => true,
+                  'pluralize' => true,
+                  'singularize' => true,
+                  'camelize' => true,
+                  'camelcase' => true,
+                  'underscore' => true,
+                  'titleize' => true,
+                  'titlecase' => true,
+                  'demodulize' => true,
+                  'deconstantize' => true,
+                  'parameterize' => true,
+                  'downcase' => true,
+                  'upcase' => true,
+                  'capitalize' => true,
+                  'swapcase' => true,
+                  'add_prefix' => true,
+                  'add_suffix' => true,
+                  'split' => true,
+                  'delete_prefix' => true,
+                  'delete_suffix' => true,
+                  'delete_before' => true,
+                  'delete_after' => true,
+                  'replace_with' => true,
+                  'argument' => { '$ref' => '#/definitions/argumentPositionList' },
+                  'arguments' => { '$ref' => '#/definitions/argumentPositionList' },
+                  'itself' => { '$ref' => '#/definitions/true' },
+                  'value' => { '$ref' => '#/definitions/string' },
+                  'key' => { '$ref' => '#/definitions/true' },
+                  'keys' => { '$ref' => '#/definitions/true' },
+                  'transforms' => { '$ref' => '#/definitions/transformList' },
+                  'linked_transforms' => { '$ref' => '#/definitions/transformList' }
+                },
+                'additionalProperties' => false,
+                'allOf' => [
+                  # synonyms
+                  { 'not' => { 'required' => %w{key keys} } },
+                  { 'not' => { 'required' => %w{argument arguments} } },
+                  # incompatible
+                  { 'not' => { 'required' => %w{transforms linked_transforms} } },
+                  # any of
+                  { 'anyOf' => [
+                    { 'required' => ['argument'] },
+                    { 'required' => ['arguments'] },
+                    { 'required' => ['key'] },
+                    { 'required' => ['keys'] },
+                    { 'required' => ['itself'] },
+                    { 'required' => ['value'] }
+                  ] }
+                ]
+              }
+            ] }
           ]
         },
         'actionList' => {
@@ -511,7 +507,7 @@ module Leftovers
       Leftovers.exit 1
     end
 
-    def self.post_process!(obj) # rubocop:disable Metrics/MethodLength
+    def self.post_process!(obj)
       case obj
       when Hash
         obj.keys.each do |key| # rubocop:disable Style/HashEachMethods # each_key never finishes.

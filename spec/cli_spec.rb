@@ -55,7 +55,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - name: test_method
               defines:
                 argument: 1
-                linked_transforms:
+                transforms:
                   - original
                   - add_suffix: '?'
         YML

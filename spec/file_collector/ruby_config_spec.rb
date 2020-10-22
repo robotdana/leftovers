@@ -63,6 +63,36 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:send, :bar)) }
   end
 
+  context 'with instance_variable_get' do
+    let(:ruby) { 'instance_variable_get(:@foo)' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:instance_variable_get, :@foo)) }
+  end
+
+  context 'with class_variable_get' do
+    let(:ruby) { 'class_variable_get(:@@foo)' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:class_variable_get, :@@foo)) }
+  end
+
+  context 'with instance_variable_set' do
+    let(:ruby) { 'instance_variable_set(:@foo, value)' }
+
+    it { is_expected.to have_definitions(:@foo).and(have_calls(:instance_variable_set, :value)) }
+  end
+
+  context 'with class_variable_set' do
+    let(:ruby) { 'class_variable_set(:@@foo, value)' }
+
+    it { is_expected.to have_definitions(:@@foo).and(have_calls(:class_variable_set, :value)) }
+  end
+
+  context 'with define_method' do
+    let(:ruby) { 'define_method(:foo) { value }' }
+
+    it { is_expected.to have_definitions(:foo).and(have_calls(:define_method, :value)) }
+  end
+
   context 'with dynamic comment allows' do
     let(:ruby) { <<~RUBY }
       attr_reader :method_name # leftovers:allow
@@ -94,9 +124,8 @@ RSpec.describe Leftovers::FileCollector do
 
   context 'with a processing error' do
     before do
-      allow_any_instance_of(::Leftovers::Rule) # rubocop:disable RSpec/AnyInstance
-        .to receive(:match?).and_raise(ArgumentError, 'original message')
-      # not even going to try to find the correct object.
+      allow(::Leftovers::ValueProcessors::ReturnCall)
+        .to receive(:process).and_raise(ArgumentError, 'original message')
     end
 
     let(:ruby) { 'attr_reader :method_name # leftovers:allow' }
@@ -106,6 +135,18 @@ RSpec.describe Leftovers::FileCollector do
         ArgumentError, "original message\nwhen processing attr_reader at foo.rb:1:0"
       )
     end
+  end
+
+  context 'with # leftovers:call # without any name' do
+    let(:ruby) do
+      <<~RUBY
+        # leftovers:call #
+        variable = :test
+        send(variable)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:send)) }
   end
 
   context 'with multiple inline comment allows' do

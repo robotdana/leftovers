@@ -47,14 +47,14 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with method calls passed in an array to a before_save if:' do
-    let(:ruby) { 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]' }
+  # context 'with method calls passed in an array to a before_save if:' do
+  #   let(:ruby) { 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]' }
 
-    it do
-      expect(subject).to have_no_definitions
-        .and have_calls(:before_save, :do_a_thing, :thing_to_be_done?, :another_thing?)
-    end
-  end
+  #   it do
+  #     expect(subject).to have_no_definitions
+  #       .and have_calls(:before_save, :do_a_thing, :thing_to_be_done?, :another_thing?)
+  #   end
+  # end
 
   context 'with method calls in route values' do
     let(:ruby) { 'patch :thing, to: "users#logout"' }
@@ -175,30 +175,30 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and have_calls(:permit, :first_name=, :last_name=) }
   end
 
-  context 'with hash permit args' do
-    let(:ruby) { 'permit(names: [:first_name, :last_name], age: :years)' }
+  # context 'with hash permit args' do
+  #   let(:ruby) { 'permit(names: [:first_name, :last_name], age: :years)' }
 
-    it do
-      expect(subject).to have_no_definitions
-        .and have_calls(
-          :permit, :names=, :first_name=, :last_name=, :age=, :years=
-        )
-    end
-  end
+  #   it do
+  #     expect(subject).to have_no_definitions
+  #       .and have_calls(
+  #         :permit, :names=, :first_name=, :last_name=, :age=, :years=
+  #       )
+  #   end
+  # end
 
-  context 'with deep permit args' do
-    let(:ruby) { <<~RUBY }
-      permit person_attributes: { names: [:first_name, :last_name, { deep: :hash}], age: :years }
-    RUBY
+  # context 'with deep permit args' do
+  #   let(:ruby) { <<~RUBY }
+  #     permit person_attributes: { names: [:first_name, :last_name, { deep: :hash}], age: :years }
+  #   RUBY
 
-    it do
-      expect(subject).to have_no_definitions
-        .and have_calls(
-          :permit, :names=, :first_name=, :last_name=,
-          :age=, :years=, :person_attributes=, :deep=, :hash=
-        )
-    end
-  end
+  #   it do
+  #     expect(subject).to have_no_definitions
+  #       .and have_calls(
+  #         :permit, :names=, :first_name=, :last_name=,
+  #         :age=, :years=, :person_attributes=, :deep=, :hash=
+  #       )
+  #   end
+  # end
 
   context 'with temp_dir' do
     before do
@@ -266,16 +266,16 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with validations calls with inclusion hash' do
-    let(:ruby) { 'validates :name, inclusion: { in: :inclusion_method }, if: :condition?' }
+  # context 'with validations calls with inclusion hash' do
+  #   let(:ruby) { 'validates :name, inclusion: { in: :inclusion_method }, if: :condition?' }
 
-    # IfValidator is awkward, but fine
-    it do
-      expect(subject).to have_no_definitions
-        .and have_calls(
-          :validates, :name, :inclusion_method, :condition?,
-          :IfValidator, :InclusionValidator
-        )
-    end
-  end
+  #   # IfValidator is awkward, but fine
+  #   it do
+  #     expect(subject).to have_no_definitions
+  #       .and have_calls(
+  #         :validates, :name, :inclusion_method, :condition?,
+  #         :IfValidator, :InclusionValidator
+  #       )
+  #   end
+  # end
 end

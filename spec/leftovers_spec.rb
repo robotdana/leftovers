@@ -38,11 +38,10 @@ RSpec.describe Leftovers do
 
       allow(subject).to receive(:stdout).and_return(StringIO.new) # rubocop:disable RSpec/SubjectStub
 
-      expect(subject.leftovers).to have_names :check_foo
-      expect(subject.collector.definitions).to have_names(
+      expect(subject.leftovers.flat_map(&:names)).to eq [:check_foo]
+      expect(subject.collector).to have_definitions(
         :foo, :foo?, :foo=, :check_foo
-      )
-      expect(subject.collector.calls).to contain_exactly(:attribute, :foo?)
+      ).and(have_calls(:attribute, :foo?))
     end
 
     it "doesn't think method calls in the same file are leftovers" do
@@ -64,11 +63,10 @@ RSpec.describe Leftovers do
         end
       RUBY
 
-      expect(subject.leftovers).to have_names :Actions
-      expect(subject.collector.definitions)
-        .to have_names(:Actions, :prepare_params, :sub_params)
-
-      expect(subject.collector.calls).to contain_exactly(:sub_params, :prepare_params)
+      expect(subject.leftovers.flat_map(&:names)).to eq [:Actions]
+      expect(subject.collector).to have_definitions(
+        :Actions, :prepare_params, :sub_params
+      ).and(have_calls(:sub_params, :prepare_params))
     end
   end
 end

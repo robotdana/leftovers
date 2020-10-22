@@ -1,19 +1,18 @@
 # frozen_string_literal: true
 
 require_relative 'definition'
+
 module Leftovers
   class DefinitionSet < Leftovers::Definition
     attr_reader :definitions
 
     def initialize(
-      names,
+      definitions,
       method_node: nil,
       location: method_node.loc.expression,
       test: method_node.test?
     )
-      @definitions = names.map do |name|
-        Leftovers::Definition.new(name, test: test, location: location)
-      end
+      @definitions = definitions
 
       super
     end

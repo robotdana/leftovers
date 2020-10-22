@@ -61,18 +61,15 @@ rules:
   - name: attr_writer
     defines:
       argument: '*'
-      transforms:
-        - add_suffix: '='
+      add_suffix: '='
   - name: attr_accessor
     defines:
       - argument: '*'
-        transforms:
-          - original
-          - add_suffix: '='
+        add_suffix: '='
+      - argument: '*'
     calls:
       argument: '*'
-      transforms:
-        add_prefix: '@'
+      add_prefix: '@'
   - name: define_method
     defines:
       argument: 1
@@ -83,7 +80,7 @@ rules:
       argument: 2
   - name:
       - instance_variable_get
-      - class_variable_set
+      - class_variable_get
     calls:
       argument: 1
   - name:

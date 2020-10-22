@@ -176,22 +176,6 @@ RSpec.describe Leftovers::Config do
         .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
-    it 'can report errors when using linked_transforms and transforms' do
-      config = described_class.new('invalid', content: <<~YML)
-        rules:
-          - names: my_method
-            defines:
-              argument: 1
-              linked_transforms:
-                - original
-              transforms:
-                - add_suffix
-      YML
-      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
-      expect { catch(:leftovers_exit) { config.rules } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
-    end
-
     it 'can report errors when using missing argument etc' do
       config = described_class.new('invalid', content: <<~YML)
         rules:

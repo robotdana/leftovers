@@ -321,18 +321,6 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with # leftovers:call # without any name' do
-    let(:ruby) do
-      <<~RUBY
-        # leftovers:call #
-        variable = :test
-        send(variable)
-      RUBY
-    end
-
-    it { is_expected.to have_no_definitions.and(have_calls(:send)) }
-  end
-
   context 'with inline comment calls for constants' do
     let(:ruby) do
       <<~RUBY

@@ -37,7 +37,15 @@ module Leftovers
         @memo[:test] = value
       end
 
-      def to_scalar_value # rubocop:disable Metrics/MethodLength
+      def keep_line=(value)
+        @memo[:keep_line] = value
+      end
+
+      def keep_line?
+        @memo[:keep_line]
+      end
+
+      def to_scalar_value
         case type
         when :sym, :int, :float, :str
           first
@@ -74,15 +82,25 @@ module Leftovers
         type == :str || type == :sym
       end
 
-      def arguments # rubocop:disable Metrics/MethodLength
+      def arguments
         @memo[:arguments] ||= case type
         when :send, :csend then children.drop(2)
-        when :casgn then [children[2]]
-        when :ivasgn, :cvasgn, :gvasgn then [second]
+        when :casgn then assign_arguments(children[2])
+        when :ivasgn, :cvasgn, :gvasgn then assign_arguments(second)
         else
           # :nocov: # these are all the nodes with collect_rules
           raise "Not argument node (#{type})"
           # :nocov:
+        end
+      end
+
+      def assign_arguments(arguments_list)
+        arguments_list = arguments_list.unwrap_freeze
+        case arguments_list.type
+        when :array
+          arguments_list.children
+        when :hash, :str, :sym
+          [arguments_list]
         end
       end
 
@@ -98,7 +116,7 @@ module Leftovers
 
       def kwargs
         @memo.fetch(:kwargs) do
-          last_arg = arguments[-1]&.unwrap_freeze
+          last_arg = arguments[-1]
           @memo[:kwargs] = (last_arg if last_arg&.type == :hash)
         end
       end
@@ -138,7 +156,7 @@ module Leftovers
         end
       end
 
-      def name # rubocop:disable Metrics/MethodLength
+      def name
         @memo[:name] ||= case type
         when :send, :csend, :casgn, :const
           second
@@ -151,7 +169,7 @@ module Leftovers
         end
       end
 
-      def [](index) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+      def [](index) # rubocop:disable Metrics/CyclomaticComplexity
         # :nocov:
         case type
         # :nocov:

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require_relative 'rule'
 require_relative 'config_validator'
 require_relative 'matcher_builders/keep'
+require_relative 'processor_builders/rule'
 
 module Leftovers
   class Config
@@ -36,7 +36,7 @@ module Leftovers
     end
 
     def rules
-      @rules ||= Rule.wrap(yaml[:rules])
+      @rules ||= ::Leftovers::ProcessorBuilders::Rule.build(yaml[:rules])
     rescue Leftovers::ConfigError => e
       warn "\e[31mConfig Error: (#{path}): #{e.message}\e[0m"
       Leftovers.exit 1
@@ -63,7 +63,7 @@ module Leftovers
       @yaml ||= ::Leftovers::ConfigValidator.validate_and_process!(parse_yaml, path)
     end
 
-    def parse_yaml # rubocop:disable Metrics/MethodLength
+    def parse_yaml
       # :nocov:
       if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
         Psych.safe_load(content, filename: path) || {}

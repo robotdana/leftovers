@@ -9,7 +9,7 @@ module Leftovers
   class FileCollector < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength
     attr_reader :calls, :definitions
 
-    def initialize(ruby, file) # rubocop:disable Metrics/MethodLength, Lint/MissingSuper
+    def initialize(ruby, file) # rubocop:disable Lint/MissingSuper
       @calls = []
       @definitions = []
       @allow_lines = Set.new.compare_by_identity
@@ -23,11 +23,22 @@ module Leftovers
     end
 
     def to_h
+      squash!
+
       {
         test?: @file.test?,
         calls: calls,
         definitions: definitions
       }
+    end
+
+    def squash!
+      calls.flatten!
+      calls.compact!
+      calls.uniq!
+      definitions.flatten!
+      definitions.compact!
+      definitions.uniq!
     end
 
     def collect
@@ -48,7 +59,7 @@ module Leftovers
     LEFTOVERS_CALL_RE = /\bleftovers:call(?:s|ed|er|ers|) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
     LEFTOVERS_ALLOW_RE = /\bleftovers:(?:keeps?|skip(?:s|ped|)|allow(?:s|ed|))\b/.freeze
     LEFTOVERS_TEST_RE = /\bleftovers:(?:for_tests?|tests?|testing)\b/.freeze
-    def process_comments(comments) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def process_comments(comments) # rubocop:disable Metrics/AbcSize
       comments.each do |comment|
         @allow_lines << comment.loc.line if comment.text.match?(LEFTOVERS_ALLOW_RE)
         @test_lines << comment.loc.line if comment.text.match?(LEFTOVERS_TEST_RE)
@@ -210,17 +221,11 @@ module Leftovers
       end
     end
 
-    def collect_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      Leftovers.config.rules.each do |rule|
-        next unless rule.match?(node)
+    def collect_rules(node) # rubocop:disable Metrics/AbcSize
+      node.keep_line = @allow_lines.include?(node.loc.line)
+      node.test = test?(node.loc) unless node.keep_line?
 
-        calls.concat(rule.calls(node))
-
-        next if @allow_lines.include?(node.loc.line)
-
-        node.test = test?(node.loc)
-        definitions.concat(rule.definitions(node))
-      end
+      Leftovers.config.rules.process(node, self)
     rescue StandardError => e
       raise e.class, "#{e.message}\nwhen processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace # rubocop:disable Layout/LineLength
     end

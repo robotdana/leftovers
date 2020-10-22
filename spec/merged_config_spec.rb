@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
 RSpec.describe Leftovers::MergedConfig do
-  describe '<<' do
-    it 'handles clearing memoization' do
-      original_exclude_paths = subject.exclude_paths
-      original_include_paths = subject.include_paths
-      original_test_paths = subject.test_paths
-      original_rules = subject.rules
+  # describe '<<' do
+  #   it 'handles clearing memoization' do
+  #     original_exclude_paths = subject.exclude_paths
+  #     original_include_paths = subject.include_paths
+  #     original_test_paths = subject.test_paths
+  #     original_rules = subject.rules
 
-      rails = Leftovers::Config.new(:rails)
-      subject << rails
+  #     rails = Leftovers::Config.new(:rails)
+  #     subject << rails
 
-      expect(original_exclude_paths + rails.exclude_paths).to eq subject.exclude_paths
-      expect(original_include_paths + rails.include_paths).to eq subject.include_paths
-      expect(original_test_paths).not_to eq subject.test_paths
-      expect(original_rules + rails.rules).to eq subject.rules
-    end
-  end
+  #     expect(original_exclude_paths + rails.exclude_paths).to eq subject.exclude_paths
+  #     expect(original_include_paths + rails.include_paths).to eq subject.include_paths
+  #     expect(original_test_paths).not_to eq subject.test_paths
+  #     expect(original_rules + rails.rules).to eq subject.rules
+  #   end
+  # end
 
   describe 'new' do
     it 'can work without bundler' do

@@ -30,4 +30,22 @@ RSpec.describe Leftovers::FileCollector do
         .and(have_calls(:expect, :array, :to, :empty?, :be_empty))
     end
   end
+
+  context 'with method calls using have_' do
+    let(:ruby) { 'expect(array).to have_key(:key)' }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:expect, :array, :to, :has_key?, :have_key))
+    end
+  end
+
+  context 'with method calls using receive_messages' do
+    let(:ruby) { 'expect(array).to receive_messages(my_method: true)' }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:expect, :array, :to, :receive_messages, :my_method))
+    end
+  end
 end

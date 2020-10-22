@@ -60,6 +60,8 @@ rules:
       add_prefix: has_
     path: /spec/
   - name: let
+    unless:
+      has_argument: 2
     defines:
       argument: 1
     path: /spec/

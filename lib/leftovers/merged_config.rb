@@ -3,6 +3,7 @@
 require 'set'
 require_relative 'config'
 require 'fast_ignore'
+require_relative 'processor_builders/each_rule'
 
 module Leftovers
   class MergedConfig
@@ -14,7 +15,7 @@ module Leftovers
       load_bundled_gem_config
     end
 
-    def <<(config) # rubocop:disable Metrics/MethodLength
+    def <<(config)
       config = Leftovers::Config.new(config) unless config.is_a?(Leftovers::Config)
       return if @loaded_configs.include?(config.name)
 
@@ -53,7 +54,7 @@ module Leftovers
     end
 
     def rules
-      @rules ||= @configs.flat_map(&:rules)
+      @rules ||= ::Leftovers::ProcessorBuilders::EachRule.build(@configs.map(&:rules))
     end
 
     def keep
