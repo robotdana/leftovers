@@ -1,7 +1,9 @@
 affixxed
+attr
 backports
 classnames
 codebase
+config
 cov
 datagrid
 esque
