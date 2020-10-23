@@ -6,6 +6,8 @@ module Leftovers
       def initialize(value, then_processor)
         @value = value
         @then_processor = then_processor
+
+        freeze
       end
 
       def process(_str, node, method_node)

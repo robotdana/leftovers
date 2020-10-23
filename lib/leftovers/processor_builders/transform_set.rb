@@ -4,7 +4,7 @@ require_relative 'each_value'
 require_relative 'each_for_definition'
 require_relative 'transform_chain'
 require_relative '../value_processors/return_definition'
-require_relative '../value_processors/return_call'
+require_relative '../value_processors/return_string'
 
 module Leftovers
   module ProcessorBuilders
@@ -28,7 +28,7 @@ module Leftovers
         when :call
           ::Leftovers::ProcessorBuilders::Each
         when :define
-          ::Leftovers::ProcessorBuilders::EachForDefinition
+          ::Leftovers::ProcessorBuilders::EachForDefinitionSet
         else raise
         end
       end
@@ -36,7 +36,7 @@ module Leftovers
       def self.build_final(action)
         case action
         when :call
-          ::Leftovers::ValueProcessors::ReturnCall
+          ::Leftovers::ValueProcessors::ReturnString
         when :define
           ::Leftovers::ValueProcessors::ReturnDefinition
         else raise

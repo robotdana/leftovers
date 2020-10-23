@@ -5,6 +5,8 @@ module Leftovers
     class EachPositionalArgument
       def initialize(then_processor)
         @then_processor = then_processor
+
+        freeze
       end
 
       def process(_str, node, method_node)

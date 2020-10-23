@@ -268,27 +268,56 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  # context 'with nested hash assignment values' do
-  #   let(:ruby) do
-  #     <<~RUBY
-  #       STRING_TRANSFORMS = {
-  #         body: { process: :downcase },
-  #         title: { process: :upcase }
-  #       }
-  #     RUBY
-  #   end
+  context 'with nested hash assignment values' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = {
+          body: { process: :downcase },
+          title: { process: :upcase }
+        }
+      RUBY
+    end
 
-  #   let(:config) do
-  #     <<~YML
-  #       rules:
-  #         - name: STRING_TRANSFORMS
-  #           calls:
-  #             arguments: '**'
-  #     YML
-  #   end
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              arguments: '**'
+              nested:
+                arguments: '**'
+      YML
+    end
 
-  #   it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:downcase, :upcase)) }
-  # end
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:downcase, :upcase)) }
+  end
+
+  context 'with recursive hash assignment values' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = {
+          body: { process: :downcase },
+          title: { process: :upcase },
+          properties: { each: { process: :swapcase } }
+        }
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              - arguments: '**'
+                recursive: true
+      YML
+    end
+
+    it do
+      expect(subject).to have_definitions(:STRING_TRANSFORMS)
+        .and(have_calls(:downcase, :upcase, :swapcase))
+    end
+  end
 
   context 'with names unless names' do
     let(:ruby) do

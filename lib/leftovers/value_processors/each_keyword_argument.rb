@@ -5,13 +5,15 @@ module Leftovers
     class EachKeywordArgument
       def initialize(then_processor)
         @then_processor = then_processor
+
+        freeze
       end
 
       def process(_str, node, method_node)
         kwargs = node.kwargs
         return unless kwargs
 
-        method_node.kwargs.children.map do |pair|
+        kwargs.children.map do |pair|
           argument_node = pair.second
           str = argument_node.to_s if argument_node.string_or_symbol?
 

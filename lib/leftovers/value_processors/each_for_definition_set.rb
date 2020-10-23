@@ -4,9 +4,11 @@ require_relative '../definition_set'
 
 module Leftovers
   module ValueProcessors
-    class EachForDefinition
+    class EachForDefinitionSet
       def initialize(then_processors)
         @then_processors = then_processors
+
+        freeze
       end
 
       def process(str, node, method_node) # rubocop:disable Metrics/MethodLength
@@ -19,6 +21,8 @@ module Leftovers
 
         definitions.flatten!
         definitions.compact!
+
+        return definitions.first if definitions.length <= 1
 
         ::Leftovers::DefinitionSet.new(
           definitions,

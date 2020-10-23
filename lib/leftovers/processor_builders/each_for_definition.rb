@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../value_processors/each_for_definition'
+require_relative '../value_processors/each_for_definition_set'
 
 module Leftovers
   module ProcessorBuilders
-    module EachForDefinition
+    module EachForDefinitionSet
       def self.each_or_self(value, &block)
         case value
         when nil then nil
@@ -19,13 +19,13 @@ module Leftovers
         case processors.length
         when 0 then nil
         when 1 then processors.first
-        else ::Leftovers::ValueProcessors::EachForDefinition.new(processors)
+        else ::Leftovers::ValueProcessors::EachForDefinitionSet.new(processors)
         end
       end
 
       def self.flatten(value) # rubocop:disable Metrics/MethodLength
         case value
-        when ::Leftovers::ValueProcessors::EachForDefinition
+        when ::Leftovers::ValueProcessors::EachForDefinitionSet
           ret = value.processors.map { |v| flatten(v) }
           ret.flatten!(1)
           ret

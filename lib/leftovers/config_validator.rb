@@ -354,7 +354,8 @@ module Leftovers
                   'value' => { '$ref' => '#/definitions/string' },
                   'key' => { '$ref' => '#/definitions/true' },
                   'keys' => { '$ref' => '#/definitions/true' },
-                  'transforms' => { '$ref' => '#/definitions/transformList' }
+                  'transforms' => { '$ref' => '#/definitions/transformList' },
+                  'recursive' => { '$ref' => '#/definitions/true' }
                 },
                 'additionalProperties' => false,
                 'allOf' => [

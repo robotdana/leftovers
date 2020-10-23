@@ -377,6 +377,7 @@ rules:
       arguments: ['*', '**']
       keys: true
       add_suffix: "="
+      recursive: true
   - name: layout
     calls:
       argument: 1

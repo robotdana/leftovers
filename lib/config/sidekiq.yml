@@ -3,8 +3,7 @@ rules:
   - names:
       - perform_async
     calls:
-      itself: true
-      delete_suffix: _async
+      value: perform
   - name: register
     calls:
       argument: 2

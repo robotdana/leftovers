@@ -8,6 +8,7 @@ require_relative 'value'
 require_relative 'each_action'
 
 require_relative 'transform_set'
+require_relative '../value_processors/placeholder'
 
 module Leftovers
   module ProcessorBuilders
@@ -37,12 +38,13 @@ module Leftovers
         end
       end
 
-      def self.build_action_from_hash_value(pattern, action) # rubocop:disable Metrics/MethodLength
+      def self.build_action_from_hash_value(pattern, action) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         args = pattern.delete(:arguments)
         keys = pattern.delete(:keys)
         itself = pattern.delete(:itself)
         value = pattern.delete(:value)
         nested = pattern.delete(:nested)
+        recursive = pattern.delete(:recursive)
 
         transformer = ::Leftovers::ProcessorBuilders::TransformSet.build(pattern, action)
         if nested
@@ -52,12 +54,25 @@ module Leftovers
           ])
         end
 
-        ::Leftovers::ProcessorBuilders::EachAction.build([
+        if recursive
+          placeholder = ::Leftovers::ValueProcessors::Placeholder.new
+          transformer = ::Leftovers::ProcessorBuilders::Each.build(
+            [placeholder, transformer]
+          )
+        end
+
+        processor = ::Leftovers::ProcessorBuilders::EachAction.build([
           ::Leftovers::ProcessorBuilders::Argument.build(args, transformer),
           ::Leftovers::ProcessorBuilders::Key.build(keys, transformer),
           ::Leftovers::ProcessorBuilders::Itself.build(itself, transformer),
           ::Leftovers::ProcessorBuilders::Value.build(value, transformer)
         ])
+
+        return unless processor
+        return processor unless recursive
+
+        placeholder.processor = processor
+        placeholder
       end
     end
   end

@@ -124,7 +124,7 @@ RSpec.describe Leftovers::FileCollector do
 
   context 'with a processing error' do
     before do
-      allow(::Leftovers::ValueProcessors::ReturnCall)
+      allow(::Leftovers::ValueProcessors::ReturnString)
         .to receive(:process).and_raise(ArgumentError, 'original message')
     end
 

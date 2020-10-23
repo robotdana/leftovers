@@ -175,16 +175,16 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and have_calls(:permit, :first_name=, :last_name=) }
   end
 
-  # context 'with hash permit args' do
-  #   let(:ruby) { 'permit(names: [:first_name, :last_name], age: :years)' }
+  context 'with hash permit args' do
+    let(:ruby) { 'permit(names: [:first_name, :last_name], age: :years)' }
 
-  #   it do
-  #     expect(subject).to have_no_definitions
-  #       .and have_calls(
-  #         :permit, :names=, :first_name=, :last_name=, :age=, :years=
-  #       )
-  #   end
-  # end
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(
+          :permit, :names=, :first_name=, :last_name=, :age=, :years=
+        )
+    end
+  end
 
   # context 'with deep permit args' do
   #   let(:ruby) { <<~RUBY }
