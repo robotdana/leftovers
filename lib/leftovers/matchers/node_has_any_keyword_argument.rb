@@ -3,6 +3,10 @@
 module Leftovers
   module Matchers
     class NodeHasAnyKeywordArgument
+      # :nocov:
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
+      # :nocov:
+
       def initialize(pair_matcher)
         @pair_matcher = pair_matcher
 

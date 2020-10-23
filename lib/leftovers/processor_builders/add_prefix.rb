@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'action'
-require_relative '../value_processors/add_dynamic_prefix'
-require_relative '../value_processors/add_prefix'
-
 module Leftovers
   module ProcessorBuilders
     module AddPrefix

@@ -4,7 +4,7 @@ module Leftovers
   module Matchers
     class And
       # :nocov:
-      using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
       # :nocov:
 
       def initialize(lhs, rhs)

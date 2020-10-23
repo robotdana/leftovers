@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require_relative 'config_validator'
-require_relative 'matcher_builders/keep'
-require_relative 'processor_builders/rule'
 
 module Leftovers
   class Config
     # :nocov:
-    using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
+    using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
     # :nocov:
 
     attr_reader :name

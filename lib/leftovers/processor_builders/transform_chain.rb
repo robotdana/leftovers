@@ -1,7 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'transform'
-
 module Leftovers
   module ProcessorBuilders
     module TransformChain

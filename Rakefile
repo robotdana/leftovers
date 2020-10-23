@@ -12,4 +12,16 @@ RSpec::Core::RakeTask.new(:spec)
 Spellr::RakeTask.generate_task
 Leftovers::RakeTask.generate_task
 
-task default: %i{spec spellr rubocop leftovers}
+desc "Test autoload"
+task :test_autoload do
+  exitstatus = 0
+  exitstatus = 1 unless system('bin/test_autoload.rb --verbose')
+  20.times do |i|
+    puts "Shuffled loading attempt: #{i}"
+
+    exitstatus = 1 unless system('bin/test_autoload.rb --verbose --only-errors')
+  end
+  exit exitstatus unless exitstatus == 0
+end
+
+task default: %i{test_autoload spec spellr rubocop leftovers build}

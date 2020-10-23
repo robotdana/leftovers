@@ -1,7 +1,6 @@
 # frozen-string-literal: true
 
-require_relative 'path'
-require_relative '../matchers/node_type'
+require 'set'
 
 module Leftovers
   module MatcherBuilders

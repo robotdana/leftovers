@@ -3,6 +3,10 @@
 module Leftovers
   module Matchers
     class NodeHasPositionalArgument
+      # :nocov:
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
+      # :nocov:
+
       def initialize(position)
         @position = position
 

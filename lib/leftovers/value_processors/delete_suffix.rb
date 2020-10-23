@@ -4,7 +4,9 @@ module Leftovers
   module ValueProcessors
     class DeleteSuffix
       # :nocov:
-      using ::Leftovers::StringDeletePrefixSuffix if defined?(::Leftovers::StringDeletePrefixSuffix)
+      if defined?(::Leftovers::Backports::StringDeletePrefixSuffix)
+        using ::Leftovers::Backports::StringDeletePrefixSuffix
+      end
       # :nocov:
 
       def initialize(suffix, then_processor)

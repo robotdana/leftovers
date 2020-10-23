@@ -2,7 +2,6 @@
 
 require 'optparse'
 require_relative '../leftovers'
-require_relative 'version'
 
 module Leftovers
   class CLI

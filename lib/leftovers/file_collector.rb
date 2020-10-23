@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-require 'fast_ignore'
 require 'set'
-require_relative 'parser'
-require_relative 'definition'
+require 'parser'
 
 module Leftovers
   class FileCollector < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength

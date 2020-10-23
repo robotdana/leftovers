@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../matchers/or'
-require_relative '../matchers/anything'
-require_relative '../matchers/nothing'
-
 require 'set'
 
 module Leftovers

@@ -1,11 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'or'
-require_relative 'and_not'
-require_relative 'node'
-require_relative 'node_has_keyword_argument'
-require_relative 'node_has_positional_argument'
-
 module Leftovers
   module MatcherBuilders
     module NodeHasArgument

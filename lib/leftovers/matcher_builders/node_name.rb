@@ -1,8 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'name'
-require_relative '../matchers/node_name'
-
 module Leftovers
   module MatcherBuilders
     module NodeName

@@ -8,6 +8,8 @@ SimpleCov.formatter SimpleCov::Formatter::SimpleFormatter
 SimpleCov.minimum_coverage 0
 SimpleCov.add_filter '/backports.rb'
 SimpleCov.add_filter '/spec/'
+SimpleCov.track_files '/lib/**/*.rb'
+
 require 'parallel'
 
 # internals of Parallel i'm sure it's fine

@@ -3,6 +3,10 @@
 module Leftovers
   module Matchers
     class NodePath
+      # :nocov:
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
+      # :nocov:
+
       def initialize(path_matcher)
         @path_matcher = path_matcher
 

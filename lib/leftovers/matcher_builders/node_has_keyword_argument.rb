@@ -1,10 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'node_name'
-require_relative 'and'
-require_relative '../matchers/node_has_any_keyword_argument'
-require_relative '../matchers/node_pair_value'
-
 module Leftovers
   module MatcherBuilders
     module NodeHasKeywordArgument

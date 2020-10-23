@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../value_processors/positional_argument'
-require_relative '../value_processors/each_positional_argument'
-require_relative '../value_processors/each_keyword_argument'
-require_relative 'keyword_argument'
-
 module Leftovers
   module ProcessorBuilders
     module Argument

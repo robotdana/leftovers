@@ -1,15 +1,9 @@
 # frozen-string-literal: true
 
-require_relative '../matchers/node_scalar_value'
-require_relative 'node_name'
-require_relative 'node_type'
-require_relative 'or'
-require_relative 'and_not'
-
 module Leftovers
   module MatcherBuilders
     module Node
-      def self.build(pattern) # rubocop:disable Metrics/MethodLength
+      def self.build(pattern)
         ::Leftovers::MatcherBuilders::Or.each_or_self(pattern) do |pat|
           case pat
           when ::Integer, true, false, nil

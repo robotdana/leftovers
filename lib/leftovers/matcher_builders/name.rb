@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'or'
-require_relative 'and_not'
-require_relative 'string'
-require_relative 'string_pattern'
-
 module Leftovers
   module MatcherBuilders
     module Name

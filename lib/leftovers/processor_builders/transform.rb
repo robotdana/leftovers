@@ -1,26 +1,5 @@
 # frozen-string-literal: true
 
-require_relative '../processor_builders/add_prefix'
-require_relative '../processor_builders/add_suffix'
-require_relative '../value_processors/split'
-require_relative '../value_processors/delete_prefix'
-require_relative '../value_processors/delete_suffix'
-require_relative '../value_processors/delete_after'
-require_relative '../value_processors/delete_before'
-require_relative '../value_processors/downcase'
-require_relative '../value_processors/upcase'
-require_relative '../value_processors/capitalize'
-require_relative '../value_processors/swapcase'
-require_relative '../value_processors/pluralize'
-require_relative '../value_processors/singularize'
-require_relative '../value_processors/camelize'
-require_relative '../value_processors/titleize'
-require_relative '../value_processors/demodulize'
-require_relative '../value_processors/deconstantize'
-require_relative '../value_processors/parameterize'
-require_relative '../value_processors/underscore'
-require_relative '../value_processors/replace_value'
-
 module Leftovers
   module ProcessorBuilders
     module Transform

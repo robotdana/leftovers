@@ -4,9 +4,9 @@ require 'parser'
 
 module Leftovers
   module AST
-    class Node < Parser::AST::Node # rubocop:disable Metrics/ClassLength
+    class Node < ::Parser::AST::Node # rubocop:disable Metrics/ClassLength
       # :nocov:
-      using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
       # :nocov:
 
       def initialize(type, children = [], properties = {})

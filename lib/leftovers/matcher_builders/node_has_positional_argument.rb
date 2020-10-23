@@ -1,11 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'or'
-require_relative 'node_name'
-require_relative '../matchers/node_has_any_positional_argument_with_value'
-require_relative '../matchers/node_has_positional_argument'
-require_relative '../matchers/node_has_positional_argument_with_value'
-
 module Leftovers
   module MatcherBuilders
     module NodeHasPositionalArgument

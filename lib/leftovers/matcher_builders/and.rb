@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../matchers/and'
-
 module Leftovers
   module MatcherBuilders
     module And

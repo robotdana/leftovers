@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'action'
-require_relative '../value_processors/add_dynamic_suffix'
-require_relative '../value_processors/add_suffix'
-
 module Leftovers
   module ProcessorBuilders
     module AddSuffix

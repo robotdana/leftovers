@@ -1,13 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'node_name'
-require_relative 'node_path'
-require_relative 'node_has_argument'
-
-require_relative 'and'
-
-require_relative '../matchers/not'
-
 module Leftovers
   module MatcherBuilders
     module Rule

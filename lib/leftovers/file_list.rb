@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'fast_ignore'
-require_relative 'file'
 
 module Leftovers
   class FileList < ::FastIgnore

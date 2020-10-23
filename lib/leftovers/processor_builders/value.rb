@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../value_processors/replace_value'
-
 module Leftovers
   module ProcessorBuilders
     module Value

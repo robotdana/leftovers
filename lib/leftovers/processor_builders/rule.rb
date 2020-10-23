@@ -1,13 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'each_rule'
-require_relative 'action'
-require_relative '../matcher_builders/rule'
-require_relative '../rule_processors/call'
-require_relative '../rule_processors/call_definition'
-require_relative '../rule_processors/definition'
-require_relative '../rule_processors/null'
-
 module Leftovers
   module ProcessorBuilders
     module Rule

@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 require 'set'
-require_relative 'config'
 require 'fast_ignore'
-require_relative 'processor_builders/each_rule'
 
 module Leftovers
   class MergedConfig

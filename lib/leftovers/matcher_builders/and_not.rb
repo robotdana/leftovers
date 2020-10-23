@@ -1,8 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'and'
-require_relative 'unless'
-
 module Leftovers
   module MatcherBuilders
     module AndNot

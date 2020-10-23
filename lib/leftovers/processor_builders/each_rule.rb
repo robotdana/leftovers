@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../rule_processors/null'
-require_relative '../rule_processors/each'
-
 module Leftovers
   module ProcessorBuilders
     module EachRule

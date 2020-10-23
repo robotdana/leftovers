@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'definition'
-
 module Leftovers
   class DefinitionSet < Leftovers::Definition
     attr_reader :definitions

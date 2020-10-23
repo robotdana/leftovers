@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../value_processors/itself'
-
 module Leftovers
   module ProcessorBuilders
     module Itself

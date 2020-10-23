@@ -1,15 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'argument'
-require_relative 'key'
-require_relative 'itself'
-require_relative 'value'
-
-require_relative 'each_action'
-
-require_relative 'transform_set'
-require_relative '../value_processors/placeholder'
-
 module Leftovers
   module ProcessorBuilders
     module Action

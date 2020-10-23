@@ -1,8 +1,5 @@
 # frozen-string-literal: true
 
-require_relative '../matcher_builders/node_name'
-require_relative '../value_processors/keyword_argument'
-
 module Leftovers
   module ProcessorBuilders
     module KeywordArgument

@@ -1,8 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'path'
-require_relative '../matchers/node_path'
-
 module Leftovers
   module MatcherBuilders
     module NodePath

@@ -1,11 +1,5 @@
 # frozen-string-literal: true
 
-require_relative 'each_value'
-require_relative 'each_for_definition'
-require_relative 'transform_chain'
-require_relative '../value_processors/return_definition'
-require_relative '../value_processors/return_string'
-
 module Leftovers
   module ProcessorBuilders
     module TransformSet

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'erb'
-require_relative 'haml'
 require 'pathname'
 
 module Leftovers
@@ -16,12 +14,12 @@ module Leftovers
       @test = Leftovers.config.test_paths.allowed?(relative_path)
     end
 
-    def ruby # rubocop:disable Metrics/MethodLength
+    def ruby
       case extname
       when '.haml'
-        Leftovers::Haml.precompile(read, self)
+        ::Leftovers::Haml.precompile(read, self)
       when '.rhtml', '.rjs', '.erb'
-        Leftovers::ERB.precompile(read)
+        ::Leftovers::ERB.precompile(read)
       else
         read
       end
