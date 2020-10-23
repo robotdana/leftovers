@@ -52,10 +52,10 @@ rules:
       - after_destroy_commit
       - after_save_commit
     calls:
-      arguments:
-        - 1
-        - if
-        - unless
+      - arguments: 1
+      - arguments: [if, unless]
+        nested:
+          arguments: '*'
   - name:
       - after_action
       - append_after_action

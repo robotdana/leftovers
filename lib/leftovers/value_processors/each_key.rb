@@ -13,7 +13,7 @@ module Leftovers
         kwargs = node.kwargs
         return unless kwargs
 
-        method_node.kwargs.children.map do |pair|
+        kwargs.children.map do |pair|
           argument_node = pair.first
           str = argument_node.to_s if argument_node.string_or_symbol?
 
