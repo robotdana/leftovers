@@ -9,7 +9,7 @@ module Leftovers
       end
 
       def process(str, node, method_node) # rubocop:disable Metrics/MethodLength
-        suffixes = @suffix_processor.process(method_node)
+        suffixes = @suffix_processor.process(nil, method_node, method_node)
         if suffixes.is_a?(Array)
           suffixes.flatten!
           suffixes.compact!

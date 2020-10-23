@@ -42,8 +42,15 @@ module Leftovers
         keys = pattern.delete(:keys)
         itself = pattern.delete(:itself)
         value = pattern.delete(:value)
+        nested = pattern.delete(:nested)
 
         transformer = ::Leftovers::ProcessorBuilders::TransformSet.build(pattern, action)
+        if nested
+          transformer = ::Leftovers::ProcessorBuilders::EachValue.build([
+            ::Leftovers::ProcessorBuilders::Action.build(nested, action),
+            transformer
+          ])
+        end
 
         ::Leftovers::ProcessorBuilders::EachAction.build([
           ::Leftovers::ProcessorBuilders::Argument.build(args, transformer),

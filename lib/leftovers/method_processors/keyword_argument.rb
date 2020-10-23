@@ -8,8 +8,8 @@ module Leftovers
         @then_processor = then_processor
       end
 
-      def process(method_node)
-        kwargs = method_node.kwargs
+      def process(_str, node, method_node)
+        kwargs = node.kwargs
         return unless kwargs
 
         result = []
@@ -17,10 +17,10 @@ module Leftovers
         kwargs.children.each do |pair|
           next unless @matcher === pair
 
-          sym_node = pair.pair_value
-          next unless sym_node.string_or_symbol?
+          argument_node = pair.pair_value
+          str = argument_node.to_s if argument_node.string_or_symbol?
 
-          result << @then_processor.process(sym_node.to_s, sym_node, method_node)
+          result << @then_processor.process(str, argument_node, method_node)
         end
 
         result

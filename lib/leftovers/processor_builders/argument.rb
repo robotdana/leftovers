@@ -9,6 +9,8 @@ module Leftovers
   module ProcessorBuilders
     module Argument
       def self.build(patterns, then_processor) # rubocop:disable Metrics/MethodLength
+        return unless then_processor
+
         ::Leftovers::ProcessorBuilders::EachAction.each_or_self(patterns) do |pattern|
           case pattern
           when nil then nil

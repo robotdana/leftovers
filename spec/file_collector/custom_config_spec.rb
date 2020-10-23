@@ -39,24 +39,25 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:test, :html, :test_html)) }
   end
 
-  # context 'with array values' do
-  #   let(:ruby) { 'flow(whatever, [:method_1, :method_2])' }
+  context 'with array values' do
+    let(:ruby) { 'flow(whatever, [:method_1, :method_2])' }
 
-  #   let(:config) do
-  #     <<~YML
-  #       rules:
-  #         - name: flow
-  #           calls:
-  #             - argument: '*'
-  #               recursive: true
-  #     YML
-  #   end
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: 2
+                nested:
+                  argument: '*'
+      YML
+    end
 
-  #   it do
-  #     expect(subject).to have_no_definitions
-  #       .and have_calls(:flow, :whatever, :method_1, :method_2)
-  #   end
-  # end
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever, :method_1, :method_2)
+    end
+  end
 
   context 'with matched keyword arguments' do
     let(:ruby) { 'my_method(whatever, some_values: :method)' }

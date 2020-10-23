@@ -11,7 +11,7 @@ module Leftovers
       def process(node, file)
         return unless @matcher === node
 
-        call = @processor.process(node)
+        call = @processor.process(nil, node, node)
         return unless call
 
         file.calls << call

@@ -12,7 +12,7 @@ module Leftovers
         return if node.keep_line?
         return unless @matcher === node
 
-        definition = @processor.process(node)
+        definition = @processor.process(nil, node, node)
         return unless definition
 
         file.definitions << definition

@@ -1,6 +1,7 @@
 # frozen-string-literal: true
 
 require_relative 'each_value'
+require_relative 'each_for_definition'
 require_relative 'transform_chain'
 require_relative '../value_processors/return_definition'
 require_relative '../value_processors/return_call'
@@ -9,7 +10,7 @@ module Leftovers
   module ProcessorBuilders
     module TransformSet
       def self.build(transforms, action)
-        ::Leftovers::ProcessorBuilders::EachValue.each_or_self(transforms, action) do |transform|
+        each_builder(action).each_or_self(transforms) do |transform|
           case transform
           when ::Hash
             next build(transform[:transforms], action) if transform[:transforms]
@@ -19,6 +20,16 @@ module Leftovers
             ::Leftovers::ProcessorBuilders::TransformChain.build(transform, build_final(action))
           else raise
           end
+        end
+      end
+
+      def self.each_builder(action)
+        case action
+        when :call
+          ::Leftovers::ProcessorBuilders::EachValue
+        when :define
+          ::Leftovers::ProcessorBuilders::EachForDefinition
+        else raise
         end
       end
 

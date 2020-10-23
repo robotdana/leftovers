@@ -8,8 +8,8 @@ module Leftovers
         @then_processor = then_processor
       end
 
-      def process(method_node)
-        @then_processor.process(@value, method_node, method_node)
+      def process(_str, node, method_node)
+        @then_processor.process(@value, node, method_node)
       end
     end
   end

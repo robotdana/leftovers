@@ -79,12 +79,14 @@ rules:
     calls:
       - arguments:
           - '*'
-          - 'in'
           - within
           - inclusion
           - scope
           - if
           - unless
+      - arguments: inclusion
+        nested:
+          arguments: 'in'
       - keys: true
         camelize: true
         add_suffix: Validator

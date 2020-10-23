@@ -266,16 +266,16 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  # context 'with validations calls with inclusion hash' do
-  #   let(:ruby) { 'validates :name, inclusion: { in: :inclusion_method }, if: :condition?' }
+  context 'with validations calls with inclusion hash' do
+    let(:ruby) { 'validates :name, inclusion: { in: :inclusion_method }, if: :condition?' }
 
-  #   # IfValidator is awkward, but fine
-  #   it do
-  #     expect(subject).to have_no_definitions
-  #       .and have_calls(
-  #         :validates, :name, :inclusion_method, :condition?,
-  #         :IfValidator, :InclusionValidator
-  #       )
-  #   end
-  # end
+    # IfValidator is awkward, but fine
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(
+          :validates, :name, :inclusion_method, :condition?,
+          :IfValidator, :InclusionValidator
+        )
+    end
+  end
 end

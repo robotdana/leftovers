@@ -6,7 +6,7 @@ module Leftovers
   module ProcessorBuilders
     module Value
       def self.build(value, then_processor)
-        return unless value
+        return unless value && then_processor
 
         ::Leftovers::MethodProcessors::Value.new(value, then_processor)
       end

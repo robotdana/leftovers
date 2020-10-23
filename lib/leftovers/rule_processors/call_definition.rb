@@ -12,12 +12,12 @@ module Leftovers
       def process(node, file)
         return unless @matcher === node
 
-        call = @call_processor.process(node)
+        call = @call_processor.process(nil, node, node)
         (file.calls << call) if call
 
         return if node.keep_line?
 
-        definition = @definition_processor.process(node)
+        definition = @definition_processor.process(nil, node, node)
         return unless definition
 
         file.definitions << definition

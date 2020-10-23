@@ -8,11 +8,16 @@ module Leftovers
         @then_processor = then_processor
       end
 
-      def process(method_node)
-        sym_node = method_node.positional_arguments[@index]
-        return unless sym_node&.string_or_symbol?
+      def process(_str, node, method_node)
+        positional_arguments = node.positional_arguments
+        return unless positional_arguments
 
-        @then_processor.process(sym_node.to_s, sym_node, method_node)
+        argument_node = positional_arguments[@index]
+        return unless argument_node
+
+        str = argument_node.to_s if argument_node.string_or_symbol?
+
+        @then_processor.process(str, argument_node, method_node)
       end
     end
   end

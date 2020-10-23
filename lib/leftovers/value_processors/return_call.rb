@@ -4,7 +4,8 @@ module Leftovers
   module ValueProcessors
     module ReturnCall
       def self.process(str, _node, _method_node)
-        return nil if str.empty?
+        return unless str
+        return if str.empty?
 
         str.to_sym
       end

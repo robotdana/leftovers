@@ -349,20 +349,18 @@ module Leftovers
                   'replace_with' => true,
                   'argument' => { '$ref' => '#/definitions/argumentPositionList' },
                   'arguments' => { '$ref' => '#/definitions/argumentPositionList' },
+                  'nested' => { '$ref' => '#/definitions/actionList' },
                   'itself' => { '$ref' => '#/definitions/true' },
                   'value' => { '$ref' => '#/definitions/string' },
                   'key' => { '$ref' => '#/definitions/true' },
                   'keys' => { '$ref' => '#/definitions/true' },
-                  'transforms' => { '$ref' => '#/definitions/transformList' },
-                  'linked_transforms' => { '$ref' => '#/definitions/transformList' }
+                  'transforms' => { '$ref' => '#/definitions/transformList' }
                 },
                 'additionalProperties' => false,
                 'allOf' => [
                   # synonyms
                   { 'not' => { 'required' => %w{key keys} } },
                   { 'not' => { 'required' => %w{argument arguments} } },
-                  # incompatible
-                  { 'not' => { 'required' => %w{transforms linked_transforms} } },
                   # any of
                   { 'anyOf' => [
                     { 'required' => ['argument'] },

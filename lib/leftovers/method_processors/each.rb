@@ -9,9 +9,9 @@ module Leftovers
         @processors = processors
       end
 
-      def process(method_node)
+      def process(str, node, method_node)
         @processors.flat_map do |processor|
-          processor.process(method_node)
+          processor.process(str, node, method_node)
         end
       end
     end

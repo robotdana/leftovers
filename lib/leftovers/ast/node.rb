@@ -83,14 +83,14 @@ module Leftovers
       end
 
       def arguments
-        @memo[:arguments] ||= case type
-        when :send, :csend then children.drop(2)
-        when :casgn then assign_arguments(children[2])
-        when :ivasgn, :cvasgn, :gvasgn then assign_arguments(second)
-        else
-          # :nocov: # these are all the nodes with collect_rules
-          raise "Not argument node (#{type})"
-          # :nocov:
+        @memo.fetch(:arguments) do
+          @memo[:arguments] = case type
+          when :send, :csend then children.drop(2)
+          when :casgn then assign_arguments(children[2])
+          when :ivasgn, :cvasgn, :gvasgn then assign_arguments(second)
+          when :array then children
+          when :hash then [self]
+          end
         end
       end
 
@@ -105,7 +105,9 @@ module Leftovers
       end
 
       def positional_arguments
-        @memo[:positional_arguments] ||= kwargs ? arguments[0...-1] : arguments
+        @memo.fetch(:positional_arguments) do
+          @memo[:positional_arguments] = kwargs ? arguments[0...-1] : arguments
+        end
       end
 
       def unwrap_freeze
@@ -116,8 +118,13 @@ module Leftovers
 
       def kwargs
         @memo.fetch(:kwargs) do
-          last_arg = arguments[-1]
-          @memo[:kwargs] = (last_arg if last_arg&.type == :hash)
+          args = arguments
+          next @memo[:kwargs] = nil unless args
+
+          last_arg = args[-1]
+          next @memo[:kwargs] = nil unless last_arg || last_arg.type != :hash
+
+          @memo[:kwargs] = last_arg
         end
       end
 
