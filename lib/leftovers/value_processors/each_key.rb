@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Leftovers
-  module MethodProcessors
-    class EachKeywordArgument
+  module ValueProcessors
+    class EachKey
       def initialize(then_processor)
         @then_processor = then_processor
       end
@@ -12,7 +12,7 @@ module Leftovers
         return unless kwargs
 
         method_node.kwargs.children.map do |pair|
-          argument_node = pair.second
+          argument_node = pair.first
           str = argument_node.to_s if argument_node.string_or_symbol?
 
           @then_processor.process(str, argument_node, method_node)

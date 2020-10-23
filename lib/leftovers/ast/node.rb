@@ -118,13 +118,13 @@ module Leftovers
 
       def kwargs
         @memo.fetch(:kwargs) do
-          args = arguments
-          next @memo[:kwargs] = nil unless args
+          @memo[:kwargs] = begin
+            args = arguments
+            next unless args
 
-          last_arg = args[-1]
-          next @memo[:kwargs] = nil unless last_arg || last_arg.type != :hash
-
-          @memo[:kwargs] = last_arg
+            last_arg = args[-1]
+            last_arg if last_arg && last_arg.type == :hash
+          end
         end
       end
 

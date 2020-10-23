@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../method_processors/positional_argument'
-require_relative '../method_processors/each_positional_argument'
-require_relative '../method_processors/each_keyword_argument'
+require_relative '../value_processors/positional_argument'
+require_relative '../value_processors/each_positional_argument'
+require_relative '../value_processors/each_keyword_argument'
 require_relative 'keyword_argument'
 
 module Leftovers
@@ -15,11 +15,11 @@ module Leftovers
           case pattern
           when nil then nil
           when ::Integer
-            ::Leftovers::MethodProcessors::PositionalArgument.new(pattern - 1, then_processor)
+            ::Leftovers::ValueProcessors::PositionalArgument.new(pattern - 1, then_processor)
           when '*'
-            ::Leftovers::MethodProcessors::EachPositionalArgument.new(then_processor)
+            ::Leftovers::ValueProcessors::EachPositionalArgument.new(then_processor)
           when '**'
-            ::Leftovers::MethodProcessors::EachKeywordArgument.new(then_processor)
+            ::Leftovers::ValueProcessors::EachKeywordArgument.new(then_processor)
           when ::String, ::Hash
             ::Leftovers::ProcessorBuilders::KeywordArgument.build(pattern, then_processor)
           else

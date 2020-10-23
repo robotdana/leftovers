@@ -19,6 +19,8 @@ require_relative '../value_processors/demodulize'
 require_relative '../value_processors/deconstantize'
 require_relative '../value_processors/parameterize'
 require_relative '../value_processors/underscore'
+require_relative '../value_processors/replace_value'
+
 module Leftovers
   module ProcessorBuilders
     module Transform
@@ -87,6 +89,8 @@ module Leftovers
           ::Leftovers::ValueProcessors::DeletePrefix.new(argument, then_processor)
         when 'delete_suffix'
           ::Leftovers::ValueProcessors::DeleteSuffix.new(argument, then_processor)
+        when 'replace_with'
+          ::Leftovers::ValueProcessors::ReplaceValue.new(argument, then_processors)
         else raise
         end
       end

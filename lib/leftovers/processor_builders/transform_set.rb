@@ -26,7 +26,7 @@ module Leftovers
       def self.each_builder(action)
         case action
         when :call
-          ::Leftovers::ProcessorBuilders::EachValue
+          ::Leftovers::ProcessorBuilders::Each
         when :define
           ::Leftovers::ProcessorBuilders::EachForDefinition
         else raise

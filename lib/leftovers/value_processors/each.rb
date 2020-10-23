@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Leftovers
-  module MethodProcessors
+  module ValueProcessors
     class Each
       attr_reader :processors
 

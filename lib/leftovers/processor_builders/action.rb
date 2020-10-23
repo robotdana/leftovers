@@ -46,7 +46,7 @@ module Leftovers
 
         transformer = ::Leftovers::ProcessorBuilders::TransformSet.build(pattern, action)
         if nested
-          transformer = ::Leftovers::ProcessorBuilders::EachValue.build([
+          transformer = ::Leftovers::ProcessorBuilders::Each.build([
             ::Leftovers::ProcessorBuilders::Action.build(nested, action),
             transformer
           ])

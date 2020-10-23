@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Leftovers
-  module MethodProcessors
+  module ValueProcessors
     class KeywordArgument
       def initialize(matcher, then_processor)
         @matcher = matcher

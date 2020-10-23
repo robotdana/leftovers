@@ -1,7 +1,7 @@
 # frozen-string-literal: true
 
 require_relative '../matcher_builders/node_name'
-require_relative '../method_processors/keyword_argument'
+require_relative '../value_processors/keyword_argument'
 
 module Leftovers
   module ProcessorBuilders
@@ -10,7 +10,7 @@ module Leftovers
         matcher = ::Leftovers::MatcherBuilders::NodeName.build(pattern)
         return unless matcher
 
-        ::Leftovers::MethodProcessors::KeywordArgument.new(matcher, then_processor)
+        ::Leftovers::ValueProcessors::KeywordArgument.new(matcher, then_processor)
       end
     end
   end
