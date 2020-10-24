@@ -1,4 +1,10 @@
 rules:
-  name: current_user_method=
-  calls:
-    argument: 1
+  - name: current_user_method=
+    calls:
+      argument: 1
+  - name: audited
+    calls:
+      argument:
+        - associated_with
+        - if
+        - unless

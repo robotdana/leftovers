@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::FileCollector do
+RSpec.describe 'rspec gem' do
   subject(:collector) do
-    collector = described_class.new(ruby, file)
+    collector = Leftovers::FileCollector.new(ruby, file)
     collector.collect
     collector
   end
