@@ -34,16 +34,10 @@ module Leftovers
 
     def rules
       @rules ||= ::Leftovers::ProcessorBuilders::Rule.build(yaml[:rules])
-    rescue Leftovers::ConfigError => e
-      warn "\e[31mConfig Error: (#{path}): #{e.message}\e[0m"
-      Leftovers.exit 1
     end
 
     def keep
       @keep ||= ::Leftovers::MatcherBuilders::Keep.build(yaml[:keep])
-    rescue Leftovers::ConfigError => e
-      warn "\e[31mConfig Error: (#{path}): #{e.message}\e[0m"
-      Leftovers.exit 1
     end
 
     private

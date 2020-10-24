@@ -13,7 +13,7 @@ module Leftovers
           when ::Hash
             build_from_hash(**pat)
           else
-            raise ::Leftovers::ConfigError, "Invalid value #{pat.inspect} for has_argument"
+            raise
           end
         end
       end

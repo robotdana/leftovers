@@ -5,13 +5,6 @@ module Leftovers
     module TransformChain
       def self.build(transforms, next_transform) # rubocop:disable Metrics/MethodLength
         case transforms
-        when ::Array
-          transforms.reverse_each do |transform|
-            next_transform = ::Leftovers::ProcessorBuilders::Transform.build(
-              transform, nil, next_transform
-            )
-          end
-          next_transform
         when ::Hash
           transforms.reverse_each do |(transform, transform_arg)|
             next_transform = ::Leftovers::ProcessorBuilders::Transform.build(
@@ -19,8 +12,11 @@ module Leftovers
             )
           end
           next_transform
-        else
-          ::Leftovers::ProcessorBuilders::Transform.build(transforms, nil, next_transform)
+        when ::String
+          ::Leftovers::ProcessorBuilders::Transform.build(transforms, true, next_transform)
+        # :nocov:
+        else raise
+          # :nocov:
         end
       end
     end

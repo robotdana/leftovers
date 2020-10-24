@@ -39,6 +39,245 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:test, :html, :test_html)) }
   end
 
+  context 'with pluralize' do
+    let(:ruby) { 'my_method(:value, :person)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: '*'
+                transforms:
+                  - pluralize
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :values, :people)) }
+  end
+
+  context 'with singularize' do
+    let(:ruby) { 'my_method(:values, :people)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: '*'
+                transforms:
+                  - singularize
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :value, :person)) }
+  end
+
+  context 'with camelize' do
+    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: '*'
+                camelize: true
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :'Kebab-case', :SnakeCase, :CamelCase, :PascalCase))
+    end
+  end
+
+  context 'with parameterize' do
+    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              argument: '*'
+              parameterize: true
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :'kebab-case', :snake_case, :camelcase, :pascalcase))
+    end
+  end
+
+  context 'with underscore' do
+    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          name: my_method
+          calls:
+            - argument: '*'
+              transforms:
+                - underscore
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :kebab_case, :snake_case, :camel_case, :pascal_case))
+    end
+  end
+
+  context 'with titleize' do
+    let(:ruby) { 'my_method(:value_id)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              argument: 1
+              transforms:
+                - titleize
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :Value)) }
+  end
+
+  context 'with demodulize' do
+    let(:ruby) { 'my_method("Namespaced::Class", "MyClass")' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: '*'
+                transforms: demodulize
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :Class, :MyClass)) }
+  end
+
+  context 'with deconstantize' do
+    let(:ruby) { 'my_method("Namespaced::Class", "MyClass")' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: '*'
+                deconstantize: true
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :Namespaced)) }
+  end
+
+  context 'with upcase' do
+    let(:ruby) { 'my_method("upcase")' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: 1
+                transforms: [upcase]
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :UPCASE)) }
+  end
+
+  context 'with downcase' do
+    let(:ruby) { 'my_method("DOWNCASE")' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: 1
+                transforms: downcase
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :downcase)) }
+  end
+
+  context 'with swapcase' do
+    let(:ruby) { 'my_method("swap_CASE")' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: 1
+                transforms: swapcase
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :SWAP_case)) }
+  end
+
+  context 'with capitalize' do
+    let(:ruby) { 'my_method("capitalize")' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: 1
+                transforms: capitalize
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :Capitalize)) }
+  end
+
+  context 'with an activesupport modifier without activesupport' do
+    before do
+      cached_require = Leftovers.instance_variable_get(:@try_require)
+      cached_require ||= Leftovers.instance_variable_set(:@try_require, {})
+      allow(cached_require)
+        .to receive(:key?).with('active_support/core_ext/string').and_return(true)
+      allow(cached_require)
+        .to receive(:[]).with('active_support/core_ext/string').and_return(false)
+    end
+
+    let(:ruby) { 'my_method(:value)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              - argument: 1
+                transforms:
+                  - camelize
+      YML
+    end
+
+    it do
+      message = <<~MESSAGE
+        Tried creating a transformer using an activesupport method (camelize), but the activesupport gem was not available
+        `gem install activesupport`
+      MESSAGE
+
+      expect { catch(:leftovers_exit) { subject } }
+        .to output(a_string_ending_with(message)).to_stderr
+    end
+  end
+
   context 'with array values' do
     let(:ruby) { 'flow(whatever, [:method_1, :method_2])' }
 
@@ -59,8 +298,44 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with matched keyword arguments' do
-    let(:ruby) { 'my_method(whatever, some_values: :method)' }
+  context 'with matches' do
+    let(:ruby) { 'my_method(:whatever) && your_method(:whichever)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name:
+              matches: "(my|your)_method"
+            calls: 1
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :your_method, :whatever, :whichever))
+    end
+  end
+
+  context 'with match' do
+    let(:ruby) { 'my_method(:whatever) && your_method(:whichever)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - names:
+              match: "(my|your)_method"
+            calls: 1
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :your_method, :whatever, :whichever))
+    end
+  end
+
+  context 'with keyword argument with prefix' do
+    let(:ruby) { 'my_method(whatever, some_values: :method, sum_values: :method2)' }
 
     let(:config) do
       <<~YML
@@ -73,6 +348,104 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :whatever, :method)) }
+  end
+
+  context 'with keyword argument with suffix' do
+    let(:ruby) { 'my_method(whatever, some_values: :method, some_value: :method2)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              argument:
+                has_suffix: values
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :whatever, :method)) }
+  end
+
+  context 'with keyword argument with prefix and suffix' do
+    let(:ruby) do
+      <<~RUBY
+        my_method(
+          whatever,
+          some_values: :method,
+          sum_values: :method2,
+          some_value: :method3
+        )
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              argument:
+                has_suffix: values
+                has_prefix: some
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :whatever, :method)) }
+  end
+
+  context 'with shortcut keyword arguments' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          name: my_method
+          calls: kw
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :method)) }
+  end
+
+  context 'with shortcut position arguments' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          name: my_method
+          calls: 1
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :whatever)) }
+  end
+
+  context 'with shortcut keyword arguments defines' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          name: my_method
+          defines: kw
+      YML
+    end
+
+    it { is_expected.to have_definitions(:method).and(have_calls(:my_method)) }
+  end
+
+  context 'with shortcut position arguments defines' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          name: my_method
+          defines: 1
+      YML
+    end
+
+    it { is_expected.to have_definitions(:whatever).and(have_calls(:my_method)) }
   end
 
   context 'with csend arguments' do
@@ -831,5 +1204,24 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_definitions(:my_method).and(have_calls(:def_my_method, :to_s)) }
+  end
+
+  context 'with keep with string pattern args' do
+    let(:config) do
+      <<~YML
+        keep:
+          has_suffix: _id
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        def this_id; end
+        def that_id; end
+        def this; end
+      RUBY
+    end
+
+    it { is_expected.to have_definitions(:this).and(have_no_calls) }
   end
 end

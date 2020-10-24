@@ -17,8 +17,7 @@ module Leftovers
             ::Leftovers::ValueProcessors::EachKeywordArgument.new(then_processor)
           when ::String, ::Hash
             ::Leftovers::ProcessorBuilders::KeywordArgument.build(pattern, then_processor)
-          else
-            raise 'not done yet'
+          else raise
           end
         end
       end

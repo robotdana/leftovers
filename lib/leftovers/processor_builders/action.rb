@@ -8,23 +8,28 @@ module Leftovers
           case pattern
           when nil then nil
           when ::String, ::Integer
-            ::Leftovers::ProcessorBuilders::Argument.build(args, final_transformer(action))
+            ::Leftovers::ProcessorBuilders::Argument.build(pattern, final_transformer(action))
           when ::Hash
             build_from_hash_value(pattern, action)
+          # :nocov:
           else raise
+            # :nocov:
           end
         end
       end
 
       def self.final_transformer(action)
-        ::Leftovers::ProcessorBuilders::TransformSet.build(nil, action)
+        ::Leftovers::ProcessorBuilders::TransformSet.build_final(action)
       end
 
-      def self.build_from_hash_value(pattern, action)
+      def self.build_from_hash_value(pattern, action) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
         if pattern[:match] || pattern[:has_prefix] || pattern[:has_suffix]
           ::Leftovers::ProcessorBuilders::Argument.build(pattern, final_transformer(action))
-        else
+        elsif pattern[:arguments] || pattern[:keys] || pattern[:itself] || pattern[:value]
           build_action_from_hash_value(pattern, action)
+        # :nocov:
+        else raise
+          # :nocov:
         end
       end
 

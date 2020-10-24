@@ -16,8 +16,7 @@ module Leftovers
             ::Leftovers::RuleProcessors::Definition.new(matcher, definition)
           elsif call
             ::Leftovers::RuleProcessors::Call.new(matcher, call)
-          else
-            ::Leftovers::RuleProcessors::Null
+          else raise "Unrecognized value #{matcher}"
           end
         end
       end

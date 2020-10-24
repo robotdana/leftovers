@@ -5,17 +5,18 @@ module Leftovers
     module Transform
       def self.require_activesupport(method)
         message = <<~MESSAGE
-          Tried transforming a string using an activesupport method (#{method}), but the activesupport gem was not available
+          Tried creating a transformer using an activesupport method (#{method}), but the activesupport gem was not available
           `gem install activesupport`
         MESSAGE
 
-        Leftovers.try_require('active_support/core_ext/string', message: message)
-        Leftovers.try_require('active_support/inflections', message: message)
-        Leftovers.try_require(
-          ::File.join(Leftovers.pwd, 'config', 'initializers', 'inflections.rb')
-        )
+        return if Leftovers.try_require('active_support/core_ext/string', message: message)
 
-        Leftovers.exit 1 unless defined?(::ActiveSupport)
+        Leftovers.exit 1
+      end
+
+      def self.try_require_inflections
+        Leftovers.try_require('active_support/inflections')
+        Leftovers.try_require((Leftovers.pwd + 'config/initializers/inflections.rb').to_s)
       end
 
       def self.build(transform, argument, then_processor) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
@@ -32,15 +33,19 @@ module Leftovers
           ::Leftovers::ValueProcessors::Swapcase.new(then_processor)
         when 'pluralize'
           require_activesupport(transform)
+          try_require_inflections
           ::Leftovers::ValueProcessors::Pluralize.new(then_processor)
         when 'singularize'
           require_activesupport(transform)
+          try_require_inflections
           ::Leftovers::ValueProcessors::Singularize.new(then_processor)
         when 'camelize', 'camelcase'
           require_activesupport(transform)
+          try_require_inflections
           ::Leftovers::ValueProcessors::Camelize.new(then_processor)
         when 'titleize', 'titlecase'
           require_activesupport(transform)
+          try_require_inflections
           ::Leftovers::ValueProcessors::Titleize.new(then_processor)
         when 'demodulize'
           require_activesupport(transform)
@@ -68,9 +73,9 @@ module Leftovers
           ::Leftovers::ValueProcessors::DeletePrefix.new(argument, then_processor)
         when 'delete_suffix'
           ::Leftovers::ValueProcessors::DeleteSuffix.new(argument, then_processor)
-        when 'replace_with'
-          ::Leftovers::ValueProcessors::ReplaceValue.new(argument, then_processors)
+        # :nocov:
         else raise
+          # :nocov:
         end
       end
     end

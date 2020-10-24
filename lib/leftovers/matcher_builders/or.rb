@@ -55,13 +55,7 @@ module Leftovers
         matchers = flatten(matchers)
         matchers.compact!
 
-        if matchers.include?(::Leftovers::Matchers::Anything)
-          return [::Leftovers::Matchers::Anything]
-        end
-
         matchers.each do |matcher|
-          next if matcher == ::Leftovers::Matchers::Nothing
-
           klass = matcher.class
           if klass == ::Set
             set.merge(matcher)

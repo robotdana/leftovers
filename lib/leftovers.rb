@@ -5,7 +5,6 @@ require_relative './leftovers/reporter'
 
 module Leftovers # rubocop:disable Metrics/ModuleLength
   class Error < StandardError; end
-  class ConfigError < Error; end
 
   module_function
 

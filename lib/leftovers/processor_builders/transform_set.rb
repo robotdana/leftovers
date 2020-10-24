@@ -12,7 +12,9 @@ module Leftovers
             ::Leftovers::ProcessorBuilders::TransformChain.build(transform, build_final(action))
           when ::String
             ::Leftovers::ProcessorBuilders::TransformChain.build(transform, build_final(action))
+          # :nocov:
           else raise
+            # :nocov:
           end
         end
       end
@@ -23,7 +25,9 @@ module Leftovers
           ::Leftovers::ProcessorBuilders::Each
         when :define
           ::Leftovers::ProcessorBuilders::EachForDefinitionSet
+        # :nocov:
         else raise
+          # :nocov:
         end
       end
 
@@ -33,7 +37,9 @@ module Leftovers
           ::Leftovers::ValueProcessors::ReturnString
         when :define
           ::Leftovers::ValueProcessors::ReturnDefinition
+        # :nocov:
         else raise
+          # :nocov:
         end
       end
     end

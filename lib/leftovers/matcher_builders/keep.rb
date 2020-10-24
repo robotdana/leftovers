@@ -10,6 +10,9 @@ module Leftovers
             ::Leftovers::MatcherBuilders::NodeName.build(pattern)
           when ::Hash
             build_hash_value(pattern)
+          # :nocov:
+          else raise
+            # :nocov:
           end
         end
       end
@@ -19,7 +22,9 @@ module Leftovers
           ::Leftovers::MatcherBuilders::Rule.build(**pattern)
         elsif pattern[:match] || pattern[:has_prefix] || pattern[:has_suffix]
           ::Leftovers::MatcherBuilders::NodeName.build(pattern)
-        else raise 'Invalid value'
+        # :nocov:
+        else raise
+          # :nocov:
         end
       end
     end

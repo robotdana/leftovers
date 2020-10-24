@@ -5,10 +5,6 @@ require 'parser'
 module Leftovers
   module AST
     class Node < ::Parser::AST::Node # rubocop:disable Metrics/ClassLength
-      # :nocov:
-      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-      # :nocov:
-
       def initialize(type, children = [], properties = {})
         # ::AST::Node#initialize freezes itself.
         # so can't use normal memoizations
@@ -128,39 +124,8 @@ module Leftovers
         end
       end
 
-      def keys
-        each_pair.map { |k, _| k }
-      end
-
-      def values
-        # :nocov:
-        @memo[:kwargs] ||= case type
-        # :nocov:
-        when :hash then each_pair.map { |_, v| v }
-        when :array then children
-        end
-      end
-
       def pair_value
         second if type == :pair
-      end
-
-      def values_at_match(matcher)
-        each_pair.with_object([]) do |(key, value), values|
-          values << value if matcher === key.to_sym
-        end
-      end
-
-      def positional_arguments_at(positions)
-        positional_arguments.values_at(*positions).compact
-      end
-
-      def each_pair
-        return enum_for(:each_pair) unless block_given?
-
-        children.each do |pair|
-          yield(*pair.children) if pair.type == :pair
-        end
       end
 
       def name
@@ -173,23 +138,6 @@ module Leftovers
           first.to_sym
         when :module, :class, :pair
           first.name
-        end
-      end
-
-      def [](index) # rubocop:disable Metrics/CyclomaticComplexity
-        # :nocov:
-        case type
-        # :nocov:
-        when :send, :csend, :casgn, :cvasgn, :ivasgn, :gvasgn
-          index.is_a?(Integer) ? arguments[index - 1] : kwargs && kwargs[index]
-        when :hash
-          each_pair do |key, value|
-            next unless key.string_or_symbol?
-
-            return value if key.to_sym == index
-          end
-
-          nil
         end
       end
     end

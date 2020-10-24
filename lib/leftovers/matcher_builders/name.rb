@@ -15,6 +15,9 @@ module Leftovers
               ::Leftovers::MatcherBuilders::StringPattern.build(**pat),
               ::Leftovers::MatcherBuilders::Name.build(unless_arg)
             )
+          # :nocov:
+          else raise
+            # :nocov:
           end
         end
       end
