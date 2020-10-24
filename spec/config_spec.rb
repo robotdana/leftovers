@@ -163,13 +163,13 @@ RSpec.describe Leftovers::Config do
         .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
     end
 
-    it 'can report errors when using key and keys' do
+    it 'can report errors when using keyword and keywords' do
       config = described_class.new('invalid', content: <<~YML)
         rules:
           - names: my_method
             defines:
-              key: true
-              keys: true
+              keyword: true
+              keywords: true
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.rules } }

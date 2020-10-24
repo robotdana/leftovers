@@ -7,6 +7,7 @@
   - `rules: names: [names],skip: true` is now `keep: [names]` (see config/parser.yml)
   - `rules: calls/defines: transforms: add_prefix: from_argument:,joiner:` is now `rules: calls/defines: transforms: add_prefix: argument:,add_suffix:` (see config/rails.yml delegate)
   - `rules: calls/defines: linked_transforms:` is now `rules: calls/defines: transforms:` (see config/rails.yml attribute). For the previous behaviour of `transforms:` add separate calls/defines entry. (see config/ruby.yml attr_accessor)
+  - `rules: keys: true` is now `rules: keywords: '**'` and can be given name patterns (e.g. unless:. see config/rails.yml validates)
   - no more automatic recursion, there's now two new keywords:
     - `rules: calls/defines: arguments/keys:,nested: arguments/keys:` will define the next layer of arguments to collect (see config/rails.yml validates)
     - `rules: calls/defines: arguments/keys:,recursive: true` will use the arguments & keys layers recursively (see config/rails.yml permit)

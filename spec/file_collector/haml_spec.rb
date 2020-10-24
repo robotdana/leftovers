@@ -66,7 +66,7 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it 'raises an error' do
-      expect { collector }.to output(<<~OUTPUT).to_stderr
+      expect { collector }.to output(a_string_ending_with(<<~OUTPUT)).to_stderr
         \e[2KSkipped parsing foo.haml, because the haml gem was not available
         `gem install haml`
       OUTPUT

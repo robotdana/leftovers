@@ -11,7 +11,7 @@ module Leftovers
     autoload(:EachRule, "#{__dir__}/processor_builders/each_rule")
     autoload(:Each, "#{__dir__}/processor_builders/each")
     autoload(:Itself, "#{__dir__}/processor_builders/itself")
-    autoload(:Key, "#{__dir__}/processor_builders/key")
+    autoload(:Keyword, "#{__dir__}/processor_builders/keyword")
     autoload(:KeywordArgument, "#{__dir__}/processor_builders/keyword_argument")
     autoload(:Rule, "#{__dir__}/processor_builders/rule")
     autoload(:TransformChain, "#{__dir__}/processor_builders/transform_chain")

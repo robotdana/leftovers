@@ -30,7 +30,7 @@ rules:
       - has_attributes?
       - receive_messages
     calls:
-      - keys: true
+      keywords: true
     path: /spec/
   - name:
     - receive

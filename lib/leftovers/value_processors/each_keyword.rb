@@ -2,7 +2,7 @@
 
 module Leftovers
   module ValueProcessors
-    class EachKey
+    class EachKeyword
       def initialize(then_processor)
         @then_processor = then_processor
 

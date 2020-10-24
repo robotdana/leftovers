@@ -25,7 +25,7 @@ module Leftovers
       def self.build_from_hash_value(pattern, action) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
         if pattern[:match] || pattern[:has_prefix] || pattern[:has_suffix]
           ::Leftovers::ProcessorBuilders::Argument.build(pattern, final_transformer(action))
-        elsif pattern[:arguments] || pattern[:keys] || pattern[:itself] || pattern[:value]
+        elsif pattern[:arguments] || pattern[:keywords] || pattern[:itself] || pattern[:value]
           build_action_from_hash_value(pattern, action)
         # :nocov:
         else raise
@@ -35,7 +35,7 @@ module Leftovers
 
       def self.build_action_from_hash_value(pattern, action) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         args = pattern.delete(:arguments)
-        keys = pattern.delete(:keys)
+        keywords = pattern.delete(:keywords)
         itself = pattern.delete(:itself)
         value = pattern.delete(:value)
         nested = pattern.delete(:nested)
@@ -58,7 +58,7 @@ module Leftovers
 
         processor = ::Leftovers::ProcessorBuilders::EachAction.build([
           ::Leftovers::ProcessorBuilders::Argument.build(args, transformer),
-          ::Leftovers::ProcessorBuilders::Key.build(keys, transformer),
+          ::Leftovers::ProcessorBuilders::Keyword.build(keywords, transformer),
           ::Leftovers::ProcessorBuilders::Itself.build(itself, transformer),
           ::Leftovers::ProcessorBuilders::Value.build(value, transformer)
         ])

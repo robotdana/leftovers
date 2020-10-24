@@ -316,6 +316,23 @@ module Leftovers
             }
           ]
         },
+        'keyword' => {
+          'anyOf' => [
+            { '$ref' => '#/definitions/name' },
+            { '$ref' => '#/definitions/true' }
+          ]
+        },
+        'keywordList' => {
+          'anyOf' => [
+            { '$ref' => '#/definitions/keyword' },
+            {
+              'type' => 'array',
+              'items' => { '$ref' => '#/definitions/keyword' },
+              'minItems' => 1,
+              'uniqueItems' => true
+            }
+          ]
+        },
         'action' => {
           'anyOf' => [
             { '$ref' => '#/definitions/argumentPosition' },
@@ -352,22 +369,22 @@ module Leftovers
                   'nested' => { '$ref' => '#/definitions/actionList' },
                   'itself' => { '$ref' => '#/definitions/true' },
                   'value' => { '$ref' => '#/definitions/string' },
-                  'key' => { '$ref' => '#/definitions/true' },
-                  'keys' => { '$ref' => '#/definitions/true' },
+                  'keyword' => { '$ref' => '#/definitions/keywordList' },
+                  'keywords' => { '$ref' => '#/definitions/keywordList' },
                   'transforms' => { '$ref' => '#/definitions/transformList' },
                   'recursive' => { '$ref' => '#/definitions/true' }
                 },
                 'additionalProperties' => false,
                 'allOf' => [
                   # synonyms
-                  { 'not' => { 'required' => %w{key keys} } },
+                  { 'not' => { 'required' => %w{keyword keywords} } },
                   { 'not' => { 'required' => %w{argument arguments} } },
                   # any of
                   { 'anyOf' => [
                     { 'required' => ['argument'] },
                     { 'required' => ['arguments'] },
-                    { 'required' => ['key'] },
-                    { 'required' => ['keys'] },
+                    { 'required' => ['keyword'] },
+                    { 'required' => ['keywords'] },
                     { 'required' => ['itself'] },
                     { 'required' => ['value'] }
                   ] }
@@ -524,7 +541,7 @@ module Leftovers
       when 'defines' then :define
       when 'calls' then :call
       when 'name' then :names
-      when 'key' then :keys
+      when 'keyword' then :keywords
       when 'argument' then :arguments
       when 'has_argument' then :has_arguments
       when 'path' then :paths

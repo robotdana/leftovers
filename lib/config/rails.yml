@@ -87,7 +87,8 @@ rules:
       - arguments: inclusion
         nested:
           arguments: 'in'
-      - keys: true
+      - keywords:
+          unless: [if, unless]
         camelize: true
         add_suffix: Validator
         split: '::'
@@ -370,12 +371,12 @@ rules:
     - update!
     - assign_attributes
     calls:
-      keys: true
+      keywords: true
       add_suffix: '='
   - name: permit
     calls:
       arguments: ['*', '**']
-      keys: true
+      keywords: true
       add_suffix: "="
       recursive: true
   - name: layout
@@ -390,7 +391,7 @@ rules:
       - left_outer_joins
     calls:
       arguments: ['*', '**']
-      keys: true
+      keywords: true
   - name:
       - string
       - text

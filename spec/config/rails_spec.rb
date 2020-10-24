@@ -257,11 +257,10 @@ RSpec.describe 'rails gem' do
   context 'with validations calls inclusion method' do
     let(:ruby) { 'validates :name, inclusion: :inclusion_method, if: :condition?' }
 
-    # IfValidator is awkward, but fine
     it do
       expect(subject).to have_no_definitions.and have_calls(
         :validates, :name, :inclusion_method, :condition?,
-        :IfValidator, :InclusionValidator
+        :InclusionValidator
       )
     end
   end
@@ -269,12 +268,11 @@ RSpec.describe 'rails gem' do
   context 'with validations calls with inclusion hash' do
     let(:ruby) { 'validates :name, inclusion: { in: :inclusion_method }, if: :condition?' }
 
-    # IfValidator is awkward, but fine
     it do
       expect(subject).to have_no_definitions
         .and have_calls(
           :validates, :name, :inclusion_method, :condition?,
-          :IfValidator, :InclusionValidator
+          :InclusionValidator
         )
     end
   end

@@ -609,7 +609,7 @@ RSpec.describe Leftovers::FileCollector do
         rules:
           - name: STRING_TRANSFORMS
             calls:
-              keys: true
+              keywords: true
       YML
     end
 
@@ -631,7 +631,7 @@ RSpec.describe Leftovers::FileCollector do
         rules:
           - name: STRING_TRANSFORMS
             calls:
-              keys: true
+              keywords: true
       YML
     end
 
