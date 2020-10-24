@@ -371,7 +371,7 @@ rules:
     - update!
     - assign_attributes
     calls:
-      keywords: true
+      keyword: true
       add_suffix: '='
   - name: permit
     calls:

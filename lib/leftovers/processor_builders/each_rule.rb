@@ -15,7 +15,7 @@ module Leftovers
         processors = compact(processors)
 
         case processors.length
-        when 0 then ::Leftovers::RuleProcessors::Null
+        when 0 then nil
         when 1 then processors.first
         else ::Leftovers::RuleProcessors::Each.new(processors)
         end

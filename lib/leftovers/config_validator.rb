@@ -61,14 +61,11 @@ module Leftovers
                 'properties' => {
                   'match' => true, 'matches' => true,
                   'has_prefix' => true, 'has_suffix' => true,
-                  'unless' => { '$ref' => '#/definitions/nameList' },
-                  'not' => { '$ref' => '#/definitions/nameList' }
+                  'unless' => { '$ref' => '#/definitions/nameList' }
                 },
                 'minProperties' => 1,
                 'additionalProperties' => false
-              },
-              # synonyms
-              { 'not' => { 'required' => %w{not unless} } }
+              }
             ] }
           ]
         },
@@ -178,7 +175,7 @@ module Leftovers
                   'name' => true, 'names' => true,
                   'path' => true, 'paths' => true,
                   'has_argument' => true, 'has_arguments' => true,
-                  'unless' => true, 'not' => true
+                  'unless' => true
                 },
                 'additionalProperties' => false
               }
@@ -200,8 +197,7 @@ module Leftovers
             'paths' => { '$ref' => '#/definitions/pathList' },
             'has_argument' => { '$ref' => '#/definitions/hasArgumentList' },
             'has_arguments' => { '$ref' => '#/definitions/hasArgumentList' },
-            'unless' => { '$ref' => '#/definitions/ruleMatcherList' },
-            'not' => { '$ref' => '#/definitions/ruleMatcherList' }
+            'unless' => { '$ref' => '#/definitions/ruleMatcherList' }
           },
           'minProperties' => 1,
           'additionalProperties' => true,
@@ -210,13 +206,12 @@ module Leftovers
             { 'not' => { 'required' => %w{name names} } },
             { 'not' => { 'required' => %w{path paths} } },
             { 'not' => { 'required' => %w{has_argument has_arguments} } },
-            { 'not' => { 'required' => %w{unless not} } },
             # At least one of
             { 'anyOf' => [
               { 'required' => ['name'] }, { 'required' => ['names'] },
               { 'required' => ['path'] }, { 'required' => ['paths'] },
               { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
-              { 'required' => ['unless'] }, { 'required' => ['not'] }
+              { 'required' => ['unless'] }
             ] }
           ]
         },
@@ -435,7 +430,7 @@ module Leftovers
                 'name' => true, 'names' => true,
                 'path' => true, 'paths' => true,
                 'has_argument' => true, 'has_arguments' => true,
-                'unless' => true, 'not' => true,
+                'unless' => true,
 
                 'call' => true, 'calls' => true,
                 'define' => true, 'defines' => true
@@ -468,7 +463,7 @@ module Leftovers
                     'name' => true, 'names' => true,
                     'path' => true, 'paths' => true,
                     'has_argument' => true, 'has_arguments' => true,
-                    'unless' => true, 'not' => true
+                    'unless' => true
                   },
                   'additionalProperties' => false,
                   'minProperties' => 1
@@ -545,7 +540,6 @@ module Leftovers
       when 'argument' then :arguments
       when 'has_argument' then :has_arguments
       when 'path' then :paths
-      when 'not' then :unless_arg
       when 'unless' then :unless_arg
       else name.to_sym
       end

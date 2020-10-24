@@ -12,8 +12,10 @@ module Leftovers
             ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(pat, nil)
           when ::Hash
             build_from_hash(**pat)
+          # :nocov:
           else
             raise
+            # :nocov:
           end
         end
       end
