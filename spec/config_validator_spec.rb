@@ -1,8 +1,7 @@
 # frozen-string-literal: true
 
 require 'spec_helper'
-
-require_relative '../lib/leftovers/config_validator'
+require 'json_schemer'
 
 RSpec.describe ::Leftovers::ConfigValidator do
   describe ::Leftovers::ConfigValidator::SCHEMA_HASH do

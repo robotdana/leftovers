@@ -1,7 +1,5 @@
 # frozen-string-literal: true
 
-require_relative '../definition_set'
-
 module Leftovers
   module ValueProcessors
     class EachForDefinitionSet

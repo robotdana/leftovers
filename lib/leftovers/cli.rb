@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require_relative '../leftovers'
-
 module Leftovers
   class CLI
     def initialize(argv: [], stdout: $stdout, stderr: $stderr)

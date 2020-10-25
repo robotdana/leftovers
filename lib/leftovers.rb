@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative './leftovers/merged_config'
-require_relative './leftovers/reporter'
-
 module Leftovers # rubocop:disable Metrics/ModuleLength
   module_function
 

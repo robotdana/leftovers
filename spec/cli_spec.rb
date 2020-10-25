@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../lib/leftovers/cli'
 require 'parallel'
 
 RSpec.describe Leftovers::CLI, type: :cli do
