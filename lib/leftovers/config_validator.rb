@@ -1,6 +1,7 @@
 # frozen-string-literal: true
 
 require 'json_schemer'
+require 'json_schemer/errors'
 
 module Leftovers
   module ConfigValidator # rubocop:disable Metrics/ModuleLength
@@ -514,7 +515,7 @@ module Leftovers
 
     def self.print_validation_errors_and_exit(errors, path)
       errors.each do |e|
-        warn "\e[31mConfig SchemaError: (#{path}): #{JSONSchemer::Errors.pretty(e)}\e[0m"
+        warn "\e[31mConfig SchemaError: (#{path}): #{::JSONSchemer::Errors.pretty(e)}\e[0m"
       end
       Leftovers.exit 1
     end
