@@ -97,3 +97,17 @@ RSpec::Matchers.define :have_no_calls do
 
   diffable
 end
+
+RSpec::Matchers.define :match_nested_object do |expected|
+  match do |actual|
+    @actual = actual
+    expect(@actual.class).to eq expected.class
+    @actual.instance_variables.each do |ivar|
+      expect(@actual.instance_variable_get(ivar)).to match_nested_object(
+        expected.instance_variable_get(ivar)
+      )
+    end
+  end
+
+  diffable
+end

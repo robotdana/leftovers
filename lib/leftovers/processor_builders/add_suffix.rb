@@ -10,7 +10,9 @@ module Leftovers
           ::Leftovers::ValueProcessors::AddDynamicSuffix.new(dynamic_suffix, then_processor)
         when ::String
           ::Leftovers::ValueProcessors::AddSuffix.new(argument, then_processor)
+          # :nocov:
         else raise
+          # :nocov:
         end
       end
     end

@@ -24,13 +24,15 @@ module Leftovers
         keys = []
         positions = []
 
-        # TODO: string matcher values
         ::Leftovers.each_or_self(at) do |k|
           case k
-          when ::String
+          when ::String, ::Hash
             keys << k
           when ::Integer
             positions << k
+          # :nocov:
+          else raise
+            # :nocov:
           end
         end
         keys = nil if keys.empty?
@@ -52,6 +54,9 @@ module Leftovers
           ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher)
         elsif positions
           ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher)
+          # :nocov:
+        else raise
+          # :nocov:
         end
 
         ::Leftovers::MatcherBuilders::AndNot.build(

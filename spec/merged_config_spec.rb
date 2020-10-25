@@ -3,20 +3,26 @@
 RSpec.describe Leftovers::MergedConfig do
   describe '<<' do
     it 'handles clearing memoization' do
-      pending
-
       original_exclude_paths = subject.exclude_paths
       original_include_paths = subject.include_paths
       original_test_paths = subject.test_paths
       original_rules = subject.rules
+      original_keep = subject.keep
 
       rails = Leftovers::Config.new(:rails)
       subject << rails
 
       expect(original_exclude_paths + rails.exclude_paths).to eq subject.exclude_paths
       expect(original_include_paths + rails.include_paths).to eq subject.include_paths
-      expect(original_test_paths).not_to eq subject.test_paths
-      expect(original_rules + rails.rules).to eq subject.rules
+      expect(original_test_paths).not_to eq subject.test_paths # it's a different set of FastIgnore
+
+      expect(
+        ::Leftovers::ProcessorBuilders::EachRule.build([original_rules, rails.rules])
+      ).to match_nested_object subject.rules
+
+      expect(
+        ::Leftovers::MatcherBuilders::Or.build([original_keep, rails.keep])
+      ).to match_nested_object subject.keep
     end
   end
 

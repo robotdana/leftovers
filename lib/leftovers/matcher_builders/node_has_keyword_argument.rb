@@ -7,7 +7,10 @@ module Leftovers
         value_matcher = ::Leftovers::Matchers::NodePairValue.new(value_matcher) if value_matcher
         keyword_matcher = ::Leftovers::MatcherBuilders::NodeName.build(keywords)
         pair_matcher = ::Leftovers::MatcherBuilders::And.build([keyword_matcher, value_matcher])
-        return unless pair_matcher
+        # :nocov:
+        raise unless pair_matcher
+
+        # :nocov:
 
         ::Leftovers::Matchers::NodeHasAnyKeywordArgument.new(pair_matcher)
       end

@@ -92,18 +92,27 @@ benchmark('not-empty') do
   end
 end
 
-
 benchmark('remove-and-return-2-from-array') do
   Benchmark.ips do |x|
     x.config(config)
 
-    x.report(:pop) { a = [1,2,3]; a.pop; a.pop }
-    x.report(:shift) { a = [1,2,3]; a.shift; a.shift }
+    x.report(:pop) do
+      a = [1, 2, 3]
+      a.pop
+      a.pop
+    end
+
+    x.report(:shift) do
+      a = [1, 2, 3]
+      a.shift
+      a.shift
+    end
+
     x.report(:first_drop) do
-      a = [1,2,3]
+      a = [1, 2, 3]
       a.first
       a[1]
-      a = a.drop(2)
+      a.drop(2)
     end
 
     x.compare!

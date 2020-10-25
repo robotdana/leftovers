@@ -37,6 +37,7 @@ module Leftovers
       definitions.flatten!
       definitions.compact!
       definitions.uniq!
+      definitions.reject! { |v| v == :keep }
     end
 
     def collect

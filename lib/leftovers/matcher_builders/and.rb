@@ -3,17 +3,12 @@
 module Leftovers
   module MatcherBuilders
     module And
-      def self.each_or_self(value, &block)
-        case value
-        when Array then build(value.map(&block))
-        else build([yield(value)])
-        end
-      end
-
       def self.build(matchers, compact: true) # rubocop:disable Metrics/MethodLength
-        matchers = matchers.compact if compact
+        matchers.compact! if compact
         case matchers.length
-        when 0 then nil
+        # :nocov:
+        when 0 then raise
+        # :nocov:
         when 1 then matchers.first
         when 2 then ::Leftovers::Matchers::And.new(matchers.first, matchers[1])
         else

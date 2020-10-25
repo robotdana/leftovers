@@ -9,7 +9,7 @@ module Leftovers
         case value
         when true, '**'
           ::Leftovers::ValueProcessors::EachKeyword.new(then_processor)
-        when ::String, ::Hash
+        when ::String, ::Hash, ::Array
           ::Leftovers::ValueProcessors::Keyword.new(
             ::Leftovers::MatcherBuilders::NodeName.build(value),
             then_processor

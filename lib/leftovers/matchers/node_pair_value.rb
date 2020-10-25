@@ -14,7 +14,7 @@ module Leftovers
       end
 
       def ===(node)
-        @value_matcher === node.pair_value
+        @value_matcher === node.second
       end
 
       freeze

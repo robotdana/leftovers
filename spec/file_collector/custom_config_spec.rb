@@ -40,7 +40,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with pluralize' do
-    let(:ruby) { 'my_method(:value, :person)' }
+    let(:ruby) { 'my_method(:value, :person, [])' }
 
     let(:config) do
       <<~YML
@@ -57,7 +57,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with singularize' do
-    let(:ruby) { 'my_method(:values, :people)' }
+    let(:ruby) { 'my_method(:values, :people, [])' }
 
     let(:config) do
       <<~YML
@@ -74,7 +74,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with camelize' do
-    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase)' }
+    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase, [])' }
 
     let(:config) do
       <<~YML
@@ -93,7 +93,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with parameterize' do
-    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase)' }
+    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase, [])' }
 
     let(:config) do
       <<~YML
@@ -112,7 +112,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with underscore' do
-    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase)' }
+    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase, [])' }
 
     let(:config) do
       <<~YML
@@ -132,14 +132,14 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with titleize' do
-    let(:ruby) { 'my_method(:value_id)' }
+    let(:ruby) { 'my_method(:value_id, [])' }
 
     let(:config) do
       <<~YML
         rules:
           - name: my_method
             calls:
-              argument: 1
+              argument: '*'
               transforms:
                 - titleize
       YML
@@ -149,7 +149,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with demodulize' do
-    let(:ruby) { 'my_method("Namespaced::Class", "MyClass")' }
+    let(:ruby) { 'my_method("Namespaced::Class", "MyClass", [])' }
 
     let(:config) do
       <<~YML
@@ -165,7 +165,7 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with deconstantize' do
-    let(:ruby) { 'my_method("Namespaced::Class", "MyClass")' }
+    let(:ruby) { 'my_method("Namespaced::Class", "MyClass", [])' }
 
     let(:config) do
       <<~YML
@@ -181,14 +181,14 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with upcase' do
-    let(:ruby) { 'my_method("upcase")' }
+    let(:ruby) { 'my_method("upcase", [])' }
 
     let(:config) do
       <<~YML
         rules:
           - name: my_method
             calls:
-              - argument: 1
+              - argument: '*'
                 transforms: [upcase]
       YML
     end
@@ -197,14 +197,14 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with downcase' do
-    let(:ruby) { 'my_method("DOWNCASE")' }
+    let(:ruby) { 'my_method("DOWNCASE", [])' }
 
     let(:config) do
       <<~YML
         rules:
           - name: my_method
             calls:
-              - argument: 1
+              - argument: '*'
                 transforms: downcase
       YML
     end
@@ -213,30 +213,30 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with swapcase' do
-    let(:ruby) { 'my_method("swap_CASE")' }
+    let(:ruby) { 'my_method(:swap, "CASE", [])' }
 
     let(:config) do
       <<~YML
         rules:
           - name: my_method
             calls:
-              - argument: 1
+              - argument: '*'
                 transforms: swapcase
       YML
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :SWAP_case)) }
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :SWAP, :case)) }
   end
 
   context 'with capitalize' do
-    let(:ruby) { 'my_method("capitalize")' }
+    let(:ruby) { 'my_method(:capitalize, [])' }
 
     let(:config) do
       <<~YML
         rules:
           - name: my_method
             calls:
-              - argument: 1
+              - argument: '*'
                 transforms: capitalize
       YML
     end
@@ -298,6 +298,146 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
+  context 'with nested with specific position' do
+    let(:ruby) { 'flow(whatever, [:method_1, :method_2])' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: 2
+                nested:
+                  argument: 2
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever, :method_2)
+    end
+  end
+
+  context 'with nested with specific, missing position' do
+    let(:ruby) { 'flow(whatever, [:method_1, :method_2])' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: 2
+                nested:
+                  argument: 3
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
+  context 'with nested with specific, missing keyword' do
+    let(:ruby) { 'flow(whatever, {a: :method_1, b: :method_2})' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: 2
+                nested:
+                  argument: c
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
+  context 'with nested with specific, non-string-symbol position' do
+    let(:ruby) { 'flow(whatever, [:method_1, nil])' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: 2
+                nested:
+                  argument: 2
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
+  context 'with nested with specific, non-string-symbol keyword' do
+    let(:ruby) { 'flow(whatever, {a: :method_1, kw: nil})' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: 2
+                nested:
+                  argument: kw
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
+  context 'with nested with non-string-symbol position' do
+    let(:ruby) { 'flow(whatever, nil)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: 2
+                nested:
+                  argument: 2
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
+  context 'with nested with non-string-symbol keyword' do
+    let(:ruby) { 'flow(whatever, kw: nil)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: flow
+            calls:
+              - argument: kw
+                nested:
+                  argument: 2
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
   context 'with matches' do
     let(:ruby) { 'my_method(:whatever) && your_method(:whichever)' }
 
@@ -348,6 +488,25 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :whatever, :method)) }
+  end
+
+  context 'with name with any of multiple prefixes' do
+    let(:ruby) { 'my_method(:whatever) && your_method(:whichever) && their_method(:whenever)' }
+
+    let(:config) do
+      <<~YML
+        rules:
+          name:
+            - has_prefix: my
+            - has_prefix: your
+          calls: 1
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :your_method, :whatever, :whichever, :their_method))
+    end
   end
 
   context 'with keyword argument with suffix' do
@@ -432,6 +591,59 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_definitions(:method).and(have_calls(:my_method)) }
+  end
+
+  context 'with defines matching keep' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        keep: method
+        rules:
+          name: my_method
+          defines: kw
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method)) }
+  end
+
+  context 'with defines matching keep in transform set' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        keep: method
+        rules:
+          name: my_method
+          defines:
+            argument: kw
+            transforms:
+              - original
+              - add_suffix: '='
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method)) }
+  end
+
+  context 'with defines with transform set with an empty value' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        keep: method
+        rules:
+          name: my_method
+          defines:
+            argument: kw
+            transforms:
+              - delete_prefix: meth
+              - delete_suffix: method
+      YML
+    end
+
+    it { is_expected.to have_definitions(:od).and(have_calls(:my_method)) }
   end
 
   context 'with shortcut position arguments defines' do
@@ -547,6 +759,82 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:downcase, :upcase)) }
   end
 
+  context "with constant assignment to something we can't process when frozen" do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = /a_regex/.freeze
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              argument: '*'
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:freeze)) }
+  end
+
+  context "with defines constant assignment to something we can't process when frozen" do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = /a_regex/.freeze
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            defines:
+              argument: '*'
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:freeze)) }
+  end
+
+  context 'with defines constant assignment to an empty string' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = ''
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            defines:
+              argument: '*'
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_no_calls) }
+  end
+
+  context "with constant assignment to something we can't process" do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = /a_regex/
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              argument: '*'
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_no_calls) }
+  end
+
   context 'with ivar assignment values' do
     let(:ruby) do
       <<~RUBY
@@ -599,7 +887,8 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         STRING_TRANSFORMS = {
           downcase: true,
-          upcase: true
+          upcase: true,
+          1 => true
         }
       RUBY
     end
@@ -614,6 +903,100 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:downcase, :upcase)) }
+  end
+
+  context 'with constant specific hash assignment keys' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = {
+          downcase: true,
+          upcase: true,
+          1 => true
+        }
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              keywords: [downcase, upcase]
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:downcase, :upcase)) }
+  end
+
+  context 'with constant hash assignment keys with has_suffix' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = {
+          downcase: true,
+          upcase: true,
+          other: true,
+          1 => true
+        }
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              keywords:
+                has_suffix: case
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:downcase, :upcase)) }
+  end
+
+  context 'with constant hash assignment keys but with an array assigned' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = [
+          :downcase,
+          :upcase
+        ]
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              keywords: true
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_no_calls) }
+  end
+
+  context 'with constant hash assignment keys with has_suffix but with an array assigned' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = [
+          :downcase,
+          :upcase,
+          :other
+        ]
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              keywords:
+                has_suffix: case
+      YML
+    end
+
+    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_no_calls) }
   end
 
   context 'with constant hash assignment keys with freeze' do
@@ -671,7 +1054,7 @@ RSpec.describe Leftovers::FileCollector do
         STRING_TRANSFORMS = {
           body: { process: :downcase },
           title: { process: :upcase },
-          properties: { each: { process: :swapcase } }
+          properties: { each: { process: :swapcase }, then: { process: nil }, and_then: nil, finally: { nil => nil }}
         }
       RUBY
     end
@@ -689,6 +1072,67 @@ RSpec.describe Leftovers::FileCollector do
     it do
       expect(subject).to have_definitions(:STRING_TRANSFORMS)
         .and(have_calls(:downcase, :upcase, :swapcase))
+    end
+  end
+
+  context 'with recursive hash assignment values and keywords' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = {
+          body: { process: :downcase },
+          title: { process: :upcase },
+          properties: {
+            each: { process: :swapcase }, then: { process: nil }, and: nil, finally: { nil => nil }
+          }
+        }
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              - arguments: '**'
+                keywords: true
+                recursive: true
+      YML
+    end
+
+    it do
+      expect(subject).to have_definitions(:STRING_TRANSFORMS)
+        .and(have_calls(
+          :downcase, :upcase, :swapcase,
+          :body, :title, :properties, :each, :then, :and, :finally, :process
+        ))
+    end
+  end
+
+  context 'with recursive hash assignment values and keywords and array' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = [{
+          body: { process: :downcase },
+          title: { process: :upcase },
+          properties: [{ process: :swapcase }, { process: [nil] }, nil, { nil => nil }]
+        }]
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        rules:
+          - name: STRING_TRANSFORMS
+            calls:
+              - arguments: ['**', '*']
+                keywords: true
+                recursive: true
+      YML
+    end
+
+    it do
+      expect(subject).to have_definitions(:STRING_TRANSFORMS)
+        .and(have_calls(:downcase, :upcase, :swapcase, :body, :title, :properties, :process))
     end
   end
 
@@ -742,21 +1186,25 @@ RSpec.describe Leftovers::FileCollector do
     }
   end
 
-  context 'with delete_after and delete_before on an empty string' do
+  context 'with delete_after and delete_before on an empty string and nil' do
     let(:config) do
       <<~YML
         rules:
           - name: my_method
             calls:
-              arguments: 1
-              delete_after: x
-              delete_before: y
+              arguments: '*'
+              transforms:
+                - delete_after: x
+                - delete_before: x
+                - delete_prefix: x
+                - delete_suffix: x
+                - split: x
       YML
     end
 
     let(:ruby) do
       <<~RUBY
-        my_method('')
+        my_method('x', '', nil)
       RUBY
     end
 
@@ -783,6 +1231,95 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :barxbaz)) }
+  end
+
+  context 'with add_suffix argument with a non-string suffix' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              arguments: 1
+              add_suffix:
+                argument: foo
+                add_prefix: x
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method(:bar, foo: baz)
+      RUBY
+    end
+
+    # no bar, barx, or barxbaz
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :baz)) }
+  end
+
+  context 'with add_suffix position argument' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              arguments: 1
+              add_suffix:
+                argument: 2
+                add_prefix: x
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method(:bar, :baz)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :barxbaz)) }
+  end
+
+  context 'with add_suffix position argument with no value to suffix' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              arguments: 1
+              add_suffix:
+                argument: 2
+                add_prefix: x
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method(bar, :baz)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :bar)) }
+  end
+
+  context 'with add_suffix position arguments' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              arguments: 1
+              add_suffix:
+                arguments: [2,3]
+                add_prefix: x
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method(:bar, :baz, :foo)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :barxbaz, :barxfoo)) }
   end
 
   context 'with add_suffix with a non string value without crashing' do
@@ -813,6 +1350,31 @@ RSpec.describe Leftovers::FileCollector do
         rules:
           - name: my_method
             has_argument:
+              value: foo
+            calls:
+              arguments: 1
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('baz', kw: 'qux')
+        my_method('bar', kw: 'foo')
+        my_method('lol', 'foo')
+        my_method('beep')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and have_calls(:bar, :lol, :my_method) }
+  end
+
+  context 'with has_argument with keyword, position, and value' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            has_argument:
+              at: [kw, 2]
               value: foo
             calls:
               arguments: 1
@@ -1019,6 +1581,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('bar', kw: true)
         my_method('lol', kw: false)
+        my_method('no', kw: {})
       RUBY
     end
 
@@ -1116,6 +1679,51 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:bar, :baz, :my_method)) }
   end
 
+  context 'with find has_argument with an index array' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            has_argument: [2,3]
+            calls:
+              arguments: 1
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('baz', 'bar', 'foo')
+        my_method('bar', 'foo')
+        my_method('foo')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:bar, :baz, :my_method)) }
+  end
+
+  context 'with find has_argument with an index array at at' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            has_argument:
+              at: [2,3]
+            calls:
+              arguments: 1
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('baz', 'bar', 'foo')
+        my_method('bar', 'foo')
+        my_method('foo')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:bar, :baz, :my_method)) }
+  end
+
   context 'with find has_argument with a mix of kw and index array and value' do
     let(:config) do
       <<~YML
@@ -1184,6 +1792,29 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_no_definitions.and(have_calls(:foo_bar, :lol, :my_method)) }
+  end
+
+  context 'with add_prefix argument with nothing to prefix' do
+    let(:config) do
+      <<~YML
+        rules:
+          - name: my_method
+            calls:
+              arguments: 1
+              add_prefix:
+                argument: 2
+                add_suffix: '_'
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method({}, 'foo')
+        my_method('lol')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:lol, :my_method)) }
   end
 
   context 'with a method to define based on a method name' do

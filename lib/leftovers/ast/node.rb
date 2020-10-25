@@ -124,10 +124,6 @@ module Leftovers
         end
       end
 
-      def pair_value
-        second if type == :pair
-      end
-
       def name
         @memo[:name] ||= case type
         when :send, :csend, :casgn, :const

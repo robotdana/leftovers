@@ -6,11 +6,10 @@ module Leftovers
       def self.build(patterns, action)
         ::Leftovers::ProcessorBuilders::EachAction.each_or_self(patterns) do |pattern|
           case pattern
-          when nil then nil
           when ::String, ::Integer
             ::Leftovers::ProcessorBuilders::Argument.build(pattern, final_transformer(action))
           when ::Hash
-            build_from_hash_value(pattern, action)
+            build_from_hash_value(action, **pattern)
           # :nocov:
           else raise
             # :nocov:
@@ -22,26 +21,17 @@ module Leftovers
         ::Leftovers::ProcessorBuilders::TransformSet.build_final(action)
       end
 
-      def self.build_from_hash_value(pattern, action) # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-        if pattern[:match] || pattern[:has_prefix] || pattern[:has_suffix]
-          ::Leftovers::ProcessorBuilders::Argument.build(pattern, final_transformer(action))
-        elsif pattern[:arguments] || pattern[:keywords] || pattern[:itself] || pattern[:value]
-          build_action_from_hash_value(pattern, action)
-        # :nocov:
-        else raise
-          # :nocov:
-        end
-      end
-
-      def self.build_action_from_hash_value(pattern, action) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-        args = pattern.delete(:arguments)
-        keywords = pattern.delete(:keywords)
-        itself = pattern.delete(:itself)
-        value = pattern.delete(:value)
-        nested = pattern.delete(:nested)
-        recursive = pattern.delete(:recursive)
-
-        transformer = ::Leftovers::ProcessorBuilders::TransformSet.build(pattern, action)
+      def self.build_from_hash_value( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
+        action,
+        arguments: nil,
+        keywords: nil,
+        itself: nil,
+        value: nil,
+        nested: nil,
+        recursive: nil,
+        **transform_args
+      )
+        transformer = ::Leftovers::ProcessorBuilders::TransformSet.build(transform_args, action)
         if nested
           transformer = ::Leftovers::ProcessorBuilders::Each.build([
             ::Leftovers::ProcessorBuilders::Action.build(nested, action),
@@ -57,13 +47,12 @@ module Leftovers
         end
 
         processor = ::Leftovers::ProcessorBuilders::EachAction.build([
-          ::Leftovers::ProcessorBuilders::Argument.build(args, transformer),
+          ::Leftovers::ProcessorBuilders::Argument.build(arguments, transformer),
           ::Leftovers::ProcessorBuilders::Keyword.build(keywords, transformer),
           ::Leftovers::ProcessorBuilders::Itself.build(itself, transformer),
           ::Leftovers::ProcessorBuilders::Value.build(value, transformer)
         ])
 
-        return unless processor
         return processor unless recursive
 
         placeholder.processor = processor

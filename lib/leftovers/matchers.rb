@@ -20,7 +20,5 @@ module Leftovers
     autoload(:NodeType, "#{__dir__}/matchers/node_type")
     autoload(:Not, "#{__dir__}/matchers/not")
     autoload(:Or, "#{__dir__}/matchers/or")
-    autoload(:Send, "#{__dir__}/matchers/send")
-    autoload(:Symbol, "#{__dir__}/matchers/symbol")
   end
 end

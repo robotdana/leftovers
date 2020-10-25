@@ -4,8 +4,6 @@
 module Leftovers
   module ValueProcessors
     class Placeholder
-      attr_reader :processor
-
       def processor=(value)
         @processor = value
 

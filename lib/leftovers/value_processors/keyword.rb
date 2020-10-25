@@ -3,6 +3,10 @@
 module Leftovers
   module ValueProcessors
     class Keyword
+      # :nocov:
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
+      # :nocov:
+
       def initialize(matcher, then_processor)
         @matcher = matcher
         @then_processor = then_processor
@@ -20,7 +24,7 @@ module Leftovers
           next unless @matcher === pair
 
           argument_node = pair.first
-          str = argument_node.to_s if argument_node.string_or_symbol?
+          str = argument_node.to_s
 
           result << @then_processor.process(str, argument_node, method_node)
         end

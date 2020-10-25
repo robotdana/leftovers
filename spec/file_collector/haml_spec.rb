@@ -41,7 +41,7 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it 'outputs an error and collects nothing' do
-      expect { subject }.to output(<<~STDERR).to_stderr
+      expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
         \e[2KHaml::SyntaxError: Illegal nesting: content can't be both given on the same line as %a and nested within it. foo.haml:1
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
@@ -66,7 +66,7 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it 'raises an error' do
-      expect { collector }.to output(a_string_ending_with(<<~OUTPUT)).to_stderr
+      expect { collector }.to output(a_string_including(<<~OUTPUT)).to_stderr
         \e[2KSkipped parsing foo.haml, because the haml gem was not available
         `gem install haml`
       OUTPUT

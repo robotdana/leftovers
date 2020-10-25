@@ -17,7 +17,9 @@ module Leftovers
         matchers = compact(matchers) if compact
 
         case matchers.length
-        when 0 then nil
+          # :nocov:
+        when 0 then raise
+          # :nocov:
         when 1 then matchers.first
         when 2 then ::Leftovers::Matchers::Or.new(matchers.first, matchers[1])
         else
@@ -45,7 +47,7 @@ module Leftovers
         end
       end
 
-      def self.compact(matchers) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize,
+      def self.compact(matchers) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize,
         return matchers if matchers.length <= 1
 
         set = Set.new
@@ -53,18 +55,14 @@ module Leftovers
         uncompactable = []
 
         matchers = flatten(matchers)
-        matchers.compact!
 
         matchers.each do |matcher|
-          klass = matcher.class
-          if klass == ::Set
-            set.merge(matcher)
-          elsif klass == ::Integer || klass == ::Symbol
-            set << matcher
-          elsif klass == ::Regexp
-            regexps << matcher
-          else
-            uncompactable << matcher
+          case matcher
+          when nil then nil
+          when ::Integer, ::Symbol then set << matcher
+          # when ::Set then set.merge(matcher) # may not be necessary
+          when ::Regexp then regexps << matcher
+          else uncompactable << matcher
           end
         end
 

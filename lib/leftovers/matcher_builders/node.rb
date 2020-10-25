@@ -3,7 +3,7 @@
 module Leftovers
   module MatcherBuilders
     module Node
-      def self.build(pattern)
+      def self.build(pattern) # rubocop:disable Metrics/MethodLength
         ::Leftovers::MatcherBuilders::Or.each_or_self(pattern) do |pat|
           case pat
           when ::Integer, true, false, nil
@@ -12,6 +12,9 @@ module Leftovers
             ::Leftovers::MatcherBuilders::NodeName.build(pat)
           when ::Hash
             build_from_hash(**pat)
+          # :nocov:
+          else raise
+            # :nocov:
           end
         end
       end

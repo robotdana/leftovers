@@ -7,7 +7,7 @@ $exit_code = 0 # rubocop:disable Style/GlobalVars
 
 module RegisteredAutoload
   def autoload(name, path)
-    autoload_registry << name if path.start_with?(__dir__.delete_suffix('/bin'))
+    autoload_registry << name if path.start_with?(Dir.pwd)
     super
   end
 
@@ -16,9 +16,7 @@ module RegisteredAutoload
   end
 end
 
-class Module
-  prepend RegisteredAutoload
-end
+Module.prepend RegisteredAutoload
 
 def try_require(parent) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   parent.autoload_registry.shuffle.each do |const_name|

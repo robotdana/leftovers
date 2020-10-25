@@ -7,7 +7,7 @@ module Leftovers
         ::Leftovers::ProcessorBuilders::EachRule.each_or_self(rules) do |rule|
           call = ::Leftovers::ProcessorBuilders::Action.build(rule.delete(:call), :call)
           definition = ::Leftovers::ProcessorBuilders::Action.build(rule.delete(:define), :define)
-          matcher = ::Leftovers::MatcherBuilders::Rule.build(**rule) if call || definition
+          matcher = ::Leftovers::MatcherBuilders::Rule.build(**rule)
 
           # this nonsense saves a method call and array instantiation per method
           if call && definition
@@ -16,7 +16,9 @@ module Leftovers
             ::Leftovers::RuleProcessors::Definition.new(matcher, definition)
           elsif call
             ::Leftovers::RuleProcessors::Call.new(matcher, call)
-          else raise "Unrecognized value #{matcher}"
+          # :nocov:
+          else raise
+            # :nocov:
           end
         end
       end

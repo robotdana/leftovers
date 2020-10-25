@@ -4,7 +4,7 @@ module Leftovers
   module Haml
     module_function
 
-    def precompile(file, name) # rubocop:disable Metrics/MethodLength
+    def precompile(file, name)
       return '' unless Leftovers.try_require('haml', message: <<~MESSAGE) # rubocop:disable Layout/EmptyLineAfterGuardClause
         Skipped parsing #{name.relative_path}, because the haml gem was not available
         `gem install haml`

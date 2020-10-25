@@ -3,6 +3,10 @@
 module Leftovers
   module RuleProcessors
     class CallDefinition
+      # :nocov:
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
+      # :nocov:
+
       def initialize(matcher, call_processor, definition_processor)
         @matcher = matcher
         @call_processor = call_processor

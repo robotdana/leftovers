@@ -100,7 +100,7 @@ module Leftovers
         },
         'valueType' => {
           'type' => 'string',
-          'enum' => %w{String Symbol Integer Float Method Constant}
+          'enum' => %w{String Symbol Integer Float}
         },
         'valueTypeList' => {
           'anyOf' => [
@@ -330,7 +330,8 @@ module Leftovers
         },
         'action' => {
           'anyOf' => [
-            { '$ref' => '#/definitions/argumentPosition' },
+            { '$ref' => '#/definitions/string' },
+            { 'type' => 'integer', 'minimum' => 1 },
             { 'allOf' => [
               { '$ref' => '#/definitions/transformProperties' },
               {

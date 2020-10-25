@@ -21,10 +21,6 @@ module Leftovers
       freeze
     end
 
-    def path
-      @location.source_buffer.name
-    end
-
     def to_s
       @name.to_s
     end

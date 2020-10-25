@@ -4,8 +4,6 @@ require_relative './leftovers/merged_config'
 require_relative './leftovers/reporter'
 
 module Leftovers # rubocop:disable Metrics/ModuleLength
-  class Error < StandardError; end
-
   module_function
 
   autoload(:AST, "#{__dir__}/leftovers/ast")
@@ -152,14 +150,6 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     when nil then nil
     when Array then value.each(&block)
     else yield(value)
-    end
-  end
-
-  def array_wrap(value)
-    case value
-    when nil then [].freeze
-    when Array then value
-    else [value]
     end
   end
 end

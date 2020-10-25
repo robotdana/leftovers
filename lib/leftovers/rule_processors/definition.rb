@@ -3,6 +3,10 @@
 module Leftovers
   module RuleProcessors
     class Definition
+      # :nocov:
+      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
+      # :nocov:
+
       def initialize(matcher, processor)
         @matcher = matcher
         @processor = processor

@@ -10,7 +10,9 @@ module Leftovers
           ::Leftovers::ValueProcessors::AddDynamicPrefix.new(dynamic_prefix, then_processor)
         when ::String
           ::Leftovers::ValueProcessors::AddPrefix.new(argument, then_processor)
+          # :nocov:
         else raise
+          # :nocov:
         end
       end
     end
