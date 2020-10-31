@@ -140,3 +140,22 @@ benchmark('concat-when-not-empty') do
     x.compare!
   end
 end
+
+benchmark('match-vs-count') do
+  # [<>&"']
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:count_miss, '"my-string".count(%{<>&"\'}).positive?')
+    x.report(:match_miss, '"my-string".match?(/[<>&"\']/)')
+    x.report(:count_hit_start, '"<my-string".count(%{<>&"\'}).positive?')
+    x.report(:match_hit_start, '"<my-string".match?(/[<>&"\']/)')
+    x.report(:count_hit_end, '"my-string>".count(%{<>&"\'}).positive?')
+    x.report(:match_hit_end, '"my-string>".match?(/[<>&"\']/)')
+    x.report(:count_hit_long_start, "'<#{'my-string ' * 20_000}'.count(%{<>&\"'}).positive?")
+    x.report(:match_hit_long_start, "'<#{'my-string ' * 20_000}'.match?(/[<>&\"']/)")
+
+    x.report(:count_hit_long_end, "'#{'my-string ' * 20_000}>'.count(%{<>&\"'}).positive?")
+    x.report(:match_hit_long_end, "'#{'my-string ' * 20_000}>'.match?(/[<>&\"']/)")
+    x.compare!
+  end
+end
