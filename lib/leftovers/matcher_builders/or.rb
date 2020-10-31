@@ -18,7 +18,7 @@ module Leftovers
 
         case matchers.length
           # :nocov:
-        when 0 then raise
+        when 0 then nil
           # :nocov:
         when 1 then matchers.first
         when 2 then ::Leftovers::Matchers::Or.new(matchers.first, matchers[1])

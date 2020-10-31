@@ -6,12 +6,12 @@ module Leftovers
   module MatcherBuilders
     module NodeType
       def self.build(types_pattern)
-        matcher = ::Leftovers::MatcherBuilders::Or.each_or_self(types_pattern) do |type|
+        ::Leftovers::MatcherBuilders::Or.each_or_self(types_pattern) do |type|
           case type
-          when 'Symbol' then :sym
-          when 'String' then :str
-          when 'Integer' then :int
-          when 'Float' then :float
+          when 'Symbol' then ::Leftovers::Matchers::NodeType.new(:sym)
+          when 'String' then ::Leftovers::Matchers::NodeType.new(:str)
+          when 'Integer' then ::Leftovers::Matchers::NodeType.new(:int)
+          when 'Float' then ::Leftovers::Matchers::NodeType.new(:float)
           # these would be neat but i can't think of a use-case
           # when 'Array' then :array
           # when 'Hash' then :hash
@@ -22,8 +22,6 @@ module Leftovers
             # :nocov:
           end
         end
-
-        ::Leftovers::Matchers::NodeType.new(matcher)
       end
     end
   end

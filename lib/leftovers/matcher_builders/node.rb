@@ -19,11 +19,25 @@ module Leftovers
         end
       end
 
-      def self.build_from_hash(type: nil, unless_arg: nil)
-        ::Leftovers::MatcherBuilders::AndNot.build(
+      def self.build_from_hash( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
+        names: nil, match: nil, has_prefix: nil, has_suffix: nil,
+        paths: nil,
+        type: nil,
+        has_arguments: nil,
+        unless_arg: nil
+      )
+        ::Leftovers::MatcherBuilders::And.build([
+          ::Leftovers::MatcherBuilders::NodeName.build([
+            names,
+            { match: match, has_prefix: has_prefix, has_suffix: has_suffix }.compact
+          ]),
           ::Leftovers::MatcherBuilders::NodeType.build(type),
-          ::Leftovers::MatcherBuilders::Node.build(unless_arg)
-        )
+          ::Leftovers::MatcherBuilders::NodePath.build(paths),
+          ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
+          ::Leftovers::MatcherBuilders::Unless.build(
+            (::Leftovers::MatcherBuilders::Node.build(unless_arg) if unless_arg)
+          )
+        ])
       end
     end
   end

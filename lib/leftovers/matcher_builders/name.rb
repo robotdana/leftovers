@@ -6,6 +6,9 @@ module Leftovers
       def self.build(patterns) # rubocop:disable Metrics/MethodLength
         ::Leftovers::MatcherBuilders::Or.each_or_self(patterns) do |pat|
           case pat
+          when nil
+          when ::Array
+            ::Leftovers::MatcherBuilders::Name.build(pat)
           when ::String
             ::Leftovers::MatcherBuilders::String.build(pat)
           when ::Hash

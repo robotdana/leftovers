@@ -7,7 +7,7 @@ module Leftovers
         ::Leftovers::ProcessorBuilders::EachDynamic.each_or_self(dynamic_rules) do |dynamic|
           call = ::Leftovers::ProcessorBuilders::Action.build(dynamic.delete(:call), :call)
           define = ::Leftovers::ProcessorBuilders::Action.build(dynamic.delete(:define), :define)
-          matcher = ::Leftovers::MatcherBuilders::Dynamic.build(**dynamic)
+          matcher = ::Leftovers::MatcherBuilders::Node.build(**dynamic)
 
           # this nonsense saves a method call and array instantiation per method
           if call && define

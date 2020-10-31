@@ -37,7 +37,7 @@ module Leftovers
     end
 
     def keep
-      @keep ||= ::Leftovers::MatcherBuilders::Keep.build(yaml[:keep])
+      @keep ||= ::Leftovers::MatcherBuilders::Node.build(yaml[:keep])
     end
 
     private
