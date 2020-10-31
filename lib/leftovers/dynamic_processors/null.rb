@@ -1,7 +1,7 @@
 # frozen-string-literal: true
 
 module Leftovers
-  module RuleProcessors
+  module DynamicProcessors
     module Null
       def self.process(_node, _file); end
     end

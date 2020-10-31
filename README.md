@@ -114,39 +114,30 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/main
 - [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#exclude_paths)
 - [`test_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#test_paths)
 - [`gems:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#gems)
-- [`rules:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#rules)
+- [`keep:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#skip)
   - [`names:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#names)
-    - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-    - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-    - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
   - [`paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#paths)
-  - [`skip:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#skip)
+  - [`has_argument:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_argument)
+- [`dynamic:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#dynamic)
+  - [`names:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#names)
+  - [`paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#paths)
+  - [`has_argument:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_argument)
+
   - [`calls:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#calls-defines), [`defines:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#calls-defines)
-    - [`arguments:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#arguments), [`keys:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#keys-), [`itself:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#itself-true)
-    - [`transforms:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#transforms), [`linked_transforms:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#linked_transforms)
-        - `original:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
-        - `delete_before:`, `delete_after:`, `downcase:`, `upcase:`, `capitalize:`, `swapcase:`
-        - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize`
-    - [`if:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#if-unless), [`unless:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#if-unless)
-      - [`has_argument:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_argument)
-        - `keyword:`
-          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
-        - `value:`
-          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
-          - `type:`
+    - [`arguments:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#arguments)
+    - [`keywords:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#keys-),
+    - [`itself:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#itself-true)
+    - [`value:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#itself-true)
+    - [`transforms:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#transforms)
 
 ## Limitations
 
 - Leftovers will report methods/constants you define that are called outside your code (perhaps by gems) as unused
 
-  Add these names to the `rules:` list with `skip: true` in the `.leftovers.yml` or add an inline comment with `# leftovers:allow my_method_name`
-- Leftovers doesn't execute your code so isn't aware of dynamic calls to `send` (e.g. `send(variable_method_name)`). (it is aware of static calls (e.g. `send(:my_method_name)`), so using send to bypass method privacy is "fine")
+  Add these names to the `keep:` list in the `.leftovers.yml` or add an inline comment with `# leftovers:allow my_method_name`
+- Leftovers doesn't execute your code so isn't aware of e.g. variables in calls to `send` (e.g. `send(variable_method_name)`). (it is aware of static calls (e.g. `send(:my_method_name)`), so using send to bypass method privacy is "fine")
 
-  Add the method/pattern to the `rules:` list with `skip: true` in the `.leftovers.yml`, or add an inline comment with the list of possibilities `# leftovers:call my_method_1, my_method_2`.
+  Add the method/pattern to the `dynamic:` list with `skip: true` in the `.leftovers.yml`, or add an inline comment with the list of possibilities `# leftovers:call my_method_1, my_method_2`.
 - Leftovers compares by name only, so multiple methods with the same name will count as used even if only one is.
 - haml & erb line and column numbers will be wrong as the files have to be precompiled before checking.
 

@@ -32,8 +32,8 @@ module Leftovers
       @test_paths ||= Array(yaml[:test_paths])
     end
 
-    def rules
-      @rules ||= ::Leftovers::ProcessorBuilders::Rule.build(yaml[:rules])
+    def dynamic
+      @dynamic ||= ::Leftovers::ProcessorBuilders::Dynamic.build(yaml[:dynamic])
     end
 
     def keep

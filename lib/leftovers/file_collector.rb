@@ -158,7 +158,7 @@ module Leftovers
     def on_casgn(node)
       super
       add_definition(node)
-      collect_rules(node)
+      collect_dynamic(node)
     end
 
     # grab calls to `alias new_method original_method`
@@ -188,7 +188,7 @@ module Leftovers
 
     def collect_send(node)
       add_call(node.name)
-      collect_rules(node)
+      collect_dynamic(node)
     end
 
     # just collects the call, super will collect the definition
@@ -207,7 +207,7 @@ module Leftovers
     def collect_variable_assign(node)
       add_definition(node)
 
-      collect_rules(node)
+      collect_dynamic(node)
     end
 
     def collect_op_asgn(node)
@@ -220,11 +220,11 @@ module Leftovers
       end
     end
 
-    def collect_rules(node) # rubocop:disable Metrics/AbcSize
+    def collect_dynamic(node) # rubocop:disable Metrics/AbcSize
       node.keep_line = @allow_lines.include?(node.loc.line)
       node.test = test?(node.loc) unless node.keep_line?
 
-      Leftovers.config.rules.process(node, self)
+      Leftovers.config.dynamic.process(node, self)
     rescue StandardError => e
       raise e.class, "#{e.message}\nwhen processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace # rubocop:disable Layout/LineLength
     end

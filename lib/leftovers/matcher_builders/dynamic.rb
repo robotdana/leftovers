@@ -2,7 +2,7 @@
 
 module Leftovers
   module MatcherBuilders
-    module Rule
+    module Dynamic
       def self.build(names: nil, paths: nil, has_arguments: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
         name_matcher = ::Leftovers::MatcherBuilders::NodeName.build(names)
         path_matcher = ::Leftovers::MatcherBuilders::NodePath.build(paths)
@@ -10,7 +10,7 @@ module Leftovers
           has_arguments
         )
         unless_matcher = ::Leftovers::MatcherBuilders::Unless.build(
-          (::Leftovers::MatcherBuilders::Rule.build(**unless_arg) if unless_arg)
+          (::Leftovers::MatcherBuilders::Dynamic.build(**unless_arg) if unless_arg)
         )
 
         ::Leftovers::MatcherBuilders::And.build([

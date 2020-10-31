@@ -1,4 +1,4 @@
-rules:
+dynamic:
   # this doesn't handle custom prefix, suffix, attribute
   - name: attr_encrypted
     defines:

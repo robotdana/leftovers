@@ -2,7 +2,7 @@ keep:
   - cursor_from_node
   - paged_nodes
   - sliced_nodes
-rules:
+dynamic:
   - name: field
     calls:
       argument: method

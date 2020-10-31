@@ -24,7 +24,7 @@ RSpec.describe ::Leftovers::ConfigValidator do
     ::Leftovers::ConfigValidator::AVAILABLE_GEMS.each do |gem|
       it "can validate #{gem} default config" do
         config = ::Leftovers::Config.new(gem)
-        expect { catch(:leftovers_exit) { config.rules } }.not_to output.to_stderr
+        expect { catch(:leftovers_exit) { config.dynamic } }.not_to output.to_stderr
       end
     end
   end

@@ -1,4 +1,4 @@
-rules:
+dynamic:
   - name: filter
     calls:
       arguments:

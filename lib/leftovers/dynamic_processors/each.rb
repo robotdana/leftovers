@@ -1,7 +1,7 @@
 # frozen-string-literal: true
 
 module Leftovers
-  module RuleProcessors
+  module DynamicProcessors
     class Each
       attr_reader :processors
 

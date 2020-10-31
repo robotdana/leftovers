@@ -26,7 +26,7 @@ keep:
       has_suffix: Preview
     path: '**/mailers/previews/**/*_preview.rb'
 
-rules:
+dynamic:
   - names:
       - after_initialize
       - after_find

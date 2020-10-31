@@ -42,7 +42,7 @@ keep:
   - == # called by Array value, Hash value equality, ===
   - hash # called by Hash key equality
   - eql? # called by Hash key equality
-rules:
+dynamic:
   - name:
       - send
       - public_send

@@ -6,7 +6,7 @@ RSpec.describe Leftovers::MergedConfig do
       original_exclude_paths = subject.exclude_paths
       original_include_paths = subject.include_paths
       original_test_paths = subject.test_paths
-      original_rules = subject.rules
+      original_dynamic = subject.dynamic
       original_keep = subject.keep
 
       rails = Leftovers::Config.new(:rails)
@@ -17,8 +17,8 @@ RSpec.describe Leftovers::MergedConfig do
       expect(original_test_paths).not_to eq subject.test_paths # it's a different set of FastIgnore
 
       expect(
-        ::Leftovers::ProcessorBuilders::EachRule.build([original_rules, rails.rules])
-      ).to match_nested_object subject.rules
+        ::Leftovers::ProcessorBuilders::EachDynamic.build([original_dynamic, rails.dynamic])
+      ).to match_nested_object subject.dynamic
 
       expect(
         ::Leftovers::MatcherBuilders::Or.build([original_keep, rails.keep])

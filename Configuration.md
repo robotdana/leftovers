@@ -9,7 +9,7 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/main
 - [`exclude_paths:`](#exclude_paths)
 - [`test_paths:`](#test_paths)
 - [`gems:`](#gems)
-- [`rules:`](#rules)
+- [`dynamic:`](#dynamic)
   - [`names:`](#names)
     - [`has_prefix](#has_prefix-has_suffix)
     - [`has_suffix](#has_prefix-has_suffix)
@@ -80,7 +80,7 @@ gems:
   - rails
 ```
 
-## `rules:`
+## `dynamic:`
 
 This is the most complex part of configuration, and is a list of methods that define/call other methods/classes/etc.
 Each must have a list of `names:`. and can optionally be limited to a list of `paths:`.
@@ -95,7 +95,7 @@ _alias `name:`_
 list methods/classnames/etc that this rule applies to.
 
 ```yml
-rules:
+dynamic:
   - names:
       - initialize
       - ClassName
@@ -109,7 +109,7 @@ rules:
 To match names other than exact strings, you can use has_suffix or has_prefix or both if you're feeling fancy.
 
 ```yml
-rules:
+dynamic:
   - names:
       - has_suffix: Helper # will match Helper, LinkHelper FormHelper, etc
       - has_prefix: be_ # will match be_equal, be_invalid, etc
@@ -123,7 +123,7 @@ rules:
 if `has_suffix:` and `has_prefix:` isn't enough, you can use `matches:` to supply a regexp.
 This string is automatically converted into a ruby regexp and must match the whole method/constant name.
 ```yml
-rules:
+dynamic:
   - names:
       - matches: 'column_\d+' # will match column_1, column_2, column_99, but not column_left etc
     skip: true
@@ -135,7 +135,7 @@ _alias `path:`_
 An optional list of paths that limits what paths this method rule can apply to, defined using a .gitignore-esque format
 
 ```yml
-rules:
+dynamic:
   - name:
       - has_suffix: Helper
     path: /app/helpers
@@ -149,7 +149,7 @@ Skip methods that are called on your behalf by code outside your project, or cal
 You can also skip method calls and definitions in place using [magic comments](https://github.com/robotdana/leftovers/tree/main/README.md#magic-comments).
 
 ```yml
-rules:
+dynamic:
   - name: initialize
     skip: true
 ```
@@ -180,7 +180,7 @@ Variables and other method calls returning values will be ignored.
 Positional arguments start at 1.
 
 ```yml
-rules:
+dynamic:
   # `send(:my_method, arg)` is equivalent to `my_method(arg)`
   - name: send
     calls:
@@ -202,7 +202,7 @@ attr_reader :my_attr, :my_other_attr
 will count as a definition of `my_attr` and `my_other_attr` and will need to be used elsewhere or they'll be reported as leftovers.
 
 ```yml
-rules:
+dynamic:
   - name: validate
     calls:
       - arguments: ['*', if, unless]
@@ -216,7 +216,7 @@ will count as a call to `does_not_match_existing_record`, and `new_record?`
 
 In addition to method call arguments, this can be used for constant assignment, as often constant assignment plus class_eval/instance_eval/define_method is used to dry up similar methods.
 ```yml
-rules:
+dynamic:
   - name: METHOD_NAMES
     defines:
       - arguments: 1
@@ -238,7 +238,7 @@ counts as a definition of `user_attributes` and `account_attributes` and calls t
 
 use `arguments: '**'`, and or `keys: true` for assigning hashes
 ```yml
-rules:
+dynamic:
   - name: METHOD_NAMES
     defines:
       - keys: '*'
@@ -280,7 +280,7 @@ will count `be_empty` as a call to `empty?`
 When the keyword argument **keywords** are the thing being called.
 
 ```yml
-rules:
+dynamic:
   - name: validates
       calls:
         - arguments: '*'
@@ -377,7 +377,7 @@ e.g. rails' `delegate` method has a `prefix:` argument of its own that is used w
 `if:` and `unless:` work the same way and can be given a list or single value of conditions. For a list, all conditions must be met.
 
 ```yml
-rules:
+dynamic:
   - name: field
     calls:
       - argument: 1
@@ -399,7 +399,7 @@ instead of an exact value `value:` can be given a type or list of type.
 
 This all comes together to give the most complex rule, rails delegate method.
 ```yml
-rules:
+dynamic:
   - name: delegate
     defines:
       - argument: '*'

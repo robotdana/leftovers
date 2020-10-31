@@ -23,7 +23,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:ProcessorBuilders, "#{__dir__}/leftovers/processor_builders")
   autoload(:RakeTask, "#{__dir__}/leftovers/rake_task")
   autoload(:Reporter, "#{__dir__}/leftovers/reporter")
-  autoload(:RuleProcessors, "#{__dir__}/leftovers/rule_processors")
+  autoload(:DynamicProcessors, "#{__dir__}/leftovers/dynamic_processors")
   autoload(:ValueProcessors, "#{__dir__}/leftovers/value_processors")
   autoload(:VERSION, "#{__dir__}/leftovers/version")
 

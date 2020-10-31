@@ -19,7 +19,7 @@ module Leftovers
 
       def self.build_hash_value(pattern)
         if pattern[:names] || pattern[:paths] || pattern[:has_arguments]
-          ::Leftovers::MatcherBuilders::Rule.build(**pattern)
+          ::Leftovers::MatcherBuilders::Dynamic.build(**pattern)
         elsif pattern[:match] || pattern[:has_prefix] || pattern[:has_suffix]
           ::Leftovers::MatcherBuilders::NodeName.build(pattern)
         # :nocov:

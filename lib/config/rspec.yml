@@ -24,7 +24,7 @@ keep:
       - dump_summary
       - seed
       - close
-rules:
+dynamic:
   - name:
       - have_attributes
       - has_attributes?

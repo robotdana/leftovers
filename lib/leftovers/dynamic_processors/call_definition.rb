@@ -1,7 +1,7 @@
 # frozen-string-literal: true
 
 module Leftovers
-  module RuleProcessors
+  module DynamicProcessors
     class CallDefinition
       # :nocov:
       using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)

@@ -31,7 +31,7 @@ module Leftovers
       remove_instance_variable(:@exclude_paths) if defined?(@exclude_paths)
       remove_instance_variable(:@include_paths) if defined?(@include_paths)
       remove_instance_variable(:@test_paths) if defined?(@test_paths)
-      remove_instance_variable(:@rules) if defined?(@rules)
+      remove_instance_variable(:@dynamic) if defined?(@dynamic)
       remove_instance_variable(:@keep) if defined?(@keep)
     end
 
@@ -51,8 +51,8 @@ module Leftovers
       )
     end
 
-    def rules
-      @rules ||= ::Leftovers::ProcessorBuilders::EachRule.build(@configs.map(&:rules))
+    def dynamic
+      @dynamic ||= ::Leftovers::ProcessorBuilders::EachDynamic.build(@configs.map(&:dynamic))
     end
 
     def keep

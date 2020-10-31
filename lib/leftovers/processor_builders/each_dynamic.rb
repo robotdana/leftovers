@@ -2,10 +2,10 @@
 
 module Leftovers
   module ProcessorBuilders
-    module EachRule
+    module EachDynamic
       def self.each_or_self(value, &block)
         case value
-        when nil then ::Leftovers::RuleProcessors::Null
+        when nil then ::Leftovers::DynamicProcessors::Null
         when Array then build(value.map(&block))
         else build([yield(value)])
         end
@@ -19,13 +19,13 @@ module Leftovers
         when 0 then raise
         # :nocov:
         when 1 then processors.first
-        else ::Leftovers::RuleProcessors::Each.new(processors)
+        else ::Leftovers::DynamicProcessors::Each.new(processors)
         end
       end
 
       def self.flatten(value) # rubocop:disable Metrics/MethodLength
         case value
-        when ::Leftovers::RuleProcessors::Each
+        when ::Leftovers::DynamicProcessors::Each
           ret = value.processors.map { |v| flatten(v) }
           ret.flatten!(1)
           ret
@@ -44,7 +44,7 @@ module Leftovers
         processors = flatten(processors)
 
         processors.reject! do |p|
-          p == ::Leftovers::RuleProcessors::Null
+          p == ::Leftovers::DynamicProcessors::Null
         end
 
         processors

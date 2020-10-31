@@ -50,7 +50,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
     context 'with files with linked config' do
       before do
         temp_file '.leftovers.yml', <<~YML
-          rules:
+          dynamic:
             - name: test_method
               defines:
                 argument: 1

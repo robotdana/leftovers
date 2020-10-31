@@ -4,6 +4,7 @@ module Leftovers
   module MatcherBuilders
     autoload(:AndNot, "#{__dir__}/matcher_builders/and_not")
     autoload(:And, "#{__dir__}/matcher_builders/and")
+    autoload(:Dynamic, "#{__dir__}/matcher_builders/dynamic")
     autoload(:Keep, "#{__dir__}/matcher_builders/keep")
     autoload(:Name, "#{__dir__}/matcher_builders/name")
     autoload(:NodeHasArgument, "#{__dir__}/matcher_builders/node_has_argument")
@@ -15,7 +16,6 @@ module Leftovers
     autoload(:Node, "#{__dir__}/matcher_builders/node")
     autoload(:Or, "#{__dir__}/matcher_builders/or")
     autoload(:Path, "#{__dir__}/matcher_builders/path")
-    autoload(:Rule, "#{__dir__}/matcher_builders/rule")
     autoload(:StringPattern, "#{__dir__}/matcher_builders/string_pattern")
     autoload(:String, "#{__dir__}/matcher_builders/string")
     autoload(:Unless, "#{__dir__}/matcher_builders/unless")

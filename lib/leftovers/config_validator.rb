@@ -401,7 +401,7 @@ module Leftovers
             }
           ]
         },
-        'ruleAction' => {
+        'dynamicAction' => {
           'type' => 'object',
           'properties' => {
             'call' => { '$ref' => '#/definitions/actionList' },
@@ -422,10 +422,10 @@ module Leftovers
             ] }
           ]
         },
-        'rule' => {
+        'dynamic' => {
           'allOf' => [
             { '$ref' => '#/definitions/ruleMatcher' },
-            { '$ref' => '#/definitions/ruleAction' },
+            { '$ref' => '#/definitions/dynamicAction' },
             {
               'properties' => {
                 # unfortunately this repetition is necessary to use additionalProperties: false
@@ -442,15 +442,15 @@ module Leftovers
             }
           ]
         },
-        'ruleList' => {
+        'dynamicList' => {
           'anyOf' => [
             {
               'type' => 'array',
-              'items' => { '$ref' => '#/definitions/rule' },
+              'items' => { '$ref' => '#/definitions/dynamic' },
               'minItems' => 1,
               'uniqueItems' => true
             },
-            { '$ref' => '#/definitions/rule' }
+            { '$ref' => '#/definitions/dynamic' }
           ]
         },
         'keep' => {
@@ -495,7 +495,7 @@ module Leftovers
           'enum' => AVAILABLE_GEMS
         },
         'keep' => { '$ref' => '#/definitions/keepList' },
-        'rules' => { '$ref' => '#/definitions/ruleList' }
+        'dynamic' => { '$ref' => '#/definitions/dynamicList' }
       }
     }.freeze
 

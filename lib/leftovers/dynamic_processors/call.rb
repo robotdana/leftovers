@@ -1,8 +1,8 @@
 # frozen-string-literal: true
 
 module Leftovers
-  module RuleProcessors
-    class Definition
+  module DynamicProcessors
+    class Call
       # :nocov:
       using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
       # :nocov:
@@ -13,13 +13,12 @@ module Leftovers
       end
 
       def process(node, file)
-        return if node.keep_line?
         return unless @matcher === node
 
-        definition = @processor.process(nil, node, node)
-        return unless definition
+        call = @processor.process(nil, node, node)
+        return unless call
 
-        file.definitions << definition
+        file.calls << call
       end
     end
   end
