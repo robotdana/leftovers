@@ -41,10 +41,13 @@ module Leftovers
         [keys, positions]
       end
 
-      def self.build_from_hash(at: nil, value: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
+      def self.build_from_hash(at: nil, has_value: nil, has_value_type: nil, unless_arg: nil) # rubocop:disable Metrics/MethodLength
         keys, positions = separate_argument_types(at)
 
-        value_matcher = ::Leftovers::MatcherBuilders::Node.build(value)
+        value_matcher = ::Leftovers::MatcherBuilders::And.build([
+          ::Leftovers::MatcherBuilders::ArgumentNodeValue.build(has_value),
+          ::Leftovers::MatcherBuilders::NodeType.build(has_value_type)
+        ])
         matcher = if (keys && positions) || (!keys && !positions)
           ::Leftovers::MatcherBuilders::Or.build([
             ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher),

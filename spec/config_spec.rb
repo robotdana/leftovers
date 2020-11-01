@@ -239,7 +239,7 @@ RSpec.describe Leftovers::Config do
         dynamic:
           - names: fancy
             has_argument:
-              value:
+              has_value_type:
                 class: String
             calls:
               argument: 1

@@ -3,11 +3,9 @@
 module Leftovers
   module MatcherBuilders
     module Node
-      def self.build(pattern) # rubocop:disable Metrics/MethodLength
+      def self.build(pattern)
         ::Leftovers::MatcherBuilders::Or.each_or_self(pattern) do |pat|
           case pat
-          when ::Integer, true, false, nil
-            ::Leftovers::Matchers::NodeScalarValue.new(pat)
           when ::String
             ::Leftovers::MatcherBuilders::NodeName.build(pat)
           when ::Hash
@@ -22,7 +20,6 @@ module Leftovers
       def self.build_from_hash( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
         names: nil, match: nil, has_prefix: nil, has_suffix: nil,
         paths: nil,
-        type: nil,
         has_arguments: nil,
         unless_arg: nil
       )
@@ -31,7 +28,6 @@ module Leftovers
             names,
             { match: match, has_prefix: has_prefix, has_suffix: has_suffix }.compact
           ]),
-          ::Leftovers::MatcherBuilders::NodeType.build(type),
           ::Leftovers::MatcherBuilders::NodePath.build(paths),
           ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
           ::Leftovers::MatcherBuilders::Unless.build(

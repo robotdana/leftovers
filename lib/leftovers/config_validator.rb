@@ -114,28 +114,18 @@ module Leftovers
             }
           ]
         },
-        'value' => {
+        'hasValue' => {
           'allOf' => [
             { 'not' => { 'type' => 'array' } },
-            { 'anyOf' => [
-              { 'not' => { 'type' => 'object' } },
-              {
-                'type' => 'object',
-                'properties' => {
-                  'type' => { '$ref' => '#/definitions/valueTypeList' }
-                },
-                'additionalProperties' => false,
-                'required' => ['type']
-              }
-            ] }
+            { 'not' => { 'type' => 'object' } }
           ]
         },
-        'valueList' => {
+        'hasValueList' => {
           'anyOf' => [
-            { '$ref' => '#/definitions/value' },
+            { '$ref' => '#/definitions/hasValue' },
             {
               'type' => 'array',
-              'items' => { '$ref' => '#/definitions/value' },
+              'items' => { '$ref' => '#/definitions/hasValue' },
               'minItems' => 1,
               'uniqueItems' => true
             }
@@ -149,9 +139,12 @@ module Leftovers
               'type' => 'object',
               'properties' => {
                 'at' => { '$ref' => '#/definitions/argumentPositionList' },
-                'value' => { '$ref' => '#/definitions/valueList' },
+                'has_value' => { '$ref' => '#/definitions/hasValueList' },
+                'has_value_type' => { '$ref' => '#/definitions/valueTypeList' },
                 'unless' => { '$ref' => '#/definitions/hasArgumentList' }
-              }
+              },
+              'minProperties' => 1,
+              'additionalProperties' => false
             }
           ]
         },

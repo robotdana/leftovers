@@ -242,7 +242,7 @@ dynamic:
     unless:
       has_argument:
         at: optional
-        value: true
+        has_value: true
     calls:
       argument: 0
 
@@ -265,7 +265,7 @@ dynamic:
     has_argument:
       at: [dependent, inverse_of, touch, validate]
       unless:
-        value: false
+        has_value: false
     calls:
       argument: 0
 
@@ -293,7 +293,7 @@ dynamic:
   - name: delegate
     has_argument:
       at: prefix
-      value: true
+      has_value: true
     defines:
       - argument: '*'
         add_prefix:
@@ -305,8 +305,7 @@ dynamic:
   - name: delegate
     has_argument:
       at: prefix
-      value:
-        type: [String, Symbol]
+      has_value_type: [String, Symbol]
     defines:
       - argument: '*'
         add_prefix:
@@ -318,10 +317,10 @@ dynamic:
   - name: delegate
     unless:
       has_argument:
-        at: prefix
-        value:
-          - true
-          - type: [String, Symbol]
+        - at: prefix
+          has_value: true
+        - at: prefix
+          has_value_type: [String, Symbol]
     calls:
       - argument: to
   - name:
