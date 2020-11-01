@@ -84,7 +84,7 @@ module Leftovers
         'argumentPosition' => {
           'anyOf' => [
             { '$ref' => '#/definitions/string' },
-            { 'type' => 'integer', 'minimum' => 1 },
+            { 'type' => 'integer', 'minimum' => 0 },
             { '$ref' => '#/definitions/name' }
           ]
         },
@@ -144,7 +144,7 @@ module Leftovers
         'hasArgument' => {
           'anyOf' => [
             { '$ref' => '#/definitions/string' },
-            { 'type' => 'integer', 'minimum' => 1 },
+            { 'type' => 'integer', 'minimum' => 0 },
             {
               'type' => 'object',
               'properties' => {
@@ -332,7 +332,7 @@ module Leftovers
         'action' => {
           'anyOf' => [
             { '$ref' => '#/definitions/string' },
-            { 'type' => 'integer', 'minimum' => 1 },
+            { 'type' => 'integer', 'minimum' => 0 },
             { 'allOf' => [
               { '$ref' => '#/definitions/transformProperties' },
               {

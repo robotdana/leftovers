@@ -53,7 +53,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           dynamic:
             - name: test_method
               defines:
-                argument: 1
+                argument: 0
                 transforms:
                   - original
                   - add_suffix: '?'

@@ -50,8 +50,7 @@ dynamic:
       - method
       - respond_to?
       - instance_method
-    calls:
-      argument: 1
+    calls: 0
   - name: attr_reader
     defines:
       argument: '*'
@@ -71,20 +70,15 @@ dynamic:
       argument: '*'
       add_prefix: '@'
   - name: define_method
-    defines:
-      argument: 1
+    defines: 0
   - name: alias_method
-    defines:
-      argument: 1
-    calls:
-      argument: 2
+    defines: 0
+    calls: 1
   - name:
       - instance_variable_get
       - class_variable_get
-    calls:
-      argument: 1
+    calls: 0
   - name:
       - instance_variable_set
       - class_variable_set
-    defines:
-      argument: 1
+    defines: 0

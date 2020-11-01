@@ -6,5 +6,4 @@ dynamic:
       value: perform
   - name: register
     calls:
-      argument: 2
-
+      argument: 1

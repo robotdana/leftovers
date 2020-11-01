@@ -1,7 +1,6 @@
 dynamic:
   - name: current_user_method=
-    calls:
-      argument: 1
+    calls: 0
   - name: audited
     calls:
       argument:

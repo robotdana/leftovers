@@ -9,13 +9,12 @@ dynamic:
   - name: field
     unless:
       has_argument: method
-    calls:
-      argument: 1
+    calls: 0
   - name: argument
     unless:
       has_argument: as
     calls:
-      - argument: 1
+      - argument: 0
         add_suffix: '='
   - name: argument
     calls:

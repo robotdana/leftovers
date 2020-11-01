@@ -36,13 +36,11 @@ dynamic:
     - receive
     - respond_to
     calls:
-      argument: 1
+      argument: 0
     path: /spec/
   - name: define_negated_matcher
-    defines:
-      argument: 1
-    calls:
-      argument: 2
+    defines: 0
+    calls: 1
     path: /spec/
   - name:
       has_prefix: be_
@@ -61,7 +59,6 @@ dynamic:
     path: /spec/
   - name: let
     unless:
-      has_argument: 2
-    defines:
-      argument: 1
+      has_argument: 1
+    defines: 0
     path: /spec/

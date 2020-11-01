@@ -49,7 +49,7 @@ dynamic:
       - after_destroy_commit
       - after_save_commit
     calls:
-      - arguments: 1
+      - arguments: 0
       - arguments: [if, unless]
         nested:
           arguments: '*'
@@ -120,8 +120,8 @@ dynamic:
     - url_field
     - week_field
     calls:
-      - arguments: [1,2] # 1: with a receiver, 2: with no receiver
-      - arguments: [1,2]
+      - arguments: [0,1] # 0: with a receiver, 1: with no receiver
+      - arguments: [0,1]
         add_suffix: '='
   - name: fields_for
     calls:
@@ -129,27 +129,27 @@ dynamic:
       add_suffix: _attributes
   - name: options_from_collection_for_select
     calls:
-      - arguments: [2,3]
+      - arguments: [1,2]
   - name:
       - collection_select
       - collection_check_boxes
       - collection_radio_buttons
     calls:
-      - argument: 2
+      - argument: 1
         add_suffix: '='
-      - arguments: [4,5]
+      - arguments: [3,4]
   - name: grouped_collection_select
     calls:
-      - argument: 2
+      - argument: 1
         add_suffix: '='
-      - arguments: [4,5,6,7]
+      - arguments: [3,4,5,6]
   - name: option_groups_from_collection_for_select
     calls:
-      - arguments: [1,2,3,4]
+      - arguments: [0,1,2,3]
   - name: scope
     path: /app/models
     defines:
-      argument: 1 # ar
+      argument: 0 # ar
   - name: scope
     path: /config/routes*
     calls:
@@ -158,7 +158,7 @@ dynamic:
       split: '::'
   - name: namespace
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
         split: '::'
   - name:
@@ -166,17 +166,17 @@ dynamic:
       - alias_attribute
     path: app/models/*
     defines:
-      argument: 1
+      argument: 0
       transforms:
         - original
         - add_suffix: '?'
         - add_suffix: '='
   - name: alias_attribute
     calls:
-      - argument: 2
-      - argument: 2
+      - argument: 1
+      - argument: 1
         add_suffix: '?'
-      - argument: 2
+      - argument: 1
         add_suffix: '='
   - name:
     - has_one
@@ -184,7 +184,7 @@ dynamic:
     unless:
       has_argument: class_name
     calls:
-      argument: 1
+      argument: 0
       camelize: true
       split: '::'
 
@@ -194,7 +194,7 @@ dynamic:
     unless:
       has_argument: class_name
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
         singularize: true
         split: '::'
@@ -202,7 +202,7 @@ dynamic:
     - has_many
     - has_and_belongs_to_many
     defines:
-      - argument: 1
+      - argument: 0
         transforms:
           - original
           - add_suffix: '='
@@ -229,7 +229,7 @@ dynamic:
       - has_one
       - belongs_to
     defines:
-      - argument: 1
+      - argument: 0
         transforms:
           - original
           - add_suffix: '='
@@ -244,7 +244,7 @@ dynamic:
         at: optional
         value: true
     calls:
-      argument: 1
+      argument: 0
 
   - name:
      - has_one
@@ -267,7 +267,7 @@ dynamic:
       unless:
         value: false
     calls:
-      argument: 1
+      argument: 0
 
   - name:
       - rescue_from
@@ -282,7 +282,7 @@ dynamic:
       - put
       - root
     calls:
-      - arguments: [1, action]
+      - arguments: [0, action]
       - argument: '**'
         delete_before: '#'
       - argument: '**'
@@ -338,7 +338,7 @@ dynamic:
       - controller
       - namespace
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
         add_suffix: Controller
         split: '::'
@@ -352,7 +352,7 @@ dynamic:
       argument: reject_if
   - name: resource
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
         pluralize: true
         add_suffix: Controller
@@ -375,7 +375,7 @@ dynamic:
       recursive: true
   - name: layout
     calls:
-      argument: 1
+      argument: 0
   - name:
       - includes
       - preload
@@ -401,7 +401,7 @@ dynamic:
       - boolean
     path: /db/schema.rb
     calls:
-      argument: 1
+      argument: 0
       transforms:
         - original
         - add_suffix: '='
@@ -451,4 +451,4 @@ dynamic:
       add_suffix: '='
   - name: delegate_missing_to
     calls:
-      argument: 1
+      argument: 0

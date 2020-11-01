@@ -7,7 +7,7 @@ module Leftovers
         ::Leftovers::ProcessorBuilders::EachAction.each_or_self(patterns) do |pattern|
           case pattern
           when ::Integer
-            ::Leftovers::ValueProcessors::PositionalArgument.new(pattern - 1, then_processor)
+            ::Leftovers::ValueProcessors::PositionalArgument.new(pattern, then_processor)
           when '*'
             ::Leftovers::ValueProcessors::EachPositionalArgument.new(then_processor)
           when '**'

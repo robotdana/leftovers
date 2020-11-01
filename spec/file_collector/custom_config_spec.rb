@@ -261,7 +261,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              - argument: 1
+              - argument: 0
                 transforms:
                   - camelize
       YML
@@ -286,7 +286,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              - argument: 2
+              - argument: 1
                 nested:
                   argument: '*'
       YML
@@ -306,9 +306,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              - argument: 2
+              - argument: 1
                 nested:
-                  argument: 2
+                  argument: 1
       YML
     end
 
@@ -326,9 +326,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              - argument: 2
+              - argument: 1
                 nested:
-                  argument: 3
+                  argument: 2
       YML
     end
 
@@ -346,7 +346,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              - argument: 2
+              - argument: 1
                 nested:
                   argument: c
       YML
@@ -366,9 +366,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              - argument: 2
+              - argument: 1
                 nested:
-                  argument: 2
+                  argument: 1
       YML
     end
 
@@ -386,7 +386,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              - argument: 2
+              - argument: 1
                 nested:
                   argument: kw
       YML
@@ -406,9 +406,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              - argument: 2
+              - argument: 1
                 nested:
-                  argument: 2
+                  argument: 1
       YML
     end
 
@@ -428,7 +428,7 @@ RSpec.describe Leftovers::FileCollector do
             calls:
               - argument: kw
                 nested:
-                  argument: 2
+                  argument: 1
       YML
     end
 
@@ -446,7 +446,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name:
               matches: "(my|your)_method"
-            calls: 1
+            calls: 0
       YML
     end
 
@@ -464,7 +464,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - names:
               match: "(my|your)_method"
-            calls: 1
+            calls: 0
       YML
     end
 
@@ -499,7 +499,7 @@ RSpec.describe Leftovers::FileCollector do
           name:
             - has_prefix: my
             - has_prefix: your
-          calls: 1
+          calls: 0
       YML
     end
 
@@ -572,7 +572,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~YML
         dynamic:
           name: my_method
-          calls: 1
+          calls: 0
       YML
     end
 
@@ -653,7 +653,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~YML
         dynamic:
           name: my_method
-          defines: 1
+          defines: 0
       YML
     end
 
@@ -668,7 +668,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: flow
             calls:
-              argument: 1
+              argument: 0
       YML
     end
 
@@ -687,7 +687,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              argument: [1, my_keyword]
+              argument: [0, my_keyword]
       YML
     end
 
@@ -707,7 +707,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              argument: [1, my_keyword]
+              argument: [0, my_keyword]
       YML
     end
 
@@ -727,7 +727,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              argument: [1, my_keyword]
+              argument: [0, my_keyword]
       YML
     end
 
@@ -1151,7 +1151,7 @@ RSpec.describe Leftovers::FileCollector do
               has_suffix: _magic_call
             unless:
               name: non_magic_call
-            calls: { arguments: 1 }
+            calls: { arguments: 0 }
       YML
     end
 
@@ -1176,7 +1176,7 @@ RSpec.describe Leftovers::FileCollector do
               has_suffix: _magic_call
               unless:
                 - non_magic_call
-            calls: { arguments: 1 }
+            calls: { arguments: 0 }
       YML
     end
 
@@ -1217,7 +1217,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_suffix:
                 argument: foo
                 add_prefix: x
@@ -1239,7 +1239,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_suffix:
                 argument: foo
                 add_prefix: x
@@ -1262,9 +1262,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_suffix:
-                argument: 2
+                argument: 1
                 add_prefix: x
       YML
     end
@@ -1284,9 +1284,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_suffix:
-                argument: 2
+                argument: 1
                 add_prefix: x
       YML
     end
@@ -1306,9 +1306,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_suffix:
-                arguments: [2,3]
+                arguments: [1,2]
                 add_prefix: x
       YML
     end
@@ -1328,7 +1328,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_suffix:
                 argument: foo
                 add_prefix: x
@@ -1352,7 +1352,7 @@ RSpec.describe Leftovers::FileCollector do
             has_argument:
               value: foo
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1374,10 +1374,10 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             has_argument:
-              at: [kw, 2]
+              at: [kw, 1]
               value: foo
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1403,7 +1403,7 @@ RSpec.describe Leftovers::FileCollector do
               value:
                 type: [String, Symbol, Integer, Float]
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1429,7 +1429,7 @@ RSpec.describe Leftovers::FileCollector do
                 type: [String, Symbol, Integer, Float]
               unless: kw
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1456,7 +1456,7 @@ RSpec.describe Leftovers::FileCollector do
               unless:
                 value: 0
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1482,7 +1482,7 @@ RSpec.describe Leftovers::FileCollector do
               value:
                 type: String
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1506,7 +1506,7 @@ RSpec.describe Leftovers::FileCollector do
             has_argument:
               value: [foo, bar]
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1528,7 +1528,7 @@ RSpec.describe Leftovers::FileCollector do
           - name: my_method
             has_argument: kw
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1550,7 +1550,7 @@ RSpec.describe Leftovers::FileCollector do
             has_argument:
               at: kw
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1573,7 +1573,7 @@ RSpec.describe Leftovers::FileCollector do
               at: kw
               value: true
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1595,7 +1595,7 @@ RSpec.describe Leftovers::FileCollector do
           - name: my_method
             has_argument: kw
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1614,9 +1614,9 @@ RSpec.describe Leftovers::FileCollector do
       <<~YML
         dynamic:
           - name: my_method
-            has_argument: 2
+            has_argument: 1
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1638,9 +1638,9 @@ RSpec.describe Leftovers::FileCollector do
           - name: my_method
             has_argument:
               value: 'foo'
-              at: 2
+              at: 1
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1662,9 +1662,9 @@ RSpec.describe Leftovers::FileCollector do
           - name: my_method
             has_argument:
               value: 'foo'
-              at: [2,3]
+              at: [1,2]
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1684,9 +1684,9 @@ RSpec.describe Leftovers::FileCollector do
       <<~YML
         dynamic:
           - name: my_method
-            has_argument: [2,3]
+            has_argument: [1,2]
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1707,9 +1707,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             has_argument:
-              at: [2,3]
+              at: [1,2]
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1731,9 +1731,9 @@ RSpec.describe Leftovers::FileCollector do
           - name: my_method
             has_argument:
               value: 'foo'
-              at: [kw, 2]
+              at: [kw, 1]
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1753,9 +1753,9 @@ RSpec.describe Leftovers::FileCollector do
       <<~YML
         dynamic:
           - name: my_method
-            has_argument: [kw, 2]
+            has_argument: [kw, 1]
             calls:
-              arguments: 1
+              arguments: 0
       YML
     end
 
@@ -1777,9 +1777,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_prefix:
-                argument: 2
+                argument: 1
                 add_suffix: '_'
       YML
     end
@@ -1800,7 +1800,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_prefix: 'call_'
       YML
     end
@@ -1826,9 +1826,9 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             calls:
-              arguments: 1
+              arguments: 0
               add_prefix:
-                argument: 2
+                argument: 1
                 add_suffix: '_'
       YML
     end
