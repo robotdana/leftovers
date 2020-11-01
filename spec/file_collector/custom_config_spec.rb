@@ -44,6 +44,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        requires: 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -61,6 +62,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        requires: 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -78,6 +80,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        requires: 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -97,6 +100,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        requires: 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -116,6 +120,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        requires: 'active_support/core_ext/string'
         dynamic:
           name: my_method
           calls:
@@ -244,37 +249,45 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :Capitalize)) }
   end
 
-  context 'with an activesupport modifier without activesupport' do
-    before do
-      cached_require = Leftovers.instance_variable_get(:@try_require)
-      cached_require ||= Leftovers.instance_variable_set(:@try_require, {})
-      allow(cached_require)
-        .to receive(:key?).with('active_support/core_ext/string').and_return(true)
-      allow(cached_require)
-        .to receive(:[]).with('active_support/core_ext/string').and_return(false)
-    end
+  context 'with an activesupport modifier without activesupport required' do
+    %i{
+      camelize
+      deconstantize
+      demodulize
+      parameterize
+      pluralize
+      singularize
+      titleize
+      underscore
+    }.each do |method|
+      context "for #{method}" do
+        before do
+          allow_any_instance_of(::String).to receive(method).and_raise(::NoMethodError) # rubocop:disable RSpec/AnyInstance # not sure how else i'd solve this
+        end
 
-    let(:ruby) { 'my_method(:value)' }
+        let(:ruby) { 'my_method(:value)' }
 
-    let(:config) do
-      <<~YML
-        dynamic:
-          - name: my_method
-            calls:
-              - argument: 0
-                transforms:
-                  - camelize
-      YML
-    end
+        let(:config) do
+          <<~YML
+            dynamic:
+              - name: my_method
+                calls:
+                  - argument: 0
+                    transforms:
+                      - #{method}
+          YML
+        end
 
-    it do
-      message = <<~MESSAGE
-        Tried creating a transformer using an activesupport method (camelize), but the activesupport gem was not available
-        `gem install activesupport`
-      MESSAGE
+        it do
+          message = <<~MESSAGE
+            Tried using the String##{method} method, but the activesupport gem was not available and/or not required
+            `gem install activesupport`, and/or add `requires: 'active_support/core_ext/string'` to your .leftovers.yml
+          MESSAGE
 
-      expect { catch(:leftovers_exit) { subject } }
-        .to output(a_string_ending_with(message)).to_stderr
+          expect { catch(:leftovers_exit) { subject } }
+            .to output(a_string_ending_with(message)).to_stderr
+        end
+      end
     end
   end
 

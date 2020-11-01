@@ -153,7 +153,8 @@ RSpec.describe 'ruby and stdlib' do
 
     it 'raises an error with the filename of the file being checked' do
       expect { collector }.to raise_error(
-        ArgumentError, "original message\nwhen processing attr_reader at foo.rb:1:0"
+        Leftovers::Error,
+        "ArgumentError: original message\nwhen processing attr_reader at foo.rb:1:0"
       )
     end
   end

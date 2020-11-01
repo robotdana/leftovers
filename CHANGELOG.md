@@ -1,5 +1,6 @@
 
 # v0.4.0
+- add `requires:` to .leftovers.yml config to e.g. load inflections in a different place than `config/initializers/inflections`
 - REFACTORED EVERYTHING for a codebase i actually can extend
 - Now with a very modified config api. After this i don't intend on every doing a rewrite like this again, so this is correcting all my bad decisions the first time through
   - `rules.names` with `rules.skip: true` is now `keep.names` (see config/parser.yml)

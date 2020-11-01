@@ -13,6 +13,11 @@ module Leftovers
         return unless str
 
         @then_processor.process(str.deconstantize, node, method_node)
+      rescue NoMethodError
+        Leftovers.error <<~MESSAGE
+          Tried using the String#deconstantize method, but the activesupport gem was not available and/or not required
+          `gem install activesupport`, and/or add `requires: 'active_support/core_ext/string'` to your .leftovers.yml
+        MESSAGE
       end
     end
   end

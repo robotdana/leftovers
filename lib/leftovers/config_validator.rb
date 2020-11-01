@@ -41,16 +41,15 @@ module Leftovers
             { 'not' => { 'required' => %w{matches has_suffix} } }
           ]
         },
-        'path' => { '$ref' => '#/definitions/string' },
-        'pathList' => {
+        'stringList' => {
           'anyOf' => [
             {
               'type' => 'array',
-              'items' => { '$ref' => '#/definitions/path' },
+              'items' => { '$ref' => '#/definitions/string' },
               'minItems' => 1,
               'uniqueItems' => true
             },
-            { '$ref' => '#/definitions/path' }
+            { '$ref' => '#/definitions/string' }
           ]
         },
         'name' => {
@@ -187,8 +186,8 @@ module Leftovers
           'properties' => {
             'name' => { '$ref' => '#/definitions/nameList' },
             'names' => { '$ref' => '#/definitions/nameList' },
-            'path' => { '$ref' => '#/definitions/pathList' },
-            'paths' => { '$ref' => '#/definitions/pathList' },
+            'path' => { '$ref' => '#/definitions/stringList' },
+            'paths' => { '$ref' => '#/definitions/stringList' },
             'has_argument' => { '$ref' => '#/definitions/hasArgumentList' },
             'has_arguments' => { '$ref' => '#/definitions/hasArgumentList' },
             'unless' => { '$ref' => '#/definitions/ruleMatcherList' }
@@ -482,9 +481,10 @@ module Leftovers
         }
       },
       'properties' => {
-        'include_paths' => { '$ref' => '#/definitions/pathList' },
-        'exclude_paths' => { '$ref' => '#/definitions/pathList' },
-        'test_paths' => { '$ref' => '#/definitions/pathList' },
+        'include_paths' => { '$ref' => '#/definitions/stringList' },
+        'exclude_paths' => { '$ref' => '#/definitions/stringList' },
+        'test_paths' => { '$ref' => '#/definitions/stringList' },
+        'requires' => { '$ref' => '#/definitions/stringList' },
         'gems' => {
           'type' => 'string',
           'enum' => AVAILABLE_GEMS
@@ -538,6 +538,7 @@ module Leftovers
       when 'has_argument' then :has_arguments
       when 'path' then :paths
       when 'unless' then :unless_arg
+      when 'require' then :requires
       else name.to_sym
       end
     end

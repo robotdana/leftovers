@@ -226,7 +226,7 @@ module Leftovers
 
       Leftovers.config.dynamic.process(node, self)
     rescue StandardError => e
-      raise e.class, "#{e.message}\nwhen processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace # rubocop:disable Layout/LineLength
+      raise ::Leftovers::Error, "#{e.class}: #{e.message}\nwhen processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace # rubocop:disable Layout/LineLength
     end
   end
 end

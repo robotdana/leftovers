@@ -21,6 +21,9 @@ module Leftovers
       @configs << config
       @loaded_configs << config.name
       config.gems.each { |gem| self << gem }
+      config.requires.each do |req|
+        Leftovers.try_require(req, message: "cannot require '#{req}' from #{config.name}.yml")
+      end
     end
 
     def project_config

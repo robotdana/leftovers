@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Leftovers::Config do
+  before { Leftovers.reset }
+
   describe '.dynamic' do
     describe 'gems' do
       files = Pathname.glob("#{__dir__}/../lib/config/*.yml")

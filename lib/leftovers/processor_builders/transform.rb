@@ -3,22 +3,6 @@
 module Leftovers
   module ProcessorBuilders
     module Transform
-      def self.require_activesupport(method)
-        message = <<~MESSAGE
-          Tried creating a transformer using an activesupport method (#{method}), but the activesupport gem was not available
-          `gem install activesupport`
-        MESSAGE
-
-        return if Leftovers.try_require('active_support/core_ext/string', message: message)
-
-        Leftovers.exit 1
-      end
-
-      def self.try_require_inflections
-        Leftovers.try_require('active_support/inflections')
-        Leftovers.try_require((Leftovers.pwd + 'config/initializers/inflections.rb').to_s)
-      end
-
       def self.build(transform, argument, then_processor) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
         case transform.to_s
         when 'original', nil
@@ -32,32 +16,20 @@ module Leftovers
         when 'swapcase'
           ::Leftovers::ValueProcessors::Swapcase.new(then_processor)
         when 'pluralize'
-          require_activesupport(transform)
-          try_require_inflections
           ::Leftovers::ValueProcessors::Pluralize.new(then_processor)
         when 'singularize'
-          require_activesupport(transform)
-          try_require_inflections
           ::Leftovers::ValueProcessors::Singularize.new(then_processor)
         when 'camelize', 'camelcase'
-          require_activesupport(transform)
-          try_require_inflections
           ::Leftovers::ValueProcessors::Camelize.new(then_processor)
         when 'titleize', 'titlecase'
-          require_activesupport(transform)
-          try_require_inflections
           ::Leftovers::ValueProcessors::Titleize.new(then_processor)
         when 'demodulize'
-          require_activesupport(transform)
           ::Leftovers::ValueProcessors::Demodulize.new(then_processor)
         when 'deconstantize'
-          require_activesupport(transform)
           ::Leftovers::ValueProcessors::Deconstantize.new(then_processor)
         when 'parameterize'
-          require_activesupport(transform)
           ::Leftovers::ValueProcessors::Parameterize.new(then_processor)
         when 'underscore'
-          require_activesupport(transform)
           ::Leftovers::ValueProcessors::Underscore.new(then_processor)
         when 'split'
           ::Leftovers::ValueProcessors::Split.new(argument, then_processor)

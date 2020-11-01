@@ -40,6 +40,10 @@ module Leftovers
       @keep ||= ::Leftovers::MatcherBuilders::Node.build(yaml[:keep])
     end
 
+    def requires
+      @requires ||= Array(yaml[:requires])
+    end
+
     private
 
     def content

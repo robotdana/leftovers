@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Leftovers::MergedConfig do
+  before { Leftovers.reset }
+
   describe '<<' do
     it 'handles clearing memoization' do
       original_exclude_paths = subject.exclude_paths
@@ -23,6 +25,18 @@ RSpec.describe Leftovers::MergedConfig do
       expect(
         ::Leftovers::MatcherBuilders::Or.build([original_keep, rails.keep])
       ).to match_nested_object subject.keep
+    end
+
+    it 'can report when requiring' do
+      config = Leftovers::Config.new('.invalid', content: <<~YML)
+        require: 'ruby' # is a reserved gem
+      YML
+
+      message = <<~MSG
+        cannot require 'ruby' from .invalid.yml
+      MSG
+
+      expect { subject << config }.to output(a_string_including(message)).to_stderr
     end
   end
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Leftovers # rubocop:disable Metrics/ModuleLength
+  class Error < ::StandardError; end
+
   module_function
 
   autoload(:AST, "#{__dir__}/leftovers/ast")
@@ -105,6 +107,11 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     stderr.puts("\e[2K#{message}")
   end
 
+  def error(message)
+    warn(message)
+    exit 1
+  end
+
   def puts(message)
     stdout.puts("\e[2K#{message}")
   end
@@ -135,9 +142,11 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
         require requirable
         true
       end
-    rescue LoadError
+    rescue LoadError => e
+      warn e.message
       false
     end
+
     warn message if !@try_require[requirable] && message
     @try_require[requirable]
   end
