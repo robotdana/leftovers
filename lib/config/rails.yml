@@ -9,21 +9,18 @@ include_paths:
 # rails is _really complicated_ and has a lot of magic which calls methods for you.
 # some is currently impossible to handle (with_options).
 # Some is just corners of rails I haven't hit yet.
-# TODO: split this up by the actual gems
 keep:
   - ClassMethods # ActiveSupport::Concern
   - process_action # ActiveSupport::LogSubscriber
   - validate_each # ActiveModel::EachValidator
   - format_message # ActiveSupport::Logger
   - ssl_configured? # ApplicationController
+  - default_url_options # called by url_for
   - APP_PATH
   - APP_ROOT
-  - default_url_options # called by url_for
-  - names:
-      has_suffix: Helper
+  - has_suffix: Helper
     path: /app/helpers
-  - names:
-      has_suffix: Preview
+  - has_suffix: Preview
     path: '**/mailers/previews/**/*_preview.rb'
 
 dynamic:
@@ -71,10 +68,7 @@ dynamic:
       - skip_around_action
       - validates_associated
     calls:
-      - arguments:
-          - '*'
-          - if
-          - unless
+      - arguments: ['*', if, unless]
   - name: validates
     calls:
       - arguments:

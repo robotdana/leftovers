@@ -1794,6 +1794,32 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:foo_bar, :lol, :my_method)) }
   end
 
+  context 'with add_prefix argument with an index when the value is not a symbol' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: 1
+              add_prefix: 'call_'
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        lol = 1 # force lol to be a local variable
+        my_method(:foo)
+        my_method('bar')
+        my_method(baz())
+        my_method(lol)
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions.and(have_calls(:call_foo, :call_bar, :baz, :my_method))
+    end
+  end
+
   context 'with add_prefix argument with nothing to prefix' do
     let(:config) do
       <<~YML

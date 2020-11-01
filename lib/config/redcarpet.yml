@@ -1,36 +1,35 @@
----
 keep:
-  - block_code
-  - block_quote
-  - block_html
-  - footnotes
-  - footnote_def
-  - header
-  - hrule
-  - list
-  - list_item
-  - paragraph
-  - table
-  - table_row
-  - table_cell
   - autolink
+  - block_code
+  - block_html
+  - block_quote
   - codespan
+  - doc_footer
+  - doc_header
   - double_emphasis
   - emphasis
+  - entity
+  - footnote_def
+  - footnote_ref
+  - footnotes
+  - header
+  - highlight
+  - hrule
   - image
   - linebreak
   - link
+  - list
+  - list_item
+  - normal_text
+  - paragraph
+  - postprocess
+  - preprocess
+  - quote
   - raw_html
-  - triple_emphasis
   - strikethrough
   - superscript
+  - table
+  - table_cell
+  - table_row
+  - triple_emphasis
   - underline
-  - highlight
-  - quote
-  - footnote_ref
-  - entity
-  - normal_text
-  - doc_header
-  - doc_footer
-  - preprocess
-  - postprocess

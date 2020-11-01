@@ -1,15 +1,19 @@
 
 # v0.4.0
 - REFACTORED EVERYTHING for a codebase i actually can extend
-- Now with a tweaked config api
+- Now with a very modified config api. After this i don't intend on every doing a rewrite like this again, so this is correcting all my bad decisions the first time through
   - `rules.names` with `rules.skip: true` is now `keep.names` (see config/parser.yml)
   - `rules.calls` and `rules.defines` is now `dynamic.calls` and `dynamic.defines`
   - `rules.calls/defines.arguments.if` is now `keep/dynamic.calls/defines.has_arguments:` (see config/graphql.yml field)
   - `rules.calls/defines.arguments.unless` is now `keep/dynamic.unless.has_arguments` (see config/graphql.yml field)
   - `rules.calls/defines.transforms.replace_with` is now `keep/dynamic.calls/defines.value` (see custom_config_spec.rb html)
   - `rules.calls/defines.transforms.add_prefix.from_argument/joiner:` is now `dynamic.calls/defines.transforms.add_prefix.argument/add_suffix` (see config/rails.yml delegate)
+  - `rules.calls/defines.transforms.add_suffix.from_argument/joiner:` is now `dynamic.calls/defines.transforms.add_suffix.argument/add_prefix`
+  - `rules.calls/defines.arguments.if.arguments.value` is now `keep/dynamic.has_arguments.has_value`
+  - `rules.calls/defines.arguments.if.arguments.value.type` is now `keep/dynamic.has_arguments.has_value_type`
   - `rules.calls/defines.linked_transforms` is now `dynamic.calls/defines.transforms` (see config/rails.yml attribute). For the previous behaviour of the `transforms:` key simply add separate calls/defines entry. (see config/ruby.yml attr_accessor)
   - `rules.calls/defines.keys: true` is now `dynamic.calls/defines.keywords: '**'` and can be given name patterns (e.g. unless:. see config/rails.yml validates)
+  - argument positions are now 0-indexed rather than 1-indexed
   - no more automatic recursion, there's now two new keywords:
     - `dynamic.calls/defines.arguments/keywords` with `dynamic.calls/defines.nested.arguments/keywords` will define the next layer of arguments to collect (see config/rails.yml validates)
     - `dynamic.calls/defines.arguments/keywords` with `dynamic.calls/defines.recursive: true` will use the arguments & keywords layers recursively (see config/rails.yml permit)

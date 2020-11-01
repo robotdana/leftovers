@@ -1,4 +1,5 @@
 affixxed
+argumentless
 attr
 backports
 barx
@@ -9,6 +10,7 @@ config
 cov
 datagrid
 esque
+firstname
 gemfile
 graphql
 hashbang

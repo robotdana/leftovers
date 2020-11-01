@@ -53,6 +53,17 @@ RSpec.describe 'ruby and stdlib' do
     it { is_expected.to have_no_definitions.and(have_calls(:send, :foo)) }
   end
 
+  context 'with method calls using send with methods' do
+    let(:ruby) do
+      <<~RUBY
+        def foo; end
+        send(foo)
+      RUBY
+    end
+
+    it { is_expected.to have_definitions(:foo).and(have_calls(:send, :foo)) }
+  end
+
   context 'with method calls using send with interpolated lvars' do
     let(:ruby) do
       <<~RUBY
@@ -120,6 +131,16 @@ RSpec.describe 'ruby and stdlib' do
     end
 
     it { is_expected.to have_no_definitions.and(have_calls(:alias_method)) }
+  end
+
+  context 'when alias_method arguments are sends' do
+    let(:ruby) do
+      <<~RUBY
+        alias_method a(), b()
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:alias_method, :a, :b)) }
   end
 
   context 'with a processing error' do

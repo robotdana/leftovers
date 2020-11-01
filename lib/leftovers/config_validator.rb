@@ -459,10 +459,12 @@ module Leftovers
             {
               'allOf' => [
                 { '$ref' => '#/definitions/ruleMatcher' },
+                { '$ref' => '#/definitions/stringPattern' },
                 {
                   'properties' => {
                     # unfortunately this repetition is necessary to use additionalProperties: false
                     'name' => true, 'names' => true,
+                    'has_prefix' => true, 'has_suffix' => true, 'matches' => true,
                     'path' => true, 'paths' => true,
                     'has_argument' => true, 'has_arguments' => true,
                     'unless' => true
