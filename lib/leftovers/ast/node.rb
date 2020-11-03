@@ -22,7 +22,7 @@ module Leftovers
       end
 
       def path
-        @memo[:path] ||= loc.expression.source_buffer.name
+        @memo[:path] ||= loc.expression.source_buffer.name.to_s
       end
 
       def test?

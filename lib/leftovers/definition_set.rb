@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Leftovers
-  class DefinitionSet < Leftovers::Definition
+  class DefinitionSet < ::Leftovers::Definition
     attr_reader :definitions
 
     def initialize(

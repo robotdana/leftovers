@@ -14,6 +14,8 @@ module Leftovers
         return unless kwargs
 
         kwargs.children.map do |pair|
+          next unless pair.type == :pair
+
           argument_node = pair.second
           str = argument_node.to_s if argument_node.string_or_symbol?
 

@@ -34,7 +34,7 @@ module Leftovers
     end
 
     def collect_file(file)
-      file_collector = Leftovers::FileCollector.new(file.ruby, file)
+      file_collector = ::Leftovers::FileCollector.new(file.ruby, file)
       file_collector.collect
 
       file_collector.to_h
