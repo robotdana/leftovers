@@ -2,7 +2,7 @@
 
 module Leftovers
   class Definition
-    attr_reader :name, :test, :location_s
+    attr_reader :name, :test, :location_s, :path
     alias_method :names, :name
 
     alias_method :test?, :test
@@ -14,6 +14,7 @@ module Leftovers
       test: method_node.test?
     )
       @name = name
+      @path = location.source_buffer.name.to_s
       @location_source_line = location.source_line.to_s
       @location_column_range_begin = location.column_range.begin.to_i
       @location_column_range_end = location.column_range.end.to_i
@@ -26,6 +27,18 @@ module Leftovers
 
     def to_s
       @name.to_s
+    end
+
+    def kwargs; end
+
+    def positional_arguments; end
+
+    def scalar?
+      false
+    end
+
+    def type
+      :leftovers_definition
     end
 
     def highlighted_source(highlight = "\e[31m", normal = "\e[0m")

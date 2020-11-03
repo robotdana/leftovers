@@ -648,6 +648,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        keep: method
         dynamic:
           name: my_method
           defines:
