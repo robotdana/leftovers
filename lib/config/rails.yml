@@ -4,31 +4,30 @@ exclude_paths:
 include_paths:
   - '*.rjs'
   - '*.rhtml'
+requires:
+  - 'active_support/core_ext/string'
+  - 'active_support/inflections'
+  - './config/initializers/inflections'
 
 # THIS IS INCOMPLETE (you can help by expanding it)
 # rails is _really complicated_ and has a lot of magic which calls methods for you.
 # some is currently impossible to handle (with_options).
 # Some is just corners of rails I haven't hit yet.
-# TODO: split this up by the actual gems
-rules:
-  - skip: true
-    names:
-      - ClassMethods # ActiveSupport::Concern
-      - process_action # ActiveSupport::LogSubscriber
-      - validate_each # ActiveModel::EachValidator
-      - format_message # ActiveSupport::Logger
-      - ssl_configured? # ApplicationController
-      - APP_PATH
-      - APP_ROOT
-      - default_url_options # called by url_for
-  - skip: true
-    names:
-      has_suffix: Helper
+keep:
+  - ClassMethods # ActiveSupport::Concern
+  - process_action # ActiveSupport::LogSubscriber
+  - validate_each # ActiveModel::EachValidator
+  - format_message # ActiveSupport::Logger
+  - ssl_configured? # ApplicationController
+  - default_url_options # called by url_for
+  - APP_PATH
+  - APP_ROOT
+  - has_suffix: Helper
     path: /app/helpers
-  - skip: true
-    names:
-      has_suffix: Preview
+  - has_suffix: Preview
     path: '**/mailers/previews/**/*_preview.rb'
+
+dynamic:
   - names:
       - after_initialize
       - after_find
@@ -54,10 +53,10 @@ rules:
       - after_destroy_commit
       - after_save_commit
     calls:
-      arguments:
-        - 1
-        - if
-        - unless
+      - arguments: 0
+      - arguments: [if, unless]
+        nested:
+          arguments: '*'
   - name:
       - after_action
       - append_after_action
@@ -73,23 +72,24 @@ rules:
       - skip_around_action
       - validates_associated
     calls:
-      - arguments:
-          - '*'
-          - if
-          - unless
+      - arguments: ['*', if, unless]
   - name: validates
     calls:
       - arguments:
           - '*'
-          - 'in'
           - within
           - inclusion
           - scope
           - if
           - unless
-      - keys: '*'
+      - arguments: inclusion
+        nested:
+          arguments: 'in'
+      - keywords:
+          unless: [if, unless]
         camelize: true
         add_suffix: Validator
+        split: '::'
   - names:
       - validate
       - validate_associated
@@ -124,8 +124,8 @@ rules:
     - url_field
     - week_field
     calls:
-      - arguments: [1,2] # 1: with a receiver, 2: with no receiver
-      - arguments: [1,2]
+      - arguments: [0,1] # 0: with a receiver, 1: with no receiver
+      - arguments: [0,1]
         add_suffix: '='
   - name: fields_for
     calls:
@@ -133,73 +133,81 @@ rules:
       add_suffix: _attributes
   - name: options_from_collection_for_select
     calls:
-      - arguments: [2,3]
+      - arguments: [1,2]
   - name:
       - collection_select
       - collection_check_boxes
       - collection_radio_buttons
     calls:
-      - argument: 2
+      - argument: 1
         add_suffix: '='
-      - arguments: [4,5]
+      - arguments: [3,4]
   - name: grouped_collection_select
     calls:
-      - argument: 2
+      - argument: 1
         add_suffix: '='
-      - arguments: [4,5,6,7]
+      - arguments: [3,4,5,6]
   - name: option_groups_from_collection_for_select
     calls:
-      - arguments: [1,2,3,4]
+      - arguments: [0,1,2,3]
   - name: scope
     path: /app/models
     defines:
-      argument: 1 # ar
+      argument: 0 # ar
   - name: scope
     path: /config/routes*
     calls:
       argument: module # routes
       camelize: true
+      split: '::'
   - name: namespace
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
+        split: '::'
   - name:
       - attribute
       - alias_attribute
     path: app/models/*
     defines:
-      argument: 1
-      linked_transforms:
+      argument: 0
+      transforms:
         - original
         - add_suffix: '?'
         - add_suffix: '='
   - name: alias_attribute
     calls:
-      - argument: 2
-      - argument: 2
+      - argument: 1
+      - argument: 1
         add_suffix: '?'
-      - argument: 2
+      - argument: 1
         add_suffix: '='
   - name:
     - has_one
     - belongs_to
+    unless:
+      has_argument: class_name
     calls:
-      argument: 1
+      argument: 0
       camelize: true
-      unless:
-        has_argument: class_name
+      split: '::'
+
   - name:
     - has_many
     - has_and_belongs_to_many
+    unless:
+      has_argument: class_name
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
         singularize: true
-        unless:
-          has_argument: class_name
+        split: '::'
+  - name:
+    - has_many
+    - has_and_belongs_to_many
     defines:
-      - argument: 1
-        linked_transforms:
+      - argument: 0
+        transforms:
           - original
           - add_suffix: '='
           - singularize: true
@@ -225,8 +233,8 @@ rules:
       - has_one
       - belongs_to
     defines:
-      - argument: 1
-        linked_transforms:
+      - argument: 0
+        transforms:
           - original
           - add_suffix: '='
           - add_prefix: build_
@@ -235,12 +243,12 @@ rules:
             add_suffix: '!'
           - add_prefix: reload
   - name: belongs_to
+    unless:
+      has_argument:
+        at: optional
+        has_value: true
     calls:
-      argument: 1
-      unless:
-        has_argument:
-          keyword: optional
-          value: true
+      argument: 0
 
   - name:
      - has_one
@@ -248,25 +256,23 @@ rules:
      - belongs_to
      - has_and_belongs_to_many
     calls:
-      - argument:
-          - class_name
-          - inverse_of
+      - argument: class_name
+        split: '::'
+      - argument: inverse_of
       - argument: touch
         add_suffix: '='
-      - argument: 1
-        if:
-          has_argument: dependent
-      - argument: 1
-        if:
-          has_argument: inverse_of
-      - argument: 1
-        if:
-          has_argument: touch
-      - argument: 1
-        if:
-          has_argument:
-            keyword: validate
-            value: true
+  - name:
+     - has_one
+     - has_many
+     - belongs_to
+     - has_and_belongs_to_many
+    has_argument:
+      at: [dependent, inverse_of, touch, validate]
+      unless:
+        has_value: false
+    calls:
+      argument: 0
+
   - name:
       - rescue_from
     calls:
@@ -280,37 +286,47 @@ rules:
       - put
       - root
     calls:
-      - arguments: [1, action]
+      - arguments: [0, action]
       - argument: '**'
         delete_before: '#'
       - argument: '**'
         delete_after: '#'
         camelize: true
         add_suffix: Controller
+        split: '::'
   - name: delegate
+    has_argument:
+      at: prefix
+      has_value: true
     defines:
       - argument: '*'
-        if:
-          has_argument:
-            keyword: prefix
-            value: true
         add_prefix:
-          from_argument: to
-          joiner: '_'
-      - argument: '*'
-        if:
-          has_argument:
-            keyword: prefix
-            value:
-              type: [String, Symbol]
-        add_prefix:
-          from_argument: prefix
-          joiner: '_'
+          argument: to
+          add_suffix: '_'
     calls:
       - argument: to
       - argument: '*'
-        if:
-          has_argument: prefix
+  - name: delegate
+    has_argument:
+      at: prefix
+      has_value_type: [String, Symbol]
+    defines:
+      - argument: '*'
+        add_prefix:
+          argument: prefix
+          add_suffix: '_'
+    calls:
+      - argument: to
+      - argument: '*'
+  - name: delegate
+    unless:
+      has_argument:
+        - at: prefix
+          has_value: true
+        - at: prefix
+          has_value_type: [String, Symbol]
+    calls:
+      - argument: to
   - name:
       - resource
       - resources
@@ -319,28 +335,31 @@ rules:
       - argument: controller
         camelize: true
         add_suffix: Controller
+        split: '::'
   - name:
       - resources
       - controller
       - namespace
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
         add_suffix: Controller
+        split: '::'
   - name: accepts_nested_attributes_for
     defines:
       argument: '*'
-      linked_transforms:
+      transforms:
         - add_suffix: _attributes
         - add_suffix: _attributes=
     calls:
       argument: reject_if
   - name: resource
     calls:
-      - argument: 1
+      - argument: 0
         camelize: true
         pluralize: true
         add_suffix: Controller
+        split: '::'
   - name:
     - new
     - create
@@ -349,16 +368,17 @@ rules:
     - update!
     - assign_attributes
     calls:
-      keys: '*'
+      keyword: '**'
       add_suffix: '='
   - name: permit
     calls:
       arguments: ['*', '**']
-      keys: '*'
+      keywords: '**'
       add_suffix: "="
+      recursive: true
   - name: layout
     calls:
-      argument: 1
+      argument: 0
   - name:
       - includes
       - preload
@@ -368,7 +388,7 @@ rules:
       - left_outer_joins
     calls:
       arguments: ['*', '**']
-      keys: '*'
+      keywords: '**'
   - name:
       - string
       - text
@@ -384,7 +404,7 @@ rules:
       - boolean
     path: /db/schema.rb
     calls:
-      argument: 1
+      argument: 0
       transforms:
         - original
         - add_suffix: '='
@@ -394,9 +414,8 @@ rules:
       - mattr_accessor
     defines:
       - argument: '*'
-        transforms:
-          - original
-          - add_suffix: '='
+      - argument: '*'
+        add_suffix: '='
     calls:
       - argument: '*'
         add_prefix: '@'
@@ -419,10 +438,9 @@ rules:
     - thread_cattr_accessor
     - thread_mattr_accessor
     defines:
-      argument: '*'
-      transforms:
-        - original
-        - add_suffix: '='
+      - argument: '*'
+      - argument: '*'
+        add_suffix: '='
   - name:
     - thread_cattr_reader
     - thread_mattr_reader
@@ -436,4 +454,4 @@ rules:
       add_suffix: '='
   - name: delegate_missing_to
     calls:
-      argument: 1
+      argument: 0

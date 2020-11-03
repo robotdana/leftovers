@@ -1,16 +1,33 @@
 # frozen_string_literal: true
 
-require_relative './leftovers/core_ext'
-require_relative './leftovers/backports'
-require_relative './leftovers/collector'
-require_relative './leftovers/merged_config'
-require_relative './leftovers/reporter'
-
 module Leftovers # rubocop:disable Metrics/ModuleLength
-  class Error < StandardError; end
-  class ConfigError < Error; end
+  class Error < ::StandardError; end
 
   module_function
+
+  autoload(:AST, "#{__dir__}/leftovers/ast")
+  autoload(:Backports, "#{__dir__}/leftovers/backports")
+  autoload(:CLI, "#{__dir__}/leftovers/cli")
+  autoload(:Collector, "#{__dir__}/leftovers/collector")
+  autoload(:ConfigValidator, "#{__dir__}/leftovers/config_validator")
+  autoload(:Config, "#{__dir__}/leftovers/config")
+  autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
+  autoload(:Definition, "#{__dir__}/leftovers/definition")
+  autoload(:ERB, "#{__dir__}/leftovers/erb")
+  autoload(:FileCollector, "#{__dir__}/leftovers/file_collector")
+  autoload(:FileList, "#{__dir__}/leftovers/file_list")
+  autoload(:File, "#{__dir__}/leftovers/file")
+  autoload(:Haml, "#{__dir__}/leftovers/haml")
+  autoload(:MatcherBuilders, "#{__dir__}/leftovers/matcher_builders")
+  autoload(:Matchers, "#{__dir__}/leftovers/matchers")
+  autoload(:MergedConfig, "#{__dir__}/leftovers/merged_config")
+  autoload(:Parser, "#{__dir__}/leftovers/parser")
+  autoload(:ProcessorBuilders, "#{__dir__}/leftovers/processor_builders")
+  autoload(:RakeTask, "#{__dir__}/leftovers/rake_task")
+  autoload(:Reporter, "#{__dir__}/leftovers/reporter")
+  autoload(:DynamicProcessors, "#{__dir__}/leftovers/dynamic_processors")
+  autoload(:ValueProcessors, "#{__dir__}/leftovers/value_processors")
+  autoload(:VERSION, "#{__dir__}/leftovers/version")
 
   class << self
     attr_accessor :parallel, :progress
@@ -28,7 +45,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   end
 
   def config
-    @config ||= Leftovers::MergedConfig.new
+    @config ||= Leftovers::MergedConfig.new(load_defaults: true)
   end
 
   def collector
@@ -39,23 +56,21 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     @reporter ||= Leftovers::Reporter.new
   end
 
-  def leftovers # rubocop:disable Metrics/MethodLength
+  def leftovers
     @leftovers ||= begin
       collector.collect
-      collector.definitions.reject do |definition|
-        definition.skipped? || definition.in_collection?
-      end
+      collector.definitions.reject(&:in_collection?)
     end
   end
 
-  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
+  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     @stdout = stdout
     @stderr = stderr
     return 0 if leftovers.empty?
 
     only_test = []
     none = []
-    leftovers.sort.each do |definition|
+    leftovers.sort_by(&:location_s).each do |definition|
       if !definition.test? && definition.in_test_collection?
         only_test << definition
       else
@@ -76,7 +91,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     1
   end
 
-  def reset # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+  def reset # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     remove_instance_variable(:@config) if defined?(@config)
     remove_instance_variable(:@collector) if defined?(@collector)
     remove_instance_variable(:@reporter) if defined?(@reporter)
@@ -90,6 +105,11 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
 
   def warn(message)
     stderr.puts("\e[2K#{message}")
+  end
+
+  def error(message)
+    warn(message)
+    exit 1
   end
 
   def puts(message)
@@ -125,6 +145,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     rescue LoadError
       false
     end
+
     warn message if !@try_require[requirable] && message
     @try_require[requirable]
   end
@@ -134,14 +155,6 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     when nil then nil
     when Array then value.each(&block)
     else yield(value)
-    end
-  end
-
-  def array_wrap(value)
-    case value
-    when nil then [].freeze
-    when Array then value
-    else [value]
     end
   end
 end

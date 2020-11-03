@@ -1,21 +1,19 @@
-rules:
-  skip: true
-  name:
-    - before_navigate_to
-    - before_navigate_back
-    - after_navigate_back
-    - before_navigate_forward
-    - after_navigate_forward
-    - before_find
-    - after_find
-    - before_click
-    - before_change_value_of
-    - after_change_value_of
-    - before_execute_script
-    - after_execute_script
-    - before_quit
-    - before_close
-    - after_navigate_to
-    - after_click
-    - after_quit
-    - after_close
+keep:
+  - before_navigate_to
+  - before_navigate_back
+  - after_navigate_back
+  - before_navigate_forward
+  - after_navigate_forward
+  - before_find
+  - after_find
+  - before_click
+  - before_change_value_of
+  - after_change_value_of
+  - before_execute_script
+  - after_execute_script
+  - before_quit
+  - before_close
+  - after_navigate_to
+  - after_click
+  - after_quit
+  - after_close

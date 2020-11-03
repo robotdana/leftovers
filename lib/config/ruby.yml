@@ -14,36 +14,35 @@ test_paths:
   - /tests/
   - /test/
 
-rules:
-  - skip: true
-    name:
-      - initialize # called by new
-      - inspect # called by repl, to_s
-      - respond_to_missing? # called by respond_to?
-      - method_missing # called by method dispatch
-      - coerce # called by Numeric
-      - to_s # called by "#{}"
-      - to_ary # called by Array(), []+
-      - to_a # called by Array(), *splat
-      - to_str # called by String(), ""+
-      - to_hash # called by Hash(), **splat, {}.merge
-      - to_int # called by Integer()
-      - to_i # called by Integer()
-      - to_f # called by Float()
-      - <=> # called by Comparable
-      - each # called by Enumerable
-      - marshal_dump # called by Marshal.dump
-      - marshal_load # called by Marshal.load
-      - _dump # called by Marshal.dump
-      - _load # called by Marshal.load
-      - inherited # called by Subclass < Klass or Class.new(Klass)
-      - extended # called by extend Module
-      - included # called by include Module
-      - $VERBOSE # called by whatever is outputting warnings i guess
-      - === # called by when
-      - == # called by Array value, Hash value equality, ===
-      - hash # called by Hash key equality
-      - eql? # called by Hash key equality
+keep:
+  - initialize # called by new
+  - inspect # called by repl, to_s
+  - respond_to_missing? # called by respond_to?
+  - method_missing # called by method dispatch
+  - coerce # called by Numeric
+  - to_s # called by "#{}"
+  - to_ary # called by Array(), []+
+  - to_a # called by Array(), *splat
+  - to_str # called by String(), ""+
+  - to_hash # called by Hash(), **splat, {}.merge
+  - to_int # called by Integer()
+  - to_i # called by Integer()
+  - to_f # called by Float()
+  - <=> # called by Comparable
+  - each # called by Enumerable
+  - marshal_dump # called by Marshal.dump
+  - marshal_load # called by Marshal.load
+  - _dump # called by Marshal.dump
+  - _load # called by Marshal.load
+  - inherited # called by Subclass < Klass or Class.new(Klass)
+  - extended # called by extend Module
+  - included # called by include Module
+  - $VERBOSE # called by whatever is outputting warnings i guess
+  - === # called by when
+  - == # called by Array value, Hash value equality, ===
+  - hash # called by Hash key equality
+  - eql? # called by Hash key equality
+dynamic:
   - name:
       - send
       - public_send
@@ -51,8 +50,7 @@ rules:
       - method
       - respond_to?
       - instance_method
-    calls:
-      argument: 1
+    calls: 0
   - name: attr_reader
     defines:
       argument: '*'
@@ -62,33 +60,25 @@ rules:
   - name: attr_writer
     defines:
       argument: '*'
-      transforms:
-        - add_suffix: '='
+      add_suffix: '='
   - name: attr_accessor
     defines:
       - argument: '*'
-        transforms:
-          - original
-          - add_suffix: '='
+        add_suffix: '='
+      - argument: '*'
     calls:
       argument: '*'
-      transforms:
-        add_prefix: '@'
+      add_prefix: '@'
   - name: define_method
-    defines:
-      argument: 1
+    defines: 0
   - name: alias_method
-    defines:
-      argument: 1
-    calls:
-      argument: 2
+    defines: 0
+    calls: 1
   - name:
       - instance_variable_get
-      - class_variable_set
-    calls:
-      argument: 1
+      - class_variable_get
+    calls: 0
   - name:
       - instance_variable_set
       - class_variable_set
-    defines:
-      argument: 1
+    defines: 0

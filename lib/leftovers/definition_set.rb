@@ -1,24 +1,18 @@
 # frozen_string_literal: true
 
-require_relative 'definition'
 module Leftovers
-  class DefinitionSet < Leftovers::Definition
-    def initialize( # rubocop:disable Metrics/MethodLength
-      names,
+  class DefinitionSet < ::Leftovers::Definition
+    attr_reader :definitions
+
+    def initialize(
+      definitions,
       method_node: nil,
       location: method_node.loc.expression,
-      file: method_node.file,
       test: method_node.test?
     )
-      @definitions = names.map do |name|
-        Leftovers::Definition.new(name, test: test, location: location, file: file)
-      end
+      @definitions = definitions
 
-      @test = test
-      @location = location
-      @file = file
-
-      freeze
+      super
     end
 
     def names
@@ -35,10 +29,6 @@ module Leftovers
 
     def in_test_collection?
       @definitions.any?(&:in_test_collection?)
-    end
-
-    def skipped?
-      @definitions.any?(&:skipped?)
     end
   end
 end

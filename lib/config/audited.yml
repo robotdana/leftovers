@@ -1,4 +1,9 @@
-rules:
-  name: current_user_method=
-  calls:
-    argument: 1
+dynamic:
+  - name: current_user_method=
+    calls: 0
+  - name: audited
+    calls:
+      argument:
+        - associated_with
+        - if
+        - unless

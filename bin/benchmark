@@ -1,0 +1,161 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'benchmark/ips'
+require 'tempfile'
+require 'stringio'
+
+# from benchmark/ips readme
+class GCSuite
+  def warming(*) # leftovers:allow
+    run_gc
+  end
+
+  def running(*) # leftovers:allow
+    run_gc
+  end
+
+  def warmup_stats(*); end # leftovers:allow
+
+  def add_report(*); end # leftovers:allow
+
+  private
+
+  def run_gc
+    GC.enable
+    GC.start
+    GC.disable
+  end
+end
+
+GC.disable
+
+config = { suite: GCSuite.new, time: 3, warmup: 0.1 }
+
+def benchmark(label)
+  return unless ARGV.empty? || ARGV.include?(label)
+
+  puts "\n#{label}:"
+
+  yield
+  puts ''
+end
+
+module AnythingMatcher
+  def self.===(_value)
+    true
+  end
+end
+benchmark('method-vs-ancestors') do
+  a_proc = proc { true }
+  method = AnythingMatcher.method(:===)
+
+  raise unless AnythingMatcher === rand
+  raise unless BasicObject === rand
+  raise unless a_proc === rand
+  raise unless method === rand
+
+  Benchmark.ips do |x|
+    x.config(config)
+
+    x.report(:method_object) { method === rand }
+    x.report(:ancestor) { Object === rand }
+    x.report(:'=== method') { AnythingMatcher === rand }
+    x.report(:proc) { a_proc === rand }
+
+    x.compare!
+  end
+end
+
+benchmark('length-and-out-of-bounds-access') do
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:length_gte_one, '[1,2,3].length >= 4')
+    x.report(:length_gt_one, '[1,2,3].length > 3')
+    x.report(:access_one, '[1,2,3][3]')
+    x.report(:length_gte_thousand, '[1,2,3].length >= 1000')
+    x.report(:length_gt_thousand, '[1,2,3].length > 999')
+    x.report(:access_thousand, '[1,2,3][999]')
+    x.compare!
+  end
+end
+benchmark('not-empty') do
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:length_gte_empty, '[].length >= 1')
+    x.report(:length_gt_empty, '[].length > 1')
+    x.report(:first_empty, '[].first')
+    x.report(:not_empty, 'not [].empty?')
+    x.compare!
+  end
+end
+
+benchmark('remove-and-return-2-from-array') do
+  Benchmark.ips do |x|
+    x.config(config)
+
+    x.report(:pop) do
+      a = [1, 2, 3]
+      a.pop
+      a.pop
+    end
+
+    x.report(:shift) do
+      a = [1, 2, 3]
+      a.shift
+      a.shift
+    end
+
+    x.report(:first_drop) do
+      a = [1, 2, 3]
+      a.first
+      a[1]
+      a.drop(2)
+    end
+
+    x.compare!
+  end
+end
+
+benchmark('concat-when-empty') do
+  Benchmark.ips do |x|
+    x.config(config)
+
+    x.report(:empty?, 'a = []; [1,2,3,4,5,6,7,8,9,0].concat(a) unless a.empty?')
+    x.report(:concat, 'a = []; [1,2,3,4,5,6,7,8,9,0].concat(a)')
+    x.report(:control, 'a = []; [1,2,3,4,5,6,6,7,8,9,0]')
+    x.compare!
+  end
+end
+
+benchmark('concat-when-not-empty') do
+  Benchmark.ips do |x|
+    x.config(config)
+
+    x.report(:empty?, 'a = [1]; [1,2,3,4,5,6,7,8,9,0].concat(a) unless a.empty?')
+    x.report(:concat, 'a = [1]; [1,2,3,4,5,6,7,8,9,0].concat(a)')
+    x.report(:control, 'a = [1]; [1,2,3,4,5,6,6,7,8,9,0]')
+    x.compare!
+  end
+end
+
+benchmark('match-vs-count') do
+  # [<>&"']
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:count_miss, '"my-string".count(%{<>&"\'}).positive?')
+    x.report(:match_miss, '"my-string".match?(/[<>&"\']/)')
+    x.report(:count_hit_start, '"<my-string".count(%{<>&"\'}).positive?')
+    x.report(:match_hit_start, '"<my-string".match?(/[<>&"\']/)')
+    x.report(:count_hit_end, '"my-string>".count(%{<>&"\'}).positive?')
+    x.report(:match_hit_end, '"my-string>".match?(/[<>&"\']/)')
+    x.report(:count_hit_long_start, "'<#{'my-string ' * 20_000}'.count(%{<>&\"'}).positive?")
+    x.report(:match_hit_long_start, "'<#{'my-string ' * 20_000}'.match?(/[<>&\"']/)")
+
+    x.report(:count_hit_long_end, "'#{'my-string ' * 20_000}>'.count(%{<>&\"'}).positive?")
+    x.report(:match_hit_long_end, "'#{'my-string ' * 20_000}>'.match?(/[<>&\"']/)")
+    x.compare!
+  end
+end

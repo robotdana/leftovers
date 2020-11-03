@@ -6,12 +6,12 @@ Find unused `methods`, `Classes`, `CONSTANTS`, `@instance_variables`, `@@class_v
 
 ## Why?
 
-Code that never gets executed is code that you shouldn't need to maintain.
+Code that never gets executed is code that you shouldn't need to maintain
 
 - Leftovers from refactoring
 - Partially removed features
 - Typos and THIS NEVER WOULD HAVE WORKED code
-- Code that you only keep around because there are tests of it.
+- Code that you only keep around because there are tests of it
 
 Leftovers will use static analysis to find these bits of code for you.
 
@@ -61,6 +61,7 @@ lib/hello_world.rb:6:6 generated_method attr_accessor :generated_method
 ## Magic comments
 
 ### `# leftovers:keep`
+_aliases `leftovers:keeps`, `leftovers:skip`, `leftovers:skips`, `leftovers:skipped`, `leftovers:allow`, `leftovers:allows`, `leftovers:allowed`_
 To mark a method definition as not unused, add the comment `# leftovers:keep` on the same line as the definition
 
 ```ruby
@@ -74,6 +75,7 @@ This would report `MyClass` is unused, but not my_method
 To do this for all definitions of this name, add the name with `skip: true` in the configuration file.
 
 ### `# leftovers:test`
+_aliases `leftovers:for_test`, `leftovers:for_tests`, `leftovers:test`, `leftovers:tests`, `leftovers:testing`_
 
 To mark a definition from a non-test dir, as intentionally only used by tests, use `leftovers:test`
 ```ruby
@@ -94,60 +96,40 @@ end
 This would consider `my_method` to be used, even though it is only called by tests.
 
 ### `# leftovers:call`
+_aliases `leftovers:calls`_
 To mark a dynamic call that doesn't use literal values, use `leftovers:call` with the method name listed
 ```ruby
-method = [:puts, :warn].sample
-send(method, 'text') # leftovers:call puts, warn
+method = [:puts, :warn].sample # leftovers:call puts, warn
+send(method, 'text')
 ```
 
 This would consider `puts` and `warn` to both have been called
 
-## Configuration
+## Configuration file
 
 The configuration is read from `.leftovers.yml` in your project root.
-Its presence is optional and all of these settings are optional:
+Its presence is optional and all of these settings are optional.
 
-see the [complete config documentation](https://github.com/robotdana/leftovers/tree/main/Configuration.md) for details.
-see the [built in config files](https://github.com/robotdana/leftovers/tree/main/lib/config) for examples.
+- [`include_paths:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#include_paths)
+- [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#exclude_paths)
+- [`test_paths:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#test_paths)
+- [`requires:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#requires)
+- [`gems:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#gems)
+- [`keep:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#keep)
+- [`dynamic:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#dynamic)
 
-- [`include_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#include_paths)
-- [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#exclude_paths)
-- [`test_paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#test_paths)
-- [`gems:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#gems)
-- [`rules:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#rules)
-  - [`names:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#names)
-    - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-    - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-    - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
-  - [`paths:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#paths)
-  - [`skip:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#skip)
-  - [`calls:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#calls-defines), [`defines:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#calls-defines)
-    - [`arguments:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#arguments), [`keys:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#keys-), [`itself:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#itself-true)
-    - [`transforms:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#transforms), [`linked_transforms:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#linked_transforms)
-        - `original:`, `add_prefix:`, `add_suffix:`, `delete_prefix:`, `delete_suffix:`, `replace_with:`
-        - `delete_before:`, `delete_after:`, `downcase:`, `upcase:`, `capitalize:`, `swapcase:`
-        - `pluralize`, `singularize`, `camelize`, `underscore`, `demodulize`, `deconstantize`
-    - [`if:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#if-unless), [`unless:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#if-unless)
-      - [`has_argument:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_argument)
-        - `keyword:`
-          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
-        - `value:`
-          - [`has_prefix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`has_suffix:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#has_prefix-has_suffix)
-          - [`matches:`](https://github.com/robotdana/leftovers/tree/main/Configuration.md#matches)
-          - `type:`
+see the [complete config documentation](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md) for details.
+see the [built in config files](https://github.com/robotdana/leftovers/tree/main/lib/config) or [this repo's own config](https://github.com/robotdana/leftovers/tree/main/.leftovers.yml) for examples.
 
 ## Limitations
 
 - Leftovers will report methods/constants you define that are called outside your code (perhaps by gems) as unused
 
-  Add these names to the `rules:` list with `skip: true` in the `.leftovers.yml` or add an inline comment with `# leftovers:allow my_method_name`
-- Leftovers doesn't execute your code so isn't aware of dynamic calls to `send` (e.g. `send(variable_method_name)`). (it is aware of static calls (e.g. `send(:my_method_name)`), so using send to bypass method privacy is "fine")
+  Add these names to the `keep:` list in the `.leftovers.yml` or add an inline comment with `# leftovers:allow my_method_name`
+- Leftovers doesn't execute your code so isn't aware of e.g. variables in calls to `send` (e.g. `send(variable_method_name)`). (it is aware of static calls (e.g. `send(:my_method_name)`), so using send to bypass method privacy is "fine")
 
-  Add the method/pattern to the `rules:` list with `skip: true` in the `.leftovers.yml`, or add an inline comment with the list of possibilities `# leftovers:call my_method_1, my_method_2`.
-- Leftovers compares by name only, so multiple methods with the same name will count as used even if only one is.
+  Add the method/pattern to the `dynamic:` list with `skip: true` in the `.leftovers.yml`, or add an inline comment with the list of possibilities `# leftovers:call my_method_1, my_method_2`.
+- Leftovers compares by name only, so multiple definitions with the same name will count as used even if only one is.
 - haml & erb line and column numbers will be wrong as the files have to be precompiled before checking.
 
 ## Other tools

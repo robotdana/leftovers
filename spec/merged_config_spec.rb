@@ -1,20 +1,59 @@
 # frozen_string_literal: true
 
 RSpec.describe Leftovers::MergedConfig do
+  before { Leftovers.reset }
+
   describe '<<' do
     it 'handles clearing memoization' do
+      subject << :ruby
       original_exclude_paths = subject.exclude_paths
       original_include_paths = subject.include_paths
       original_test_paths = subject.test_paths
-      original_rules = subject.rules
+      original_dynamic = subject.dynamic
+      original_keep = subject.keep
 
       rails = Leftovers::Config.new(:rails)
       subject << rails
 
       expect(original_exclude_paths + rails.exclude_paths).to eq subject.exclude_paths
       expect(original_include_paths + rails.include_paths).to eq subject.include_paths
-      expect(original_test_paths).not_to eq subject.test_paths
-      expect(original_rules + rails.rules).to eq subject.rules
+      expect(original_test_paths).not_to eq subject.test_paths # it's a different set of FastIgnore
+
+      expect(
+        ::Leftovers::ProcessorBuilders::EachDynamic.build([original_dynamic, rails.dynamic])
+      ).to match_nested_object subject.dynamic
+
+      expect(
+        ::Leftovers::MatcherBuilders::Or.build([original_keep, rails.keep])
+      ).to match_nested_object subject.keep
+    end
+
+    it 'can report when requiring' do
+      config = Leftovers::Config.new('.invalid', content: <<~YML)
+        require: 'ruby' # is a reserved gem
+      YML
+
+      message = <<~MSG
+        cannot require 'ruby' from .invalid.yml
+      MSG
+
+      expect { subject << config }.to output(a_string_including(message)).to_stderr
+    end
+
+    it "or's correctly" do
+      config = Leftovers::Config.new('.valid.yml', content: 'keep: method')
+      config2 = Leftovers::Config.new('.valid2.yml', content: 'keep: method2')
+      config3 = Leftovers::Config.new('.valid3.yml', content: 'keep: [method3, method4]')
+      config4 = Leftovers::Config.new('.valid4.yml', content: 'keep: [method5, method6, method7]')
+
+      subject << config
+      expect(subject.keep).to be_a(::Leftovers::Matchers::NodeName)
+      subject << config2
+      expect(subject.keep).to be_a(::Leftovers::Matchers::Or)
+      subject << config3
+      expect(subject.keep).to be_a(::Leftovers::Matchers::Any)
+      subject << config4
+      expect(subject.keep).to be_a(::Leftovers::Matchers::Any)
     end
   end
 
@@ -24,19 +63,17 @@ RSpec.describe Leftovers::MergedConfig do
       expect_any_instance_of(described_class).to receive(:<<).twice # rubocop:disable RSpec/AnyInstance
       # not sure how i can expect a particular instance because it's called in the initializer
 
-      subject
+      described_class.new(load_defaults: true)
     end
 
     it 'only tries loading rspec once' do
-      with_temp_dir
-      temp_file '.leftovers.yml', <<~YML
-        gems:
-        - rspec
-        - rspec
-      YML
+      config = Leftovers::Config.new('.valid.yml', content: 'gems: rspec')
+      config2 = Leftovers::Config.new('.valid2.yml', content: 'gems: rspec')
 
-      loaded_configs = subject.instance_variable_get(:@configs).map(&:name)
-      expect((loaded_configs - [:rspec]).length).to be loaded_configs.length - 1
+      subject << config
+      subject << config2
+
+      expect(subject.instance_variable_get(:@configs).length).to eq 3 # 2 configs + rspec once
     end
   end
 end

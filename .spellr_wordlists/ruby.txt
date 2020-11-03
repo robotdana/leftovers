@@ -41,6 +41,7 @@ masgn
 mattr
 memoizations
 optarg
+pascalcase
 postexe
 postprocess
 precompile
@@ -57,6 +58,7 @@ rspec
 rubocop
 shadowarg
 simplecov
+stdlib
 strikethrough
 subnodes
 syms
@@ -64,4 +66,5 @@ titlecase
 titleize
 usr
 vasgn
+xcontext
 xstr

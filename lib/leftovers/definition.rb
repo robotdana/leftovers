@@ -2,7 +2,7 @@
 
 module Leftovers
   class Definition
-    attr_reader :name, :test
+    attr_reader :name, :test, :location_s
     alias_method :names, :name
 
     alias_method :test?, :test
@@ -11,48 +11,27 @@ module Leftovers
       name,
       method_node: nil,
       location: method_node.loc.expression,
-      file: method_node.file,
       test: method_node.test?
     )
       @name = name
-
-      @location = location
-      @file = file
+      @location_source_line = location.source_line.to_s
+      @location_column_range_begin = location.column_range.begin.to_i
+      @location_column_range_end = location.column_range.end.to_i
+      @location_source = location.source.to_s
+      @location_s = location.to_s
       @test = test
 
       freeze
-    end
-
-    def <=>(other)
-      (path <=> other.path).nonzero? ||
-        (line <=> other.line).nonzero? ||
-        (column <=> other.column)
-    end
-
-    def path
-      @file.relative_path
     end
 
     def to_s
       @name.to_s
     end
 
-    def line
-      @location.line
-    end
-
-    def column
-      @location.column
-    end
-
-    def full_location
-      "#{path}:#{line}:#{column}"
-    end
-
-    def highlighted_source(highlight = "\e[31m", normal = "\e[0m") # rubocop:disable Metrics/AbcSize
-      @location.source_line.to_s[0...(@location.column_range.begin)].lstrip +
-        highlight + @location.source.to_s + normal +
-        @location.source_line.to_s[(@location.column_range.end)..-1].rstrip
+    def highlighted_source(highlight = "\e[31m", normal = "\e[0m")
+      @location_source_line[0...@location_column_range_begin].lstrip +
+        highlight + @location_source + normal +
+        @location_source_line[@location_column_range_end..-1].rstrip
     end
 
     def in_collection?
@@ -61,10 +40,6 @@ module Leftovers
 
     def in_test_collection?
       Leftovers.collector.test_calls.include?(@name)
-    end
-
-    def skipped?
-      Leftovers.config.skip_rules.any? { |r| r.match?(@name, path) }
     end
   end
 end

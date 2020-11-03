@@ -3,9 +3,6 @@
 require 'parser'
 require 'parser/current'
 
-require_relative 'ast/builder'
-require_relative 'ast/node'
-
 module Leftovers
   module Parser
     class << self
@@ -23,7 +20,7 @@ module Leftovers
 
       # mostly copied from https://github.com/whitequark/parser/blob/master/lib/parser/base.rb
       # but with our builder
-      def parser # rubocop:disable Metrics/MethodLength
+      def parser
         p = ::Parser::CurrentRuby.new(Leftovers::AST::Builder.new)
         p.diagnostics.all_errors_are_fatal = true
         p.diagnostics.ignore_warnings = true

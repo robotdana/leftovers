@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require_relative 'rule'
 
 module Leftovers
   class Config
     # :nocov:
-    using ::Leftovers::SetCaseEq if defined?(::Leftovers::SetCaseEq)
+    using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
     # :nocov:
 
     attr_reader :name
@@ -33,11 +32,16 @@ module Leftovers
       @test_paths ||= Array(yaml[:test_paths])
     end
 
-    def rules
-      @rules ||= Rule.wrap(yaml[:rules])
-    rescue Leftovers::ConfigError => e
-      warn "\e[31mConfig Error: (#{path}): #{e.message}\e[0m"
-      Leftovers.exit 1
+    def dynamic
+      @dynamic ||= ::Leftovers::ProcessorBuilders::Dynamic.build(yaml[:dynamic])
+    end
+
+    def keep
+      @keep ||= ::Leftovers::MatcherBuilders::Node.build(yaml[:keep])
+    end
+
+    def requires
+      @requires ||= Array(yaml[:requires])
     end
 
     private
@@ -50,31 +54,21 @@ module Leftovers
       @path ||= ::File.expand_path("../config/#{name}.yml", __dir__)
     end
 
-    def yaml # rubocop:disable Metrics/MethodLength
+    def yaml
+      @yaml ||= ::Leftovers::ConfigValidator.validate_and_process!(parse_yaml, path)
+    end
+
+    def parse_yaml
       # :nocov:
-      @yaml ||= if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
-        Psych.safe_load(content, symbolize_names: true, filename: path) || {}
+      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
+        Psych.safe_load(content, filename: path) || {}
       else
-        symbolize_names!(Psych.safe_load(content, [], [], false, path)) || {}
+        Psych.safe_load(content, [], [], false, path) || {}
       end
       # :nocov:
     rescue ::Psych::SyntaxError => e
       warn "\e[31mConfig SyntaxError: #{e.message}\e[0m"
       Leftovers.exit 1
     end
-
-    # :nocov:
-    def symbolize_names!(obj) # rubocop:disable Metrics/MethodLength
-      case obj
-      when Hash
-        obj.keys.each do |key| # rubocop:disable Style/HashEachMethods # each_key never finishes.
-          obj[key.to_sym] = symbolize_names!(obj.delete(key))
-        end
-      when Array
-        obj.map! { |ea| symbolize_names!(ea) }
-      end
-      obj
-    end
-    # :nocov:
   end
 end

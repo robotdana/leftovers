@@ -9,11 +9,11 @@ module Leftovers
       @compiler.compile(erb).first
     end
 
-    def add_insert_cmd(out, content)
+    def add_insert_cmd(out, content) # leftovers:keep
       out.push("#{content}\n")
     end
 
-    def add_put_cmd(out, _content)
+    def add_put_cmd(out, _content) # leftovers:keep
       out
     end
   end

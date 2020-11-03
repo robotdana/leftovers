@@ -3,14 +3,12 @@
 require 'fast_ignore'
 require 'set'
 require 'parallel'
-require_relative 'file_collector'
-require_relative 'file_list'
 
 module Leftovers
   class Collector
     attr_reader :calls, :test_calls, :definitions
 
-    def initialize # rubocop:disable Metrics/MethodLength
+    def initialize
       @calls = []
       @test_calls = []
       @definitions = []
@@ -36,7 +34,7 @@ module Leftovers
     end
 
     def collect_file(file)
-      file_collector = Leftovers::FileCollector.new(file.ruby, file)
+      file_collector = ::Leftovers::FileCollector.new(file.ruby, file)
       file_collector.collect
 
       file_collector.to_h
@@ -48,7 +46,7 @@ module Leftovers
       )
     end
 
-    def finish_file(_, _, result) # rubocop:disable Metrics/MethodLength
+    def finish_file(_, _, result)
       @count += 1
       @count_calls += result[:calls].length
       @count_definitions += result[:definitions].length

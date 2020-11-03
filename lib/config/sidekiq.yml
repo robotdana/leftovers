@@ -1,13 +1,9 @@
-rules:
-  - skip: true
-    names:
-      - on_complete
+keep: on_complete
+dynamic:
   - names:
       - perform_async
     calls:
-      itself: true
-      delete_suffix: _async
+      value: perform
   - name: register
     calls:
-      argument: 2
-
+      argument: 1

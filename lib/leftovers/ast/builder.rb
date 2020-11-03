@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'node'
+require 'parser'
 
 module Leftovers
   module AST
@@ -9,12 +9,12 @@ module Leftovers
       #
       # @return [Node] the generated node
 
-      def n(type, children, source_map)
-        Leftovers::AST::Node.new(type, children, location: source_map)
+      def n(type, children, source_map) # leftovers:keep
+        ::Leftovers::AST::Node.new(type, children, location: source_map)
       end
 
       # Don't complain about invalid strings
-      def string_value(token)
+      def string_value(token) # leftovers:keep
         value(token)
       end
     end

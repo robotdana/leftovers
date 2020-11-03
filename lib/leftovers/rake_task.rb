@@ -2,7 +2,7 @@
 
 require 'rake'
 require 'shellwords'
-require_relative 'cli'
+require_relative '../leftovers'
 
 module Leftovers
   class RakeTask

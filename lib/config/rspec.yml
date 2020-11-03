@@ -1,9 +1,10 @@
 test_paths:
   - /spec/
 
-rules:
-  - skip: true
-    path: /spec/
+# split into gems too
+
+keep:
+  - path: /spec/
     name:
       # matchers
       - diffable?
@@ -23,24 +24,23 @@ rules:
       - dump_summary
       - seed
       - close
+dynamic:
   - name:
       - have_attributes
       - has_attributes?
       - receive_messages
     calls:
-      - keys: '*'
+      keywords: '**'
     path: /spec/
   - name:
     - receive
     - respond_to
     calls:
-      argument: 1
+      argument: 0
     path: /spec/
   - name: define_negated_matcher
-    defines:
-      argument: 1
-    calls:
-      argument: 2
+    defines: 0
+    calls: 1
     path: /spec/
   - name:
       has_prefix: be_
@@ -58,6 +58,7 @@ rules:
       add_prefix: has_
     path: /spec/
   - name: let
-    defines:
-      argument: 1
+    unless:
+      has_argument: 1
+    defines: 0
     path: /spec/

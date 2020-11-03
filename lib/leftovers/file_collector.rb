@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
-require 'fast_ignore'
 require 'set'
-require_relative 'parser'
-require_relative 'definition'
+require 'parser'
 
 module Leftovers
   class FileCollector < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength
     attr_reader :calls, :definitions
 
-    def initialize(ruby, file) # rubocop:disable Metrics/MethodLength
+    def initialize(ruby, file) # rubocop:disable Lint/MissingSuper
       @calls = []
       @definitions = []
       @allow_lines = Set.new.compare_by_identity
@@ -23,6 +21,8 @@ module Leftovers
     end
 
     def to_h
+      squash!
+
       {
         test?: @file.test?,
         calls: calls,
@@ -30,8 +30,18 @@ module Leftovers
       }
     end
 
+    def squash!
+      calls.flatten!
+      calls.compact!
+      calls.uniq!
+      definitions.flatten!
+      definitions.compact!
+      definitions.uniq!
+      definitions.reject! { |v| v == :keep }
+    end
+
     def collect
-      ast, comments = Leftovers::Parser.parse_with_comments(@ruby, @file)
+      ast, comments = Leftovers::Parser.parse_with_comments(@ruby, @file.relative_path)
       process_comments(comments)
       process(ast)
     rescue ::Parser::SyntaxError => e
@@ -48,7 +58,7 @@ module Leftovers
     LEFTOVERS_CALL_RE = /\bleftovers:call(?:s|ed|er|ers|) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
     LEFTOVERS_ALLOW_RE = /\bleftovers:(?:keeps?|skip(?:s|ped|)|allow(?:s|ed|))\b/.freeze
     LEFTOVERS_TEST_RE = /\bleftovers:(?:for_tests?|tests?|testing)\b/.freeze
-    def process_comments(comments) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def process_comments(comments) # rubocop:disable Metrics/AbcSize
       comments.each do |comment|
         @allow_lines << comment.loc.line if comment.text.match?(LEFTOVERS_ALLOW_RE)
         @test_lines << comment.loc.line if comment.text.match?(LEFTOVERS_TEST_RE)
@@ -61,66 +71,74 @@ module Leftovers
 
     # grab method definitions
     def on_def(node)
-      add_definition(node.name, node.loc.name)
-
+      add_definition(node)
       super
     end
 
     def on_ivasgn(node)
-      add_definition(node.name, node.loc.name)
-
-      collect_rules(node)
-
+      collect_variable_assign(node)
       super
     end
-    alias_method :on_gvasgn, :on_ivasgn
-    alias_method :on_cvasgn, :on_ivasgn
+
+    def on_gvasgn(node)
+      collect_variable_assign(node)
+      super
+    end
+
+    def on_cvasgn(node)
+      collect_variable_assign(node)
+      super
+    end
 
     def on_ivar(node)
       add_call(node.name)
-
       super
     end
-    alias_method :on_gvar, :on_ivar
-    alias_method :on_cvar, :on_ivar
+
+    def on_gvar(node)
+      add_call(node.name)
+      super
+    end
+
+    def on_cvar(node)
+      add_call(node.name)
+      super
+    end
 
     def on_op_asgn(node)
       collect_op_asgn(node)
-
       super
     end
 
     def on_and_asgn(node)
       collect_op_asgn(node)
-
       super
     end
 
     def on_or_asgn(node)
       collect_op_asgn(node)
-
       super
     end
 
     # grab method calls
     def on_send(node)
       super
-
-      add_call(node.name)
-      collect_rules(node)
+      collect_send(node)
     end
-    alias_method :on_csend, :on_send
+
+    def on_csend(node)
+      super
+      collect_send(node)
+    end
 
     def on_const(node)
       super
-
       add_call(node.name)
     end
 
     # grab e.g. :to_s in each(&:to_s)
     def on_block_pass(node)
       super
-
       add_call(node.children.first.to_sym) if node.children.first.string_or_symbol?
     end
 
@@ -132,26 +150,22 @@ module Leftovers
 
       node = node.children.first
 
-      add_definition(node.name, node.loc.name)
+      add_definition(node)
     end
     alias_method :on_module, :on_class
 
     # grab Constant = Class.new or CONSTANT = 'string'.freeze
     def on_casgn(node)
       super
-
-      add_definition(node.name, node.loc.name)
-
-      collect_rules(node)
+      add_definition(node)
+      collect_dynamic(node)
     end
 
     # grab calls to `alias new_method original_method`
     def on_alias(node)
       super
-
       new_method, original_method = node.children
-
-      add_definition(new_method.children.first, new_method.loc.expression)
+      add_definition(new_method, name: new_method.children.first, loc: new_method.loc.expression)
       add_call(original_method.children.first)
     end
 
@@ -161,14 +175,20 @@ module Leftovers
       @file.test? || @test_lines.include?(loc.line)
     end
 
-    def add_definition(name, loc)
+    def add_definition(node, name: node.name, loc: node.loc.name)
       return if @allow_lines.include?(loc.line)
+      return if Leftovers.config.keep === node
 
-      definitions << Leftovers::Definition.new(name, location: loc, file: @file, test: test?(loc))
+      definitions << Leftovers::Definition.new(name, location: loc, test: test?(loc))
     end
 
     def add_call(name)
       calls << name
+    end
+
+    def collect_send(node)
+      add_call(node.name)
+      collect_dynamic(node)
     end
 
     # just collects the call, super will collect the definition
@@ -184,6 +204,12 @@ module Leftovers
       add_call(:"#{name}=")
     end
 
+    def collect_variable_assign(node)
+      add_definition(node)
+
+      collect_dynamic(node)
+    end
+
     def collect_op_asgn(node)
       node = node.children.first
       # :nocov: # don't need else, it's exhaustive for callers
@@ -194,22 +220,13 @@ module Leftovers
       end
     end
 
-    def collect_rules(node) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      Leftovers.config.rules.each do |rule|
-        next unless rule.match?(node.name, filename)
+    def collect_dynamic(node) # rubocop:disable Metrics/AbcSize
+      node.keep_line = @allow_lines.include?(node.loc.line)
+      node.test = test?(node.loc) unless node.keep_line?
 
-        next if rule.skip?
-
-        calls.concat(rule.calls(node))
-
-        next if @allow_lines.include?(node.loc.line)
-
-        node.file = @file
-        node.test = test?(node.loc)
-        definitions.concat(rule.definitions(node))
-      end
+      Leftovers.config.dynamic.process(node, self)
     rescue StandardError => e
-      raise e.class, "#{e.message}\nwhen processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace # rubocop:disable Layout/LineLength
+      raise ::Leftovers::Error, "#{e.class}: #{e.message}\nwhen processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace # rubocop:disable Layout/LineLength
     end
   end
 end

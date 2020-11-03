@@ -1,20 +1,21 @@
 # frozen_string_literal: true
 
 require 'set'
-require_relative 'config'
 require 'fast_ignore'
 
 module Leftovers
   class MergedConfig
-    def initialize
+    def initialize(load_defaults: false)
       @configs = []
       @loaded_configs = Set.new
+      return unless load_defaults
+
       self << :ruby
       self << project_config
       load_bundled_gem_config
     end
 
-    def <<(config) # rubocop:disable Metrics/MethodLength
+    def <<(config)
       config = Leftovers::Config.new(config) unless config.is_a?(Leftovers::Config)
       return if @loaded_configs.include?(config.name)
 
@@ -22,6 +23,9 @@ module Leftovers
       @configs << config
       @loaded_configs << config.name
       config.gems.each { |gem| self << gem }
+      config.requires.each do |req|
+        Leftovers.try_require(req, message: "cannot require '#{req}' from #{config.name}.yml")
+      end
     end
 
     def project_config
@@ -32,7 +36,8 @@ module Leftovers
       remove_instance_variable(:@exclude_paths) if defined?(@exclude_paths)
       remove_instance_variable(:@include_paths) if defined?(@include_paths)
       remove_instance_variable(:@test_paths) if defined?(@test_paths)
-      remove_instance_variable(:@rules) if defined?(@rules)
+      remove_instance_variable(:@dynamic) if defined?(@dynamic)
+      remove_instance_variable(:@keep) if defined?(@keep)
     end
 
     def exclude_paths
@@ -51,12 +56,12 @@ module Leftovers
       )
     end
 
-    def skip_rules
-      @skip_rules ||= rules.select(&:skip?)
+    def dynamic
+      @dynamic ||= ::Leftovers::ProcessorBuilders::EachDynamic.build(@configs.map(&:dynamic))
     end
 
-    def rules
-      @rules ||= @configs.flat_map(&:rules)
+    def keep
+      @keep ||= ::Leftovers::MatcherBuilders::Or.build(@configs.map(&:keep))
     end
 
     private

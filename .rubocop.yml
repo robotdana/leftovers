@@ -123,7 +123,7 @@ Layout/LineLength:
   IgnoreCopDirectives: true
 
 Metrics/MethodLength:
-  Max: 5
+  Max: 10
 
 Naming/MethodParameterName:
   AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
@@ -221,4 +221,22 @@ RSpec/NestedGroups:
   Max: 5
 
 RSpec/MessageSpies:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false # wrong when lhs is a Pathname
+
+Style/OptionalBooleanParameter:
+  Enabled: false # it's slower
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+Lint/RedundantSafeNavigation:
+  Enabled: false # i use it terrifyingly to shortcut rhs sometimes.
+
+Style/CommentedKeyword:
+  Enabled: false # i will
+
+Style/EmptyElse:
   Enabled: false

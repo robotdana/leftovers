@@ -9,15 +9,6 @@ RSpec.describe Leftovers do
     expect(Leftovers::VERSION).not_to be nil
   end
 
-  describe '.leftovers_append' do
-    it 'appends things' do
-      expect([1, 2, 3].leftovers_append(4)).to eq [1, 2, 3, 4]
-      expect([1, 2, 3].leftovers_append(nil)).to eq [1, 2, 3]
-      expect([1, 2, 3].leftovers_append([4, 5])).to eq [1, 2, 3, 4, 5]
-      expect([1, 2, 3].leftovers_append([4, 5].to_set)).to eq [1, 2, 3, 4, 5]
-    end
-  end
-
   describe '.leftovers' do
     subject { described_class }
 
@@ -38,11 +29,10 @@ RSpec.describe Leftovers do
 
       allow(subject).to receive(:stdout).and_return(StringIO.new) # rubocop:disable RSpec/SubjectStub
 
-      expect(subject.leftovers).to have_names :check_foo
-      expect(subject.collector.definitions).to have_names(
+      expect(subject.leftovers.flat_map(&:names)).to eq [:check_foo]
+      expect(subject.collector).to have_definitions(
         :foo, :foo?, :foo=, :check_foo
-      )
-      expect(subject.collector.calls).to contain_exactly(:attribute, :foo?)
+      ).and(have_calls(:attribute, :foo?))
     end
 
     it "doesn't think method calls in the same file are leftovers" do
@@ -64,11 +54,10 @@ RSpec.describe Leftovers do
         end
       RUBY
 
-      expect(subject.leftovers).to have_names :Actions
-      expect(subject.collector.definitions)
-        .to have_names(:Actions, :initialize, :prepare_params, :sub_params)
-
-      expect(subject.collector.calls).to contain_exactly(:sub_params, :prepare_params)
+      expect(subject.leftovers.flat_map(&:names)).to eq [:Actions]
+      expect(subject.collector).to have_definitions(
+        :Actions, :prepare_params, :sub_params
+      ).and(have_calls(:sub_params, :prepare_params))
     end
   end
 end
