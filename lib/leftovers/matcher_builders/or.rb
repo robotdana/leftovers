@@ -13,31 +13,24 @@ module Leftovers
         end
       end
 
-      def self.build(matchers, compact: true) # rubocop:disable Metrics/MethodLength
-        matchers = compact(matchers) if compact
-
+      def self.build(matchers)
+        matchers = compact(matchers)
         case matchers.length
           # :nocov:
         when 0 then nil
           # :nocov:
         when 1 then matchers.first
         when 2 then ::Leftovers::Matchers::Or.new(matchers.first, matchers[1])
-        else
-          # turn two matchers at the end into 1
-          # using pop because i want this to be progressively more nested
-          # rather than progressively less nested
-          last = matchers.pop
-          next_last = matchers.pop
-          matchers << ::Leftovers::Matchers::Or.new(next_last, last)
-          # recurse
-          ::Leftovers::MatcherBuilders::Or.build(matchers, compact: false)
+        else ::Leftovers::Matchers::Any.new(matchers.dup)
         end
       end
 
-      def self.flatten(value)
+      def self.flatten(value) # rubocop:disable Metrics/MethodLength
         case value
         when ::Leftovers::Matchers::Or
           [*flatten(value.lhs), *flatten(value.rhs)]
+        when ::Leftovers::Matchers::Any
+          flatten(value.matchers)
         when Array
           ret = value.map { |v| flatten(v) }
           ret.flatten!(1)

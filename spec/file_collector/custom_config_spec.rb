@@ -648,7 +648,6 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        keep: method
         dynamic:
           name: my_method
           defines:
@@ -901,10 +900,12 @@ RSpec.describe Leftovers::FileCollector do
   context 'with constant hash assignment keys' do
     let(:ruby) do
       <<~RUBY
+        rest = {}
         STRING_TRANSFORMS = {
           downcase: true,
           upcase: true,
-          1 => true
+          1 => true,
+          **rest
         }
       RUBY
     end
@@ -1043,9 +1044,11 @@ RSpec.describe Leftovers::FileCollector do
   context 'with nested hash assignment values' do
     let(:ruby) do
       <<~RUBY
+        rest = {}
         STRING_TRANSFORMS = {
           body: { process: :downcase },
-          title: { process: :upcase }
+          title: { process: :upcase },
+          **rest
         }
       RUBY
     end

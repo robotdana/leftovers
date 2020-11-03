@@ -11,7 +11,7 @@ module Leftovers
           ::Leftovers::ValueProcessors::EachKeyword.new(then_processor)
         when ::String, ::Hash, ::Array
           ::Leftovers::ValueProcessors::Keyword.new(
-            ::Leftovers::MatcherBuilders::NodeName.build(value),
+            ::Leftovers::MatcherBuilders::NodePairName.build(value),
             then_processor
           )
         # :nocov:

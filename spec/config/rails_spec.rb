@@ -38,6 +38,15 @@ RSpec.describe 'rails gem' do
     end
   end
 
+  context 'with method calls using a method that calls multiple keyword arguments with splat' do
+    let(:ruby) { 'skip_before_action :method_one, :method_two, **conditions' }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:skip_before_action, :method_one, :method_two, :conditions)
+    end
+  end
+
   context 'with method calls passed to before_save if:' do
     let(:ruby) { 'before_save :do_a_thing, if: :thing_to_be_done?' }
 
@@ -96,6 +105,15 @@ RSpec.describe 'rails gem' do
     it do
       expect(subject).to have_no_definitions
         .and have_calls(:TestValidator, :validates, :OtherValidator, :PresenceValidator)
+    end
+  end
+
+  context 'with rest key calls' do
+    let(:ruby) { 'validates test: true, presence: true, **validators' }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:TestValidator, :validates, :PresenceValidator, :validators)
     end
   end
 

@@ -10,6 +10,8 @@ module Leftovers
     autoload(:NodeHasKeywordArgument, "#{__dir__}/matcher_builders/node_has_keyword_argument")
     autoload(:NodeHasPositionalArgument, "#{__dir__}/matcher_builders/node_has_positional_argument")
     autoload(:NodeName, "#{__dir__}/matcher_builders/node_name")
+    autoload(:NodePairName, "#{__dir__}/matcher_builders/node_pair_name")
+    autoload(:NodePairValue, "#{__dir__}/matcher_builders/node_pair_value")
     autoload(:NodePath, "#{__dir__}/matcher_builders/node_path")
     autoload(:NodeType, "#{__dir__}/matcher_builders/node_type")
     autoload(:Node, "#{__dir__}/matcher_builders/node")

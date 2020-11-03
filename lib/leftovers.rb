@@ -45,7 +45,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   end
 
   def config
-    @config ||= Leftovers::MergedConfig.new
+    @config ||= Leftovers::MergedConfig.new(load_defaults: true)
   end
 
   def collector

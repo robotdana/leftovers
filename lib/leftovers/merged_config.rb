@@ -5,9 +5,11 @@ require 'fast_ignore'
 
 module Leftovers
   class MergedConfig
-    def initialize
+    def initialize(load_defaults: false)
       @configs = []
       @loaded_configs = Set.new
+      return unless load_defaults
+
       self << :ruby
       self << project_config
       load_bundled_gem_config

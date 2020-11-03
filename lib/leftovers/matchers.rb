@@ -2,7 +2,9 @@
 
 module Leftovers
   module Matchers
+    autoload(:All, "#{__dir__}/matchers/all")
     autoload(:And, "#{__dir__}/matchers/and")
+    autoload(:Any, "#{__dir__}/matchers/any")
     autoload(:NodeHasAnyKeywordArgument, "#{__dir__}/matchers/node_has_any_keyword_argument")
     autoload(
       :NodeHasAnyPositionalArgumentWithValue,

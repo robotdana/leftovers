@@ -5,6 +5,7 @@ RSpec.describe Leftovers::MergedConfig do
 
   describe '<<' do
     it 'handles clearing memoization' do
+      subject << :ruby
       original_exclude_paths = subject.exclude_paths
       original_include_paths = subject.include_paths
       original_test_paths = subject.test_paths
@@ -38,6 +39,22 @@ RSpec.describe Leftovers::MergedConfig do
 
       expect { subject << config }.to output(a_string_including(message)).to_stderr
     end
+
+    it "or's correctly" do
+      config = Leftovers::Config.new('.valid.yml', content: 'keep: method')
+      config2 = Leftovers::Config.new('.valid2.yml', content: 'keep: method2')
+      config3 = Leftovers::Config.new('.valid3.yml', content: 'keep: [method3, method4]')
+      config4 = Leftovers::Config.new('.valid4.yml', content: 'keep: [method5, method6, method7]')
+
+      subject << config
+      expect(subject.keep).to be_a(::Leftovers::Matchers::NodeName)
+      subject << config2
+      expect(subject.keep).to be_a(::Leftovers::Matchers::Or)
+      subject << config3
+      expect(subject.keep).to be_a(::Leftovers::Matchers::Any)
+      subject << config4
+      expect(subject.keep).to be_a(::Leftovers::Matchers::Any)
+    end
   end
 
   describe 'new' do
@@ -46,20 +63,17 @@ RSpec.describe Leftovers::MergedConfig do
       expect_any_instance_of(described_class).to receive(:<<).twice # rubocop:disable RSpec/AnyInstance
       # not sure how i can expect a particular instance because it's called in the initializer
 
-      subject
+      described_class.new(load_defaults: true)
     end
 
     it 'only tries loading rspec once' do
-      pending 'redo this when rails is split up and builtin yaml files start requiring gems'
-      with_temp_dir
-      temp_file '.leftovers.yml', <<~YML
-        gems:
-        - rspec
-        - rspec
-      YML
+      config = Leftovers::Config.new('.valid.yml', content: 'gems: rspec')
+      config2 = Leftovers::Config.new('.valid2.yml', content: 'gems: rspec')
 
-      loaded_configs = subject.instance_variable_get(:@configs).map(&:name)
-      expect((loaded_configs - [:rspec]).length).to be loaded_configs.length - 1
+      subject << config
+      subject << config2
+
+      expect(subject.instance_variable_get(:@configs).length).to eq 3 # 2 configs + rspec once
     end
   end
 end
