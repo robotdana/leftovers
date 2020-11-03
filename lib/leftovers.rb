@@ -142,8 +142,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
         require requirable
         true
       end
-    rescue LoadError => e
-      warn e.message
+    rescue LoadError
       false
     end
 

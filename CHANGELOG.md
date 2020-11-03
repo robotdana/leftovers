@@ -10,6 +10,7 @@
   - `rules.calls/defines.transforms.replace_with` is now `keep/dynamic.calls/defines.value` (see custom_config_spec.rb html)
   - `rules.calls/defines.transforms.add_prefix.from_argument/joiner:` is now `dynamic.calls/defines.transforms.add_prefix.argument/add_suffix` (see config/rails.yml delegate)
   - `rules.calls/defines.transforms.add_suffix.from_argument/joiner:` is now `dynamic.calls/defines.transforms.add_suffix.argument/add_prefix`
+  - `rules.calls/defines.key: true` is now `dynamic.calls/defines.keywords: '**'`
   - `rules.calls/defines.arguments.if.arguments.value` is now `keep/dynamic.has_arguments.has_value`
   - `rules.calls/defines.arguments.if.arguments.value.type` is now `keep/dynamic.has_arguments.has_value_type`
   - `rules.calls/defines.linked_transforms` is now `dynamic.calls/defines.transforms` (see config/rails.yml attribute). For the previous behaviour of the `transforms:` key simply add separate calls/defines entry. (see config/ruby.yml attr_accessor)

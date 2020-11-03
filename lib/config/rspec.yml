@@ -30,7 +30,7 @@ dynamic:
       - has_attributes?
       - receive_messages
     calls:
-      keywords: true
+      keywords: '**'
     path: /spec/
   - name:
     - receive

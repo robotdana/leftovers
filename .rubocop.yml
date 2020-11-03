@@ -237,3 +237,6 @@ Lint/RedundantSafeNavigation:
 
 Style/CommentedKeyword:
   Enabled: false # i will
+
+Style/EmptyElse:
+  Enabled: false

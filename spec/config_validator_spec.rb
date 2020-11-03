@@ -11,19 +11,11 @@ RSpec.describe ::Leftovers::ConfigValidator do
     end
   end
 
-  describe ::Leftovers::ConfigValidator::AVAILABLE_GEMS do
-    it 'lists available gems' do
-      files = Pathname.glob("#{__dir__}/../lib/config/*.yml")
-      gems = files.map { |f| f.basename.sub_ext('').to_s }.sort
-
-      expect(described_class).to eq(gems)
-    end
-  end
-
   describe 'gems' do
-    ::Leftovers::ConfigValidator::AVAILABLE_GEMS.each do |gem|
+    ::Pathname.glob("#{__dir__}/../lib/config/*.yml").each do |config_path|
+      gem = config_path.basename.sub_ext('').to_s
       it "can validate #{gem} default config" do
-        config = ::Leftovers::Config.new(gem)
+        config = ::Leftovers::Config.new(gem, path: config_path.to_s)
         expect { catch(:leftovers_exit) { config.dynamic } }.not_to output.to_stderr
       end
     end

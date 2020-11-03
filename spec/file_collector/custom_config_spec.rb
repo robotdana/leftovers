@@ -141,6 +141,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        require: active_support/core_ext/string
         dynamic:
           - name: my_method
             calls:
@@ -158,6 +159,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        requires: 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -174,11 +176,12 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
+        requires: 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
               - argument: '*'
-                deconstantize: true
+                deconstantize: 'true'
       YML
     end
 
@@ -911,7 +914,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: STRING_TRANSFORMS
             calls:
-              keywords: true
+              keywords: '**'
       YML
     end
 
@@ -981,7 +984,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: STRING_TRANSFORMS
             calls:
-              keywords: true
+              keywords: '**'
       YML
     end
 
@@ -1027,7 +1030,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: STRING_TRANSFORMS
             calls:
-              keywords: true
+              keywords: '**'
       YML
     end
 
@@ -1078,7 +1081,7 @@ RSpec.describe Leftovers::FileCollector do
           - name: STRING_TRANSFORMS
             calls:
               - arguments: '**'
-                recursive: true
+                recursive: 'true'
       YML
     end
 
@@ -1107,7 +1110,7 @@ RSpec.describe Leftovers::FileCollector do
           - name: STRING_TRANSFORMS
             calls:
               - arguments: '**'
-                keywords: true
+                keywords: '**'
                 recursive: true
       YML
     end
@@ -1138,7 +1141,7 @@ RSpec.describe Leftovers::FileCollector do
           - name: STRING_TRANSFORMS
             calls:
               - arguments: ['**', '*']
-                keywords: true
+                keywords: '**'
                 recursive: true
       YML
     end

@@ -368,12 +368,12 @@ dynamic:
     - update!
     - assign_attributes
     calls:
-      keyword: true
+      keyword: '**'
       add_suffix: '='
   - name: permit
     calls:
       arguments: ['*', '**']
-      keywords: true
+      keywords: '**'
       add_suffix: "="
       recursive: true
   - name: layout
@@ -388,7 +388,7 @@ dynamic:
       - left_outer_joins
     calls:
       arguments: ['*', '**']
-      keywords: true
+      keywords: '**'
   - name:
       - string
       - text

@@ -37,12 +37,27 @@ RSpec.describe Leftovers::Config do
             calls:
               arguments: 1
               add_prefix:
-                get_the_keyword: foo
+                is_argument: foo
                 joiner: baz
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      unless Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.7') # || defined?(::DidYouMean)
+        allow(::Leftovers::ConfigValidator::ErrorProcessor)
+          .to receive(:did_you_mean).with('joiner', be_a(Array))
+          .and_return([])
+        allow(::Leftovers::ConfigValidator::ErrorProcessor)
+          .to receive(:did_you_mean).with('is_argument', be_a(Array))
+          .and_return(['argument'])
+      end
+
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/calls/add_prefix: invalid property keyword: joiner
+          Valid keywords: argument, arguments, keyword, keywords, itself, value, nested, recursive, transforms, pluralize, singularize, camelize, camelcase, underscore, titleize, titlecase, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, and delete_after\e[0m
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/calls/add_prefix: invalid property keyword: is_argument
+          Valid keywords: argument, arguments, keyword, keywords, itself, value, nested, recursive, transforms, pluralize, singularize, camelize, camelcase, underscore, titleize, titlecase, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, and delete_after
+          Did you mean? argument\e[0m
+        MESSAGE
     end
 
     it 'can report errors with transform dynamic dynamic' do
@@ -52,12 +67,14 @@ RSpec.describe Leftovers::Config do
             defines:
               arguments: 1
               delete_prefix:
-                from_argument: foo
-                joiner: baz
+                argument: foo
+                add_prefix: baz
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines/delete_prefix: must be a string (was an object)\e[0m
+        MESSAGE
     end
 
     it 'can report errors with transform keys' do
@@ -73,18 +90,67 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines/transforms: invalid property keyword: infix
+          Valid keywords: original, pluralize, singularize, camelize, camelcase, underscore, titleize, titlecase, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, and delete_after\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors with invalid transform values' do
+      config = described_class.new('invalid', content: <<~YML)
+        dynamic:
+          - name:
+            - my_method
+            - my_other_method
+            defines:
+              arguments: 1
+              transforms:
+                - add_prefix
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines/transforms/0: can't be: add_prefix
+          Valid values: original, pluralize, singularize, camelize, camelcase, underscore, titleize, titlecase, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, or swapcase\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors with invalid typo transform values' do
+      config = described_class.new('invalid', content: <<~YML)
+        dynamic:
+          - name:
+            - my_method
+            - my_other_method
+            defines:
+              arguments: 1
+              transforms:
+                - origin
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      unless Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.7') # || defined?(::DidYouMean)
+        allow(::Leftovers::ConfigValidator::ErrorProcessor)
+          .to receive(:did_you_mean).with('origin', be_a(Array))
+          .and_return(['original'])
+      end
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines/transforms/0: can't be: origin
+          Valid values: original, pluralize, singularize, camelize, camelcase, underscore, titleize, titlecase, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, or swapcase
+          Did you mean? original\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using name and names' do
       config = described_class.new('invalid', content: <<~YML)
         keep:
-          - name: my_method
-            names: my_other_method
+          - names: my_other_method
+            name: my_method
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0: use only one of: name or names\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using path and paths' do
@@ -96,7 +162,9 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0: use only one of: path or paths\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using call and calls' do
@@ -110,7 +178,9 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0: use only one of: call or calls\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using define and defines' do
@@ -124,7 +194,26 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0: use only one of: define or defines\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors when using define and defines and call and calls' do
+      config = described_class.new('invalid', content: <<~YML)
+        dynamic:
+          - names: my_method
+            defines: 1
+            define: 2
+            calls: 1
+            call: 2
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0: use only one of: call or calls\e[0m
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0: use only one of: define or defines\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using invalid conditions' do
@@ -136,8 +225,12 @@ RSpec.describe Leftovers::Config do
               argument: 1
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0: invalid property keyword: tuesday
+          Valid keywords: name, names, path, paths, has_argument, has_arguments, unless, call, calls, define, and defines\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using invalid argument values' do
@@ -149,7 +242,9 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/calls/argument is invalid\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using argument and arguments' do
@@ -162,7 +257,9 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines: use only one of: argument or arguments\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using keyword and keywords' do
@@ -170,12 +267,14 @@ RSpec.describe Leftovers::Config do
         dynamic:
           - names: my_method
             defines:
-              keyword: true
-              keywords: true
+              keyword: '**'
+              keywords: '**'
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines: use only one of: keyword or keywords\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using missing argument etc' do
@@ -187,7 +286,9 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines: requires at least one of these keywords: argument, arguments, keyword, keywords, itself, or value\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using nonexistent keys for calls' do
@@ -199,7 +300,10 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/calls: invalid property keyword: param
+          Valid keywords: argument, arguments, keyword, keywords, itself, value, nested, recursive, transforms, pluralize, singularize, camelize, camelcase, underscore, titleize, titlecase, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, and delete_after\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using nonexistent keys for defines' do
@@ -212,7 +316,10 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/defines: invalid property keyword: param
+          Valid keywords: argument, arguments, keyword, keywords, itself, value, nested, recursive, transforms, pluralize, singularize, camelize, camelcase, underscore, titleize, titlecase, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, and delete_after\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using nonexistent keys for name' do
@@ -223,7 +330,10 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0/names: invalid property keyword: starts_with
+          Valid keywords: match, matches, has_prefix, has_suffix, and unless\e[0m
+        MESSAGE
     end
 
     it 'can report errors when using invalid vales for name' do
@@ -233,10 +343,121 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0/names is invalid\e[0m
+        MESSAGE
     end
 
-    it 'can report errors when using invalid vales for value' do
+    it 'can report errors when using invalid value number for has prefix' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep:
+          - has_prefix: 1.0
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0/has_prefix: must be a string (was a number)\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors when using invalid value integer for has_prefix' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep:
+          - has_prefix: 1
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0/has_prefix: must be a string (was an integer)\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors when using invalid value array for has_prefix' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep:
+          - has_prefix: []
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0/has_prefix: must be a string (was an array)\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors for empty keep' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep: []
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep: can't be empty\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors for empty keep object' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep: {}
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep: can't be empty\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors for empty keep string' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep: ''
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep: can't be empty\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors when using invalid value true for has_prefix' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep:
+          - has_prefix: true
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0/has_prefix: must be a string (was a boolean)\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors when using invalid value null for has_prefix' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep:
+          - has_prefix: null
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /keep/0/has_prefix: must be a string (was a null)\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors when using invalid values array for has_value' do
+      config = described_class.new('invalid', content: <<~YML)
+        dynamic:
+          - names: fancy
+            has_argument:
+              has_value: [[]]
+            calls:
+              argument: 1
+      YML
+      path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
+      expect { catch(:leftovers_exit) { config.dynamic } }
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/has_argument/has_value/0: must be a string, integer, number, boolean, or null (was an array)\e[0m
+        MESSAGE
+    end
+
+    it 'can report errors when using invalid value for has_value_type' do
       config = described_class.new('invalid', content: <<~YML)
         dynamic:
           - names: fancy
@@ -248,7 +469,9 @@ RSpec.describe Leftovers::Config do
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
-        .to output(a_string_starting_with("\e[31mConfig SchemaError: (#{path}): ")).to_stderr
+        .to output(<<~MESSAGE).to_stderr
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/has_argument/has_value_type is invalid\e[0m
+        MESSAGE
     end
   end
 end
