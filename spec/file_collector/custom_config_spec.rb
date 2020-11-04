@@ -643,6 +643,67 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:my_method)) }
   end
 
+  context 'with defines matching test_only sometimes' do
+    let(:ruby) { 'my_method(:whatever, :method)' }
+
+    let(:config) do
+      <<~YML
+        test_only: method
+        dynamic:
+          name: my_method
+          defines: '*'
+      YML
+    end
+
+    it do
+      expect(subject).to have_non_test_definitions(:whatever)
+        .and(have_test_only_definitions(:method))
+        .and(have_calls(:my_method))
+    end
+  end
+
+  context 'with defines matching test_only' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        test_only: method
+        dynamic:
+          name: my_method
+          defines: kw
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_non_test_definitions
+        .and(have_test_only_definitions(:method))
+        .and(have_calls(:my_method))
+    end
+  end
+
+  context 'with defines matching test_only in transform set' do
+    let(:ruby) { 'my_method(:whatever, kw: :method)' }
+
+    let(:config) do
+      <<~YML
+        test_only: method
+        dynamic:
+          name: my_method
+          defines:
+            argument: kw
+            transforms:
+              - original
+              - add_suffix: '='
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_non_test_definitions
+        .and(have_test_only_definitions(:method, :method=))
+        .and(have_calls(:my_method))
+    end
+  end
+
   context 'with defines with transform set with an empty value' do
     let(:ruby) { 'my_method(:whatever, kw: :method)' }
 

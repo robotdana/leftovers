@@ -57,7 +57,7 @@ module Leftovers
     NAME_RE = Regexp.union(METHOD_NAME_RE, NON_ALNUM_METHOD_NAME_RE, CONSTANT_NAME_RE)
     LEFTOVERS_CALL_RE = /\bleftovers:call(?:s|ed|er|ers|) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
     LEFTOVERS_ALLOW_RE = /\bleftovers:(?:keeps?|skip(?:s|ped|)|allow(?:s|ed|))\b/.freeze
-    LEFTOVERS_TEST_RE = /\bleftovers:(?:for_tests?|tests?|testing)\b/.freeze
+    LEFTOVERS_TEST_RE = /\bleftovers:(?:for_tests?|tests?|testing|test_only)\b/.freeze
     def process_comments(comments) # rubocop:disable Metrics/AbcSize
       comments.each do |comment|
         @allow_lines << comment.loc.line if comment.text.match?(LEFTOVERS_ALLOW_RE)
@@ -171,15 +171,20 @@ module Leftovers
 
     private
 
-    def test?(loc)
-      @file.test? || @test_lines.include?(loc.line)
+    def test_line?(loc)
+      @file.test? ||
+        @test_lines.include?(loc.line)
+    end
+
+    def test_node?(node, loc)
+      test_line?(loc) || ::Leftovers.config.test_only === node
     end
 
     def add_definition(node, name: node.name, loc: node.loc.name)
       return if @allow_lines.include?(loc.line)
       return if Leftovers.config.keep === node
 
-      definitions << Leftovers::Definition.new(name, location: loc, test: test?(loc))
+      definitions << Leftovers::Definition.new(name, location: loc, test: test_node?(node, loc))
     end
 
     def add_call(name)
@@ -222,7 +227,7 @@ module Leftovers
 
     def collect_dynamic(node) # rubocop:disable Metrics/AbcSize
       node.keep_line = @allow_lines.include?(node.loc.line)
-      node.test = test?(node.loc) unless node.keep_line?
+      node.test_line = test_line?(node.loc) unless node.keep_line?
 
       Leftovers.config.dynamic.process(node, self)
     rescue StandardError => e

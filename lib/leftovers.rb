@@ -11,6 +11,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:Collector, "#{__dir__}/leftovers/collector")
   autoload(:ConfigValidator, "#{__dir__}/leftovers/config_validator")
   autoload(:Config, "#{__dir__}/leftovers/config")
+  autoload(:DefinitionNode, "#{__dir__}/leftovers/definition_node")
   autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
   autoload(:Definition, "#{__dir__}/leftovers/definition")
   autoload(:ERB, "#{__dir__}/leftovers/erb")

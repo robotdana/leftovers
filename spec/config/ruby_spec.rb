@@ -112,6 +112,18 @@ RSpec.describe 'ruby and stdlib' do
     it { is_expected.to have_no_definitions.and(have_calls(:attr_reader, :@method_name)) }
   end
 
+  context 'with dynamic comment test only' do
+    let(:ruby) { <<~RUBY }
+      attr_reader :method_name # leftovers:test
+    RUBY
+
+    it do
+      expect(subject).to have_no_non_test_definitions
+        .and(have_test_only_definitions(:method_name))
+        .and(have_calls(:attr_reader, :@method_name))
+    end
+  end
+
   context 'with alias_method arguments' do
     let(:ruby) { 'alias_method :new_method, :original_method' }
 

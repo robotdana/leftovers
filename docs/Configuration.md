@@ -9,6 +9,7 @@ Its presence is optional and all of these settings are optional.
 - [`requires:`](#requires)
 - [`gems:`](#gems)
 - [`keep:`](#keep)
+- [`test_only:](#test_only)
 - [`dynamic:`](#dynamic)
 
 see the [built in config files](https://github.com/robotdana/leftovers/tree/main/lib/config) or [this repo's own config](https://github.com/robotdana/leftovers/tree/main/.leftovers.yml) for examples.
@@ -111,6 +112,34 @@ Arrays are not necessary for single values
 example from rails.yml
 ```yml
 keep:
+  - APP_PATH
+  - ssl_configured?
+  - has_suffix: Helper
+    path: /app/helpers
+  ...
+```
+
+Alternatively, you can mark method/constants/variables in-place using [magic comments](https://github.com/robotdana/leftovers/tree/main/README.md#magic-comments).
+
+## `test_only:`
+
+This is a list of methods/constants/variables that are ok to be defined outside of [test paths](#test_paths), but only used within test paths, maybe because they're your public api, or convenience methods for tests etc.
+
+Each entry can be a string (an exact match for a method, constant, or variable name that includes the sigil), or have at least one of the following properties:
+- [`names:`](#names)
+  or the properties from `names:`
+  - [`has_prefix:`](#has_prefix)
+  - [`has_suffix:`](#has_suffix)
+  - [`matches:`](#matches) (can't be used in the same entry as `has_prefix:` or `has_suffix:`)
+- [`paths:`](#paths)
+- [`has_arguments:`](#has_arguments)
+- [`unless`](#unless)
+
+Arrays are not necessary for single values
+
+example from rails.yml
+```yml
+test_only:
   - APP_PATH
   - ssl_configured?
   - has_suffix: Helper

@@ -25,12 +25,12 @@ module Leftovers
         @memo[:path] ||= loc.expression.source_buffer.name.to_s
       end
 
-      def test?
-        @memo[:test]
+      def test_line?
+        @memo[:test_line]
       end
 
-      def test=(value)
-        @memo[:test] = value
+      def test_line=(value)
+        @memo[:test_line] = value
       end
 
       def keep_line=(value)

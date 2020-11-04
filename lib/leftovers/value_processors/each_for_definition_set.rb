@@ -9,7 +9,7 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node) # rubocop:disable Metrics/MethodLength
+      def process(str, node, method_node)
         definitions = @then_processors.map do |then_processor|
           processed = then_processor.process(str, node, method_node)
           return if processed == :keep # rubocop:disable Lint/NonLocalExitFromIterator
@@ -22,11 +22,7 @@ module Leftovers
 
         return definitions.first if definitions.length <= 1
 
-        ::Leftovers::DefinitionSet.new(
-          definitions,
-          location: node.loc.expression,
-          method_node: method_node
-        )
+        ::Leftovers::DefinitionSet.new(definitions)
       end
     end
   end

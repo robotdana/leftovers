@@ -72,16 +72,16 @@ class MyClass
 end
 ```
 This would report `MyClass` is unused, but not my_method
-To do this for all definitions of this name, add the name with `skip: true` in the configuration file.
+To do this for all definitions of this name, instead of adding a comment, add the name to the [`keep:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#keep) list in the [configuration file](#configuration-file).
 
-### `# leftovers:test`
+### `# leftovers:test_only`
 _aliases `leftovers:for_test`, `leftovers:for_tests`, `leftovers:test`, `leftovers:tests`, `leftovers:testing`_
 
-To mark a definition from a non-test dir, as intentionally only used by tests, use `leftovers:test`
+To mark a definition from a non-test dir, as intentionally only used by tests, use `leftovers:test_only`
 ```ruby
 # app/my_class.rb
 class MyClass
-  def my_method # leftovers:test
+  def my_method # leftovers:test_only
     true
   end
 end
@@ -94,6 +94,8 @@ end
 ```
 
 This would consider `my_method` to be used, even though it is only called by tests.
+
+To do this for all definitions of this name, instead of adding a comment, add the name to the [`test_only:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#test_only) list in the [configuration file](#configuration-file).
 
 ### `# leftovers:call`
 _aliases `leftovers:calls`_
@@ -116,6 +118,7 @@ Its presence is optional and all of these settings are optional.
 - [`requires:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#requires)
 - [`gems:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#gems)
 - [`keep:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#keep)
+- [`test_only:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#test_only)
 - [`dynamic:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#dynamic)
 
 see the [complete config documentation](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md) for details.

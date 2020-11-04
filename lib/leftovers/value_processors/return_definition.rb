@@ -11,15 +11,15 @@ module Leftovers
         return unless str
         return if str.empty?
 
-        definition = Leftovers::Definition.new(
-          str.to_sym,
+        str_node = Leftovers::DefinitionNode.new(str.to_sym, method_node.path)
+
+        return :keep if ::Leftovers.config.keep === str_node
+
+        Leftovers::Definition.new(
+          str_node.name,
           location: node.loc.expression,
-          method_node: method_node
+          test: method_node.test_line? || ::Leftovers.config.test_only === str_node
         )
-
-        return :keep if ::Leftovers.config.keep === definition
-
-        definition
       end
     end
   end

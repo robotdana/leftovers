@@ -11,6 +11,7 @@ RSpec.describe Leftovers::MergedConfig do
       original_test_paths = subject.test_paths
       original_dynamic = subject.dynamic
       original_keep = subject.keep
+      original_test_only = subject.test_only
 
       rails = Leftovers::Config.new(:rails)
       subject << rails
@@ -26,6 +27,10 @@ RSpec.describe Leftovers::MergedConfig do
       expect(
         ::Leftovers::MatcherBuilders::Or.build([original_keep, rails.keep])
       ).to match_nested_object subject.keep
+
+      expect(
+        ::Leftovers::MatcherBuilders::Or.build([original_test_only, rails.test_only])
+      ).to match_nested_object subject.test_only
     end
 
     it 'can report when requiring' do

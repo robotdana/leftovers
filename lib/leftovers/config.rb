@@ -40,6 +40,10 @@ module Leftovers
       @keep ||= ::Leftovers::MatcherBuilders::Node.build(yaml[:keep])
     end
 
+    def test_only
+      @test_only ||= ::Leftovers::MatcherBuilders::Node.build(yaml[:test_only])
+    end
+
     def requires
       @requires ||= Array(yaml[:requires])
     end

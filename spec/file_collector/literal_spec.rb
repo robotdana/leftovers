@@ -289,9 +289,9 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it 'has only test definitions' do
-      expect(collector.definitions.map(&:test?)).to eq([true, true, true, true])
       expect(collector).to have_no_calls
-        .and have_definitions(:method_name, :method_name?, :method_name=, :method_name!)
+        .and have_no_non_test_definitions
+        .and have_test_only_definitions(:method_name, :method_name?, :method_name=, :method_name!)
     end
   end
 

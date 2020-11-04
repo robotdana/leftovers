@@ -445,7 +445,7 @@ module Leftovers
             { '$ref' => '#/definitions/dynamic' }
           ]
         },
-        'keep' => {
+        'keepTestOnly' => {
           'anyOf' => [
             { '$ref' => '#/definitions/string' },
             {
@@ -460,7 +460,7 @@ module Leftovers
                     'has_prefix' => true, 'has_suffix' => true, 'matches' => true,
                     'path' => true, 'paths' => true,
                     'has_argument' => true, 'has_arguments' => true,
-                    'unless' => { '$ref' => '#/definitions/keepList' }
+                    'unless' => { '$ref' => '#/definitions/keepTestOnlyList' }
                   },
                   'additionalProperties' => false,
                   'minProperties' => 1
@@ -469,15 +469,15 @@ module Leftovers
             }
           ]
         },
-        'keepList' => {
+        'keepTestOnlyList' => {
           'anyOf' => [
             {
               'type' => 'array',
-              'items' => { '$ref' => '#/definitions/keep' },
+              'items' => { '$ref' => '#/definitions/keepTestOnly' },
               'minItems' => 1,
               'uniqueItems' => true
             },
-            { '$ref' => '#/definitions/keep' }
+            { '$ref' => '#/definitions/keepTestOnly' }
           ]
         }
       },
@@ -487,7 +487,8 @@ module Leftovers
         'test_paths' => { '$ref' => '#/definitions/stringList' },
         'requires' => { '$ref' => '#/definitions/stringList' },
         'gems' => { '$ref' => '#/definitions/stringList' },
-        'keep' => { '$ref' => '#/definitions/keepList' },
+        'keep' => { '$ref' => '#/definitions/keepTestOnlyList' },
+        'test_only' => { '$ref' => '#/definitions/keepTestOnlyList' },
         'dynamic' => { '$ref' => '#/definitions/dynamicList' }
       }
     }.freeze

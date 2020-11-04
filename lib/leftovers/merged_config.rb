@@ -64,6 +64,10 @@ module Leftovers
       @keep ||= ::Leftovers::MatcherBuilders::Or.build(@configs.map(&:keep))
     end
 
+    def test_only
+      @test_only ||= ::Leftovers::MatcherBuilders::Or.build(@configs.map(&:test_only))
+    end
+
     private
 
     def load_bundled_gem_config

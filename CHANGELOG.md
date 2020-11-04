@@ -1,3 +1,5 @@
+# v0.4.1
+- add `test_only:` to mark methods/constants/assignments as test_only in the config rather than just with magic comments
 
 # v0.4.0
 - add `requires:` to .leftovers.yml config to e.g. load inflections in a different place than `config/initializers/inflections`

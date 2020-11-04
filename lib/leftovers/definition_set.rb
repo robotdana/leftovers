@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
 module Leftovers
-  class DefinitionSet < ::Leftovers::Definition
+  class DefinitionSet
     attr_reader :definitions
 
-    def initialize(
-      definitions,
-      method_node: nil,
-      location: method_node.loc.expression,
-      test: method_node.test?
-    )
+    def initialize(definitions)
       @definitions = definitions
 
-      super
+      freeze
     end
 
     def names
@@ -23,8 +18,20 @@ module Leftovers
       @definitions.map(&:to_s).join(', ')
     end
 
+    def location_s
+      @definitions.first.location_s
+    end
+
+    def highlighted_source(*args)
+      @definitions.first.highlighted_source(*args)
+    end
+
     def in_collection?
       @definitions.any?(&:in_collection?)
+    end
+
+    def test?
+      @definitions.any?(&:test?)
     end
 
     def in_test_collection?
