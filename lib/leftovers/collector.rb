@@ -46,7 +46,7 @@ module Leftovers
       )
     end
 
-    def finish_file(_, _, result)
+    def finish_file(_item, _index, result)
       @count += 1
       @count_calls += result[:calls].length
       @count_definitions += result[:definitions].length

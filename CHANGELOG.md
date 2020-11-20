@@ -1,3 +1,5 @@
+# v0.4.2
+- Make sorbet happy with this as a dependency
 # v0.4.1
 - add `test_only:` to mark methods/constants/assignments as test_only in the config rather than just with magic comments
 
