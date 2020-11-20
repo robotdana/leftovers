@@ -13,11 +13,12 @@ Spellr::RakeTask.generate_task
 Leftovers::RakeTask.generate_task
 
 desc 'Test autoload'
-task :test_autoload do
+task :test_autoload, [:times] do |_, args|
   exitstatus = 0
+  puts 'Shuffled loading attempt: 1'
   exitstatus = 1 unless system('bin/test_autoload.rb --verbose')
-  3.times do |i|
-    puts "Shuffled loading attempt: #{i}"
+  (args[:times]&.to_i&.-(1) || 2).times do |i|
+    puts "Shuffled loading attempt: #{i + 2}"
 
     exitstatus = 1 unless system('bin/test_autoload.rb --verbose --only-errors')
   end
