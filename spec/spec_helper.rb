@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require 'fileutils'
+FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))
 require 'bundler/setup'
 
-if RSpec.configuration.instance_variable_get(:@files_or_directories_to_run) == ['spec']
-  FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))
-
+if ENV['COVERAGE']
   require 'simplecov'
   require 'simplecov-console'
 
