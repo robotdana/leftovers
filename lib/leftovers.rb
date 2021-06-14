@@ -64,7 +64,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength
     @stdout = stdout
     @stderr = stderr
     return 0 if leftovers.empty?
@@ -79,15 +79,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       end
     end
 
-    unless only_test.empty?
-      puts "\e[31mOnly directly called in tests:\e[0m"
-      only_test.each { |definition| reporter.call(definition) }
-    end
-
-    unless none.empty?
-      puts "\e[31mNot directly called at all:\e[0m"
-      none.each { |definition| reporter.call(definition) }
-    end
+    reporter.report(only_test: only_test, none: none)
 
     1
   end
