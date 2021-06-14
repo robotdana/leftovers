@@ -1,3 +1,7 @@
+# v0.4.3
+- add --write-todo so you can add this to your project without
+immediately fixing everything.
+
 # v0.4.2
 - Make sorbet happy with this as a dependency
 # v0.4.1

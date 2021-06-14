@@ -2,24 +2,28 @@
 
 module Leftovers
   class Reporter
-    def report(only_test:, none:)
-      return report_success if only_test.empty? && none.empty?
+    def prepare; end
 
+    def report(only_test:, none:)
       report_list('Only directly called in tests:', only_test)
       report_list('Not directly called at all:', none)
       report_instructions
+
+      1
+    end
+
+    def report_success
+      puts green('Everything is used')
+
+      0
     end
 
     private
 
-    def report_success
-      puts green('Everything is used')
-    end
-
     def report_instructions
       puts <<~HELP
 
-        how to resolve: #{green Leftovers.resolution_instructions}
+        how to resolve: #{green Leftovers.resolution_instructions_link}
       HELP
     end
 

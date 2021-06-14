@@ -18,6 +18,7 @@ module Leftovers
     end
 
     def collect
+      Leftovers.reporter.prepare
       collect_file_list(Leftovers::FileList.new)
       print_progress
       Leftovers.newline
