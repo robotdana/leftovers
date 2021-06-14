@@ -71,6 +71,8 @@ RSpec.describe Leftovers::CLI, type: :cli do
           checked 1 files, collected 1 calls, 1 definitions
           \e[31mNot directly called at all:\e[0m
           \e[36mapp/foo.rb:1:13\e[0m test, test? \e[2mtest_method \e[33m:test\e[0;2m\e[0m
+
+          how to resolve: \e[32m#{Leftovers.resolution_instructions}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -99,6 +101,8 @@ RSpec.describe Leftovers::CLI, type: :cli do
           \e[36mapp/foo.rb:1:13\e[0m foo \e[2mattr_reader \e[33m:foo\e[0;2m\e[0m
           \e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
           \e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
+
+          how to resolve: \e[32m#{Leftovers.resolution_instructions}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -115,6 +119,8 @@ RSpec.describe Leftovers::CLI, type: :cli do
           \e[36mapp/foo.rb:1:13\e[0m foo \e[2mattr_reader \e[33m:foo\e[0;2m\e[0m
           \e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
           \e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
+
+          how to resolve: \e[32m#{Leftovers.resolution_instructions}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -131,6 +137,8 @@ RSpec.describe Leftovers::CLI, type: :cli do
           \e[36mapp/foo.rb:1:13\e[0m foo \e[2mattr_reader \e[33m:foo\e[0;2m\e[0m
           \e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
           \e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
+
+          how to resolve: \e[32m#{Leftovers.resolution_instructions}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -165,12 +173,15 @@ RSpec.describe Leftovers::CLI, type: :cli do
         it 'runs' do
           run('--no-parallel') # so i get consistent order
 
+          # i assume i'm intentionally not checking the processed output of this
           expect(stdout.string).to eq <<~STDOUT
             \e[2Kchecked 1 files, collected 2 calls, 3 definitions\r\e[2Kchecked 2 files, collected 10 calls, 3 definitions\r\e[2Kchecked 2 files, collected 10 calls, 3 definitions\r
             \e[2K\e[31mOnly directly called in tests:\e[0m
             \e[2K\e[36mapp/foo.rb:1:13\e[0m foo \e[2mattr_reader \e[33m:foo\e[0;2m\e[0m
             \e[2K\e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
             \e[2K\e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
+            \e[2K
+            how to resolve: \e[32m#{Leftovers.resolution_instructions}\e[0m
           STDOUT
           expect(stderr.string).to be_empty
           expect(exitstatus).to be 1
@@ -185,6 +196,8 @@ RSpec.describe Leftovers::CLI, type: :cli do
             \e[2K\e[36mapp/foo.rb:1:13\e[0m foo \e[2mattr_reader \e[33m:foo\e[0;2m\e[0m
             \e[2K\e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
             \e[2K\e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
+            \e[2K
+            how to resolve: \e[32m#{Leftovers.resolution_instructions}\e[0m
           STDOUT
           expect(stderr.string).to be_empty
           expect(exitstatus).to be 1

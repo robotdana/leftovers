@@ -3,11 +3,25 @@
 module Leftovers
   class Reporter
     def report(only_test:, none:)
+      return report_success if only_test.empty? && none.empty?
+
       report_list('Only directly called in tests:', only_test)
       report_list('Not directly called at all:', none)
+      report_instructions
     end
 
     private
+
+    def report_success
+      puts green('Everything is used')
+    end
+
+    def report_instructions
+      puts <<~HELP
+
+        how to resolve: #{green Leftovers.resolution_instructions}
+      HELP
+    end
 
     def report_list(title, list)
       return if list.empty?
@@ -28,6 +42,10 @@ module Leftovers
 
     def red(string)
       "\e[31m#{string}\e[0m"
+    end
+
+    def green(string)
+      "\e[32m#{string}\e[0m"
     end
 
     def aqua(string)

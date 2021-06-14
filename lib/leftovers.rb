@@ -96,6 +96,10 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     remove_instance_variable(:@pwd) if defined?(@pwd)
   end
 
+  def resolution_instructions
+    "https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve"
+  end
+
   def warn(message)
     stderr.puts("\e[2K#{message}")
   end
