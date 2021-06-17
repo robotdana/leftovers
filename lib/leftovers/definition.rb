@@ -2,7 +2,7 @@
 
 module Leftovers
   class Definition
-    attr_reader :name, :test, :location_s
+    attr_reader :name, :test, :location_s, :source_line
     alias_method :names, :name
 
     alias_method :test?, :test
@@ -14,7 +14,7 @@ module Leftovers
     )
       @name = name
       @path = location.source_buffer.name.to_s
-      @location_source_line = location.source_line.to_s
+      @source_line = location.source_line.to_s
       @location_column_range_begin = location.column_range.begin.to_i
       @location_column_range_end = location.column_range.end.to_i
       @location_source = location.source.to_s
@@ -29,9 +29,9 @@ module Leftovers
     end
 
     def highlighted_source(highlight = "\e[31m", normal = "\e[0m")
-      @location_source_line[0...@location_column_range_begin].lstrip +
+      @source_line[0...@location_column_range_begin].lstrip +
         highlight + @location_source + normal +
-        @location_source_line[@location_column_range_end..-1].rstrip
+        @source_line[@location_column_range_end..-1].rstrip
     end
 
     def in_collection?

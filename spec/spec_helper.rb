@@ -24,6 +24,7 @@ if ENV['COVERAGE']
 end
 
 require_relative '../lib/leftovers'
+require 'timecop'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -35,9 +36,15 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+    c.include_chain_clauses_in_custom_matcher_descriptions = true
+    c.max_formatted_output_length = 2000
   end
   require_relative './support/temp_file_helper'
   require_relative './support/cli_helper'
+
+  config.after do
+    Timecop.return
+  end
 end
 
 RSpec::Matchers.define_negated_matcher :exclude, :include

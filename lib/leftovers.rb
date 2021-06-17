@@ -26,14 +26,14 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:ProcessorBuilders, "#{__dir__}/leftovers/processor_builders")
   autoload(:RakeTask, "#{__dir__}/leftovers/rake_task")
   autoload(:Reporter, "#{__dir__}/leftovers/reporter")
+  autoload(:TodoReporter, "#{__dir__}/leftovers/todo_reporter")
   autoload(:DynamicProcessors, "#{__dir__}/leftovers/dynamic_processors")
   autoload(:ValueProcessors, "#{__dir__}/leftovers/value_processors")
   autoload(:VERSION, "#{__dir__}/leftovers/version")
 
   class << self
-    attr_accessor :parallel, :progress
+    attr_accessor :parallel, :progress, :reporter
     alias_method :parallel?, :parallel
-
     alias_method :progress?, :progress
   end
 
@@ -64,10 +64,10 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength
     @stdout = stdout
     @stderr = stderr
-    return 0 if leftovers.empty?
+    return reporter.report_success if leftovers.empty?
 
     only_test = []
     none = []
@@ -79,17 +79,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       end
     end
 
-    unless only_test.empty?
-      puts "\e[31mOnly directly called in tests:\e[0m"
-      only_test.each { |definition| reporter.call(definition) }
-    end
-
-    unless none.empty?
-      puts "\e[31mNot directly called at all:\e[0m"
-      none.each { |definition| reporter.call(definition) }
-    end
-
-    1
+    reporter.report(only_test: only_test, none: none)
   end
 
   def reset # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
@@ -102,6 +92,10 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     remove_instance_variable(:@stderr) if defined?(@stderr)
     remove_instance_variable(:@parallel) if defined?(@parallel)
     remove_instance_variable(:@pwd) if defined?(@pwd)
+  end
+
+  def resolution_instructions_link
+    "https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve"
   end
 
   def warn(message)

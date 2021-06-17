@@ -12,6 +12,7 @@ module Leftovers
 
       self << :ruby
       self << project_config
+      self << project_todo
       load_bundled_gem_config
     end
 
@@ -30,6 +31,10 @@ module Leftovers
 
     def project_config
       Leftovers::Config.new(:'.leftovers.yml', path: Leftovers.pwd + '.leftovers.yml')
+    end
+
+    def project_todo
+      Leftovers::Config.new(:'.leftovers_todo.yml', path: Leftovers.pwd + '.leftovers_todo.yml')
     end
 
     def unmemoize

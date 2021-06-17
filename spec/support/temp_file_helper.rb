@@ -15,6 +15,10 @@ module TempFileHelper
     path.write(body)
     path
   end
+
+  def temp_dir
+    @__temp_dir
+  end
 end
 
 RSpec.configure do |config|

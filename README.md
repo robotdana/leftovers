@@ -56,7 +56,37 @@ lib/hello_world.rb:18:6 another_tested_unused_method def another_tested_unused_m
 Not directly called at all:
 lib/hello_world.rb:6:6 generated_method= attr_accessor :generated_method
 lib/hello_world.rb:6:6 generated_method attr_accessor :generated_method
+
+how to resolve: https://github.com/robotdana/leftovers/tree/main/Readme.md#how_to_resolve
 ```
+
+if there is an overwhelming number of results, try using [`--write-todo`](#write-todo)
+
+## How to resolve
+
+When running `leftovers` you'll be given a list of method, constant, and variable definitions it thinks are unused. Now what?
+
+they were unintentionally left when removing their calls:
+  - remove their definitions. (they're still there in your git etc history if you want them back)
+
+they are called dynamically:
+  - define how they're called dynamically in the [.leftovers.yml](#configuration-file); or
+  - mark the calls with [`# leftovers:call my_unused_method`](#leftovers-call); or
+  - mark the definition with [`# leftovers:keep`](#leftovers-keep)
+
+they're defined intentionally to only be used by tests:
+  - add [`# leftovers:test_only`](#leftovers-test-only)
+
+they're from a file that shouldn't be checked by leftovers:
+  - add the paths to the [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#exclude_paths) list in the [.leftovers.yml](#configuration-file) file
+
+if there are too many to address when first adding leftovers to your project, try running [`leftovers --write-todo`](#write-todo),
+
+### --write-todo
+
+running `leftovers --write-todo` will generate a supplemental configuration file allowing all the currently detected uncalled definitions, which will be read on subsequent runs of `leftovers` without alerting any of the items mentioned in it.
+
+commit this file so you/your team can gradually address these items while still having leftovers alert you to any newly unused items.
 
 ## Magic comments
 
