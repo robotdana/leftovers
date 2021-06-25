@@ -1,3 +1,6 @@
+# v0.4.4
+- don't hard-wrap the --write-todo instructions it looks weird
+
 # v0.4.3
 - add --write-todo so you can add this to your project without
 immediately fixing everything.

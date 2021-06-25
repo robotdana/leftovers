@@ -30,12 +30,9 @@ module Leftovers
     def report_instructions
       puts <<~MESSAGE
         generated #{path.basename}.
-        running leftovers again will read this file and
-        not alert you to any unused items mentioned in it.
+        running leftovers again will read this file and not alert you to any unused items mentioned in it.
 
-        commit this file so you/your team can gradually
-        address these items while still having leftovers
-        alert you to any newly unused items.
+        commit this file so you/your team can gradually address these items while still having leftovers alert you to any newly unused items.
       MESSAGE
     end
 

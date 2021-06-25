@@ -74,12 +74,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
         expect(stdout).to have_output <<~STDOUT
           checked 1 files, collected 0 calls, 1 definitions
           generated .leftovers_todo.yml.
-          running leftovers again will read this file and
-          not alert you to any unused items mentioned in it.
+          running leftovers again will read this file and not alert you to any unused items mentioned in it.
 
-          commit this file so you/your team can gradually
-          address these items while still having leftovers
-          alert you to any newly unused items.
+          commit this file so you/your team can gradually address these items while still having leftovers alert you to any newly unused items.
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 0
@@ -168,12 +165,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
         expect(stdout).to have_output <<~STDOUT
           checked 1 files, collected 2 calls, 3 definitions
           generated .leftovers_todo.yml.
-          running leftovers again will read this file and
-          not alert you to any unused items mentioned in it.
+          running leftovers again will read this file and not alert you to any unused items mentioned in it.
 
-          commit this file so you/your team can gradually
-          address these items while still having leftovers
-          alert you to any newly unused items.
+          commit this file so you/your team can gradually address these items while still having leftovers alert you to any newly unused items.
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 0
@@ -206,12 +200,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
           checked 1 files, collected 2 calls, 3 definitions
           generated .leftovers_todo.yml.
-          running leftovers again will read this file and
-          not alert you to any unused items mentioned in it.
+          running leftovers again will read this file and not alert you to any unused items mentioned in it.
 
-          commit this file so you/your team can gradually
-          address these items while still having leftovers
-          alert you to any newly unused items.
+          commit this file so you/your team can gradually address these items while still having leftovers alert you to any newly unused items.
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 0
@@ -352,12 +343,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
           expect(stdout).to have_output <<~STDOUT
             checked 3 files, collected 10 calls, 4 definitions
             generated .leftovers_todo.yml.
-            running leftovers again will read this file and
-            not alert you to any unused items mentioned in it.
+            running leftovers again will read this file and not alert you to any unused items mentioned in it.
 
-            commit this file so you/your team can gradually
-            address these items while still having leftovers
-            alert you to any newly unused items.
+            commit this file so you/your team can gradually address these items while still having leftovers alert you to any newly unused items.
           STDOUT
           expect(stderr.string).to be_empty
           expect(exitstatus).to be 0
@@ -402,12 +390,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
           expect(stdout).to have_output <<~STDOUT
             checked 3 files, collected 7 calls, 4 definitions
             generated .leftovers_todo.yml.
-            running leftovers again will read this file and
-            not alert you to any unused items mentioned in it.
+            running leftovers again will read this file and not alert you to any unused items mentioned in it.
 
-            commit this file so you/your team can gradually
-            address these items while still having leftovers
-            alert you to any newly unused items.
+            commit this file so you/your team can gradually address these items while still having leftovers alert you to any newly unused items.
           STDOUT
           expect(stderr.string).to be_empty
           expect(exitstatus).to be 0
