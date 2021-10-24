@@ -91,7 +91,7 @@ module Leftovers
         },
         'valueType' => {
           'type' => 'string',
-          'enum' => %w{String Symbol Integer Float}
+          'enum' => %w{String Symbol Integer Float Array Hash}
         },
         'valueTypeList' => {
           'anyOf' => [
@@ -110,7 +110,40 @@ module Leftovers
             { 'type' => 'integer' },
             { 'type' => 'number' },
             { 'type' => 'boolean' },
-            { 'type' => 'null' }
+            { 'type' => 'null' },
+            { 'allOf' => [
+              { '$ref' => '#/definitions/stringPattern' },
+              {
+                'type' => 'object',
+                'properties' => {
+                  'match' => true, 'matches' => true,
+                  'has_prefix' => true, 'has_suffix' => true,
+                  'at' => { '$ref' => '#/definitions/argumentPositionList' },
+                  'has_value' => { '$ref' => '#/definitions/hasValueList' },
+                  'type' => { '$ref' => '#/definitions/valueTypeList' },
+                  'unless' => { '$ref' => '#/definitions/hasValueList' }
+                },
+                'minProperties' => 1,
+                'additionalProperties' => false,
+                'allOf' => [
+                  # incompatible groups
+                  { 'not' => { 'required' => %w{match at} } },
+                  { 'not' => { 'required' => %w{match has_value} } },
+                  { 'not' => { 'required' => %w{match type} } },
+                  { 'not' => { 'required' => %w{matches at} } },
+                  { 'not' => { 'required' => %w{matches has_value} } },
+                  { 'not' => { 'required' => %w{matches type} } },
+                  { 'not' => { 'required' => %w{has_prefix at} } },
+                  { 'not' => { 'required' => %w{has_prefix has_value} } },
+                  { 'not' => { 'required' => %w{has_prefix type} } },
+                  { 'not' => { 'required' => %w{has_suffix at} } },
+                  { 'not' => { 'required' => %w{has_suffix has_value} } },
+                  { 'not' => { 'required' => %w{has_suffix type} } },
+                  { 'not' => { 'required' => %w{at type} } },
+                  { 'not' => { 'required' => %w{has_value type} } }
+                ]
+              }
+            ] }
           ]
         },
         'hasValueList' => {
@@ -133,9 +166,6 @@ module Leftovers
               'properties' => {
                 'at' => { '$ref' => '#/definitions/argumentPositionList' },
                 'has_value' => { '$ref' => '#/definitions/hasValueList' },
-                'has_value_type' => { '$ref' => '#/definitions/valueTypeList' },
-                'has_argument' => { '$ref' => '#/definitions/hasArgumentList' },
-                'has_arguments' => { '$ref' => '#/definitions/hasArgumentList' },
                 'unless' => { '$ref' => '#/definitions/hasArgumentList' }
               },
               'minProperties' => 1,

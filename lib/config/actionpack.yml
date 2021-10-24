@@ -83,7 +83,7 @@ dynamic:
         - at: except
           has_value: index
         - at: except
-          has_argument:
+          has_value:
             at: '*'
             has_value: index
     calls:
@@ -97,7 +97,7 @@ dynamic:
         - at: except
           has_value: new
         - at: except
-          has_argument:
+          has_value:
             at: '*'
             has_value: new
     calls:
@@ -111,7 +111,7 @@ dynamic:
         - at: except
           has_value: create
         - at: except
-          has_argument:
+          has_value:
             at: '*'
             has_value: create
     calls:
@@ -125,7 +125,7 @@ dynamic:
         - at: except
           has_value: edit
         - at: except
-          has_argument:
+          has_value:
             at: '*'
             has_value: edit
     calls:
@@ -139,7 +139,7 @@ dynamic:
         - at: except
           has_value: update
         - at: except
-          has_argument:
+          has_value:
             at: '*'
             has_value: update
     calls:
@@ -153,7 +153,7 @@ dynamic:
         - at: except
           has_value: destroy
         - at: except
-          has_argument:
+          has_value:
             at: '*'
             has_value: destroy
     calls:

@@ -1477,14 +1477,15 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and have_calls(:bar, :lol, :my_method) }
   end
 
-  context 'with has_argument with only value types' do
+  context 'with has_argument with String type' do
     let(:config) do
       <<~YML
         dynamic:
           - name: my_method
             has_argument:
               at: kw
-              has_value_type: [String, Symbol, Integer, Float]
+              has_value:
+                type: String
             calls:
               arguments: 0
       YML
@@ -1492,14 +1493,157 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:ruby) do
       <<~RUBY
-        my_method('baz', kw: 'qux')
-        my_method('bar', kw: 1)
-        my_method('lol', kw: no)
-        my_method('foo', kw: 1.0)
+        my_method('yes', kw: 'qux')
+        my_method('no', kw: 1)
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:bar, :no, :baz, :foo, :my_method)) }
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :my_method)) }
+  end
+
+  context 'with has_argument with Symbol type' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: kw
+              has_value:
+                type: Symbol
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', kw: :qux)
+        my_method('no', kw: 'qux')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :my_method)) }
+  end
+
+  context 'with has_argument with Integer type' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: kw
+              has_value:
+                type: Integer
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', kw: 1)
+        my_method('no', kw: 1.0)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :my_method)) }
+  end
+
+  context 'with has_argument with Float type' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: kw
+              has_value:
+                type: Float
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', kw: 1.0)
+        my_method('no', kw: 1)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :my_method)) }
+  end
+
+  context 'with has_argument with Array type' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: kw
+              has_value:
+                type: Array
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', kw: [])
+        my_method('no', kw: {})
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :my_method)) }
+  end
+
+  context 'with has_argument with Hash type' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: kw
+              has_value:
+                type: Hash
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', kw: {})
+        my_method('no', kw: [])
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :my_method)) }
+  end
+
+  context 'with has_argument with multiple types' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: kw
+              has_value:
+                type: [Hash, String]
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', kw: {})
+        my_method('yes2', kw: 'thing')
+        my_method('no', kw: 3)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :yes2, :my_method)) }
   end
 
   context 'with find has_argument with unless' do
@@ -1508,7 +1652,8 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             has_argument:
-              has_value_type: [String, Symbol, Integer, Float]
+              has_value:
+                type: [String, Symbol, Integer, Float]
               unless: kw
             calls:
               arguments: 0
@@ -1533,7 +1678,8 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           - name: my_method
             has_argument:
-              has_value_type: Integer
+              has_value:
+                type: Integer
               unless:
                 has_value: 0
             calls:
@@ -1560,7 +1706,8 @@ RSpec.describe Leftovers::FileCollector do
           - name: my_method
             has_argument:
               at: kw
-              has_value_type: String
+              has_value:
+                type: String
             calls:
               arguments: 0
       YML
@@ -1570,12 +1717,86 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('baz', kw: 'qux')
         my_method('bar', kw: 1)
-        my_method('lol', kw: no)
+        my_method('lol', kw: another_method)
         my_method('foo', kw: 1.0)
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and have_calls(:no, :baz, :my_method) }
+    it { is_expected.to have_no_definitions.and have_calls(:another_method, :baz, :my_method) }
+  end
+
+  context 'with find has_argument with only value type at any kw' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: '**'
+              has_value:
+                type: String
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('baz', kw: 'qux')
+        my_method('bar', other_kw: '1')
+        my_method('lol', 'position')
+        my_method('foo', kw: :no)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and have_calls(:bar, :baz, :my_method) }
+  end
+
+  context 'with find has_argument with only value type at any position' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: '*'
+              has_value:
+                type: Integer
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('baz', kw: 1)
+        my_method('bar', '1', kw: 1)
+        my_method('lol', 1)
+        my_method('foo', 'no', 1)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and have_calls(:lol, :foo, :my_method) }
+  end
+
+  context 'with find has_argument with any positional argument' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: '*'
+            calls:
+              arguments: kw
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('baz', kw: 'kw1')
+        my_method(kw: 'kw2')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and have_calls(:kw1, :my_method) }
   end
 
   context 'with find has_argument with only any of value' do
@@ -1638,6 +1859,29 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('bar', kw: 'foo')
         my_method('lol', 1 => true)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:bar, :my_method)) }
+  end
+
+  context 'with find has_argument with has_value name matcher' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              has_value:
+                has_prefix: 'A'
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('bar', 'A1')
+        my_method('lol', '1A')
       RUBY
     end
 

@@ -131,6 +131,8 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
 
     def each_or_self(value, &block)
+      return enum_for(__method__, value) unless block
+
       case value
       when nil then nil
       when Array then value.each(&block)

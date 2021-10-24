@@ -30,7 +30,8 @@ dynamic:
   - name: delegate
     has_argument:
       at: prefix
-      has_value_type: [String, Symbol]
+      has_value:
+        type: [String, Symbol]
     defines:
       - argument: '*'
         add_prefix:
@@ -45,7 +46,8 @@ dynamic:
         - at: prefix
           has_value: true
         - at: prefix
-          has_value_type: [String, Symbol]
+          has_value:
+            type: [String, Symbol]
     calls:
       - argument: to
   - name:

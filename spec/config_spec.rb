@@ -453,7 +453,7 @@ RSpec.describe Leftovers::Config do
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
         .to output(<<~MESSAGE).to_stderr
-          \e[31mConfig SchemaError: (#{path}): /dynamic/0/has_argument/has_value/0: must be a string, integer, number, boolean, or null (was an array)\e[0m
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/has_argument/has_value/0 is invalid\e[0m
         MESSAGE
     end
 
@@ -462,15 +462,16 @@ RSpec.describe Leftovers::Config do
         dynamic:
           - names: fancy
             has_argument:
-              has_value_type:
-                class: String
+              has_value:
+                type:
+                  class: String
             calls:
               argument: 1
       YML
       path = ::File.expand_path('../lib/config/invalid.yml', __dir__)
       expect { catch(:leftovers_exit) { config.dynamic } }
         .to output(<<~MESSAGE).to_stderr
-          \e[31mConfig SchemaError: (#{path}): /dynamic/0/has_argument/has_value_type is invalid\e[0m
+          \e[31mConfig SchemaError: (#{path}): /dynamic/0/has_argument/has_value/type is invalid\e[0m
         MESSAGE
     end
   end

@@ -350,7 +350,6 @@ and when used in:
 It can have any of these properties:
 - [`at:`](#at)
 - [`has_value:`](#has_value)
-- [`has_value_type:`](#has_value_type)
 
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
 
@@ -366,8 +365,7 @@ The method call/constant variable/assignment will be considered matching if it h
 
 It can have any of these properties:
 - [`at:`](#at)
-- [`has_value:`](#has_value) # TODO
-- [`has_value_type:`](#has_value_type) # TODO
+- [`has_value:`](#has_value)
 
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
 
@@ -420,16 +418,23 @@ Each entry can be one of
   - [`has_prefix:`](#has_prefix)
   - [`has_suffix:`](#has_suffix)
   - [`matches:`](#matches) (this can't be used in the same entry as `has_prefix:` or `has_suffix:`)
+- or have at least one of the following properties to match within an array or hash:
+  - [`at`](#at)
+  - [`has_value`](#has_value)
+- or have the following property to match the value type
+  - [`type`](#type)
 
-## `has_value_type:`
+## `type:`
 
-Filter [`arguments:`](#arguments), [`has_arguments:`](#has_arguments), and [`keywords:`](#keywords), by the argument/assigned value
+Filter [`has_value`](#has_value), by the argument/assigned value type
 
 Each entry can be one of
 - `'String'`
 - `'Symbol'`
 - `'Integer'`
 - `'Float'`
+- `'Array'`
+- `'Hash'`
 
 Arrays are not necessary for single values
 

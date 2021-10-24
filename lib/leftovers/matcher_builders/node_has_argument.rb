@@ -27,7 +27,7 @@ module Leftovers
         ::Leftovers.each_or_self(at) do |k|
           case k
           when '*'
-            positions << '*'
+            positions << k
           when ::String, ::Hash
             keys << k
           when ::Integer
@@ -44,24 +44,18 @@ module Leftovers
         [keys, positions]
       end
 
-      def self.build_from_hash( # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      def self.build_from_hash( # rubocop:disable Metrics/MethodLength
         at: nil,
         has_value: nil,
-        has_value_type: nil,
-        has_arguments: nil,
         unless_arg: nil
       )
         keys, positions = separate_argument_types(at)
 
-        value_matcher = ::Leftovers::MatcherBuilders::And.build([
-          ::Leftovers::MatcherBuilders::ArgumentNodeValue.build(has_value),
-          ::Leftovers::MatcherBuilders::NodeType.build(has_value_type),
-          ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments)
-        ])
+        value_matcher = ::Leftovers::MatcherBuilders::ArgumentNodeValue.build(has_value)
         matcher = if (keys && positions) || (!keys && !positions)
           ::Leftovers::MatcherBuilders::Or.build([
-            ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher),
-            ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher)
+            ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher),
+            ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher)
           ])
         elsif keys
           ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher)
