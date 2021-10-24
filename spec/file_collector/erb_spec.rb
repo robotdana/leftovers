@@ -9,15 +9,17 @@ RSpec.describe Leftovers::FileCollector do
     collector
   end
 
-  before { Leftovers.reset }
+  before do
+    Leftovers.reset
+    with_temp_dir
+  end
 
   after { Leftovers.reset }
 
   let(:path) { 'foo.erb' }
   let(:file) do
-    f = Leftovers::File.new(Leftovers.pwd + path)
-    allow(f).to receive(:read).and_return(erb)
-    f
+    temp_file(path, erb)
+    Leftovers::File.new(Leftovers.pwd + path)
   end
   let(:erb) { '' }
   let(:ruby) { file.ruby }

@@ -14,6 +14,12 @@ test_paths:
   - /tests/
   - /test/
 
+erb_paths:
+  - '*.erb'
+
+haml_paths:
+  - '*.haml'
+
 keep:
   - initialize # called by new
   - inspect # called by repl, to_s

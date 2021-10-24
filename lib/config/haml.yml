@@ -1,2 +1,4 @@
 include_paths:
   - '*.haml'
+haml_paths:
+  - '*.haml'

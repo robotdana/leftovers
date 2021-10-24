@@ -6,6 +6,8 @@ Its presence is optional and all of these settings are optional.
 - [`include_paths:`](#include_paths)
 - [`exclude_paths:`](#exclude_paths)
 - [`test_paths:`](#test_paths)
+- [`haml_paths:`](#haml_paths)
+- [`erb_paths:`](#erb_paths)
 - [`requires:`](#requires)
 - [`gems:`](#gems)
 - [`keep:`](#keep)
@@ -77,6 +79,30 @@ test_paths:
 ```
 
 Arrays are not necessary for single values
+
+## `haml_paths:`
+
+list filenames/paths of test directories that are in the haml format
+Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+
+```yml
+haml_paths:
+  - '*.haml'
+```
+
+Arrays are not necessary for single values. `*.haml` is recognized by default
+
+## `erb_paths:`
+
+list filenames/paths of test directories that are in the erb format
+Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+
+```yml
+erb_paths:
+  - '*.erb'
+```
+
+Arrays are not necessary for single values. `*.erb` is recognized by default
 
 ## `gems:`
 _alias `gem:`_

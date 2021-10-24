@@ -32,6 +32,14 @@ module Leftovers
       @test_paths ||= Array(yaml[:test_paths])
     end
 
+    def haml_paths
+      @haml_paths ||= Array(yaml[:haml_paths])
+    end
+
+    def erb_paths
+      @erb_paths ||= Array(yaml[:erb_paths])
+    end
+
     def dynamic
       @dynamic ||= ::Leftovers::ProcessorBuilders::Dynamic.build(yaml[:dynamic])
     end

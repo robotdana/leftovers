@@ -15,10 +15,9 @@ module Leftovers
     end
 
     def ruby
-      case extname
-      when '.haml'
+      if Leftovers.config.haml_paths.allowed?(relative_path)
         ::Leftovers::Haml.precompile(read, self)
-      when '.rhtml', '.rjs', '.erb'
+      elsif Leftovers.config.erb_paths.allowed?(relative_path)
         ::Leftovers::ERB.precompile(read)
       else
         read
