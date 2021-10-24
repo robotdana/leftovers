@@ -49,7 +49,7 @@ exclude_paths:
 
 Arrays are not necessary for single values
 
-## `requires:` # TODO
+## `requires:`
 _alias `require`_
 
 List filenames/paths that you want to include

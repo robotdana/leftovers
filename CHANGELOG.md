@@ -1,3 +1,11 @@
+# v0.5.0
+- `has_value_type:` is now `has_value: type:`
+- `has_value:` can be nested with `at:` and `has_value:`.
+- `has_argument:` can be given `at:` with `'*'` or `'**'` which match all positional arguments or keyword arguments respectively
+- the rails.yml config has been broken up into e.g. activerecord
+- `haml_paths:` and `erb_paths:` are now configurable.
+- `type:` can match on `'Array'` and `'Hash'` literals.
+
 # v0.4.4
 - don't hard-wrap the --write-todo instructions it looks weird
 

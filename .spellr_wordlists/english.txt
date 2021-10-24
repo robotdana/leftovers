@@ -17,10 +17,12 @@ config
 cov
 datagrid
 deserialize
+erb
 esque
 firstname
 gemfile
 graphql
+haml
 hashbang
 i'd
 i'm
