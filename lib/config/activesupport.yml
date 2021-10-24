@@ -1,0 +1,96 @@
+requires:
+  - 'active_support/core_ext/string'
+  - 'active_support/inflections'
+  - './config/initializers/inflections'
+
+# THIS IS INCOMPLETE (you can help by expanding it)
+# rails is _really complicated_ and has a lot of magic which calls methods for you.
+# some is currently impossible to handle (with_options).
+# Some is just corners of rails I haven't hit yet.
+keep:
+  - ClassMethods # ActiveSupport::Concern
+  - process_action # ActiveSupport::LogSubscriber
+  - format_message # ActiveSupport::Logger
+  - APP_PATH
+  - APP_ROOT
+
+dynamic:
+  - name: delegate
+    has_argument:
+      at: prefix
+      has_value: true
+    defines:
+      - argument: '*'
+        add_prefix:
+          argument: to
+          add_suffix: '_'
+    calls:
+      - argument: to
+      - argument: '*'
+  - name: delegate
+    has_argument:
+      at: prefix
+      has_value_type: [String, Symbol]
+    defines:
+      - argument: '*'
+        add_prefix:
+          argument: prefix
+          add_suffix: '_'
+    calls:
+      - argument: to
+      - argument: '*'
+  - name: delegate
+    unless:
+      has_argument:
+        - at: prefix
+          has_value: true
+        - at: prefix
+          has_value_type: [String, Symbol]
+    calls:
+      - argument: to
+  - name:
+      - cattr_accessor
+      - mattr_accessor
+    defines:
+      - argument: '*'
+      - argument: '*'
+        add_suffix: '='
+    calls:
+      - argument: '*'
+        add_prefix: '@'
+  - name:
+      - cattr_reader
+      - mattr_reader
+    defines:
+      - argument: '*'
+    calls:
+      - argument: '*'
+        add_prefix: '@'
+  - name:
+      - cattr_writer
+      - mattr_writer
+    defines:
+      - argument: '*'
+        add_suffix: '='
+
+  - name:
+    - thread_cattr_accessor
+    - thread_mattr_accessor
+    defines:
+      - argument: '*'
+      - argument: '*'
+        add_suffix: '='
+  - name:
+    - thread_cattr_reader
+    - thread_mattr_reader
+    defines:
+      argument: '*'
+  - name:
+    - thread_cattr_writer
+    - thread_mattr_writer
+    defines:
+      argument: '*'
+      add_suffix: '='
+  - name: delegate_missing_to
+    calls:
+      argument: 0

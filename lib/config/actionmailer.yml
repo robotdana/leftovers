@@ -1,0 +1,22 @@
+# THIS IS INCOMPLETE (you can help by expanding it)
+# rails is _really complicated_ and has a lot of magic which calls methods for you.
+# some is currently impossible to handle (with_options).
+# Some is just corners of rails I haven't hit yet.
+keep:
+  - has_suffix: Preview
+    path: '**/mailers/previews/**/*_preview.rb'
+  - delivering_email
+  - delivered_email
+
+dynamic:
+  names:
+    - deliver_now
+    - deliver_later
+  calls:
+    value:
+      deliver
+  names:
+    - before_action
+    - after_action
+    - around_action
+  calls: ['*', if, unless]

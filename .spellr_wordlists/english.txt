@@ -1,3 +1,10 @@
+actioncable
+actionmailer
+actionpack
+actionview
+activejob
+activemodel
+activerecord
 affixxed
 argumentless
 attr
@@ -9,6 +16,7 @@ codebase
 config
 cov
 datagrid
+deserialize
 esque
 firstname
 gemfile

@@ -10,6 +10,9 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   before do
+    allow(Leftovers).to receive(:try_require_cache).and_call_original
+    allow(Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
+
     Leftovers.reset
     Leftovers.config << Leftovers::Config.new('test', content: config)
   end

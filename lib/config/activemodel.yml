@@ -1,0 +1,74 @@
+# THIS IS INCOMPLETE (you can help by expanding it)
+# rails is _really complicated_ and has a lot of magic which calls methods for you.
+# some is currently impossible to handle (with_options).
+# Some is just corners of rails I haven't hit yet.
+keep:
+  - validate_each # ActiveModel::EachValidator
+
+dynamic:
+  - names:
+      - after_initialize
+      - before_validation
+      - after_validation
+    calls:
+      - arguments: 0
+      - arguments: [if, unless]
+        nested:
+          arguments: '*'
+  - name:
+      - validates_associated
+    calls:
+      - arguments: ['*', if, unless]
+  - name: validates
+    calls:
+      - arguments:
+          - '*'
+          - within
+          - inclusion
+          - scope
+          - if
+          - unless
+      - arguments: inclusion
+        nested:
+          arguments: 'in'
+      - keywords:
+          unless: [if, unless]
+        camelize: true
+        add_suffix: Validator
+        split: '::'
+  - names:
+      - validate
+      - validate_associated
+    calls:
+      - arguments: ['*', if, unless]
+  - name:
+      - attribute
+      - alias_attribute
+    path: app/models/*
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '?'
+        - add_suffix: '='
+  - name: alias_attribute
+    calls:
+      - argument: 1
+      - argument: 1
+        add_suffix: '?'
+      - argument: 1
+        add_suffix: '='
+  - name: resource
+    calls:
+      - argument: 0
+        camelize: true
+        pluralize: true
+        add_suffix: Controller
+        split: '::'
+
+  - name:
+    - new
+    - assign_attributes
+    calls:
+      keyword: '**'
+      add_suffix: '='

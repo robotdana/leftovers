@@ -1,0 +1,176 @@
+# THIS IS INCOMPLETE (you can help by expanding it)
+# rails is _really complicated_ and has a lot of magic which calls methods for you.
+# some is currently impossible to handle (with_options).
+# Some is just corners of rails I haven't hit yet.
+
+exclude_paths:
+  - db/migrate/*
+
+dynamic:
+  - names:
+      - after_find
+      - after_touch
+      - before_save
+      - around_save
+      - after_save
+      - before_create
+      - around_create
+      - after_create
+      - before_update
+      - around_update
+      - after_update
+      - before_destroy
+      - around_destroy
+      - after_destroy
+      - after_commit
+      - after_rollback
+      - after_create_commit
+      - after_update_commit
+      - after_destroy_commit
+      - after_save_commit
+    calls:
+      - arguments: 0
+      - arguments: [if, unless]
+        nested:
+          arguments: '*'
+  - name:
+    - has_one
+    - belongs_to
+    unless:
+      has_argument: class_name
+    calls:
+      argument: 0
+      camelize: true
+      split: '::'
+
+  - name:
+    - has_many
+    - has_and_belongs_to_many
+    unless:
+      has_argument: class_name
+    calls:
+      - argument: 0
+        camelize: true
+        singularize: true
+        split: '::'
+  - name:
+    - has_many
+    - has_and_belongs_to_many
+    defines:
+      - argument: 0
+        transforms:
+          - original
+          - add_suffix: '='
+          - singularize: true
+            add_suffix: _ids
+          - singularize: true
+            add_suffix: _ids=
+  - name:
+    - has_many
+    - has_one
+    - has_and_belongs_to_many
+    calls:
+      argument:
+        - as
+  - name:
+    - has_one
+    - has_many
+    calls:
+      - argument:
+          - source_type
+          - source
+          - through
+  - name:
+      - has_one
+      - belongs_to
+    defines:
+      - argument: 0
+        transforms:
+          - original
+          - add_suffix: '='
+          - add_prefix: build_
+          - add_prefix: create_
+          - add_prefix: create_
+            add_suffix: '!'
+          - add_prefix: reload
+  - name: belongs_to
+    unless:
+      has_argument:
+        at: optional
+        has_value: true
+    calls:
+      argument: 0
+
+  - name:
+     - has_one
+     - has_many
+     - belongs_to
+     - has_and_belongs_to_many
+    calls:
+      - argument: class_name
+        split: '::'
+      - argument: inverse_of
+      - argument: touch
+        add_suffix: '='
+  - name:
+     - has_one
+     - has_many
+     - belongs_to
+     - has_and_belongs_to_many
+    has_argument:
+      at: [dependent, inverse_of, touch, validate]
+      unless:
+        has_value: false
+    calls:
+      argument: 0
+  - name: scope
+    path: /app/models
+    defines:
+      argument: 0 # ar
+
+  - name:
+    - create
+    - create!
+    - update
+    - update!
+    calls:
+      keyword: '**'
+      add_suffix: '='
+  - name:
+      - includes
+      - preload
+      - eager_load
+      - joins
+      - left_joins
+      - left_outer_joins
+    calls:
+      arguments: ['*', '**']
+      keywords: '**'
+  - name:
+      - string
+      - text
+      - integer
+      - bigint
+      - float
+      - decimal
+      - numeric
+      - datetime
+      - time
+      - date
+      - binary
+      - boolean
+    path: /db/schema.rb
+    calls:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: '?'
+  - name: accepts_nested_attributes_for
+    defines:
+      argument: '*'
+      transforms:
+        - add_suffix: _attributes
+        - add_suffix: _attributes=
+    calls:
+      argument: reject_if

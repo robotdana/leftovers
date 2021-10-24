@@ -1,0 +1,29 @@
+# THIS IS INCOMPLETE (you can help by expanding it)
+# rails is _really complicated_ and has a lot of magic which calls methods for you.
+# some is currently impossible to handle (with_options).
+# Some is just corners of rails I haven't hit yet.
+keep:
+  - serialize?
+  - serialize
+  - deserialize
+dynamic:
+  - name:
+      - perform_later
+      - perform
+    calls:
+      - value: perform
+  - names:
+      - before_enqueue
+      - around_enqueue
+      - after_enqueue
+      - before_perform
+      - around_perform
+      - after_perform
+    calls:
+      - arguments: 1
+      - arguments: [if, unless]
+        nested:
+          arguments: '*'
+  - name: rescue_from
+    calls:
+      - arguments: 1

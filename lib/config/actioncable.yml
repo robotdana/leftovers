@@ -2,17 +2,3 @@
 # rails is _really complicated_ and has a lot of magic which calls methods for you.
 # some is currently impossible to handle (with_options).
 # Some is just corners of rails I haven't hit yet.
-gems:
-  - actioncable
-  - actionmailer
-  - actionpack
-  - actionview
-  - activejob
-  - activemodel
-  - activerecord
-  - activesupport
-
-keep:
-  - default_url_options # called by url_for, unsure what gem does
-  - APP_PATH
-  - APP_ROOT

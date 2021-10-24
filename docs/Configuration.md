@@ -613,9 +613,9 @@ Can be used in the [`transforms:`](#transforms) list (or anywhere `transforms:` 
 if used in a hash `true` can be used as a placeholder value
 
 the incoming value will be transformed using the [active_support String core extensions](https://edgeguides.rubyonrails.org/active_support_core_extensions.html#inflections)
-and if using [gems:](#gems) with `active_support` or `rails` then your `config/initializers/inflections.rb` will be loaded. if you have inflections in another file, then supply that to [`requires:`](#requires).
+and if using [gems:](#gems) with `activesupport` or `rails` then your `config/initializers/inflections.rb` will be loaded. if you have inflections in another file, then supply that to [`requires:`](#requires).
 
-If the `active_support` gem is not available this will raise an error.
+If the `activesupport` gem is not available this will raise an error.
 
 ## `unless:`
 

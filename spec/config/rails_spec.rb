@@ -141,7 +141,34 @@ RSpec.describe 'rails gem' do
   context 'with routes resource calls' do
     let(:ruby) { 'resource :user' }
 
-    it { is_expected.to have_no_definitions.and have_calls(:resource, :UsersController) }
+    it do
+      expect(subject).to have_definitions.and have_calls(
+        :resource, :UsersController,
+        :index, :new, :create, :edit, :update, :destroy
+      )
+    end
+  end
+
+  context 'with routes resource calls with except' do
+    let(:ruby) { 'resource :user, except: :index' }
+
+    it do
+      expect(subject).to have_definitions.and have_calls(
+        :resource, :UsersController,
+        :new, :create, :edit, :update, :destroy
+      )
+    end
+  end
+
+  context 'with routes resource calls with array except' do
+    let(:ruby) { 'resource :user, except: [:index]' }
+
+    it do
+      expect(subject).to have_definitions.and have_calls(
+        :resource, :UsersController,
+        :new, :create, :edit, :update, :destroy
+      )
+    end
   end
 
   context 'with delegation definitions and calls' do

@@ -1,0 +1,181 @@
+# THIS IS INCOMPLETE (you can help by expanding it)
+# rails is _really complicated_ and has a lot of magic which calls methods for you.
+# some is currently impossible to handle (with_options).
+# Some is just corners of rails I haven't hit yet.
+
+include_paths:
+  - '*.rjs'
+  - '*.rhtml'
+
+keep:
+  - ssl_configured? # ApplicationController
+  - default_url_options # called by url_for
+  - has_suffix: Helper
+    path: /app/helpers
+
+dynamic:
+  - names:
+      - after_action
+      - append_after_action
+      - append_around_action
+      - append_before_action
+      - around_action
+      - before_action
+      - prepend_after_action
+      - prepend_around_action
+      - prepend_before_action
+      - skip_before_action
+      - skip_after_action
+      - skip_around_action
+    calls:
+      - arguments: ['*', if, unless]
+  - name: scope
+    path: /config/routes*
+    calls:
+      argument: module # routes
+      camelize: true
+      split: '::'
+  - name: namespace
+    calls:
+      - argument: 0
+        camelize: true
+        split: '::'
+  - name:
+      - rescue_from
+    calls:
+      - argument: [1, with]
+  - name:
+      - match
+      - delete
+      - get
+      - patch
+      - post
+      - put
+      - root
+    calls:
+      - arguments: [0, action]
+      - argument: '**'
+        delete_before: '#'
+      - argument: '**'
+        delete_after: '#'
+        camelize: true
+        add_suffix: Controller
+        split: '::'
+  - name:
+      - resource
+      - resources
+    calls:
+      - argument: only
+      - argument: controller
+        camelize: true
+        add_suffix: Controller
+        split: '::'
+  - name:
+    - resource
+    - resources
+    unless:
+      has_argument:
+        - at: only
+        - at: except
+          has_value: index
+        - at: except
+          has_argument:
+            at: '*'
+            has_value: index
+    calls:
+      - value: index
+  - name:
+    - resource
+    - resources
+    unless:
+      has_argument:
+        - at: only
+        - at: except
+          has_value: new
+        - at: except
+          has_argument:
+            at: '*'
+            has_value: new
+    calls:
+      - value: new
+  - name:
+    - resource
+    - resources
+    unless:
+      has_argument:
+        - at: only
+        - at: except
+          has_value: create
+        - at: except
+          has_argument:
+            at: '*'
+            has_value: create
+    calls:
+      - value: create
+  - name:
+    - resource
+    - resources
+    unless:
+      has_argument:
+        - at: only
+        - at: except
+          has_value: edit
+        - at: except
+          has_argument:
+            at: '*'
+            has_value: edit
+    calls:
+      - value: edit
+  - name:
+    - resource
+    - resources
+    unless:
+      has_argument:
+        - at: only
+        - at: except
+          has_value: update
+        - at: except
+          has_argument:
+            at: '*'
+            has_value: update
+    calls:
+      - value: update
+  - name:
+    - resource
+    - resources
+    unless:
+      has_argument:
+        - at: only
+        - at: except
+          has_value: destroy
+        - at: except
+          has_argument:
+            at: '*'
+            has_value: destroy
+    calls:
+      - value: destroy
+  - name:
+      - resources
+      - controller
+      - namespace
+    calls:
+      - argument: 0
+        camelize: true
+        add_suffix: Controller
+        split: '::'
+  - name: resource
+    calls:
+      - argument: 0
+        camelize: true
+        pluralize: true
+        add_suffix: Controller
+        split: '::'
+  - name: permit
+    calls:
+      arguments: ['*', '**']
+      keywords: '**'
+      add_suffix: "="
+      recursive: true
+  - name: layout
+    calls:
+      argument: 0

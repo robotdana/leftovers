@@ -1,0 +1,64 @@
+# THIS IS INCOMPLETE (you can help by expanding it)
+# rails is _really complicated_ and has a lot of magic which calls methods for you.
+# some is currently impossible to handle (with_options).
+# Some is just corners of rails I haven't hit yet.
+keep:
+  - has_suffix: Helper
+    path: /app/helpers
+
+dynamic:
+  - name:
+    - check_box
+    - date_select
+    - datetime_select
+    - file_field
+    - hidden_field
+    - label
+    - radio_button
+    - select
+    - time_select
+    - time_zone_select
+    - color_field
+    - date_field
+    - datetime_field
+    - datetime_local_field
+    - email_field
+    - month_field
+    - number_field
+    - password_field
+    - phone_field
+    - range_field
+    - search_field
+    - telephone_field
+    - text_area
+    - text_field
+    - time_field
+    - url_field
+    - week_field
+    calls:
+      - arguments: [0,1] # 0: with a receiver, 1: with no receiver
+      - arguments: [0,1]
+        add_suffix: '='
+  - name: fields_for
+    calls:
+      argument: 1
+      add_suffix: _attributes
+  - name: options_from_collection_for_select
+    calls:
+      - arguments: [1,2]
+  - name:
+      - collection_select
+      - collection_check_boxes
+      - collection_radio_buttons
+    calls:
+      - argument: 1
+        add_suffix: '='
+      - arguments: [3,4]
+  - name: grouped_collection_select
+    calls:
+      - argument: 1
+        add_suffix: '='
+      - arguments: [3,4,5,6]
+  - name: option_groups_from_collection_for_select
+    calls:
+      - arguments: [0,1,2,3]

@@ -4,7 +4,12 @@ require 'parallel'
 
 RSpec.describe Leftovers::CLI, type: :cli do
   describe 'leftovers' do
-    before { with_temp_dir }
+    before do
+      allow(Leftovers).to receive(:try_require_cache).and_call_original
+      allow(Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
+
+      with_temp_dir
+    end
 
     context 'with no files' do
       it 'runs' do
@@ -61,7 +66,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
     context 'with a test method defined and unused' do
       before do
-        temp_file 'spec/bar.rb', <<~RUBY
+        temp_file 'test/bar.rb', <<~RUBY
           def test_method; end
         RUBY
       end
@@ -90,7 +95,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
           test_only:
             # Defined in tests:
-            - "test_method" # spec/bar.rb:1:5 def test_method; end
+            - "test_method" # test/bar.rb:1:5 def test_method; end
         FILE
 
         expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
@@ -280,7 +285,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
       context 'with tests' do
         before do
-          temp_file 'spec/foo.rb', <<~RUBY
+          temp_file 'test/foo.rb', <<~RUBY
             expect(unused_method).to eq foo
             self.instance_variable_get(:@bar) == true
           RUBY
@@ -334,7 +339,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
         it 'runs with --write-todo' do
           Timecop.freeze('2021-06-14T22:03:35 UTC')
-          temp_file 'spec/bar.rb', <<~RUBY
+          temp_file 'test/bar.rb', <<~RUBY
             def test_method; end
           RUBY
 
@@ -359,7 +364,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
             test_only:
               # Defined in tests:
-              - "test_method" # spec/bar.rb:1:5 def test_method; end
+              - "test_method" # test/bar.rb:1:5 def test_method; end
 
             keep:
               # Only directly called in tests:
@@ -374,14 +379,14 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
       context 'with some test' do
         before do
-          temp_file 'spec/foo.rb', <<~RUBY
+          temp_file 'test/foo.rb', <<~RUBY
             expect(unused_method).to eq foo
           RUBY
         end
 
         it 'runs with --write-todo' do
           Timecop.freeze('2021-06-14T22:03:35 UTC')
-          temp_file 'spec/bar.rb', <<~RUBY
+          temp_file 'test/bar.rb', <<~RUBY
             def test_method; end
           RUBY
 
@@ -406,7 +411,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
             test_only:
               # Defined in tests:
-              - "test_method" # spec/bar.rb:1:5 def test_method; end
+              - "test_method" # test/bar.rb:1:5 def test_method; end
 
             keep:
               # Only directly called in tests:

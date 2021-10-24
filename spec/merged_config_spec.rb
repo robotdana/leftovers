@@ -3,6 +3,8 @@
 RSpec.describe Leftovers::MergedConfig do
   before { Leftovers.reset }
 
+  after { Leftovers.reset }
+
   describe '<<' do
     it 'handles clearing memoization' do
       subject << :ruby
@@ -16,8 +18,8 @@ RSpec.describe Leftovers::MergedConfig do
       rails = Leftovers::Config.new(:rails)
       subject << rails
 
-      expect(original_exclude_paths + rails.exclude_paths).to eq subject.exclude_paths
-      expect(original_include_paths + rails.include_paths).to eq subject.include_paths
+      expect(original_exclude_paths).not_to eq subject.exclude_paths
+      expect(original_include_paths).not_to eq subject.include_paths
       expect(original_test_paths).not_to eq subject.test_paths # it's a different set of FastIgnore
 
       expect(
@@ -64,7 +66,7 @@ RSpec.describe Leftovers::MergedConfig do
 
   describe 'new' do
     it 'can work without bundler' do
-      allow(Leftovers).to receive(:try_require).with('bundler').and_return(false)
+      allow(Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
       expect_any_instance_of(described_class).to receive(:<<).exactly(3).times # rubocop:disable RSpec/AnyInstance
       # not sure how i can expect a particular instance because it's called in the initializer
 

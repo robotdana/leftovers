@@ -50,13 +50,8 @@ RSpec.describe Leftovers::FileCollector do
 
   context 'with unavailable haml gem' do
     before do
-      unless Leftovers.instance_variable_get(:@try_require)
-        Leftovers.instance_variable_set(:@try_require, {})
-      end
-      allow(Leftovers.instance_variable_get(:@try_require))
-        .to receive(:key?).with('haml').and_return(true)
-      allow(Leftovers.instance_variable_get(:@try_require))
-        .to receive(:[]).with('haml').and_return(false)
+      allow(Leftovers).to receive(:try_require_cache).and_call_original
+      allow(Leftovers).to receive(:try_require_cache).with('haml').and_return(false)
     end
 
     let(:haml) do
