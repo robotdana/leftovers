@@ -14,7 +14,10 @@ module Leftovers
       end
 
       def ===(node)
-        node.positional_arguments.any? do |value|
+        args = node.positional_arguments
+        return false unless args
+
+        args.any? do |value|
           @matcher === value
         end
       end

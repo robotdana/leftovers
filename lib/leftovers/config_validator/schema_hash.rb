@@ -134,10 +134,16 @@ module Leftovers
                 'at' => { '$ref' => '#/definitions/argumentPositionList' },
                 'has_value' => { '$ref' => '#/definitions/hasValueList' },
                 'has_value_type' => { '$ref' => '#/definitions/valueTypeList' },
+                'has_argument' => { '$ref' => '#/definitions/hasArgumentList' },
+                'has_arguments' => { '$ref' => '#/definitions/hasArgumentList' },
                 'unless' => { '$ref' => '#/definitions/hasArgumentList' }
               },
               'minProperties' => 1,
-              'additionalProperties' => false
+              'additionalProperties' => false,
+              'allOf' => [
+                # synonyms
+                { 'not' => { 'required' => %w{has_argument has_arguments} } }
+              ]
             }
           ]
         },
