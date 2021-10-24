@@ -78,6 +78,13 @@ module Leftovers
         type == :str || type == :sym
       end
 
+      def proc?
+        return unless type == :block
+
+        name = first.name
+        name == :lambda || name == :proc
+      end
+
       def arguments
         @memo.fetch(:arguments) do
           @memo[:arguments] = case type

@@ -91,7 +91,7 @@ module Leftovers
         },
         'valueType' => {
           'type' => 'string',
-          'enum' => %w{String Symbol Integer Float Array Hash}
+          'enum' => %w{String Symbol Integer Float Array Hash Proc}
         },
         'valueTypeList' => {
           'anyOf' => [

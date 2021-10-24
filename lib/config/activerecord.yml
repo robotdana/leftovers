@@ -124,9 +124,12 @@ dynamic:
     calls:
       argument: 0
   - name: scope
-    path: /app/models
+    has_argument:
+      at: 1
+      has_value:
+        type: Proc
     defines:
-      argument: 0 # ar
+      argument: 0
 
   - name:
     - create

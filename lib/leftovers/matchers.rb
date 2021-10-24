@@ -22,5 +22,6 @@ module Leftovers
     autoload(:NodeType, "#{__dir__}/matchers/node_type")
     autoload(:Not, "#{__dir__}/matchers/not")
     autoload(:Or, "#{__dir__}/matchers/or")
+    autoload(:Predicate, "#{__dir__}/matchers/predicate")
   end
 end

@@ -34,7 +34,11 @@ dynamic:
     calls:
       - arguments: ['*', if, unless]
   - name: scope
-    path: /config/routes*
+    unless:
+      has_argument:
+        at: 1
+        has_value:
+          type: Proc
     calls:
       argument: module # routes
       camelize: true

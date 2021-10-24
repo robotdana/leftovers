@@ -2,15 +2,15 @@
 
 module Leftovers
   module Matchers
-    class NodeHasPositionalArgument
-      def initialize(position)
-        @position = position
+    class Predicate
+      def initialize(predicate)
+        @predicate = predicate
 
         freeze
       end
 
       def ===(node)
-        node.positional_arguments[@position]
+        node.send(@predicate)
       end
 
       freeze

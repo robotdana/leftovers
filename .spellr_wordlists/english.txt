@@ -50,6 +50,7 @@ rvm
 sherson
 sidekiq
 simplecov
+stabby
 timecop
 todo
 uncompactable

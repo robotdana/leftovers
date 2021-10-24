@@ -254,8 +254,6 @@ RSpec.describe 'rails gem' do
     end
 
     context 'with routes scope' do
-      let(:path) { 'config/routes.rb' }
-
       let(:ruby) do
         <<~RUBY
           Rails.application.routes.draw do
@@ -273,8 +271,6 @@ RSpec.describe 'rails gem' do
     end
 
     context 'with AR scope' do
-      let(:path) { 'app/models/user.rb' }
-
       let(:ruby) do
         <<~RUBY
           class User < ApplicationRecord

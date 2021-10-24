@@ -20,6 +20,10 @@ RSpec.describe Leftovers::AST::Node do
   let(:module_node) { Leftovers::Parser.parse_with_comments('module Foo; end').first }
   let(:integer_node) { Leftovers::Parser.parse_with_comments('1').first }
   let(:float_node) { Leftovers::Parser.parse_with_comments('1.0').first }
+  let(:proc_node) { Leftovers::Parser.parse_with_comments('proc {}').first }
+  let(:lambda_node) { Leftovers::Parser.parse_with_comments('lambda {}').first }
+  let(:do_end_lambda_node) { Leftovers::Parser.parse_with_comments('lambda do; end').first }
+  let(:stabby_lambda_node) { Leftovers::Parser.parse_with_comments('-> {}').first }
 
   describe '#to_s' do
     it 'provides a string representation' do
@@ -138,6 +142,16 @@ RSpec.describe Leftovers::AST::Node do
       expect(module_node).not_to be_scalar
       expect(integer_node).to be_scalar
       expect(float_node).to be_scalar
+    end
+  end
+
+  describe '#proc?' do
+    it 'responds to proc?' do
+      expect(proc_node).to be_proc
+      expect(lambda_node).to be_proc
+      expect(do_end_lambda_node).to be_proc
+      expect(stabby_lambda_node).to be_proc
+      expect(send_node).not_to be_proc
     end
   end
 end

@@ -1525,6 +1525,37 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:yes, :my_method)) }
   end
 
+  context 'with has_argument with Proc type' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: kw
+              has_value:
+                type: Proc
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', kw: -> {})
+        my_method('yes2', kw: proc {})
+        my_method('yes3', kw: lambda {})
+        my_method('no', kw: Proc.new {}) # not a "literal"
+        my_method('no', kw: thing {})
+      RUBY
+    end
+
+    it do
+      expect(subject)
+        .to have_no_definitions
+        .and(have_calls(:yes, :yes2, :yes3, :proc, :lambda, :Proc, :new, :my_method, :thing))
+    end
+  end
+
   context 'with has_argument with Integer type' do
     let(:config) do
       <<~YML
