@@ -381,7 +381,7 @@ RSpec.describe Leftovers::FileCollector do
       expect do
         collector
       end.to output(
-        "\e[2K\e[31mfoo.rb:3:0 SyntaxError: unexpected token $end\e[0m\n"
+        a_string_including("\e[2K\e[31mfoo.rb:3:0 SyntaxError: unexpected token $end\e[0m\n")
       ).to_stderr
     end
   end
