@@ -7,6 +7,7 @@
 - `haml_paths:` and `erb_paths:` are now configurable.
 - `type:` can match on `'Array'`, `'Hash'`, and `'Proc'` literals.
 - rails.yml config determines which `scope` is which by its shape rather than its path: (ActiveRecord#scope has a proc as the second parameter)
+- `--write--todo` now correctly handles grouped definitions (like activemodel attributes)
 
 # v0.4.4
 - don't hard-wrap the --write-todo instructions it looks weird

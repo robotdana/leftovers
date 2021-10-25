@@ -105,12 +105,18 @@ module Leftovers
     def generate_list(title, list)
       <<~YML
           # #{title}
-        #{list.map { |d| print_definition(d) }.join("\n")}
+        #{print_definition_list(list)}
 
       YML
     end
 
+    def print_definition_list(definition_list)
+      definition_list.map { |definition| print_definition(definition) }.join("\n")
+    end
+
     def print_definition(definition)
+      return print_definition_list(definition.definitions) if definition.is_a?(DefinitionSet)
+
       "  - #{definition.to_s.inspect} # #{definition.location_s} #{definition.source_line.strip}"
     end
 
