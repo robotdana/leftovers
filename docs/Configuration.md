@@ -131,6 +131,7 @@ Each entry can be a string (an exact match for a method, constant, or variable n
   - [`matches:`](#matches) (can't be used in the same entry as `has_prefix:` or `has_suffix:`)
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
+- [`has_receiver:`](#has_receiver)
 - [`unless`](#unless)
 
 Arrays are not necessary for single values
@@ -187,6 +188,7 @@ Each entry must have at least one of the following properties to restrict which 
   - [`matches:`](#matches)
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
+- [`has_receiver:`](#has_receiver)
 - [`unless`](#unless)
 
 And must have one or both of
@@ -349,7 +351,7 @@ and when used in:
 
 It can have any of these properties:
 - [`at:`](#at)
-- [`has_value:`](#has_value)
+- [`has_value:`](#has_value_has_receiver)
 
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
 
@@ -365,7 +367,7 @@ The method call/constant variable/assignment will be considered matching if it h
 
 It can have any of these properties:
 - [`at:`](#at)
-- [`has_value:`](#has_value)
+- [`has_value:`](#has_value_has_receiver)
 
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
 
@@ -407,9 +409,9 @@ Each entry can be any of:
 
 Arrays are not necessary for single values
 
-## `has_value:`
+## `has_value:`, `has_receiver:`
 
-filter [`arguments:`](#arguments), [`has_arguments:`](#has_arguments), and [`keywords:`](#keywords), by the argument/assigned value
+filter [`arguments:`](#arguments), [`has_arguments:`](#has_arguments), and [`keywords:`](#keywords), by the argument/assigned/receiver value
 
 Each entry can be one of
 - `true`, `false`, `nil`, or an Integer. matches the literal value
@@ -420,13 +422,15 @@ Each entry can be one of
   - [`matches:`](#matches) (this can't be used in the same entry as `has_prefix:` or `has_suffix:`)
 - or have at least one of the following properties to match within an array or hash:
   - [`at`](#at)
-  - [`has_value`](#has_value)
+  - [`has_value`](#has_value_has_receiver)
 - or have the following property to match the value type
   - [`type`](#type)
+- or have the following property to match the receiver
+  - [`has_receiver`](#has_value_has_receiver)
 
 ## `type:`
 
-Filter [`has_value`](#has_value), by the argument/assigned value type
+Filter [`has_value`](#has_value_has_receiver), by the argument/assigned value type
 
 Each entry can be one of
 - `'String'`

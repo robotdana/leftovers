@@ -33,6 +33,7 @@ lol
 lorem
 memoization
 memoized
+namespace
 namespaced
 nocov
 noninfringement

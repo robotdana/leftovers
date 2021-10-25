@@ -2,13 +2,17 @@
 
 RSpec.describe Leftovers::AST::Node do
   let(:send_node) { Leftovers::Parser.parse_with_comments('foo()').first }
+  let(:send_then_send_node) { Leftovers::Parser.parse_with_comments('foo().bar()').first }
+  let(:const_then_send_node) { Leftovers::Parser.parse_with_comments('Foo.bar()').first }
   let(:csend_node) { Leftovers::Parser.parse_with_comments('true&.foo()').first }
+  let(:send_then_csend_node) { Leftovers::Parser.parse_with_comments('foo()&.bar()').first }
   let(:true_node) { Leftovers::Parser.parse_with_comments('true').first }
   let(:false_node) { Leftovers::Parser.parse_with_comments('false').first }
   let(:nil_node) { Leftovers::Parser.parse_with_comments('nil').first }
   let(:str_node) { Leftovers::Parser.parse_with_comments('"foo"').first }
   let(:sym_node) { Leftovers::Parser.parse_with_comments(':foo').first }
   let(:constant_node) { Leftovers::Parser.parse_with_comments('FOO = true').first }
+  let(:const_then_const_node) { Leftovers::Parser.parse_with_comments('Foo::Bar').first }
   let(:def_node) { Leftovers::Parser.parse_with_comments('def foo; end').first }
   let(:ivar_node) { Leftovers::Parser.parse_with_comments('@foo').first }
   let(:ivasgn_node) { Leftovers::Parser.parse_with_comments('@foo = true').first }
@@ -152,6 +156,17 @@ RSpec.describe Leftovers::AST::Node do
       expect(do_end_lambda_node).to be_proc
       expect(stabby_lambda_node).to be_proc
       expect(send_node).not_to be_proc
+    end
+  end
+
+  describe 'receiver' do
+    it 'responds to receiver', :aggregate_failures do
+      expect(true_node.receiver).to be_nil
+      expect(send_node.receiver).to be_nil
+      expect(const_then_send_node.receiver.name).to eq :Foo
+      expect(const_then_const_node.receiver.name).to eq :Foo
+      expect(send_then_send_node.receiver.name).to eq :foo
+      expect(send_then_csend_node.receiver.name).to eq :foo
     end
   end
 end

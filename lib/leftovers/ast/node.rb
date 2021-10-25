@@ -113,6 +113,13 @@ module Leftovers
         end
       end
 
+      def receiver
+        case type
+        when :const, :csend, :send
+          first
+        end
+      end
+
       def unwrap_freeze
         return self unless type == :send && name == :freeze
 

@@ -120,6 +120,7 @@ module Leftovers
                   'has_prefix' => true, 'has_suffix' => true,
                   'at' => { '$ref' => '#/definitions/argumentPositionList' },
                   'has_value' => { '$ref' => '#/definitions/hasValueList' },
+                  'has_receiver' => { '$ref' => '#/definitions/hasValueList' },
                   'type' => { '$ref' => '#/definitions/valueTypeList' },
                   'unless' => { '$ref' => '#/definitions/hasValueList' }
                 },
@@ -196,7 +197,8 @@ module Leftovers
             'path' => { '$ref' => '#/definitions/stringList' },
             'paths' => { '$ref' => '#/definitions/stringList' },
             'has_argument' => { '$ref' => '#/definitions/hasArgumentList' },
-            'has_arguments' => { '$ref' => '#/definitions/hasArgumentList' }
+            'has_arguments' => { '$ref' => '#/definitions/hasArgumentList' },
+            'has_receiver' => { '$ref' => '#/definitions/hasValueList' }
           },
           'minProperties' => 1,
           'allOf' => [
@@ -426,6 +428,7 @@ module Leftovers
               { 'required' => ['name'] }, { 'required' => ['names'] },
               { 'required' => ['path'] }, { 'required' => ['paths'] },
               { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
+              { 'required' => ['has_receiver'] },
               { 'required' => ['unless'] }
             ] },
             {
@@ -435,6 +438,7 @@ module Leftovers
                 'name' => true, 'names' => true,
                 'path' => true, 'paths' => true,
                 'has_argument' => true, 'has_arguments' => true,
+                'has_receiver' => true,
                 'unless' => { '$ref' => '#/definitions/ruleMatcherList' }
 
               },
@@ -451,6 +455,7 @@ module Leftovers
               { 'required' => ['name'] }, { 'required' => ['names'] },
               { 'required' => ['path'] }, { 'required' => ['paths'] },
               { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
+              { 'required' => ['has_receiver'] },
               { 'required' => ['unless'] }
             ] },
             {
@@ -460,6 +465,7 @@ module Leftovers
                 'name' => true, 'names' => true,
                 'path' => true, 'paths' => true,
                 'has_argument' => true, 'has_arguments' => true,
+                'has_receiver' => true,
                 'unless' => { '$ref' => '#/definitions/ruleMatcherList' },
 
                 'call' => true, 'calls' => true,
@@ -496,6 +502,7 @@ module Leftovers
                     'has_prefix' => true, 'has_suffix' => true, 'matches' => true,
                     'path' => true, 'paths' => true,
                     'has_argument' => true, 'has_arguments' => true,
+                    'has_receiver' => true,
                     'unless' => { '$ref' => '#/definitions/keepTestOnlyList' }
                   },
                   'additionalProperties' => false,

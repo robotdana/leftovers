@@ -20,9 +20,6 @@ module Leftovers
             ::Leftovers::Matchers::NodeHasPositionalArgument.new(pos)
           elsif value_matcher
             ::Leftovers::Matchers::NodeHasAnyPositionalArgumentWithValue.new(value_matcher)
-            # :nocov:
-          else raise
-            # :nocov:
           end
         end
       end

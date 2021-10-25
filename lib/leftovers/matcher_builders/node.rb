@@ -21,6 +21,7 @@ module Leftovers
         names: nil, match: nil, has_prefix: nil, has_suffix: nil,
         paths: nil,
         has_arguments: nil,
+        has_receiver: nil,
         unless_arg: nil
       )
         ::Leftovers::MatcherBuilders::And.build([
@@ -30,6 +31,7 @@ module Leftovers
           ]),
           ::Leftovers::MatcherBuilders::NodePath.build(paths),
           ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
+          ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),
           ::Leftovers::MatcherBuilders::Unless.build(
             (::Leftovers::MatcherBuilders::Node.build(unless_arg) if unless_arg)
           )

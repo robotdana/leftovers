@@ -15,10 +15,8 @@ module Leftovers
           pair_matcher = ::Leftovers::MatcherBuilders::And.build([
             keyword_matcher, value_matcher
           ])
-          # :nocov:
-          raise unless pair_matcher
 
-          # :nocov:
+          return nil unless pair_matcher
 
           ::Leftovers::Matchers::NodeHasAnyKeywordArgument.new(pair_matcher)
         end

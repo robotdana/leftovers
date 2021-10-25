@@ -245,44 +245,44 @@ RSpec.describe 'rails gem' do
     end
   end
 
-  context 'with temp_dir' do
-    before do
-      with_temp_dir
-      # need the files to actually exist or fast_ignore doesn't work.
-      temp_file 'app/models/user.rb'
-      temp_file 'config/routes.rb'
+  context 'with routes scope' do
+    let(:ruby) do
+      <<~RUBY
+        Rails.application.routes.draw do
+          scope '/whatever', module: :whichever
+        end
+      RUBY
     end
 
-    context 'with routes scope' do
-      let(:ruby) do
-        <<~RUBY
-          Rails.application.routes.draw do
-            scope '/whatever', module: :whichever
-          end
-        RUBY
-      end
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(
+          :Rails, :application, :routes, :draw, :scope, :Whichever
+        ))
+    end
+  end
 
-      it do
-        expect(subject).to have_no_definitions
-          .and(have_calls(
-            :Rails, :application, :routes, :draw, :scope, :Whichever
-          ))
-      end
+  context 'with AR scope' do
+    let(:ruby) do
+      <<~RUBY
+        class User < ApplicationRecord
+          scope :whatever, -> { order(:whichever) }
+        end
+      RUBY
     end
 
-    context 'with AR scope' do
-      let(:ruby) do
-        <<~RUBY
-          class User < ApplicationRecord
-            scope :whatever, -> { order(:whichever) }
-          end
-        RUBY
-      end
+    it do
+      expect(subject).to have_definitions(:User, :whatever)
+        .and have_calls(:ApplicationRecord, :lambda, :scope, :order)
+    end
+  end
 
-      it do
-        expect(subject).to have_definitions(:User, :whatever)
-          .and have_calls(:ApplicationRecord, :lambda, :scope, :order)
-      end
+  context 'with scope with 1 argument' do
+    let(:ruby) { "scope 'some other thing'" }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:scope)
     end
   end
 

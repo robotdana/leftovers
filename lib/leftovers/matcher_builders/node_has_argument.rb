@@ -51,7 +51,7 @@ module Leftovers
       )
         keys, positions = separate_argument_types(at)
 
-        value_matcher = ::Leftovers::MatcherBuilders::ArgumentNodeValue.build(has_value)
+        value_matcher = ::Leftovers::MatcherBuilders::NodeValue.build(has_value)
         matcher = if (keys && positions) || (!keys && !positions)
           ::Leftovers::MatcherBuilders::Or.build([
             ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher),

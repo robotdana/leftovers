@@ -15,6 +15,7 @@ module Leftovers
       "#{__dir__}/matchers/node_has_positional_argument_with_value"
     )
     autoload(:NodeHasPositionalArgument, "#{__dir__}/matchers/node_has_positional_argument")
+    autoload(:NodeHasReceiver, "#{__dir__}/matchers/node_has_receiver")
     autoload(:NodeName, "#{__dir__}/matchers/node_name")
     autoload(:NodePairValue, "#{__dir__}/matchers/node_pair_value")
     autoload(:NodePath, "#{__dir__}/matchers/node_path")

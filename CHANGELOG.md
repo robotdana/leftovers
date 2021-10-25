@@ -1,10 +1,11 @@
 # v0.5.0
+- `has_receiver:` will match the receiver for methods and the namespace for constants.
 - `has_value_type:` is now `has_value: type:`
 - `has_value:` can be nested with `at:` and `has_value:`.
-- `has_argument:` can be given `at:` with `'*'` or `'**'` which match all positional arguments or keyword arguments respectively
-- the rails.yml config has been broken up into e.g. activerecord
+- `has_argument:` can be given `at:` with `'*'` or `'**'` which matches all positional arguments or keyword arguments respectively
+- the rails.yml config has been broken up into e.g. activerecord, actionpack, etc
 - `haml_paths:` and `erb_paths:` are now configurable.
-- `type:` can match on `'Array'` and `'Hash'` literals.
+- `type:` can match on `'Array'`, `'Hash'`, and `'Proc'` literals.
 - rails.yml config determines which `scope` is which by its shape rather than its path: (ActiveRecord#scope has a proc as the second parameter)
 
 # v0.4.4
