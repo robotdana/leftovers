@@ -12,7 +12,7 @@ module Leftovers
             when ::String
               ::Leftovers::MatcherBuilders::NodeName.build(pat)
             when ::Hash
-              build_from_hash(pat)
+              build_from_hash(**pat)
             # :nocov:
             else raise
               # :nocov:
@@ -22,18 +22,26 @@ module Leftovers
 
         private
 
-        def build_from_hash(pat) # rubocop:disable Metrics/MethodLength
+        def build_from_hash( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
+          at: nil, has_value: nil,
+          match: nil, has_prefix: nil, has_suffix: nil,
+          type: nil,
+          has_receiver: nil,
+          unless_arg: nil
+        )
           matcher = ::Leftovers::MatcherBuilders::And.build([
-            ::Leftovers::MatcherBuilders::NodeHasArgument.build(pat.slice(:at, :has_value)),
-            ::Leftovers::MatcherBuilders::NodeName.build(
-              pat.slice(:match, :has_prefix, :has_suffix)
+            ::Leftovers::MatcherBuilders::NodeHasArgument.build(
+              at: at, has_value: has_value
             ),
-            ::Leftovers::MatcherBuilders::NodeType.build(pat[:type]),
-            ::Leftovers::MatcherBuilders::NodeHasReceiver.build(pat[:has_receiver])
+            ::Leftovers::MatcherBuilders::NodeName.build(
+              match: match, has_prefix: has_prefix, has_suffix: has_suffix
+            ),
+            ::Leftovers::MatcherBuilders::NodeType.build(type),
+            ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver)
           ])
 
           ::Leftovers::MatcherBuilders::AndNot.build(
-            matcher, ::Leftovers::MatcherBuilders::NodeValue.build(pat[:unless_arg])
+            matcher, ::Leftovers::MatcherBuilders::NodeValue.build(unless_arg)
           )
         end
       end
