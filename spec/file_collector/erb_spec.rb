@@ -32,10 +32,8 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it do
-      # the extra options are internal erb stuff and i don't mind
       expect(subject).to have_no_definitions
         .and(have_calls_including(:whatever))
-        .and(have_calls_excluding(:a, :href, :label))
     end
   end
 
@@ -49,10 +47,38 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it do
-      # the extra options are internal erb stuff and i don't mind
       expect(subject).to have_no_definitions
-        .and(have_calls_including(:foo, :present?))
-        .and(have_calls_excluding(:a, :href, :label))
+        .and(have_calls(:foo, :present?))
+    end
+  end
+
+  context 'with erb files when block begins' do
+    let(:erb) do
+      <<~ERB
+        <% bar do %>
+          <a href="<%= foo %>">label</a>
+        <% end %>
+      ERB
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:foo, :bar))
+    end
+  end
+
+  context 'with erb files when comments' do
+    let(:erb) do
+      <<~ERB
+        <% #Comment %>
+        <% if query? %>
+          <%= call %>
+        <% end %>
+      ERB
+    end
+
+    it do
+      expect(subject).to have_no_definitions.and(have_calls(:query?, :call))
     end
   end
 end

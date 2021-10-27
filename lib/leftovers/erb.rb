@@ -10,11 +10,11 @@ module Leftovers
     end
 
     def add_insert_cmd(out, content) # leftovers:keep
-      out.push("#{content}\n")
+      out.push("\n#{content}\n")
     end
 
     def add_put_cmd(out, _content) # leftovers:keep
-      out
+      out.push("\n")
     end
   end
 end

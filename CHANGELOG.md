@@ -1,3 +1,12 @@
+# v0.5.1
+- fixed a bug with the erb parsing where it was incorrectly compiling comments:
+```
+<% # Comment %>
+<% if query? %>
+  <%= content %>
+<% end %>
+```
+
 # v0.5.0
 - `has_receiver:` will match the receiver for methods and the namespace for constants.
 - `has_value_type:` is now `has_value: type:`
