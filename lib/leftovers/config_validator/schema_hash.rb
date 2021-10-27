@@ -36,8 +36,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/string' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             },
             { '$ref' => '#/definitions/string' }
           ]
@@ -65,8 +64,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/name' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             },
             { '$ref' => '#/definitions/name' }
           ]
@@ -84,8 +82,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/argumentPosition' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             }
           ]
         },
@@ -99,8 +96,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/valueType' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             }
           ]
         },
@@ -153,8 +149,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/hasValue' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             }
           ]
         },
@@ -184,8 +179,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/hasArgument' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             }
           ]
         },
@@ -298,8 +292,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/transform' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             }
           ]
         },
@@ -314,8 +307,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/keyword' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             }
           ]
         },
@@ -384,8 +376,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/action' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             }
           ]
         },
@@ -415,8 +406,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/ruleMatcher' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             },
             { '$ref' => '#/definitions/ruleMatcher' }
           ]
@@ -481,8 +471,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/dynamic' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             },
             { '$ref' => '#/definitions/dynamic' }
           ]
@@ -517,8 +506,7 @@ module Leftovers
             {
               'type' => 'array',
               'items' => { '$ref' => '#/definitions/keepTestOnly' },
-              'minItems' => 1,
-              'uniqueItems' => true
+              'minItems' => 1
             },
             { '$ref' => '#/definitions/keepTestOnly' }
           ]

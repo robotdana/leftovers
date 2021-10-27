@@ -1,3 +1,6 @@
+# v0.5.2
+- allow config entries to have duplicates (especially as --write-todo) can write a file with duplicates)
+
 # v0.5.1
 - fixed a bug with the erb parsing where it was incorrectly compiling comments:
 ```
