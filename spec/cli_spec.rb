@@ -93,8 +93,8 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # for instructions on how to address these
           # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
-          test_only:
-            # Defined in tests:
+          keep:
+            # Not directly called at all:
             - "test_method" # test/bar.rb:1:5 def test_method; end
         FILE
 
@@ -394,14 +394,14 @@ RSpec.describe Leftovers::CLI, type: :cli do
             # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
             test_only:
-              # Defined in tests:
-              - "test_method" # test/bar.rb:1:5 def test_method; end
-
-            keep:
               # Only directly called in tests:
               - "foo" # app/foo.rb:1:13 attr_reader :foo
               - "unused_method" # app/foo.rb:3:5 def unused_method
               - "@bar" # app/foo.rb:4:3 @bar = true
+
+            keep:
+              # Not directly called at all:
+              - "test_method" # test/bar.rb:1:5 def test_method; end
           FILE
 
           expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
@@ -441,16 +441,14 @@ RSpec.describe Leftovers::CLI, type: :cli do
             # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
             test_only:
-              # Defined in tests:
-              - "test_method" # test/bar.rb:1:5 def test_method; end
-
-            keep:
               # Only directly called in tests:
               - "foo" # app/foo.rb:1:13 attr_reader :foo
               - "unused_method" # app/foo.rb:3:5 def unused_method
 
+            keep:
               # Not directly called at all:
               - "@bar" # app/foo.rb:4:3 @bar = true
+              - "test_method" # test/bar.rb:1:5 def test_method; end
           FILE
 
           expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error

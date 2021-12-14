@@ -64,47 +64,22 @@ module Leftovers
     end
 
     def todo_data(only_test, none)
-      none_test = none.select(&:test?)
-      none_non_test = none.reject(&:test?)
       [
-        test_only_data(none_test),
-        keep_data(only_test, none_non_test)
+        list_data(
+          :test_only, 'Only directly called in tests', only_test
+        ),
+        list_data(
+          :keep, 'Not directly called at all', none
+        )
       ].compact.join
     end
 
-    def test_only_data(list)
+    def list_data(key, title, list)
       return if list.empty?
 
       <<~YML
-        test_only:
-        #{generate_list('Defined in tests:', list).chomp}
-      YML
-    end
-
-    def keep_data(only_test, none_non_test)
-      return if only_test.empty? && none_non_test.empty?
-
-      <<~YML.chomp
-        keep:
-        #{keep_test_called_data(only_test)}#{keep_never_called_data(none_non_test)}
-      YML
-    end
-
-    def keep_test_called_data(list)
-      return if list.empty?
-
-      generate_list('Only directly called in tests:', list)
-    end
-
-    def keep_never_called_data(list)
-      return if list.empty?
-
-      generate_list('Not directly called at all:', list)
-    end
-
-    def generate_list(title, list)
-      <<~YML
-          # #{title}
+        #{key}:
+          # #{title}:
         #{print_definition_list(list)}
 
       YML

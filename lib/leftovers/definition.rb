@@ -10,7 +10,7 @@ module Leftovers
     def initialize(
       name,
       location: method_node.loc.expression,
-      test: method_node.test_line?
+      test: method_node.test_line? || ::Leftovers.config.test_only === method_node
     )
       @name = name
       @path = location.source_buffer.name.to_s
