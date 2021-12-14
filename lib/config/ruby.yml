@@ -10,6 +10,9 @@ include_paths:
   - '*.erb'
   - '*.rb'
 
+yaml_paths:
+  - '/dev/null'
+
 test_paths:
   - /tests/
   - /test/

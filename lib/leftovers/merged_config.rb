@@ -43,6 +43,7 @@ module Leftovers
       @test_paths
       @haml_paths
       @slim_paths
+      @yaml_paths
       @erb_paths
       @dynamic
       @keep
@@ -82,6 +83,14 @@ module Leftovers
     def slim_paths
       @slim_paths ||= FastIgnore.new(
         include_rules: @configs.flat_map(&:slim_paths),
+        gitignore: false,
+        root: Leftovers.pwd
+      )
+    end
+
+    def yaml_paths
+      @yaml_paths ||= FastIgnore.new(
+        include_rules: @configs.flat_map(&:yaml_paths),
         gitignore: false,
         root: Leftovers.pwd
       )

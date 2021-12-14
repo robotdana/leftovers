@@ -2324,4 +2324,30 @@ RSpec.describe Leftovers::FileCollector do
 
     it { is_expected.to have_no_definitions.and(have_calls(:Caller, :Leftovers, :new, :yes)) }
   end
+
+  context 'with values from yaml document' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          name: _leftovers_yaml_document
+          calls:
+            argument: name
+      YML
+    end
+
+    let(:path) { 'foo.yml' }
+
+    let(:yaml) do
+      <<~YML
+        name: MyClassName
+      YML
+    end
+
+    let(:ruby) { ::Leftovers::YAML.precompile(yaml, file) }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:_leftovers_yaml_document, :MyClassName))
+    end
+  end
 end

@@ -14,20 +14,53 @@ module Leftovers
       @test = Leftovers.config.test_paths.allowed?(relative_path)
     end
 
-    def ruby
-      precompiler&.precompile(read, self) || read
+    def ruby # rubocop:disable Metrics/MethodLength
+      precompiled = []
+      precompile = false
+
+      if haml?
+        precompiled << ::Leftovers::Haml.precompile(read, self)
+        precompile = true
+      end
+
+      if erb?
+        precompiled << ::Leftovers::ERB.precompile(read, self)
+        precompile = true
+      end
+
+      if slim?
+        precompiled << ::Leftovers::Slim.precompile(read, self)
+        precompile = true
+      end
+
+      if yaml?
+        precompiled << ::Leftovers::YAML.precompile(read, self)
+        precompile = true
+      end
+
+      if precompile
+        precompiled.join("\n")
+      else
+        read
+      end
     end
 
     private
 
-    def precompiler
-      if Leftovers.config.haml_paths.allowed?(relative_path)
-        ::Leftovers::Haml
-      elsif Leftovers.config.slim_paths.allowed?(relative_path)
-        ::Leftovers::Slim
-      elsif Leftovers.config.erb_paths.allowed?(relative_path)
-        ::Leftovers::ERB
-      end
+    def erb?
+      Leftovers.config.erb_paths.allowed?(relative_path)
+    end
+
+    def haml?
+      Leftovers.config.haml_paths.allowed?(relative_path)
+    end
+
+    def yaml?
+      Leftovers.config.yaml_paths.allowed?(relative_path)
+    end
+
+    def slim?
+      Leftovers.config.slim_paths.allowed?(relative_path)
     end
   end
 end

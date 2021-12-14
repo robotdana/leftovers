@@ -9,6 +9,7 @@ Its presence is optional and all of these settings are optional.
 - [`haml_paths:`](#haml_paths)
 - [`slim_paths:`](#slim_paths)
 - [`erb_paths:`](#erb_paths)
+- [`yaml_paths:`](#yaml_paths)
 - [`requires:`](#requires)
 - [`gems:`](#gems)
 - [`keep:`](#keep)
@@ -116,6 +117,39 @@ erb_paths:
 ```
 
 Arrays are not necessary for single values. `*.erb` is recognized by default
+
+## `yaml_paths:`
+
+list filenames/paths of test directories that are in the yaml format
+Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+
+```yml
+yaml_paths:
+  - 'config/.yml'
+```
+
+These documents will consider yaml tags like `!ruby/class 'MyClass'` to be a call to `MyClass` and render the structure of the yaml as arguments to a magic `_leftovers_yaml_document` method.
+
+so you could, e.g. read the class name out of a yaml document like:
+
+```yml
+class_name: MyClass
+```
+
+with config like:
+
+```yml
+yaml_paths:
+  - 'config/*.yml'
+
+dynamic:
+  name: _leftovers_yaml_document
+  path: config/*.yml
+  calls:
+    argument: class_name
+```
+
+[`nested:`](#nested) may be useful for more complex yaml structures
 
 ## `gems:`
 _alias `gem:`_
