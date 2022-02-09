@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# TODO: convert these tests to Slim tests
-
 require 'spec_helper'
 
 RSpec.describe Leftovers::FileCollector do
@@ -18,77 +16,78 @@ RSpec.describe Leftovers::FileCollector do
 
   after { Leftovers.reset }
 
-  let(:path) { 'foo.haml' }
+  let(:path) { 'foo.slim' }
   let(:file) do
-    temp_file(path, haml)
+    temp_file(path, slim)
     Leftovers::File.new(Leftovers.pwd + path)
   end
-  let(:haml) { '' }
+  let(:slim) { '' }
   let(:ruby) { file.ruby }
 
-  context 'with haml files' do
+  context 'with slim files' do
     let(:haml) do
-      <<~HAML
-        = a
-      HAML
+      <<~SLIM
+        a
+      SLIM
     end
 
     it { is_expected.to have_no_definitions.and(have_calls_including(:a, :to_s)) }
   end
 
-  context 'with invalid haml files' do
-    let(:haml) do
+  context 'with invalid slim files' do
+    let(:slim) do
       <<~HAML
-        %a text
-          %a text
+        a text
+          a text
       HAML
     end
 
     it 'outputs an error and collects nothing' do
+      # TODO: confirm this error/message
       expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
-        \e[2KHaml::SyntaxError: Illegal nesting: content can't be both given on the same line as %a and nested within it. foo.haml:1
+        \e[2KSlim::SyntaxError: Illegal nesting: content can't be both given on the same line as a and nested within it. foo.slim:1
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
     end
   end
 
-  context 'with unavailable haml gem' do
+  context 'with unavailable slim gem' do
     before do
       allow(Leftovers).to receive(:try_require_cache).and_call_original
-      allow(Leftovers).to receive(:try_require_cache).with('haml').and_return(false)
+      allow(Leftovers).to receive(:try_require_cache).with('slim').and_return(false)
     end
 
-    let(:haml) do
-      <<~HAML
-        %a text
-      HAML
+    let(:slim) do
+      <<~slim
+        a text
+      slim
     end
 
     it 'raises an error' do
       expect { collector }.to output(a_string_including(<<~OUTPUT)).to_stderr
-        \e[2KSkipped parsing foo.haml, because the haml gem was not available
-        `gem install haml`
+        \e[2KSkipped parsing foo.slim, because the slim gem was not available
+        `gem install slim`
       OUTPUT
 
       expect(collector).to have_no_definitions.and(have_no_calls)
     end
   end
 
-  context 'with haml files with hidden scripts' do
-    let(:haml) do
-      <<~HAML
+  context 'with slim files with hidden scripts' do
+    let(:slim) do
+      <<~SLIM
         - a
-      HAML
+      SLIM
     end
 
     it { is_expected.to have_no_definitions.and(have_calls_including(:a)) }
   end
 
-  context 'with haml files string interpolation' do
-    let(:haml) do
-      <<~HAML
+  context 'with slim files string interpolation' do
+    let(:slim) do
+      <<~SLIM
         before\#{a}after
-      HAML
+      SLIM
     end
 
     it do
@@ -98,12 +97,12 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with haml files with ruby blocks' do
-    let(:haml) do
-      <<~HAML
+  context 'with slim files with ruby blocks' do
+    let(:slim) do
+      <<~SLIM
         :ruby
           a(1)
-      HAML
+      SLIM
     end
 
     it do
@@ -113,11 +112,11 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with haml files with dynamic attributes' do
-    let(:haml) do
-      <<~HAML
-        %div{id: a}
-      HAML
+  context 'with slim files with dynamic attributes' do
+    let(:slim) do
+      <<~slim
+        div{id: a}
+      slim
     end
 
     it do
@@ -127,12 +126,12 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with haml files with whitespace-significant blocks' do
-    let(:haml) do
-      <<~HAML
+  context 'with slim files with whitespace-significant blocks' do
+    let(:slim) do
+      <<~SLIM
         - foo.each do |bar|
           = bar
-      HAML
+      SLIM
     end
 
     it do
@@ -142,12 +141,12 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with haml files with echoed whitespace-significant blocks' do
-    let(:haml) do
-      <<~HAML
+  context 'with slim files with echoed whitespace-significant blocks' do
+    let(:slim) do
+      <<~SLIM
         = form_for(whatever) do |bar|
           = bar
-      HAML
+      SLIM
     end
 
     it do
