@@ -11,7 +11,7 @@ module Leftovers
       MESSAGE
 
       begin
-        ::Slim::Engine.new(file: file).precompiled
+        ::Slim::Engine.new(file: file).call(file)
       rescue ::Slim::Parser::SyntaxError => e
         Leftovers.warn "#{e.class}: #{e.message} #{name.relative_path}:#{e.line}"
         ''
