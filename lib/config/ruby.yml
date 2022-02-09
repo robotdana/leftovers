@@ -20,6 +20,9 @@ erb_paths:
 haml_paths:
   - '*.haml'
 
+slim_paths:
+  - '*.slim'
+
 keep:
   - initialize # called by new
   - inspect # called by repl, to_s

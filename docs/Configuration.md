@@ -7,6 +7,7 @@ Its presence is optional and all of these settings are optional.
 - [`exclude_paths:`](#exclude_paths)
 - [`test_paths:`](#test_paths)
 - [`haml_paths:`](#haml_paths)
+- [`slim_paths:`](#slim_paths)
 - [`erb_paths:`](#erb_paths)
 - [`requires:`](#requires)
 - [`gems:`](#gems)
@@ -91,6 +92,18 @@ haml_paths:
 ```
 
 Arrays are not necessary for single values. `*.haml` is recognized by default
+
+## `slim_paths:`
+
+list filenames/paths of test directories that are in the slim format
+Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+
+```yml
+slim_paths:
+  - '*.slim'
+```
+
+Arrays are not necessary for single values. `*.slim` is recognized by default
 
 ## `erb_paths:`
 
