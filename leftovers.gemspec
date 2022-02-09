@@ -42,6 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec', '~> 1.44.1'
   spec.add_development_dependency 'simplecov', '>= 0.18.5'
   spec.add_development_dependency 'simplecov-console'
+  spec.add_development_dependency 'slim'
   spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'tty_string', '>= 0.2.1'
 
