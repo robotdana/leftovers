@@ -43,9 +43,8 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it 'outputs an error and collects nothing' do
-      # TODO: confirm this error/message
       expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
-        \e[2KSlim::SyntaxError: Illegal nesting: content can't be both given on the same line as a and nested within it. foo.slim:1
+        \e[2KSlim::Parser::SyntaxError: Illegal nesting: content can't be both given on the same line as a and nested within it. foo.slim:1
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
     end
