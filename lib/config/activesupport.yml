@@ -1,4 +1,5 @@
 requires:
+  - 'active_support'
   - 'active_support/core_ext/string'
   - 'active_support/inflections'
   - './config/initializers/inflections'

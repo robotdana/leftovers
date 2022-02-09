@@ -47,7 +47,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        requires: 'active_support/core_ext/string'
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -65,7 +67,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        requires: 'active_support/core_ext/string'
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -83,7 +87,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        requires: 'active_support/core_ext/string'
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -103,7 +109,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        requires: 'active_support/core_ext/string'
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -123,7 +131,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        requires: 'active_support/core_ext/string'
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
         dynamic:
           name: my_method
           calls:
@@ -144,7 +154,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        require: active_support/core_ext/string
+        require:
+          - 'active_support'
+          - active_support/core_ext/string
         dynamic:
           - name: my_method
             calls:
@@ -162,7 +174,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        requires: 'active_support/core_ext/string'
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -179,7 +193,9 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:config) do
       <<~YML
-        requires: 'active_support/core_ext/string'
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
         dynamic:
           - name: my_method
             calls:
@@ -287,7 +303,7 @@ RSpec.describe Leftovers::FileCollector do
         it do
           message = <<~MESSAGE
             Tried using the String##{method} method, but the activesupport gem was not available and/or not required
-            `gem install activesupport`, and/or add `requires: 'active_support/core_ext/string'` to your .leftovers.yml
+            `gem install activesupport`, and/or add `requires: ['active_support', 'active_support/core_ext/string']` to your .leftovers.yml
           MESSAGE
 
           expect { catch(:leftovers_exit) { subject } }
