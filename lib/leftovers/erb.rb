@@ -4,7 +4,7 @@ require 'erb'
 
 module Leftovers
   class ERB < ::ERB::Compiler
-    def self.precompile(erb)
+    def self.precompile(erb, _name)
       @compiler ||= new('-')
       @compiler.compile(erb).first
     end

@@ -18,6 +18,12 @@ RSpec.describe Leftovers::MergedConfig do
       original_keep = subject.keep
       original_test_only = subject.test_only
 
+      expect(
+        subject.instance_variables
+      ).to contain_exactly(
+        *::Leftovers::MergedConfig::MEMOIZED_IVARS, :@configs, :@loaded_configs
+      )
+
       rails = Leftovers::Config.new(:rails)
       subject << rails
 
