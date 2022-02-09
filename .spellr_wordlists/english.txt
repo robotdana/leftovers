@@ -58,6 +58,7 @@ timecop
 todo
 uncompactable
 unmemoize
+veganstraightedge
 warmup
 webdriver
 whatevers

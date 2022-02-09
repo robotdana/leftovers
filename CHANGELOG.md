@@ -1,3 +1,7 @@
+# 0.5.4
+- Add support for slim templates #13 - thanks @veganstraightedge
+- fix the #how-to-resolve link #11 - thanks @veganstraightedge
+
 # v0.5.3
 - fix incompatibility with activesupport 7.
 
