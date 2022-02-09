@@ -13,7 +13,7 @@ module Leftovers
       begin
         ::Slim::Engine.new(file: file).call(file)
       rescue ::Slim::Parser::SyntaxError => e
-        Leftovers.warn "#{e.class}: #{e.message} #{name.relative_path}:#{e.line}"
+        Leftovers.warn "#{e.class}: \"#{e.error}\" #{name.relative_path}:#{e.lineno}:#{e.column}"
         ''
       end
     end

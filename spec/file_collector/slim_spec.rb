@@ -27,25 +27,25 @@ RSpec.describe Leftovers::FileCollector do
   context 'with slim files' do
     let(:slim) do
       <<~SLIM
-        a
+        = foo
       SLIM
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls_including(:a, :to_s)) }
+    it { is_expected.to have_no_definitions.and(have_calls_including(:foo, :to_s)) }
   end
 
   context 'with invalid slim files' do
     let(:slim) do
       <<~SLIM
-        a text
-          a text
+        div text
+        fake:
+          invalid
       SLIM
     end
 
     it 'outputs an error and collects nothing' do
-      # TODO: figure out the actual error message text
       expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
-        \e[2KSlim::Parser::SyntaxError: Illegal nesting: content can't be both given on the same line as a and nested within it. foo.slim:1
+        \e[2KSlim::Parser::SyntaxError: "Expected tag" foo.slim:2:5
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
     end
@@ -58,9 +58,9 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     let(:slim) do
-      <<~slim
-        a text
-      slim
+      <<~SLIM
+        div text
+      SLIM
     end
 
     it 'raises an error' do
@@ -76,23 +76,23 @@ RSpec.describe Leftovers::FileCollector do
   context 'with slim files with hidden scripts' do
     let(:slim) do
       <<~SLIM
-        - a
+        - foo
       SLIM
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls_including(:a)) }
+    it { is_expected.to have_no_definitions.and(have_calls_including(:foo)) }
   end
 
-  context 'with slim files string interpolation' do
+  context 'with slim files with string interpolation' do
     let(:slim) do
       <<~SLIM
-        before\#{a}after
+        div before\#{foo}after
       SLIM
     end
 
     it do
       expect(subject).to have_no_definitions
-        .and(have_calls_including(:a))
+        .and(have_calls_including(:foo))
         .and(have_calls_excluding(:before, :after))
     end
   end
@@ -100,29 +100,42 @@ RSpec.describe Leftovers::FileCollector do
   context 'with slim files with ruby blocks' do
     let(:slim) do
       <<~SLIM
-        :ruby
-          a(1)
+        ruby:
+          foo(1)
       SLIM
     end
 
     it do
       expect(subject).to have_no_definitions
-        .and(have_calls_including(:a))
+        .and(have_calls_including(:foo))
         .and(have_calls_excluding(:ruby))
     end
   end
 
   context 'with slim files with dynamic attributes' do
     let(:slim) do
-      <<~slim
-        div{id: a}
-      slim
+      <<~SLIM
+        div id=foo
+      SLIM
     end
 
     it do
       expect(subject).to have_no_definitions
-        .and(have_calls_including(:a))
+        .and(have_calls_including(:foo))
         .and(have_calls_excluding(:id, :div))
+    end
+  end
+
+  context 'with slim files with static attributes' do
+    let(:slim) do
+      <<~SLIM
+        div id="foo"
+      SLIM
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls_excluding(:foo, :id, :div))
     end
   end
 
