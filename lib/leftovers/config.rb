@@ -36,6 +36,10 @@ module Leftovers
       @haml_paths ||= Array(yaml[:haml_paths])
     end
 
+    def slim_paths
+      @slim_paths ||= Array(yaml[:slim_paths])
+    end
+
     def erb_paths
       @erb_paths ||= Array(yaml[:erb_paths])
     end

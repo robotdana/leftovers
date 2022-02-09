@@ -17,6 +17,8 @@ module Leftovers
     def ruby
       if Leftovers.config.haml_paths.allowed?(relative_path)
         ::Leftovers::Haml.precompile(read, self)
+      elsif Leftovers.config.slim_paths.allowed?(relative_path)
+        ::Leftovers::Slim.precompile(read, self)
       elsif Leftovers.config.erb_paths.allowed?(relative_path)
         ::Leftovers::ERB.precompile(read)
       else
