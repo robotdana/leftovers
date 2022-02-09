@@ -57,7 +57,7 @@ Not directly called at all:
 lib/hello_world.rb:6:6 generated_method= attr_accessor :generated_method
 lib/hello_world.rb:6:6 generated_method attr_accessor :generated_method
 
-how to resolve: https://github.com/robotdana/leftovers/tree/main/Readme.md#how_to_resolve
+how to resolve: https://github.com/robotdana/leftovers/tree/main/Readme.md#how-to-resolve
 ```
 
 if there is an overwhelming number of results, try using [`--write-todo`](#write-todo)

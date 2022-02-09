@@ -91,7 +91,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
           test_only:
             # Defined in tests:
@@ -153,7 +153,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
           keep:
             # Not directly called at all:
@@ -213,7 +213,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
           keep:
             # Not directly called at all:
@@ -248,7 +248,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
           keep:
             # Not directly called at all:
@@ -391,7 +391,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             # Generated at: 2021-06-14 22:03:35 UTC
             #
             # for instructions on how to address these
-            # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve
+            # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
             test_only:
               # Defined in tests:
@@ -438,7 +438,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             # Generated at: 2021-06-14 22:03:35 UTC
             #
             # for instructions on how to address these
-            # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve
+            # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
 
             test_only:
               # Defined in tests:
