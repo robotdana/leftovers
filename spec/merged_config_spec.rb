@@ -12,10 +12,17 @@ RSpec.describe Leftovers::MergedConfig do
       original_include_paths = subject.include_paths
       original_test_paths = subject.test_paths
       original_haml_paths = subject.haml_paths
+      original_slim_paths = subject.slim_paths
       original_erb_paths = subject.erb_paths
       original_dynamic = subject.dynamic
       original_keep = subject.keep
       original_test_only = subject.test_only
+
+      expect(
+        subject.instance_variables
+      ).to contain_exactly(
+        *::Leftovers::MergedConfig::MEMOIZED_IVARS, :@configs, :@loaded_configs
+      )
 
       rails = Leftovers::Config.new(:rails)
       subject << rails
@@ -24,6 +31,7 @@ RSpec.describe Leftovers::MergedConfig do
       expect(original_include_paths).not_to eq subject.include_paths
       expect(original_test_paths).not_to eq subject.test_paths # it's a different set of FastIgnore
       expect(original_haml_paths).not_to eq subject.haml_paths
+      expect(original_slim_paths).not_to eq subject.slim_paths
       expect(original_erb_paths).not_to eq subject.erb_paths
 
       expect(

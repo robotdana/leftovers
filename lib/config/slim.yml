@@ -1,0 +1,4 @@
+include_paths:
+  - '*.slim'
+slim_paths:
+  - '*.slim'

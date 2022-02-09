@@ -15,12 +15,18 @@ module Leftovers
     end
 
     def ruby
+      precompiler&.precompile(read, self) || read
+    end
+
+    private
+
+    def precompiler
       if Leftovers.config.haml_paths.allowed?(relative_path)
-        ::Leftovers::Haml.precompile(read, self)
+        ::Leftovers::Haml
+      elsif Leftovers.config.slim_paths.allowed?(relative_path)
+        ::Leftovers::Slim
       elsif Leftovers.config.erb_paths.allowed?(relative_path)
-        ::Leftovers::ERB.precompile(read)
-      else
-        read
+        ::Leftovers::ERB
       end
     end
   end

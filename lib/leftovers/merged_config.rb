@@ -37,14 +37,22 @@ module Leftovers
       Leftovers::Config.new(:'.leftovers_todo.yml', path: Leftovers.pwd + '.leftovers_todo.yml')
     end
 
-    def unmemoize # rubocop:disable Metrics/CyclomaticComplexity
-      remove_instance_variable(:@exclude_paths) if defined?(@exclude_paths)
-      remove_instance_variable(:@include_paths) if defined?(@include_paths)
-      remove_instance_variable(:@test_paths) if defined?(@test_paths)
-      remove_instance_variable(:@haml_paths) if defined?(@haml_paths)
-      remove_instance_variable(:@erb_paths) if defined?(@erb_paths)
-      remove_instance_variable(:@dynamic) if defined?(@dynamic)
-      remove_instance_variable(:@keep) if defined?(@keep)
+    MEMOIZED_IVARS = %i{
+      @exclude_paths
+      @include_paths
+      @test_paths
+      @haml_paths
+      @slim_paths
+      @erb_paths
+      @dynamic
+      @keep
+      @test_only
+    }.freeze
+
+    def unmemoize
+      MEMOIZED_IVARS.each do |ivar|
+        remove_instance_variable(ivar) if instance_variable_get(ivar)
+      end
     end
 
     def exclude_paths
@@ -66,6 +74,14 @@ module Leftovers
     def haml_paths
       @haml_paths ||= FastIgnore.new(
         include_rules: @configs.flat_map(&:haml_paths),
+        gitignore: false,
+        root: Leftovers.pwd
+      )
+    end
+
+    def slim_paths
+      @slim_paths ||= FastIgnore.new(
+        include_rules: @configs.flat_map(&:slim_paths),
         gitignore: false,
         root: Leftovers.pwd
       )
