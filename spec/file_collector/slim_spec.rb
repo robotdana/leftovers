@@ -25,7 +25,7 @@ RSpec.describe Leftovers::FileCollector do
   let(:ruby) { file.ruby }
 
   context 'with slim files' do
-    let(:haml) do
+    let(:slim) do
       <<~SLIM
         a
       SLIM
@@ -36,10 +36,10 @@ RSpec.describe Leftovers::FileCollector do
 
   context 'with invalid slim files' do
     let(:slim) do
-      <<~HAML
+      <<~SLIM
         a text
           a text
-      HAML
+      SLIM
     end
 
     it 'outputs an error and collects nothing' do
