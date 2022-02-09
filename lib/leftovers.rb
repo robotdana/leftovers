@@ -93,7 +93,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
 
     def resolution_instructions_link
-      "https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how_to_resolve"
+      "https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve"
     end
 
     def warn(message)
