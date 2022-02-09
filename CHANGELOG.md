@@ -1,3 +1,6 @@
+# v0.5.3
+- fix incompatibility with activesupport 7.
+
 # v0.5.2
 - allow config entries to have duplicates (especially as --write-todo) can write a file with duplicates)
 

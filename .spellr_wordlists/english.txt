@@ -5,6 +5,7 @@ actionview
 activejob
 activemodel
 activerecord
+activesupport
 affixxed
 argumentless
 attr
