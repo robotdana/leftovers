@@ -143,7 +143,7 @@ RSpec.describe 'rails gem' do
 
     it do
       expect(subject).to have_definitions.and have_calls(
-        :resource, :UsersController,
+        :resource, :UsersController, :UserController,
         :index, :new, :create, :edit, :update, :destroy
       )
     end
@@ -154,7 +154,7 @@ RSpec.describe 'rails gem' do
 
     it do
       expect(subject).to have_definitions.and have_calls(
-        :resource, :UsersController,
+        :resource, :UsersController, :UserController,
         :new, :create, :edit, :update, :destroy
       )
     end
@@ -165,8 +165,40 @@ RSpec.describe 'rails gem' do
 
     it do
       expect(subject).to have_definitions.and have_calls(
-        :resource, :UsersController,
+        :resource, :UsersController, :UserController,
         :new, :create, :edit, :update, :destroy
+      )
+    end
+  end
+
+  context 'with routes resource calls with only' do
+    let(:ruby) { 'resources :users, only: :index' }
+
+    it do
+      expect(subject).to have_definitions.and have_calls(
+        :resources, :UsersController,
+        :index
+      )
+    end
+  end
+
+  context 'with non-route resource calls' do
+    let(:ruby) { 'Loader.resources' }
+
+    it do
+      expect(subject).to have_definitions.and have_calls(
+        :resources, :Loader
+      )
+    end
+  end
+
+  context 'with routes resource calls with array only' do
+    let(:ruby) { 'resources :users, only: [:index, :new]' }
+
+    it do
+      expect(subject).to have_definitions.and have_calls(
+        :resources, :UsersController,
+        :index, :new
       )
     end
   end

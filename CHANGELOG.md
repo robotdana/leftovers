@@ -1,3 +1,6 @@
+# 0.5.5
+- Fix rails resource/resources method signatures
+
 # 0.5.4
 - Add support for slim templates #13 - thanks @veganstraightedge
 - fix the #how-to-resolve link #11 - thanks @veganstraightedge
