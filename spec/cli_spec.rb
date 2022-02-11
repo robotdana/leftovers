@@ -217,9 +217,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
           keep:
             # Not directly called at all:
+            - "@bar" # app/foo.rb:4:3 @bar = true
             - "foo" # app/foo.rb:1:13 attr_reader :foo
             - "unused_method" # app/foo.rb:3:5 def unused_method
-            - "@bar" # app/foo.rb:4:3 @bar = true
         FILE
 
         expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
@@ -252,9 +252,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
           keep:
             # Not directly called at all:
+            - "@bar" # app/foo.rb:4:3 @bar = true
             - "foo" # app/foo.rb:1:13 attr_reader :foo
             - "unused_method" # app/foo.rb:3:5 def unused_method
-            - "@bar" # app/foo.rb:4:3 @bar = true
         FILE
 
         expect { Psych.safe_load(todo_file.read) }.not_to raise_error
@@ -395,9 +395,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
 
             test_only:
               # Only directly called in tests:
+              - "@bar" # app/foo.rb:4:3 @bar = true
               - "foo" # app/foo.rb:1:13 attr_reader :foo
               - "unused_method" # app/foo.rb:3:5 def unused_method
-              - "@bar" # app/foo.rb:4:3 @bar = true
 
             keep:
               # Not directly called at all:

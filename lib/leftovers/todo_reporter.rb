@@ -86,7 +86,7 @@ module Leftovers
     end
 
     def print_definition_list(definition_list)
-      definition_list.map { |definition| print_definition(definition) }.join("\n")
+      definition_list.map { |definition| print_definition(definition) }.sort.join("\n")
     end
 
     def print_definition(definition)
