@@ -124,11 +124,13 @@ list filenames/paths of test directories that are in the yaml format
 Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
 
 ```yml
+include:
+  - 'config/*.yml'
 yaml_paths:
-  - 'config/.yml'
+  - '*.yml'
 ```
 
-These documents will consider yaml tags like `!ruby/class 'MyClass'` to be a call to `MyClass` and render the structure of the yaml as arguments to a magic `_leftovers_yaml_document` method.
+These documents will consider yaml tags like `!ruby/class 'MyClass'` to be a call to `MyClass` and render the structure of the yaml as arguments for the [`document:true`](#document-true) rule.
 
 so you could, e.g. read the class name out of a yaml document like:
 
@@ -139,11 +141,11 @@ class_name: MyClass
 with config like:
 
 ```yml
-yaml_paths:
+include_paths:
   - 'config/*.yml'
 
 dynamic:
-  name: _leftovers_yaml_document
+  document: true
   path: config/*.yml
   calls:
     argument: class_name
@@ -236,7 +238,8 @@ Each entry must have at least one of the following properties to restrict which 
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
 - [`has_receiver:`](#has_receiver)
-- [`unless`](#unless)
+- [`unless:`](#unless)
+- [`document: true`](#document-true)
 
 And must have one or both of
 - ['calls:`](#calls-defines)
@@ -333,6 +336,33 @@ keep:
     path: /app/helpers
 ```
 
+## `document: true`
+
+Instructs to consider the whole document. this is useful when parsing YAML or JSON config files for various values.
+
+e.g.
+
+```yml
+includes: /config/roles.yml
+keep:
+  - document: true
+    path: /config/roles.yml
+    defines:
+      arguments: '*'
+      add_suffix: '?'
+      add_prefix: can_
+```
+
+will parse "config/roles.yml"
+```yml
+- build_house
+- drive_car
+```
+
+and consider it to have created methods like `can_build_house?` and `can_drive_car?`
+
+[`nested:`](#nested) will likely be useful
+
 ## `calls:`, `defines:`
 _aliases `call:`, `define:`_
 
@@ -400,7 +430,9 @@ It can have any of these properties:
 - [`at:`](#at)
 - [`has_value:`](#has_value_has_receiver)
 
-Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
+Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level.
+
+Positional arguments are zero indexed
 
 ## `has_arguments:`
 _alias `has_argument:`_
@@ -417,6 +449,8 @@ It can have any of these properties:
 - [`has_value:`](#has_value_has_receiver)
 
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
+
+Positional arguments are zero indexed
 
 ## `keywords:`
 When the keyword argument **keywords** are the thing being called.

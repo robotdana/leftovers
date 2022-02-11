@@ -229,7 +229,7 @@ RSpec.describe Leftovers::Config do
       expect { catch(:leftovers_exit) { config.dynamic } }
         .to output(<<~MESSAGE).to_stderr
           \e[31mConfig SchemaError: (#{path}): /dynamic/0: invalid property keyword: tuesday
-          Valid keywords: name, names, path, paths, has_argument, has_arguments, has_receiver, unless, call, calls, define, and defines\e[0m
+          Valid keywords: name, names, path, paths, document, has_argument, has_arguments, has_receiver, unless, call, calls, define, and defines\e[0m
         MESSAGE
     end
 

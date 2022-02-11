@@ -187,6 +187,7 @@ module Leftovers
           'type' => 'object',
           'properties' => {
             'name' => { '$ref' => '#/definitions/nameList' },
+            'document' => { '$ref' => '#/definitions/true' },
             'names' => { '$ref' => '#/definitions/nameList' },
             'path' => { '$ref' => '#/definitions/stringList' },
             'paths' => { '$ref' => '#/definitions/stringList' },
@@ -443,6 +444,7 @@ module Leftovers
             { '$ref' => '#/definitions/dynamicAction' },
             { 'anyOf' => [
               { 'required' => ['name'] }, { 'required' => ['names'] },
+              { 'required' => ['document'] },
               { 'required' => ['path'] }, { 'required' => ['paths'] },
               { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
               { 'required' => ['has_receiver'] },
@@ -454,6 +456,7 @@ module Leftovers
                 # unfortunately this repetition is necessary to use additionalProperties: false
                 'name' => true, 'names' => true,
                 'path' => true, 'paths' => true,
+                'document' => true,
                 'has_argument' => true, 'has_arguments' => true,
                 'has_receiver' => true,
                 'unless' => { '$ref' => '#/definitions/ruleMatcherList' },

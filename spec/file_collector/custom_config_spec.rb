@@ -2358,7 +2358,7 @@ RSpec.describe Leftovers::FileCollector do
     let(:config) do
       <<~YML
         dynamic:
-          name: _leftovers_yaml_document
+          document: true
           calls:
             argument: name
       YML
@@ -2376,7 +2376,7 @@ RSpec.describe Leftovers::FileCollector do
 
     it do
       expect(subject).to have_no_definitions
-        .and(have_calls(:_leftovers_yaml_document, :MyClassName))
+        .and(have_calls(:__leftovers_document, :MyClassName))
     end
   end
 end

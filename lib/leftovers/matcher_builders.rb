@@ -4,6 +4,7 @@ module Leftovers
   module MatcherBuilders
     autoload(:AndNot, "#{__dir__}/matcher_builders/and_not")
     autoload(:And, "#{__dir__}/matcher_builders/and")
+    autoload(:Document, "#{__dir__}/matcher_builders/document")
     autoload(:Name, "#{__dir__}/matcher_builders/name")
     autoload(:Node, "#{__dir__}/matcher_builders/node")
     autoload(:NodeHasArgument, "#{__dir__}/matcher_builders/node_has_argument")

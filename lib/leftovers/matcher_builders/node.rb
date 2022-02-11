@@ -10,7 +10,7 @@ module Leftovers
             ::Leftovers::MatcherBuilders::NodeName.build(pat)
           when ::Hash
             build_from_hash(**pat)
-          # :nocov:
+            # :nocov:
           else raise
             # :nocov:
           end
@@ -19,6 +19,7 @@ module Leftovers
 
       def self.build_from_hash( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
         names: nil, match: nil, has_prefix: nil, has_suffix: nil,
+        document: false,
         paths: nil,
         has_arguments: nil,
         has_receiver: nil,
@@ -29,6 +30,7 @@ module Leftovers
             names,
             { match: match, has_prefix: has_prefix, has_suffix: has_suffix }.compact
           ]),
+          ::Leftovers::MatcherBuilders::Document.build(document),
           ::Leftovers::MatcherBuilders::NodePath.build(paths),
           ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
           ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),

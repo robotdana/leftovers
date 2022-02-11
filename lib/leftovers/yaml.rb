@@ -41,7 +41,7 @@ module Leftovers
 
       def to_ruby_file
         [
-          '_leftovers_yaml_document(',
+          '__leftovers_document(',
           root.to_ruby.first.inspect,
           ')',
           *@constants
