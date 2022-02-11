@@ -18,6 +18,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:File, "#{__dir__}/leftovers/file")
   autoload(:Haml, "#{__dir__}/leftovers/haml")
   autoload(:YAML, "#{__dir__}/leftovers/yaml")
+  autoload(:JSON, "#{__dir__}/leftovers/json")
   autoload(:MatcherBuilders, "#{__dir__}/leftovers/matcher_builders")
   autoload(:Matchers, "#{__dir__}/leftovers/matchers")
   autoload(:MergedConfig, "#{__dir__}/leftovers/merged_config")

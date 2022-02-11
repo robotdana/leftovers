@@ -2354,21 +2354,24 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:Caller, :Leftovers, :new, :yes)) }
   end
 
-  context 'with values from yaml document' do
+  context 'with values from an array yaml document' do
     let(:config) do
       <<~YML
         dynamic:
           document: true
           calls:
-            argument: name
+            arguments: '*'
+            add_suffix: '?'
+            add_prefix: can_
       YML
     end
 
-    let(:path) { 'foo.yml' }
+    let(:path) { 'roles.yml' }
 
     let(:yaml) do
       <<~YML
-        name: MyClassName
+        - build_house
+        - drive_car
       YML
     end
 
@@ -2376,7 +2379,98 @@ RSpec.describe Leftovers::FileCollector do
 
     it do
       expect(subject).to have_no_definitions
-        .and(have_calls(:__leftovers_document, :MyClassName))
+        .and(have_calls(:__leftovers_document, :can_build_house?, :can_drive_car?))
+    end
+  end
+
+  context 'with values from an array json document' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          document: true
+          calls:
+            arguments: '*'
+            add_suffix: '?'
+            add_prefix: can_
+      YML
+    end
+
+    let(:path) { 'roles.yml' }
+
+    let(:json) do
+      <<~JSON
+        [
+          "build_house",
+          "drive_car"
+        ]
+      JSON
+    end
+
+    let(:ruby) { ::Leftovers::JSON.precompile(json, file) }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:__leftovers_document, :can_build_house?, :can_drive_car?))
+    end
+  end
+
+  context 'with values from a hash yaml document' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          document: true
+          calls:
+            keywords: '**'
+            add_suffix: '?'
+            add_prefix: can_
+      YML
+    end
+
+    let(:path) { 'roles.yml' }
+
+    let(:yaml) do
+      <<~YML
+        build_house: true
+        drive_car: false
+      YML
+    end
+
+    let(:ruby) { ::Leftovers::YAML.precompile(yaml, file) }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:__leftovers_document, :can_build_house?, :can_drive_car?))
+    end
+  end
+
+  context 'with values from an hash json document' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          document: true
+          calls:
+            keywords: '**'
+            add_suffix: '?'
+            add_prefix: can_
+      YML
+    end
+
+    let(:path) { 'roles.yml' }
+
+    let(:json) do
+      <<~JSON
+        {
+          "build_house": true,
+          "drive_car": false
+        }
+      JSON
+    end
+
+    let(:ruby) { ::Leftovers::JSON.precompile(json, file) }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:__leftovers_document, :can_build_house?, :can_drive_car?))
     end
   end
 end

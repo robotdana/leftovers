@@ -5,6 +5,12 @@ require 'yaml'
 module Leftovers
   module YAML
     class Builder < ::Psych::TreeBuilder
+      # :nocov:
+      if defined?(::Leftovers::Backports::StringDeletePrefixSuffix)
+        using ::Leftovers::Backports::StringDeletePrefixSuffix
+      end
+      # :nocov:
+
       def initialize
         @constants = []
 
@@ -40,21 +46,31 @@ module Leftovers
       end
 
       def to_ruby_file
-        [
-          '__leftovers_document(',
-          root.to_ruby.first.inspect,
-          ')',
-          *@constants
-        ].join("\n")
+        <<~RUBY
+          __leftovers_document(#{to_ruby_argument(root.to_ruby.first)})
+          #{@constants.join("\n")}
+        RUBY
+      end
+
+      private
+
+      def to_ruby_argument(value)
+        ruby = value.inspect
+        return ruby unless value.is_a?(Array)
+
+        ruby.delete_prefix!('[')
+        ruby.delete_suffix!(']')
+
+        ruby
       end
     end
 
     def self.precompile(yaml, name)
-      handler = ::Leftovers::YAML::Builder.new
-      parser = ::Psych::Parser.new(handler)
+      builder = ::Leftovers::YAML::Builder.new
+      parser = ::Psych::Parser.new(builder)
       parser.parse(yaml, name.relative_path)
 
-      handler.to_ruby_file
+      builder.to_ruby_file
     rescue ::Psych::SyntaxError => e
       Leftovers.warn "#{e.class}: #{e.message}"
       ''

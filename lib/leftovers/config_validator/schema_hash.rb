@@ -522,6 +522,7 @@ module Leftovers
         'haml_paths' => { '$ref' => '#/definitions/stringList' },
         'slim_paths' => { '$ref' => '#/definitions/stringList' },
         'yaml_paths' => { '$ref' => '#/definitions/stringList' },
+        'json_paths' => { '$ref' => '#/definitions/stringList' },
         'erb_paths' => { '$ref' => '#/definitions/stringList' },
         'requires' => { '$ref' => '#/definitions/stringList' },
         'gems' => { '$ref' => '#/definitions/stringList' },

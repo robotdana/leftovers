@@ -11,7 +11,11 @@ include_paths:
   - '*.rb'
 
 yaml_paths:
-  - '/dev/null'
+  - '*.yml'
+  - '*.yaml'
+
+json_paths:
+  - '*.json'
 
 test_paths:
   - /tests/

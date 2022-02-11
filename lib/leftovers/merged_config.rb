@@ -4,7 +4,7 @@ require 'set'
 require 'fast_ignore'
 
 module Leftovers
-  class MergedConfig
+  class MergedConfig # rubocop:disable Metrics/ClassLength
     def initialize(load_defaults: false)
       @configs = []
       @loaded_configs = Set.new
@@ -44,6 +44,7 @@ module Leftovers
       @haml_paths
       @slim_paths
       @yaml_paths
+      @json_paths
       @erb_paths
       @dynamic
       @keep
@@ -91,6 +92,14 @@ module Leftovers
     def yaml_paths
       @yaml_paths ||= FastIgnore.new(
         include_rules: @configs.flat_map(&:yaml_paths),
+        gitignore: false,
+        root: Leftovers.pwd
+      )
+    end
+
+    def json_paths
+      @json_paths ||= FastIgnore.new(
+        include_rules: @configs.flat_map(&:json_paths),
         gitignore: false,
         root: Leftovers.pwd
       )

@@ -14,12 +14,17 @@ module Leftovers
       @test = Leftovers.config.test_paths.allowed?(relative_path)
     end
 
-    def ruby # rubocop:disable Metrics/MethodLength
+    def ruby # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       precompiled = []
       precompile = false
 
       if haml?
         precompiled << ::Leftovers::Haml.precompile(read, self)
+        precompile = true
+      end
+
+      if json?
+        precompiled << ::Leftovers::JSON.precompile(read, self)
         precompile = true
       end
 
@@ -57,6 +62,10 @@ module Leftovers
 
     def yaml?
       Leftovers.config.yaml_paths.allowed?(relative_path)
+    end
+
+    def json?
+      Leftovers.config.json_paths.allowed?(relative_path)
     end
 
     def slim?

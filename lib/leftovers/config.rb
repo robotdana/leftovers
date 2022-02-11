@@ -44,6 +44,10 @@ module Leftovers
       @yaml_paths ||= Array(yaml[:yaml_paths])
     end
 
+    def json_paths
+      @json_paths ||= Array(yaml[:json_paths])
+    end
+
     def erb_paths
       @erb_paths ||= Array(yaml[:erb_paths])
     end

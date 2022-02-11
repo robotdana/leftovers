@@ -10,6 +10,7 @@ Its presence is optional and all of these settings are optional.
 - [`slim_paths:`](#slim_paths)
 - [`erb_paths:`](#erb_paths)
 - [`yaml_paths:`](#yaml_paths)
+- [`json_paths:`](#json_paths)
 - [`requires:`](#requires)
 - [`gems:`](#gems)
 - [`keep:`](#keep)
@@ -152,6 +153,41 @@ dynamic:
 ```
 
 [`nested:`](#nested) may be useful for more complex yaml structures
+
+## `json_paths:`
+
+list filenames/paths of test directories that are in the json format
+Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+
+```yml
+include:
+  - 'config/*.json'
+json_paths:
+  - '*.json'
+```
+
+These documents render the structure of the yaml as arguments for the [`document:true`](#document-true) rule.
+
+so you could, e.g. read the class name out of a yaml document like:
+
+```json
+{ "class_name": "MyClass" }
+```
+
+with config like:
+
+```yml
+include_paths:
+  - 'config/*.json'
+
+dynamic:
+  document: true
+  path: config/*.json
+  calls:
+    argument: class_name
+```
+
+[`nested:`](#nested) may be useful for more complex json structures
 
 ## `gems:`
 _alias `gem:`_
@@ -338,13 +374,13 @@ keep:
 
 ## `document: true`
 
-Instructs to consider the whole document. this is useful when parsing YAML or JSON config files for various values.
+Instructs to consider the whole document. this is useful when parsing [YAML](#yaml-paths) or [JSON](#json-paths) config files for various values.
 
 e.g.
 
 ```yml
 includes: /config/roles.yml
-keep:
+dynamic:
   - document: true
     path: /config/roles.yml
     defines:
@@ -361,7 +397,7 @@ will parse "config/roles.yml"
 
 and consider it to have created methods like `can_build_house?` and `can_drive_car?`
 
-[`nested:`](#nested) will likely be useful
+[`nested:`](#nested) may be useful for more complex data structures
 
 ## `calls:`, `defines:`
 _aliases `call:`, `define:`_
