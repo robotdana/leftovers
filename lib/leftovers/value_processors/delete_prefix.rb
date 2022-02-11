@@ -3,12 +3,6 @@
 module Leftovers
   module ValueProcessors
     class DeletePrefix
-      # :nocov:
-      if defined?(::Leftovers::Backports::StringDeletePrefixSuffix)
-        using ::Leftovers::Backports::StringDeletePrefixSuffix
-      end
-      # :nocov:
-
       def initialize(prefix, then_processor)
         @prefix = prefix
         @then_processor = then_processor

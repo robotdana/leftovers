@@ -4,10 +4,6 @@ require 'yaml'
 
 module Leftovers
   class Config
-    # :nocov:
-    using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-    # :nocov:
-
     attr_reader :name
 
     def initialize(name, path: nil, content: nil)

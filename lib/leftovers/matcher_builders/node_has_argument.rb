@@ -60,7 +60,8 @@ module Leftovers
         elsif positions
           ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher)
           # :nocov:
-        else raise
+        else
+          raise
           # :nocov:
         end
 

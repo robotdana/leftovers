@@ -3,10 +3,6 @@
 module Leftovers
   module Matchers
     class NodePairValue
-      # :nocov:
-      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-      # :nocov:
-
       def initialize(value_matcher)
         @value_matcher = value_matcher
 

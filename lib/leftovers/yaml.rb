@@ -5,12 +5,6 @@ require 'yaml'
 module Leftovers
   module YAML
     class Builder < ::Psych::TreeBuilder
-      # :nocov:
-      if defined?(::Leftovers::Backports::StringDeletePrefixSuffix)
-        using ::Leftovers::Backports::StringDeletePrefixSuffix
-      end
-      # :nocov:
-
       def initialize
         @constants = []
 

@@ -3,10 +3,6 @@
 module Leftovers
   module Matchers
     class Any
-      # :nocov:
-      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-      # :nocov:
-
       attr_reader :matchers
 
       def initialize(matchers)

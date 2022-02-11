@@ -1,4 +1,5 @@
-# 0.5.6
+# 0.6.0
+- drop ruby 2.4 support, allowing for some performance improvements
 - Add ability to parse JSON and YAML files
 - Add magic comment that points to a particular dynamic rule
 - repeated calls to --write-todo won't have ordering differences

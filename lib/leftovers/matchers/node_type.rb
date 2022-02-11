@@ -3,10 +3,6 @@
 module Leftovers
   module Matchers
     class NodeType
-      # :nocov:
-      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-      # :nocov:
-
       def initialize(type_matcher)
         @type_matcher = type_matcher
 

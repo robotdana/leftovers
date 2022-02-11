@@ -17,7 +17,7 @@ AllCops:
     - vendor/**/*
   DisplayCopNames: true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
 
 # all of our layout customisations are because we prefer indentation to be
 # always consistently 2 spaces, for blocks, scopes, multiline expressions, etc
@@ -59,6 +59,9 @@ Layout/CaseIndentation:
 # to match our preference for consistent indentation
 Layout/EndAlignment:
   EnforcedStyleAlignWith: start_of_line
+
+Layout/LineEndStringConcatenationIndentation:
+  EnforcedStyle: indented
 
 # Aligning Assignments, etc makes diffs noisy
 Layout/ExtraSpacing:

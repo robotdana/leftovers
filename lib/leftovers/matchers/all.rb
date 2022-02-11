@@ -3,10 +3,6 @@
 module Leftovers
   module Matchers
     class All
-      # :nocov:
-      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-      # :nocov:
-
       def initialize(matchers)
         @matchers = matchers
 

@@ -25,8 +25,8 @@ RSpec.describe Leftovers::Config do
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(
         "\e[31mConfig SyntaxError: " \
-        "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
-        "did not find expected key while parsing a block mapping at line 2 column 5\e[0m\n"
+          "(#{::File.expand_path('../lib/config/invalid.yml', __dir__)}): " \
+          "did not find expected key while parsing a block mapping at line 2 column 5\e[0m\n"
       ).to_stderr
     end
 

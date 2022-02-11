@@ -5,12 +5,6 @@ require 'json'
 module Leftovers
   module JSON
     class << self
-      # :nocov:
-      if defined?(::Leftovers::Backports::StringDeletePrefixSuffix)
-        using ::Leftovers::Backports::StringDeletePrefixSuffix
-      end
-      # :nocov:
-
       def precompile(json, name)
         "__leftovers_document(#{to_ruby_argument(::JSON.parse(json))})"
       rescue ::JSON::ParserError => e

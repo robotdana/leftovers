@@ -3,10 +3,6 @@
 module Leftovers
   module ValueProcessors
     class KeywordArgument
-      # :nocov:
-      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-      # :nocov:
-
       def initialize(matcher, then_processor)
         @matcher = matcher
         @then_processor = then_processor

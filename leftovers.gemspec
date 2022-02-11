@@ -17,7 +17,9 @@ Gem::Specification.new do |spec|
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'http://github.com/robotdana/leftovers'
   spec.metadata['changelog_uri'] = 'http://github.com/robotdana/leftovers/blob/main/CHANGELOG.md'
-  spec.required_ruby_version = '>= 2.4.0'
+
+  spec.metadata['rubygems_mfa_required'] = 'true'
+  spec.required_ruby_version = '>= 2.5.0'
 
   spec.files = Dir.glob('{lib,exe,docs}/**/{*,.*}') + %w{
     CHANGELOG.md
@@ -37,7 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry', '~> 0.1'
   spec.add_development_dependency 'rake', '>= 13'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '< 1.12'
+  spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-performance'
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'simplecov', '>= 0.18.5'

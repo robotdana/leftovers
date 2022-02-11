@@ -4,7 +4,6 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   class Error < ::StandardError; end
 
   autoload(:AST, "#{__dir__}/leftovers/ast")
-  autoload(:Backports, "#{__dir__}/leftovers/backports")
   autoload(:CLI, "#{__dir__}/leftovers/cli")
   autoload(:Collector, "#{__dir__}/leftovers/collector")
   autoload(:ConfigValidator, "#{__dir__}/leftovers/config_validator")
@@ -149,12 +148,10 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       @try_require_cache ||= {}
 
       @try_require_cache.fetch(requirable) do
-        begin
-          require requirable
-          @try_require_cache[requirable] = true
-        rescue LoadError
-          @try_require_cache[requirable] = false
-        end
+        require requirable
+        @try_require_cache[requirable] = true
+      rescue LoadError
+        @try_require_cache[requirable] = false
       end
     end
   end

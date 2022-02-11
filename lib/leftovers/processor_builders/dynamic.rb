@@ -17,7 +17,8 @@ module Leftovers
           elsif call
             ::Leftovers::DynamicProcessors::Call.new(matcher, call)
           # :nocov:
-          else raise
+          else
+            raise
             # :nocov:
           end
         end

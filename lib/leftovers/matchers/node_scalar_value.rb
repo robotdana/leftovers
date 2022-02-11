@@ -3,10 +3,6 @@
 module Leftovers
   module Matchers
     class NodeScalarValue
-      # :nocov:
-      using ::Leftovers::Backports::SetCaseEq if defined?(::Leftovers::Backports::SetCaseEq)
-      # :nocov:
-
       def initialize(matcher)
         @matcher = matcher
 
