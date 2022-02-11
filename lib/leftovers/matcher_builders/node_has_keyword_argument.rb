@@ -6,7 +6,7 @@ module Leftovers
       class << self
         def build(keywords, value_matcher) # rubocop:disable Metrics/MethodLength
           value_matcher = ::Leftovers::MatcherBuilders::NodePairValue.build(value_matcher)
-          keyword_matcher = if ::Leftovers.each_or_self(keywords).any? { |x| x == '**' }
+          keyword_matcher = if ::Leftovers.each_or_self(keywords).include?('**')
             ::Leftovers::Matchers::NodeType.new(:pair)
           else
             ::Leftovers::MatcherBuilders::NodePairName.build(keywords)

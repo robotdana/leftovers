@@ -26,12 +26,10 @@ module Leftovers
 
         ::Leftovers.each_or_self(at) do |k|
           case k
-          when '*'
+          when '*', ::Integer
             positions << k
           when ::String, ::Hash
             keys << k
-          when ::Integer
-            positions << k
           # :nocov:
           else raise
             # :nocov:

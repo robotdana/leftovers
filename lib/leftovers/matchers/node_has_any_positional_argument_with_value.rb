@@ -17,9 +17,7 @@ module Leftovers
         args = node.positional_arguments
         return false unless args
 
-        args.any? do |value|
-          @matcher === value
-        end
+        args.any?(@matcher)
       end
 
       freeze

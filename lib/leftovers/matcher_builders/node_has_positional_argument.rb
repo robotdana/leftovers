@@ -14,7 +14,7 @@ module Leftovers
               end
             end
           elsif positions
-            pos = 0 if ::Leftovers.each_or_self(positions).any? { |x| x == '*' }
+            pos = 0 if ::Leftovers.each_or_self(positions).include?('*')
             pos ||= ::Leftovers.each_or_self(positions).min
 
             ::Leftovers::Matchers::NodeHasPositionalArgument.new(pos)

@@ -103,16 +103,11 @@ Layout/MultilineOperationIndentation:
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
-# Temporarily disable this spec as a recent change has broken it for us:
-# https://github.com/rubocop-hq/rubocop/issues/6254
-Layout/RescueEnsureAlignment:
-  Enabled: false
-
 Metrics:
   CountComments: false
 
 Metrics/BlockLength:
-  ExcludedMethods:
+  IgnoredMethods:
     - configure
     - describe
     - context
@@ -127,6 +122,9 @@ Metrics/MethodLength:
 
 Naming/MethodParameterName:
   AllowedNames: [_, io, id, to, by, 'on', in, at, ip, db]
+
+Naming/VariableNumber:
+  Enabled: false
 
 RSpec:
   Enabled: true

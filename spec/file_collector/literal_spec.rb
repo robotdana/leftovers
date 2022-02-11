@@ -363,7 +363,7 @@ RSpec.describe Leftovers::FileCollector do
 
     it do
       expect(subject).to have_no_definitions.and(have_calls(
-        :[], :[]=, :**, :'!', :~, :+@, :-@, :*, :/, :%, :+, :-, :>>, :<<,
+        :[], :[]=, :**, :!, :~, :+@, :-@, :*, :/, :%, :+, :-, :>>, :<<,
         :&, :^, :|, :<=, :<, :>, :>=, :<=>, :==, :===, :'!=', :=~, :!~
       ))
     end

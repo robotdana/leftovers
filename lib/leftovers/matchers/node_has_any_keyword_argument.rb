@@ -17,9 +17,7 @@ module Leftovers
         kwargs = node.kwargs
         return false unless kwargs
 
-        kwargs.children.any? do |pair|
-          @pair_matcher === pair
-        end
+        kwargs.children.any?(@pair_matcher)
       end
 
       freeze

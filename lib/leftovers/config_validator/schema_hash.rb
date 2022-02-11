@@ -44,19 +44,21 @@ module Leftovers
         'name' => {
           'anyOf' => [
             { '$ref' => '#/definitions/string' },
-            { 'allOf' => [
-              { '$ref' => '#/definitions/stringPattern' },
-              {
-                'type' => 'object',
-                'properties' => {
-                  'match' => true, 'matches' => true,
-                  'has_prefix' => true, 'has_suffix' => true,
-                  'unless' => { '$ref' => '#/definitions/nameList' }
-                },
-                'minProperties' => 1,
-                'additionalProperties' => false
-              }
-            ] }
+            {
+              'allOf' => [
+                { '$ref' => '#/definitions/stringPattern' },
+                {
+                  'type' => 'object',
+                  'properties' => {
+                    'match' => true, 'matches' => true,
+                    'has_prefix' => true, 'has_suffix' => true,
+                    'unless' => { '$ref' => '#/definitions/nameList' }
+                  },
+                  'minProperties' => 1,
+                  'additionalProperties' => false
+                }
+              ]
+            }
           ]
         },
         'nameList' => {
@@ -107,40 +109,42 @@ module Leftovers
             { 'type' => 'number' },
             { 'type' => 'boolean' },
             { 'type' => 'null' },
-            { 'allOf' => [
-              { '$ref' => '#/definitions/stringPattern' },
-              {
-                'type' => 'object',
-                'properties' => {
-                  'match' => true, 'matches' => true,
-                  'has_prefix' => true, 'has_suffix' => true,
-                  'at' => { '$ref' => '#/definitions/argumentPositionList' },
-                  'has_value' => { '$ref' => '#/definitions/hasValueList' },
-                  'has_receiver' => { '$ref' => '#/definitions/hasValueList' },
-                  'type' => { '$ref' => '#/definitions/valueTypeList' },
-                  'unless' => { '$ref' => '#/definitions/hasValueList' }
-                },
-                'minProperties' => 1,
-                'additionalProperties' => false,
-                'allOf' => [
-                  # incompatible groups
-                  { 'not' => { 'required' => %w{match at} } },
-                  { 'not' => { 'required' => %w{match has_value} } },
-                  { 'not' => { 'required' => %w{match type} } },
-                  { 'not' => { 'required' => %w{matches at} } },
-                  { 'not' => { 'required' => %w{matches has_value} } },
-                  { 'not' => { 'required' => %w{matches type} } },
-                  { 'not' => { 'required' => %w{has_prefix at} } },
-                  { 'not' => { 'required' => %w{has_prefix has_value} } },
-                  { 'not' => { 'required' => %w{has_prefix type} } },
-                  { 'not' => { 'required' => %w{has_suffix at} } },
-                  { 'not' => { 'required' => %w{has_suffix has_value} } },
-                  { 'not' => { 'required' => %w{has_suffix type} } },
-                  { 'not' => { 'required' => %w{at type} } },
-                  { 'not' => { 'required' => %w{has_value type} } }
-                ]
-              }
-            ] }
+            {
+              'allOf' => [
+                { '$ref' => '#/definitions/stringPattern' },
+                {
+                  'type' => 'object',
+                  'properties' => {
+                    'match' => true, 'matches' => true,
+                    'has_prefix' => true, 'has_suffix' => true,
+                    'at' => { '$ref' => '#/definitions/argumentPositionList' },
+                    'has_value' => { '$ref' => '#/definitions/hasValueList' },
+                    'has_receiver' => { '$ref' => '#/definitions/hasValueList' },
+                    'type' => { '$ref' => '#/definitions/valueTypeList' },
+                    'unless' => { '$ref' => '#/definitions/hasValueList' }
+                  },
+                  'minProperties' => 1,
+                  'additionalProperties' => false,
+                  'allOf' => [
+                    # incompatible groups
+                    { 'not' => { 'required' => %w{match at} } },
+                    { 'not' => { 'required' => %w{match has_value} } },
+                    { 'not' => { 'required' => %w{match type} } },
+                    { 'not' => { 'required' => %w{matches at} } },
+                    { 'not' => { 'required' => %w{matches has_value} } },
+                    { 'not' => { 'required' => %w{matches type} } },
+                    { 'not' => { 'required' => %w{has_prefix at} } },
+                    { 'not' => { 'required' => %w{has_prefix has_value} } },
+                    { 'not' => { 'required' => %w{has_prefix type} } },
+                    { 'not' => { 'required' => %w{has_suffix at} } },
+                    { 'not' => { 'required' => %w{has_suffix has_value} } },
+                    { 'not' => { 'required' => %w{has_suffix type} } },
+                    { 'not' => { 'required' => %w{at type} } },
+                    { 'not' => { 'required' => %w{has_value type} } }
+                  ]
+                }
+              ]
+            }
           ]
         },
         'hasValueList' => {
@@ -254,37 +258,39 @@ module Leftovers
                 swapcase
               }
             },
-            { 'allOf' => [
-              { '$ref' => '#/definitions/transformProperties' },
-              {
-                'type' => 'object',
-                'properties' => {
-                  'original' => true,
-                  'pluralize' => true,
-                  'singularize' => true,
-                  'camelize' => true,
-                  'camelcase' => true,
-                  'underscore' => true,
-                  'titleize' => true,
-                  'titlecase' => true,
-                  'demodulize' => true,
-                  'deconstantize' => true,
-                  'parameterize' => true,
-                  'downcase' => true,
-                  'upcase' => true,
-                  'capitalize' => true,
-                  'swapcase' => true,
-                  'add_prefix' => true,
-                  'add_suffix' => true,
-                  'split' => true,
-                  'delete_prefix' => true,
-                  'delete_suffix' => true,
-                  'delete_before' => true,
-                  'delete_after' => true
-                },
-                'additionalProperties' => false
-              }
-            ] }
+            {
+              'allOf' => [
+                { '$ref' => '#/definitions/transformProperties' },
+                {
+                  'type' => 'object',
+                  'properties' => {
+                    'original' => true,
+                    'pluralize' => true,
+                    'singularize' => true,
+                    'camelize' => true,
+                    'camelcase' => true,
+                    'underscore' => true,
+                    'titleize' => true,
+                    'titlecase' => true,
+                    'demodulize' => true,
+                    'deconstantize' => true,
+                    'parameterize' => true,
+                    'downcase' => true,
+                    'upcase' => true,
+                    'capitalize' => true,
+                    'swapcase' => true,
+                    'add_prefix' => true,
+                    'add_suffix' => true,
+                    'split' => true,
+                    'delete_prefix' => true,
+                    'delete_suffix' => true,
+                    'delete_before' => true,
+                    'delete_after' => true
+                  },
+                  'additionalProperties' => false
+                }
+              ]
+            }
           ]
         },
         'transformList' => {
@@ -316,59 +322,63 @@ module Leftovers
           'anyOf' => [
             { '$ref' => '#/definitions/string' },
             { 'type' => 'integer', 'minimum' => 0 },
-            { 'allOf' => [
-              { '$ref' => '#/definitions/transformProperties' },
-              {
-                'type' => 'object',
-                'properties' => {
-                  'argument' => { '$ref' => '#/definitions/argumentPositionList' },
-                  'arguments' => { '$ref' => '#/definitions/argumentPositionList' },
-                  'keyword' => { '$ref' => '#/definitions/keywordList' },
-                  'keywords' => { '$ref' => '#/definitions/keywordList' },
-                  'itself' => { '$ref' => '#/definitions/true' },
-                  'value' => { '$ref' => '#/definitions/string' },
-                  'nested' => { '$ref' => '#/definitions/actionList' },
-                  'recursive' => { '$ref' => '#/definitions/true' },
-                  'transforms' => { '$ref' => '#/definitions/transformList' },
-                  'pluralize' => true,
-                  'singularize' => true,
-                  'camelize' => true,
-                  'camelcase' => true,
-                  'underscore' => true,
-                  'titleize' => true,
-                  'titlecase' => true,
-                  'demodulize' => true,
-                  'deconstantize' => true,
-                  'parameterize' => true,
-                  'downcase' => true,
-                  'upcase' => true,
-                  'capitalize' => true,
-                  'swapcase' => true,
-                  'add_prefix' => true,
-                  'add_suffix' => true,
-                  'split' => true,
-                  'delete_prefix' => true,
-                  'delete_suffix' => true,
-                  'delete_before' => true,
-                  'delete_after' => true
-                },
-                'additionalProperties' => false,
-                'allOf' => [
-                  # synonyms
-                  { 'not' => { 'required' => %w{keyword keywords} } },
-                  { 'not' => { 'required' => %w{argument arguments} } },
-                  # any of
-                  { 'anyOf' => [
-                    { 'required' => ['argument'] },
-                    { 'required' => ['arguments'] },
-                    { 'required' => ['keyword'] },
-                    { 'required' => ['keywords'] },
-                    { 'required' => ['itself'] },
-                    { 'required' => ['value'] }
-                  ] }
-                ]
-              }
-            ] }
+            {
+              'allOf' => [
+                { '$ref' => '#/definitions/transformProperties' },
+                {
+                  'type' => 'object',
+                  'properties' => {
+                    'argument' => { '$ref' => '#/definitions/argumentPositionList' },
+                    'arguments' => { '$ref' => '#/definitions/argumentPositionList' },
+                    'keyword' => { '$ref' => '#/definitions/keywordList' },
+                    'keywords' => { '$ref' => '#/definitions/keywordList' },
+                    'itself' => { '$ref' => '#/definitions/true' },
+                    'value' => { '$ref' => '#/definitions/string' },
+                    'nested' => { '$ref' => '#/definitions/actionList' },
+                    'recursive' => { '$ref' => '#/definitions/true' },
+                    'transforms' => { '$ref' => '#/definitions/transformList' },
+                    'pluralize' => true,
+                    'singularize' => true,
+                    'camelize' => true,
+                    'camelcase' => true,
+                    'underscore' => true,
+                    'titleize' => true,
+                    'titlecase' => true,
+                    'demodulize' => true,
+                    'deconstantize' => true,
+                    'parameterize' => true,
+                    'downcase' => true,
+                    'upcase' => true,
+                    'capitalize' => true,
+                    'swapcase' => true,
+                    'add_prefix' => true,
+                    'add_suffix' => true,
+                    'split' => true,
+                    'delete_prefix' => true,
+                    'delete_suffix' => true,
+                    'delete_before' => true,
+                    'delete_after' => true
+                  },
+                  'additionalProperties' => false,
+                  'allOf' => [
+                    # synonyms
+                    { 'not' => { 'required' => %w{keyword keywords} } },
+                    { 'not' => { 'required' => %w{argument arguments} } },
+                    # any of
+                    {
+                      'anyOf' => [
+                        { 'required' => ['argument'] },
+                        { 'required' => ['arguments'] },
+                        { 'required' => ['keyword'] },
+                        { 'required' => ['keywords'] },
+                        { 'required' => ['itself'] },
+                        { 'required' => ['value'] }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
           ]
         },
         'actionList' => {
@@ -396,10 +406,12 @@ module Leftovers
             { 'not' => { 'required' => %w{call calls} } },
             { 'not' => { 'required' => %w{define defines} } },
             # At least one of
-            { 'anyOf' => [
-              { 'required' => ['call'] }, { 'required' => ['calls'] },
-              { 'required' => ['define'] }, { 'required' => ['defines'] }
-            ] }
+            {
+              'anyOf' => [
+                { 'required' => ['call'] }, { 'required' => ['calls'] },
+                { 'required' => ['define'] }, { 'required' => ['defines'] }
+              ]
+            }
           ]
         },
         'ruleMatcherList' => {
@@ -415,13 +427,15 @@ module Leftovers
         'ruleMatcher' => {
           'allOf' => [
             { '$ref' => '#/definitions/rulePattern' },
-            { 'anyOf' => [
-              { 'required' => ['name'] }, { 'required' => ['names'] },
-              { 'required' => ['path'] }, { 'required' => ['paths'] },
-              { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
-              { 'required' => ['has_receiver'] },
-              { 'required' => ['unless'] }
-            ] },
+            {
+              'anyOf' => [
+                { 'required' => ['name'] }, { 'required' => ['names'] },
+                { 'required' => ['path'] }, { 'required' => ['paths'] },
+                { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
+                { 'required' => ['has_receiver'] },
+                { 'required' => ['unless'] }
+              ]
+            },
             {
               'type' => 'object',
               'properties' => {
@@ -442,14 +456,16 @@ module Leftovers
           'allOf' => [
             { '$ref' => '#/definitions/rulePattern' },
             { '$ref' => '#/definitions/dynamicAction' },
-            { 'anyOf' => [
-              { 'required' => ['name'] }, { 'required' => ['names'] },
-              { 'required' => ['document'] },
-              { 'required' => ['path'] }, { 'required' => ['paths'] },
-              { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
-              { 'required' => ['has_receiver'] },
-              { 'required' => ['unless'] }
-            ] },
+            {
+              'anyOf' => [
+                { 'required' => ['name'] }, { 'required' => ['names'] },
+                { 'required' => ['document'] },
+                { 'required' => ['path'] }, { 'required' => ['paths'] },
+                { 'required' => ['has_argument'] }, { 'required' => ['has_arguments'] },
+                { 'required' => ['has_receiver'] },
+                { 'required' => ['unless'] }
+              ]
+            },
             {
               'type' => 'object',
               'properties' => {

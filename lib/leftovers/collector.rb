@@ -28,7 +28,9 @@ module Leftovers
 
     def collect_file_list(list)
       if Leftovers.parallel?
-        Parallel.each(list, finish: method(:finish_file), &method(:collect_file))
+        Parallel.each(list, finish: method(:finish_file)) do |file|
+          collect_file(file)
+        end
       else
         list.each { |file| finish_file(nil, nil, collect_file(file)) }
       end
