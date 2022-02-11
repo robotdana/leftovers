@@ -28,6 +28,7 @@ hashbang
 i'd
 i'm
 ips
+json
 kchecked
 lhs
 lol

@@ -1,3 +1,9 @@
+# 0.5.6
+- Add ability to parse JSON and YAML files
+- Add magic comment that points to a particular dynamic rule
+- repeated calls to --write-todo won't have ordering differences
+- fix issue with --write-todo and unused methods defined in test files
+
 # 0.5.5
 - Fix rails resource/resources method signatures
 
