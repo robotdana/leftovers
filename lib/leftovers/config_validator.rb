@@ -1,5 +1,6 @@
 # frozen-string-literal: true
 
+require 'set'
 require 'json_schemer'
 
 module Leftovers

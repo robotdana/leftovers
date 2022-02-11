@@ -1,6 +1,7 @@
 # frozen-string-literal: true
 
 require 'spec_helper'
+require 'set'
 require 'json_schemer'
 
 RSpec.describe ::Leftovers::ConfigValidator do
