@@ -129,13 +129,33 @@ To do this for all definitions of this name, instead of adding a comment, add th
 
 ### `# leftovers:call`
 _aliases `leftovers:calls`_
-To mark a dynamic call that doesn't use literal values, use `leftovers:call` with the method name listed
+To mark a call that doesn't use literal values, use `leftovers:call` with the method name listed
 ```ruby
 method = [:puts, :warn].sample # leftovers:call puts, warn
 send(method, 'text')
 ```
 
 This would consider `puts` and `warn` to both have been called
+
+### `# leftovers:dynamic:*`
+To mark a dynamic call for literal hash and array values without enumerating everything in the comment again, use `leftovers:dynamic:`  on the same line as the beginning of the array or hash
+
+```ruby
+[ # leftovers:dynamic:call_login
+  :user,
+  :admin
+].each { |method| send("#{method}_login") }
+```
+
+with the following configuration matching the `name: value` to the `leftovers:dynamic:process_name`
+
+```yaml
+dynamic:
+  name: call_login
+  arguments: '*'
+  add_suffix: '_login'
+```
+This would consider `user_login` and `admin_login` to both have been called.
 
 ## Configuration file
 

@@ -42,6 +42,35 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:test, :html, :test_html)) }
   end
 
+  context 'with dynamic comment' do
+    let(:ruby) { '[:This, :That] # leftovers:dynamic:call_each' }
+
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: call_each
+            calls:
+              argument: '*'
+              add_suffix: Class
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:ThisClass, :ThatClass)) }
+
+    context 'when across multiple lines' do
+      let(:ruby) do
+        <<~RUBY
+          [ # leftovers:dynamic:call_each
+            :This,
+            :That
+          ]
+        RUBY
+      end
+
+      it { is_expected.to have_no_definitions.and(have_calls(:ThisClass, :ThatClass)) }
+    end
+  end
+
   context 'with pluralize' do
     let(:ruby) { 'my_method(:value, :person, [])' }
 

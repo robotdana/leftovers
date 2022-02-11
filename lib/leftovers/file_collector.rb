@@ -12,6 +12,7 @@ module Leftovers
       @definitions = []
       @allow_lines = Set.new.compare_by_identity
       @test_lines = Set.new.compare_by_identity
+      @dynamic_lines = {}
       @ruby = ruby
       @file = file
     end
@@ -58,14 +59,18 @@ module Leftovers
     LEFTOVERS_CALL_RE = /\bleftovers:call(?:s|ed|er|ers|) (#{NAME_RE}(?:[, :]+#{NAME_RE})*)/.freeze
     LEFTOVERS_ALLOW_RE = /\bleftovers:(?:keeps?|skip(?:s|ped|)|allow(?:s|ed|))\b/.freeze
     LEFTOVERS_TEST_RE = /\bleftovers:(?:for_tests?|tests?|testing|test_only)\b/.freeze
+    LEFTOVERS_DYNAMIC_RE = /\bleftovers:dynamic:(#{NAME_RE})\b/.freeze
+
     def process_comments(comments) # rubocop:disable Metrics/AbcSize
       comments.each do |comment|
         @allow_lines << comment.loc.line if comment.text.match?(LEFTOVERS_ALLOW_RE)
         @test_lines << comment.loc.line if comment.text.match?(LEFTOVERS_TEST_RE)
+        dynamic_match = comment.text.match(LEFTOVERS_DYNAMIC_RE)
+        @dynamic_lines[comment.loc.line] = dynamic_match[1] if dynamic_match
 
-        next unless (match = comment.text.match(LEFTOVERS_CALL_RE))
+        next unless (call_match = comment.text.match(LEFTOVERS_CALL_RE))
 
-        match[1].scan(NAME_RE).each { |s| add_call(s.to_sym) }
+        call_match[1].scan(NAME_RE).each { |s| add_call(s.to_sym) }
       end
     end
 
@@ -134,6 +139,16 @@ module Leftovers
     def on_const(node)
       super
       add_call(node.name)
+    end
+
+    def on_array(node)
+      super
+      collect_commented_dynamic(node)
+    end
+
+    def on_hash(node)
+      super
+      collect_commented_dynamic(node)
     end
 
     # grab e.g. :to_s in each(&:to_s)
@@ -223,6 +238,22 @@ module Leftovers
       when :send then collect_send_op_asgn(node)
       when :ivasgn, :gvasgn, :cvasgn then collect_var_op_asgn(node)
       end
+    end
+
+    def collect_commented_dynamic(node)
+      fake_method_name = @dynamic_lines[node.loc.line]
+      return unless fake_method_name
+
+      node = build_send_wrapper_for(node, fake_method_name)
+      collect_dynamic(node)
+    end
+
+    def build_send_wrapper_for(node, name)
+      ::Leftovers::AST::Node.new(
+        :send,
+        [nil, name.to_sym, *node.arguments],
+        location: node.location
+      )
     end
 
     def collect_dynamic(node) # rubocop:disable Metrics/AbcSize
