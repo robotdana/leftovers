@@ -1,7 +1,7 @@
 require:
   - rubocop-rspec
   - rubocop-performance
-
+  - rubocop-rake
 # Reference:
 # https://rubocop.readthedocs.io/en/latest/
 
