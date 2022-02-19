@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.5, 2.6, 2.7, 3.0, 3.1, ruby-head]
+        ruby: [2.5, 2.6, 2.7, '3.0', 3.1, ruby-head]
     continue-on-error: ${{ endsWith(matrix.ruby, 'head') }}
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.1
+          ruby-version: '3.0'
           bundler-cache: true
       - run: gem install did_you_mean; COVERAGE=1 bundle exec rspec
 
