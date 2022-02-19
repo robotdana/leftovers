@@ -9,14 +9,14 @@ keep:
   - delivered_email
 
 dynamic:
-  names:
-    - deliver_now
-    - deliver_later
-  calls:
-    value:
-      deliver
-  names:
-    - before_action
-    - after_action
-    - around_action
-  calls: ['*', if, unless]
+  - names:
+      - deliver_now
+      - deliver_later
+    calls:
+      value:
+        deliver
+  - names:
+      - before_action
+      - after_action
+      - around_action
+    calls: ['*', if, unless]

@@ -133,6 +133,28 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
+  context 'with camelcase' do
+    let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase, [])' }
+
+    let(:config) do
+      <<~YML
+        requires:
+          - 'active_support'
+          - 'active_support/core_ext/string'
+        dynamic:
+          - name: my_method
+            calls:
+              - argument: '*'
+                camelcase: true
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :'Kebab-case', :SnakeCase, :CamelCase, :PascalCase))
+    end
+  end
+
   context 'with parameterize' do
     let(:ruby) { 'my_method(:"kebab-case", :snake_case, :camelCase, :PascalCase, [])' }
 
@@ -192,6 +214,26 @@ RSpec.describe Leftovers::FileCollector do
               argument: '*'
               transforms:
                 - titleize
+      YML
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :Value)) }
+  end
+
+  context 'with titlecase' do
+    let(:ruby) { 'my_method(:value_id, [])' }
+
+    let(:config) do
+      <<~YML
+        require:
+          - active_support
+          - active_support/core_ext/string
+        dynamic:
+          - name: my_method
+            calls:
+              argument: '*'
+              transforms:
+                - titlecase
       YML
     end
 
@@ -332,7 +374,7 @@ RSpec.describe Leftovers::FileCollector do
         it do
           message = <<~MESSAGE
             Tried using the String##{method} method, but the activesupport gem was not available and/or not required
-            `gem install activesupport`, and/or add `requires: ['active_support', 'active_support/core_ext/string']` to your .leftovers.yml
+            `gem install activesupport`, and/or add `requires: ['active_support', 'active_support/core_ext/string']` to your .leftovers.yml\n\e[0m
           MESSAGE
 
           expect { catch(:leftovers_exit) { subject } }

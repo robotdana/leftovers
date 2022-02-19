@@ -19,9 +19,9 @@ module Leftovers
           ::Leftovers::ValueProcessors::Pluralize.new(then_processor)
         when 'singularize'
           ::Leftovers::ValueProcessors::Singularize.new(then_processor)
-        when 'camelize', 'camelcase'
+        when 'camelize'
           ::Leftovers::ValueProcessors::Camelize.new(then_processor)
-        when 'titleize', 'titlecase'
+        when 'titleize'
           ::Leftovers::ValueProcessors::Titleize.new(then_processor)
         when 'demodulize'
           ::Leftovers::ValueProcessors::Demodulize.new(then_processor)

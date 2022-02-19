@@ -1,3 +1,9 @@
+# 0.7.0
+- Rewrite the config parser/validation
+  - to provide clearer error messages with line numbers and everything
+  - to allow removing the json_schemer dependency with its 4 further dependencies
+- Allow `match:` to be used with `has_prefix:` and/or `has_suffix:`. There's not a good use for this but it was easier than encoding 'this can't be used with that' logic especially for it.
+
 # 0.6.0
 - drop ruby 2.4 support, allowing for some performance improvements
 - Add ability to parse JSON and YAML files

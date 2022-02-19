@@ -5,7 +5,11 @@ require 'pathname'
 module Leftovers
   class File < Pathname
     def relative_path
-      @relative_path ||= relative_path_from(Leftovers.pwd)
+      @relative_path ||= begin
+        relative_path_from(Leftovers.pwd)
+      rescue ArgumentError
+        self
+      end
     end
 
     def test?

@@ -3,7 +3,6 @@
 # some is currently impossible to handle (with_options).
 # Some is just corners of rails I haven't hit yet.
 gems:
-  - actioncable
   - actionmailer
   - actionpack
   - actionview

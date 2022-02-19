@@ -35,6 +35,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'activesupport'
   spec.add_development_dependency 'benchmark-ips'
   spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'did_you_mean'
   spec.add_development_dependency 'haml'
   spec.add_development_dependency 'pry', '~> 0.1'
   spec.add_development_dependency 'rake', '>= 13'
@@ -51,7 +52,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'spellr', '>= 0.8.1'
   spec.add_dependency 'fast_ignore', '>= 0.15.1'
-  spec.add_dependency 'json_schemer'
   spec.add_dependency 'parallel'
   spec.add_dependency 'parser'
 end

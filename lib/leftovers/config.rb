@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'yaml'
-
 module Leftovers
   class Config
     attr_reader :name
@@ -66,29 +64,8 @@ module Leftovers
 
     private
 
-    def content
-      @content ||= ::File.exist?(path) ? ::File.read(path) : ''
-    end
-
-    def path
-      @path ||= ::File.expand_path("../config/#{name}.yml", __dir__)
-    end
-
     def yaml
-      @yaml ||= ::Leftovers::ConfigValidator.validate_and_process!(parse_yaml, path)
-    end
-
-    def parse_yaml
-      # :nocov:
-      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
-        Psych.safe_load(content, filename: path) || {}
-      else
-        Psych.safe_load(content, [], [], false, path) || {}
-      end
-      # :nocov:
-    rescue ::Psych::SyntaxError => e
-      warn "\e[31mConfig SyntaxError: #{e.message}\e[0m"
-      Leftovers.exit 1
+      @yaml ||= ::Leftovers::ConfigLoader.load(name, path: @path, content: @content)
     end
   end
 end

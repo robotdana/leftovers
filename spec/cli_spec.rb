@@ -98,7 +98,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - "test_method" # test/bar.rb:1:5 def test_method; end
         FILE
 
-        expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
+        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
     end
 
@@ -161,7 +161,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - "test?" # app/foo.rb:1:13 test_method :test
         FILE
 
-        expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
+        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
     end
 
@@ -222,7 +222,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - "unused_method" # app/foo.rb:3:5 def unused_method
         FILE
 
-        expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
+        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
 
       it 'runs with --write-todo and a preexisting TODO file' do
@@ -257,7 +257,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - "unused_method" # app/foo.rb:3:5 def unused_method
         FILE
 
-        expect { Psych.safe_load(todo_file.read) }.not_to raise_error
+        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
 
       it 'runs with --no-parallel' do
@@ -404,7 +404,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
               - "test_method" # test/bar.rb:1:5 def test_method; end
           FILE
 
-          expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
+          config = Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml'))
+          config.keep
+          config.test_only
         end
       end
 
@@ -451,7 +453,9 @@ RSpec.describe Leftovers::CLI, type: :cli do
               - "test_method" # test/bar.rb:1:5 def test_method; end
           FILE
 
-          expect { Psych.safe_load(temp_dir.join('.leftovers_todo.yml').read) }.not_to raise_error
+          config = Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml'))
+          config.keep
+          config.test_only
         end
       end
     end

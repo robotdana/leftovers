@@ -7,7 +7,7 @@ module Leftovers
         def build(pattern) # rubocop:disable Metrics/MethodLength
           ::Leftovers::MatcherBuilders::Or.each_or_self(pattern) do |pat|
             case pat
-            when ::Integer, true, false, nil
+            when ::Integer, ::Float, true, false, nil
               ::Leftovers::Matchers::NodeScalarValue.new(pat)
             when ::String
               ::Leftovers::MatcherBuilders::NodeName.build(pat)

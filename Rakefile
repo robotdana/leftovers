@@ -24,5 +24,5 @@ task :test_autoload, [:times] do |_, args|
   end
   exit exitstatus unless exitstatus == 0
 end
-
+ENV['COVERAGE'] = '1'
 task default: %i{test_autoload spec spellr rubocop leftovers build}

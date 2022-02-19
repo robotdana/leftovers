@@ -6,7 +6,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:AST, "#{__dir__}/leftovers/ast")
   autoload(:CLI, "#{__dir__}/leftovers/cli")
   autoload(:Collector, "#{__dir__}/leftovers/collector")
-  autoload(:ConfigValidator, "#{__dir__}/leftovers/config_validator")
+  autoload(:ConfigLoader, "#{__dir__}/leftovers/config_loader")
   autoload(:Config, "#{__dir__}/leftovers/config")
   autoload(:DefinitionNode, "#{__dir__}/leftovers/definition_node")
   autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
@@ -103,7 +103,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
 
     def error(message)
-      warn(message)
+      warn("\e[31m#{message}\e[0m")
       exit 1
     end
 

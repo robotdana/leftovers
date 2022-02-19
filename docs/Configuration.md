@@ -213,7 +213,7 @@ Each entry can be a string (an exact match for a method, constant, or variable n
   or the properties from `names:`
   - [`has_prefix:`](#has_prefix)
   - [`has_suffix:`](#has_suffix)
-  - [`matches:`](#matches) (can't be used in the same entry as `has_prefix:` or `has_suffix:`)
+  - [`matches:`](#matches)
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
 - [`has_receiver:`](#has_receiver)
@@ -242,7 +242,7 @@ Each entry can be a string (an exact match for a method, constant, or variable n
   or the properties from `names:`
   - [`has_prefix:`](#has_prefix)
   - [`has_suffix:`](#has_suffix)
-  - [`matches:`](#matches) (can't be used in the same entry as `has_prefix:` or `has_suffix:`)
+  - [`matches:`](#matches)
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
 - [`unless`](#unless)
@@ -305,7 +305,7 @@ This is a list of methods/constants/variables, and can be used in [`dynamic:`](#
 Each entry can be a string (an exact match for a method, constant, or variable name that includes the sigil), or have at least one of the following properties:
 - [`has_prefix:`](#has_prefix)
 - [`has_suffix:`](#has_suffix)
-- [`matches:`](#matches) (this can't be used in the same entry as `has_prefix:` or `has_suffix:`)
+- [`matches:`](#matches)
 
 Arrays are not necessary for single values
 
@@ -522,7 +522,7 @@ Each entry can be any of:
 - or have at least one of the following properties to match the keyword/hash key string or symbol:
   - [`has_prefix:`](#has_prefix)
   - [`has_suffix:`](#has_suffix)
-  - [`matches:`](#matches) (this can't be used in the same entry as `has_prefix:` or `has_suffix:`)
+  - [`matches:`](#matches)
 
 Arrays are not necessary for single values
 
@@ -533,10 +533,10 @@ filter [`arguments:`](#arguments), [`has_arguments:`](#has_arguments), and [`key
 Each entry can be one of
 - `true`, `false`, `nil`, or an Integer. matches the literal value
 - a String. matches the literal string or symbol value
-- or have at least one of the following properties to match a string or symbol:
+- or have at least one of the following properties to match the name:
   - [`has_prefix:`](#has_prefix)
   - [`has_suffix:`](#has_suffix)
-  - [`matches:`](#matches) (this can't be used in the same entry as `has_prefix:` or `has_suffix:`)
+  - [`matches:`](#matches)
 - or have at least one of the following properties to match within an array or hash:
   - [`at`](#at)
   - [`has_value`](#has_value_has_receiver)

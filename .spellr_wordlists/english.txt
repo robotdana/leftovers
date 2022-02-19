@@ -1,3 +1,4 @@
+accessors
 actioncable
 actionmailer
 actionpack
@@ -20,6 +21,7 @@ deserialize
 erb
 esque
 firstname
+fuzzer
 gemfile
 graphql
 haml
@@ -57,6 +59,7 @@ stabby
 timecop
 todo
 uncompactable
+unfuzzable
 unmemoize
 veganstraightedge
 warmup
