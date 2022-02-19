@@ -4,7 +4,7 @@ require 'set'
 require 'fast_ignore'
 
 module Leftovers
-  class MergedConfig # rubocop:disable Metrics/ClassLength
+  class MergedConfig
     def initialize(load_defaults: false)
       @configs = []
       @loaded_configs = Set.new
@@ -64,51 +64,27 @@ module Leftovers
     end
 
     def test_paths
-      @test_paths ||= FastIgnore.new(
-        include_rules: @configs.flat_map(&:test_paths),
-        gitignore: false,
-        root: Leftovers.pwd
-      )
+      @test_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:test_paths))
     end
 
     def haml_paths
-      @haml_paths ||= FastIgnore.new(
-        include_rules: @configs.flat_map(&:haml_paths),
-        gitignore: false,
-        root: Leftovers.pwd
-      )
+      @haml_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:haml_paths))
     end
 
     def slim_paths
-      @slim_paths ||= FastIgnore.new(
-        include_rules: @configs.flat_map(&:slim_paths),
-        gitignore: false,
-        root: Leftovers.pwd
-      )
+      @slim_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:slim_paths))
     end
 
     def yaml_paths
-      @yaml_paths ||= FastIgnore.new(
-        include_rules: @configs.flat_map(&:yaml_paths),
-        gitignore: false,
-        root: Leftovers.pwd
-      )
+      @yaml_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:yaml_paths))
     end
 
     def json_paths
-      @json_paths ||= FastIgnore.new(
-        include_rules: @configs.flat_map(&:json_paths),
-        gitignore: false,
-        root: Leftovers.pwd
-      )
+      @json_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:json_paths))
     end
 
     def erb_paths
-      @erb_paths ||= FastIgnore.new(
-        include_rules: @configs.flat_map(&:erb_paths),
-        gitignore: false,
-        root: Leftovers.pwd
-      )
+      @erb_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:erb_paths))
     end
 
     def dynamic
