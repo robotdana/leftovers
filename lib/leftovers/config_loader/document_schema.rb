@@ -11,7 +11,7 @@ module Leftovers
       attribute :yaml_paths, ValueOrArraySchema[StringSchema], aliases: :yaml_path
       attribute :json_paths, ValueOrArraySchema[StringSchema], aliases: :json_path
       attribute :erb_paths, ValueOrArraySchema[StringSchema], aliases: :erb_path
-      attribute :requires, ValueOrArraySchema[StringSchema], aliases: :require
+      attribute :requires, ValueOrArraySchema[RequireSchema], aliases: :require
       attribute :gems, ValueOrArraySchema[StringSchema], aliases: :gem
       attribute :keep, ValueOrArraySchema[KeepTestOnlySchema]
       attribute :test_only, ValueOrArraySchema[KeepTestOnlySchema]

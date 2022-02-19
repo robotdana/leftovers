@@ -2,7 +2,7 @@ requires:
   - 'active_support'
   - 'active_support/core_ext/string'
   - 'active_support/inflections'
-  - './config/initializers/inflections'
+  - quiet: './config/initializers/inflections'
 
 # THIS IS INCOMPLETE (you can help by expanding it)
 # rails is _really complicated_ and has a lot of magic which calls methods for you.

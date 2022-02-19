@@ -24,9 +24,7 @@ module Leftovers
       @configs << config
       @loaded_configs << config.name
       config.gems.each { |gem| self << gem }
-      config.requires.each do |req|
-        Leftovers.try_require(req, message: "cannot require '#{req}' from #{config.name}.yml")
-      end
+      require_requires(config)
     end
 
     def project_config
@@ -126,6 +124,16 @@ module Leftovers
     end
 
     private
+
+    def require_requires(config)
+      config.requires.each do |req|
+        if req.is_a?(Hash) && req[:quiet]
+          Leftovers.try_require(req[:quiet])
+        else
+          Leftovers.try_require(req, message: "cannot require '#{req}' from #{config.name}.yml")
+        end
+      end
+    end
 
     def load_bundled_gem_config
       return unless Leftovers.try_require('bundler')
