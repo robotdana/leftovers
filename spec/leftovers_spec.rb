@@ -5,8 +5,49 @@ RSpec.describe Leftovers do
 
   after { described_class.reset }
 
-  it 'has a version number' do
-    expect(Leftovers::VERSION).not_to be nil
+  describe 'version' do
+    changelog = ::File.read(::File.expand_path('../CHANGELOG.md', __dir__))
+    changelog_version = changelog.match(/^# v([\d.]+)$/)&.captures&.first
+
+    it "has the version number: #{changelog_version}, matching the changelog" do
+      expect(described_class::VERSION).to eq changelog_version
+    end
+  end
+
+  describe '.reset' do
+    before { with_temp_dir }
+
+    it 'unmemoizes everything' do
+      described_class.run
+      described_class.try_require('not here')
+
+      original_stdout = described_class.stdout
+      original_stderr = described_class.stderr
+      original_config = described_class.config
+      original_collector = described_class.collector
+      original_reporter = described_class.reporter
+      original_leftovers = described_class.leftovers
+      original_parallel = described_class.parallel = true
+      original_progress = described_class.progress = true
+
+      # Leftovers.pwd is stubbed by with_temp_dir
+      expect(
+        subject.instance_variables
+      ).to contain_exactly(
+        *(::Leftovers::MEMOIZED_IVARS - [:@pwd])
+      )
+
+      described_class.reset
+
+      expect(described_class.stdout).not_to eq original_stdout
+      expect(described_class.stderr).not_to eq original_stderr
+      expect(described_class.config).not_to eq original_config
+      expect(described_class.collector).not_to eq original_collector
+      expect(described_class.reporter).not_to eq original_reporter
+      expect(described_class.leftovers).not_to be original_leftovers
+      expect(described_class.parallel).not_to eq original_parallel
+      expect(described_class.progress).not_to eq original_progress
+    end
   end
 
   describe '.leftovers' do

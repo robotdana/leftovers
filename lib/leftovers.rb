@@ -31,6 +31,19 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:ValueProcessors, "#{__dir__}/leftovers/value_processors")
   autoload(:VERSION, "#{__dir__}/leftovers/version")
 
+  MEMOIZED_IVARS = %i{
+    @config
+    @collector
+    @reporter
+    @leftovers
+    @try_require_cache
+    @stdout
+    @stderr
+    @parallel
+    @pwd
+    @progress
+  }.freeze
+
   class << self
     attr_accessor :parallel, :progress
     attr_writer :reporter
@@ -82,16 +95,10 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       reporter.report(only_test: only_test, none: none)
     end
 
-    def reset # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-      remove_instance_variable(:@config) if defined?(@config)
-      remove_instance_variable(:@collector) if defined?(@collector)
-      remove_instance_variable(:@reporter) if defined?(@reporter)
-      remove_instance_variable(:@leftovers) if defined?(@leftovers)
-      remove_instance_variable(:@try_require_cache) if defined?(@try_require_cache)
-      remove_instance_variable(:@stdout) if defined?(@stdout)
-      remove_instance_variable(:@stderr) if defined?(@stderr)
-      remove_instance_variable(:@parallel) if defined?(@parallel)
-      remove_instance_variable(:@pwd) if defined?(@pwd)
+    def reset
+      MEMOIZED_IVARS.each do |ivar|
+        remove_instance_variable(ivar) if instance_variable_get(ivar)
+      end
     end
 
     def resolution_instructions_link

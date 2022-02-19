@@ -59,12 +59,17 @@ List filenames/paths that you want to include
 Unlike other `paths:` configuration, each entry is **not** the gitignore pattern format.
 Instead it is strings that can be passed directly to ruby's `require` method (relative paths should start with `./`).
 
-Missing files/gems will be a warning, but not a LoadError.
-
-By default, the default [`gems: active_support`]() config `require: activesupport` and `gems: rails` will `require: ./config/initializers/inflections`
-
 ```yml
 require: ./config/initializers/my_other_inflections_file
+```
+
+Missing files/gems will be a warning, but not a LoadError.
+To avoid seeing the warning if the file isn't there use `quiet:`.
+
+```yml
+  requires:
+  - 'active_support/inflections' # will warn if it's missing
+  - quiet: './config/initializers/inflections' # will say nothing
 ```
 
 Arrays are not necessary for single values
