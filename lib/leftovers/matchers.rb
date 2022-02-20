@@ -19,6 +19,7 @@ module Leftovers
     autoload(:NodeName, "#{__dir__}/matchers/node_name")
     autoload(:NodePairValue, "#{__dir__}/matchers/node_pair_value")
     autoload(:NodePath, "#{__dir__}/matchers/node_path")
+    autoload(:NodePrivacy, "#{__dir__}/matchers/node_privacy")
     autoload(:NodeScalarValue, "#{__dir__}/matchers/node_scalar_value")
     autoload(:NodeType, "#{__dir__}/matchers/node_type")
     autoload(:Not, "#{__dir__}/matchers/not")

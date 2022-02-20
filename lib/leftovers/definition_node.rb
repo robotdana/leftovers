@@ -1,19 +1,15 @@
 # frozen-string-literal: true
 
-# To give to matchers before creating a Definition
-
 module Leftovers
   class DefinitionNode
-    attr_reader :path, :name
+    attr_reader :name, :loc, :node
 
-    def initialize(name, path)
+    def initialize(node, name:, location: node.loc.expression)
+      @node = node
       @name = name
-      @path = path
-
-      freeze
+      @loc = location
     end
 
-    # these are the methods checked by things in lib/leftovers/matchers
     def kwargs
       nil
     end
@@ -22,15 +18,8 @@ module Leftovers
       nil
     end
 
-    # these two i'm not sure are possible with the current config flags
-    # :nocov:
-    def scalar?
-      false
+    def path
+      node.path
     end
-
-    def type
-      :leftovers_definition
-    end
-    # :nocov:
   end
 end

@@ -5,16 +5,19 @@ require 'parser'
 
 module Leftovers
   class FileCollector < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength
-    attr_reader :calls, :definitions
+    attr_reader :calls
+    attr_accessor :default_method_privacy
 
     def initialize(ruby, file) # rubocop:disable Lint/MissingSuper
       @calls = []
-      @definitions = []
+      @definitions_to_add = {}
       @allow_lines = Set.new.compare_by_identity
       @test_lines = Set.new.compare_by_identity
       @dynamic_lines = {}
       @ruby = ruby
       @file = file
+      @default_method_privacy = :public
+      @definition_sets_to_add = []
     end
 
     def filename
@@ -76,6 +79,12 @@ module Leftovers
 
     # grab method definitions
     def on_def(node)
+      node.privacy = default_method_privacy
+      add_definition(node)
+      super
+    end
+
+    def on_defs(node)
       add_definition(node)
       super
     end
@@ -184,23 +193,40 @@ module Leftovers
       add_call(original_method.children.first)
     end
 
-    private
-
-    def test_line?(loc)
-      @file.test? ||
-        @test_lines.include?(loc.line)
-    end
-
-    def test_node?(node, loc)
-      test_line?(loc) || ::Leftovers.config.test_only === node
-    end
-
     def add_definition(node, name: node.name, loc: node.loc.name)
-      return if @allow_lines.include?(loc.line)
-      return if Leftovers.config.keep === node
-
-      definitions << Leftovers::Definition.new(name, location: loc, test: test_node?(node, loc))
+      @definitions_to_add[name] =
+        ::Leftovers::DefinitionToAdd.new(node, name: name, location: loc)
     end
+
+    def add_definition_set(definition_node_set)
+      @definition_sets_to_add << definition_node_set.definitions.map do |definition_node|
+        ::Leftovers::DefinitionToAdd.new(definition_node, location: definition_node.loc)
+      end
+    end
+
+    def set_privacy(name, to)
+      @definitions_to_add[name]&.privacy = to
+    end
+
+    def definitions
+      @definitions ||= @definitions_to_add.each_value.map { |d| d.to_definition(self) }.compact +
+        @definition_sets_to_add.map do |definition_set|
+          next nil if definition_set.any? { |d| d.keep?(self) }
+
+          ::Leftovers::DefinitionSet.new(definition_set.map { |d| d.to_definition(self) })
+        end.compact
+    end
+
+    def test_line?(line)
+      @file.test? ||
+        @test_lines.include?(line)
+    end
+
+    def keep_line?(line)
+      @allow_lines.include?(line)
+    end
+
+    private
 
     def add_call(name)
       calls << name
@@ -232,11 +258,14 @@ module Leftovers
 
     def collect_op_asgn(node)
       node = node.children.first
-      # :nocov: # don't need else, it's exhaustive for callers
       case node.type
-      # :nocov:
       when :send then collect_send_op_asgn(node)
       when :ivasgn, :gvasgn, :cvasgn then collect_var_op_asgn(node)
+      when :lvasgn then nil # we don't care about lvasgn
+      # :nocov:
+      else
+        raise "Unrecognized op_asgn node type #{node.type}"
+        # :nocov:
       end
     end
 
@@ -256,9 +285,8 @@ module Leftovers
       )
     end
 
-    def collect_dynamic(node) # rubocop:disable Metrics/AbcSize
+    def collect_dynamic(node)
       node.keep_line = @allow_lines.include?(node.loc.line)
-      node.test_line = test_line?(node.loc) unless node.keep_line?
 
       Leftovers.config.dynamic.process(node, self)
     rescue StandardError => e

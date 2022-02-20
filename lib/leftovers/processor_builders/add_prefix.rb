@@ -6,7 +6,7 @@ module Leftovers
       def self.build(argument, then_processor)
         case argument
         when ::Hash
-          dynamic_prefix = ::Leftovers::ProcessorBuilders::Action.build(argument, :call)
+          dynamic_prefix = ::Leftovers::ProcessorBuilders::Action.build(argument, :sym)
           ::Leftovers::ValueProcessors::AddDynamicPrefix.new(dynamic_prefix, then_processor)
         when ::String
           ::Leftovers::ValueProcessors::AddPrefix.new(argument, then_processor)

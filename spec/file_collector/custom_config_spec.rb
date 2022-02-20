@@ -2373,7 +2373,7 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with recursive has_receiver' do
+  context 'with nested has_receiver' do
     let(:config) do
       <<~YML
         dynamic:
@@ -2394,6 +2394,117 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_no_definitions.and(have_calls(:Caller, :Leftovers, :new, :yes)) }
+  end
+
+  context 'with definition set and calls defined' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          name: delegate_with_bang
+          calls:
+            argument:
+              - '*'
+              - to
+          defines:
+            argument: '*'
+            transforms:
+              - add_prefix:
+                  argument: to
+                  add_suffix: _
+                add_suffix: '!'
+              - add_prefix:
+                  argument: to
+                  add_suffix: _
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        delegate_with_bang :acting, to: :try
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(:try_acting!, :try_acting)
+        .and(have_calls(:delegate_with_bang, :acting, :try))
+    end
+  end
+
+  context 'with all public constants being kept' do
+    let(:config) do
+      <<~YML
+        keep:
+          privacy: public
+          type: Constant
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        class MyClass
+          PRIVATE_CONST = 1
+          PUBLIC_CONST = 2
+          private_constant :PRIVATE_CONST
+        end
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(:PRIVATE_CONST)
+        .and(have_calls(:private_constant))
+    end
+  end
+
+  context 'with all public methods being kept' do
+    let(:config) do
+      <<~YML
+        keep:
+          privacy: public
+          type: Method
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        class MyClass
+          def public1; end
+          def self.public2; end
+
+          def private1; end
+          def private2; end
+          def private3; end
+          def private4; end
+          def private5; end
+          private def private6; end
+          def self.private7; end
+          def self.private8; end
+          def self.private9; end
+          def self.private10; end
+          def self.private11; end
+
+          private :private1
+          private :private2, :private3
+          private [:private4, :private5]
+          private_class_method :private7
+          private_class_method :private8, :private9
+          private_class_method def self.private10; end
+          private :not_a_method_defined_in_this_file
+
+          private
+
+          def private11; end
+          def self.public3; end
+        end
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(
+        :MyClass, :private1, :private2, :private3,
+        :private4, :private5, :private6, :private7,
+        :private8, :private9, :private10, :private11
+      ).and(have_calls(:private, :private_class_method))
+    end
   end
 
   context 'with values from an array yaml document' do

@@ -2,19 +2,20 @@
 
 module Leftovers
   module DynamicProcessors
-    class Call
-      def initialize(matcher, processor)
+    class SetPrivacy
+      def initialize(matcher, processor, to)
         @matcher = matcher
         @processor = processor
+        @to = to
       end
 
       def process(node, file)
         return unless @matcher === node
 
-        calls = @processor.process(nil, node, node)
+        set_privacy = @processor.process(nil, node, node)
 
-        ::Leftovers.each_or_self(calls) do |call|
-          file.calls << call
+        ::Leftovers.each_or_self(set_privacy) do |name|
+          file.set_privacy(name, @to)
         end
       end
     end

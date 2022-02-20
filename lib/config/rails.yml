@@ -10,6 +10,7 @@ gems:
   - activemodel
   - activerecord
   - activesupport
+  - railties
 
 keep:
   - default_url_options # called by url_for, unsure what gem does

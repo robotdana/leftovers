@@ -49,6 +49,7 @@ RSpec::Matchers.define :have_non_test_definitions do |*expected|
 
   diffable
 end
+
 RSpec::Matchers.define :have_test_only_definitions do |*expected|
   match do |actual|
     actual.squash! if actual.respond_to?(:squash!)

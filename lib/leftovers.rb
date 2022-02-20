@@ -8,9 +8,11 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:Collector, "#{__dir__}/leftovers/collector")
   autoload(:ConfigLoader, "#{__dir__}/leftovers/config_loader")
   autoload(:Config, "#{__dir__}/leftovers/config")
-  autoload(:DefinitionNode, "#{__dir__}/leftovers/definition_node")
-  autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
   autoload(:Definition, "#{__dir__}/leftovers/definition")
+  autoload(:DefinitionNode, "#{__dir__}/leftovers/definition_node")
+  autoload(:DefinitionNodeSet, "#{__dir__}/leftovers/definition_node_set")
+  autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
+  autoload(:DefinitionToAdd, "#{__dir__}/leftovers/definition_to_add")
   autoload(:ERB, "#{__dir__}/leftovers/erb")
   autoload(:FileCollector, "#{__dir__}/leftovers/file_collector")
   autoload(:FileList, "#{__dir__}/leftovers/file_list")
@@ -144,7 +146,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
 
       case value
       when nil then nil
-      when Array then value.each(&block)
+      when Array then value.each { |i| each_or_self(i, &block) }
       else yield(value)
       end
     end

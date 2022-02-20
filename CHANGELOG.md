@@ -9,6 +9,13 @@
   - 'active_support/inflections'
   - quiet: './config/initializers/inflections'
   ```
+- consider all the public methods in rails custom generators to be used, this required some new features:
+  - add filtering methods/constants by public/protected/private
+  - add the possibility to set the privacy of methods and constants with method calls (`set_privacy:`, and `set_default_privacy:`)
+  - add `Method` and `Constant` as options for the `type:` filter
+  - add type filtering to dynamic.
+- check `def self.whatever` as a definition, i didn't realise i wasn't checking this.
+
 # v0.6.0
 - drop ruby 2.4 support, allowing for some performance improvements
 - Add ability to parse JSON and YAML files

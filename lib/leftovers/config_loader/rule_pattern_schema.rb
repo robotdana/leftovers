@@ -10,6 +10,8 @@ module Leftovers
       attribute :has_arguments, ValueOrArraySchema[HasArgumentSchema], aliases: :has_argument,
         require_group: :matcher
       attribute :has_receiver, ValueOrArraySchema[HasValueSchema], require_group: :matcher
+      attribute :type, ValueOrArraySchema[ValueTypeSchema], require_group: :matcher
+      attribute :privacy, ValueOrArraySchema[PrivacySchema], require_group: :matcher
       attribute :unless, ValueOrArraySchema[RulePatternSchema], require_group: :matcher
     end
   end

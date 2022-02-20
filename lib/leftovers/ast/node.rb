@@ -25,20 +25,20 @@ module Leftovers
         @memo[:path] ||= loc.expression.source_buffer.name.to_s
       end
 
-      def test_line?
-        @memo[:test_line]
-      end
-
-      def test_line=(value)
-        @memo[:test_line] = value
-      end
-
       def keep_line=(value)
         @memo[:keep_line] = value
       end
 
       def keep_line?
         @memo[:keep_line]
+      end
+
+      def privacy=(value)
+        @memo[:privacy] = value
+      end
+
+      def privacy
+        @memo[:privacy] || :public
       end
 
       def to_scalar_value
@@ -76,6 +76,10 @@ module Leftovers
 
       def string_or_symbol?
         type == :str || type == :sym
+      end
+
+      def string_or_symbol_or_def?
+        type == :str || type == :sym || type == :def || type == :defs
       end
 
       def proc?
@@ -140,7 +144,7 @@ module Leftovers
 
       def name
         @memo[:name] ||= case type
-        when :send, :csend, :casgn, :const
+        when :send, :csend, :casgn, :const, :defs
           second
         when :def, :ivasgn, :ivar, :gvar, :cvar, :gvasgn, :cvasgn, :sym
           first

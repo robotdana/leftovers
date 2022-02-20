@@ -14,6 +14,74 @@ RSpec.describe Leftovers do
     end
   end
 
+  describe '.each_or_self' do
+    it "doesn't yield nil" do
+      expect { |b| described_class.each_or_self(nil, &b) }.not_to yield_control
+    end
+
+    it "doesn't yield arrays of nils" do
+      expect { |b| described_class.each_or_self([nil, [nil]], &b) }.not_to yield_control
+    end
+
+    it "doesn't yield arrays of empty arrays" do
+      expect { |b| described_class.each_or_self([[], [[], []]], &b) }.not_to yield_control
+    end
+
+    it 'yields a single value' do
+      expect { |b| described_class.each_or_self(1, &b) }.to yield_with_args(1)
+    end
+
+    it 'yields a single layer array' do
+      expect { |b| described_class.each_or_self([1, 2, 3], &b) }.to yield_successive_args(1, 2, 3)
+    end
+
+    it 'yields a multi layer array' do
+      expect do |b|
+        described_class.each_or_self([1, [2, [], 3], [4]], &b)
+      end.to yield_successive_args(1, 2, 3, 4)
+    end
+
+    it 'yields a hash as a single item' do
+      expect { |b| described_class.each_or_self(this: :that, another: :thing, &b) }
+        .to yield_with_args(this: :that, another: :thing)
+    end
+
+    context 'when an enumerator' do
+      it "doesn't yield nil" do
+        expect { |b| described_class.each_or_self(nil).each(&b) }.not_to yield_control
+      end
+
+      it "doesn't yield arrays of nils" do
+        expect { |b| described_class.each_or_self([nil, [nil]]).each(&b) }.not_to yield_control
+      end
+
+      it "doesn't yield arrays of empty arrays" do
+        expect { |b| described_class.each_or_self([[], [[], []]]).each(&b) }.not_to yield_control
+      end
+
+      it 'yields a single value' do
+        expect { |b| described_class.each_or_self(1).each(&b) }.to yield_with_args(1)
+      end
+
+      it 'yields a single layer array' do
+        expect do |b|
+          described_class.each_or_self([1, 2, 3]).each(&b)
+        end.to yield_successive_args(1, 2, 3)
+      end
+
+      it 'yields a multi layer array' do
+        expect do |b|
+          described_class.each_or_self([1, [2, [], 3], [4]]).each(&b)
+        end.to yield_successive_args(1, 2, 3, 4)
+      end
+
+      it 'yields a hash as a single item' do
+        expect { |b| described_class.each_or_self(this: :that, another: :thing).each(&b) }
+          .to yield_with_args(this: :that, another: :thing)
+      end
+    end
+  end
+
   describe '.reset' do
     before { with_temp_dir }
 

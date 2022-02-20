@@ -15,6 +15,8 @@ module Leftovers
     autoload(:KeepTestOnlySchema, "#{__dir__}/config_loader/keep_test_only_schema")
     autoload(:Node, "#{__dir__}/config_loader/node")
     autoload(:ObjectSchema, "#{__dir__}/config_loader/object_schema")
+    autoload(:PrivacyProcessorSchema, "#{__dir__}/config_loader/privacy_processor_schema")
+    autoload(:PrivacySchema, "#{__dir__}/config_loader/privacy_schema")
     autoload(:RequireSchema, "#{__dir__}/config_loader/require_schema")
     autoload(:RulePatternSchema, "#{__dir__}/config_loader/rule_pattern_schema")
     autoload(:ScalarArgumentSchema, "#{__dir__}/config_loader/scalar_argument_schema")

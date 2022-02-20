@@ -277,6 +277,37 @@ RSpec.describe 'rails gem' do
     end
   end
 
+  context 'with generators with private messages' do
+    before do
+      with_temp_dir
+      # need the files to actually exist or fast_ignore doesn't work.
+      temp_file 'lib/generators/initializer_generator.rb'
+    end
+
+    let(:path) { 'lib/generators/initializer_generator.rb' }
+    let(:ruby) do
+      <<~RUBY
+        class InitializerGenerator < Rails::Generators::Base
+          def create_initializer_file
+            create_file "config/initializers/initializer.rb", "# content"
+          end
+
+          private
+
+          def leftover_support_method
+            create_file 'forgotten.yml'
+          end
+        end
+      RUBY
+    end
+
+    it do
+      # keep drops things from definitions
+      expect(subject).to have_definitions(:InitializerGenerator, :leftover_support_method)
+        .and have_calls(:Rails, :Generators, :Base, :create_file, :private)
+    end
+  end
+
   context 'with routes scope' do
     let(:ruby) do
       <<~RUBY

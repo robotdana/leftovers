@@ -14,12 +14,12 @@ module Leftovers
           when 'Float' then ::Leftovers::Matchers::NodeType.new(:float)
           when 'Array' then ::Leftovers::Matchers::NodeType.new(:array)
           when 'Hash' then ::Leftovers::Matchers::NodeType.new(:hash)
-
           when 'Proc' then ::Leftovers::Matchers::Predicate.new(:proc?)
-          # when 'Method' then ::Leftovers::Matchers::NodeType.new(Set[:send, :csend, :def])
-          # when 'Constant' then ::Leftovers::Matchers::NodeType.new(Set[:const, :class, :module])
+          when 'Method' then ::Leftovers::Matchers::NodeType.new(Set[:send, :csend, :def, :defs])
+          when 'Constant'
+            ::Leftovers::Matchers::NodeType.new(Set[:const, :class, :module, :casgn])
           # :nocov:
-          else raise
+          else raise "Unknown type #{type}"
             # :nocov:
           end
         end

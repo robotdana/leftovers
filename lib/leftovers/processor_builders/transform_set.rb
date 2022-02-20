@@ -21,24 +21,24 @@ module Leftovers
 
       def self.each_builder(action)
         case action
-        when :call
+        when :sym
           ::Leftovers::ProcessorBuilders::Each
-        when :define
+        when :definition_node
           ::Leftovers::ProcessorBuilders::EachForDefinitionSet
         # :nocov:
-        else raise
+        else raise "Unknown action #{action}"
           # :nocov:
         end
       end
 
       def self.build_final(action)
         case action
-        when :call
-          ::Leftovers::ValueProcessors::ReturnString
-        when :define
-          ::Leftovers::ValueProcessors::ReturnDefinition
+        when :sym
+          ::Leftovers::ValueProcessors::ReturnSym
+        when :definition_node
+          ::Leftovers::ValueProcessors::ReturnDefinitionNode
         # :nocov:
-        else raise
+        else raise "Unknown action #{action}"
           # :nocov:
         end
       end

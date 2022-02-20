@@ -39,11 +39,13 @@ memoized
 namespace
 namespaced
 nocov
+nonexcluded
 noninfringement
 okcomputer
 precompiled
 precompiler
 qux
+railties
 readme
 redcarpet
 requirables
@@ -52,6 +54,7 @@ rspec
 rubo
 rubocop
 rvm
+schemas
 sherson
 sidekiq
 simplecov

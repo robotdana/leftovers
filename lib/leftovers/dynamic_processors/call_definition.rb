@@ -9,18 +9,25 @@ module Leftovers
         @definition_processor = definition_processor
       end
 
-      def process(node, file)
+      def process(node, file) # rubocop:disable Metrics/MethodLength
         return unless @matcher === node
 
-        call = @call_processor.process(nil, node, node)
-        (file.calls << call) if call
+        calls = @call_processor.process(nil, node, node)
+
+        ::Leftovers.each_or_self(calls) do |call|
+          file.calls << call
+        end
 
         return if node.keep_line?
 
-        definition = @definition_processor.process(nil, node, node)
-        return unless definition
-
-        file.definitions << definition
+        definitions = @definition_processor.process(nil, node, node)
+        ::Leftovers.each_or_self(definitions) do |definition|
+          if definition.is_a?(DefinitionNodeSet)
+            file.add_definition_set(definition)
+          else
+            file.add_definition(definition, loc: definition.loc)
+          end
+        end
       end
     end
   end

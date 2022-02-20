@@ -185,7 +185,7 @@ RSpec.describe Leftovers::Config do
 
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 unrecognized key tuesday for dynamic value
-        Did you mean: paths, document, has_arguments, has_receiver, unless, define\e[0m
+        Did you mean: paths, document, has_arguments, has_receiver, type, privacy, unless, define, set_privacy, set_default_privacy\e[0m
       MESSAGE
     end
 
@@ -237,7 +237,7 @@ RSpec.describe Leftovers::Config do
               add_suffix: foo
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must include at least one of arguments, keywords, itself, nested, value, recursive or an array\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must include at least one of arguments, keywords, itself, value or an array\e[0m
       MESSAGE
     end
 
@@ -325,7 +325,7 @@ RSpec.describe Leftovers::Config do
         keep: {}
       YML
       expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, unless, names, paths, document, has_arguments, has_receiver, unless or an array\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, names, paths, document, has_arguments, has_receiver, type, privacy, unless or an array\e[0m
       MESSAGE
     end
 
@@ -359,7 +359,7 @@ RSpec.describe Leftovers::Config do
               argument: 1
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:18 has_value value must be any scalar value or a hash with any of match, has_prefix, has_suffix, unless, at, has_value, has_receiver, type\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:18 has_value value must be any scalar value or a hash with any of match, has_prefix, has_suffix, at, has_value, has_receiver, type, unless\e[0m
       MESSAGE
     end
 

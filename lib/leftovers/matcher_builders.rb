@@ -15,6 +15,7 @@ module Leftovers
     autoload(:NodePairName, "#{__dir__}/matcher_builders/node_pair_name")
     autoload(:NodePairValue, "#{__dir__}/matcher_builders/node_pair_value")
     autoload(:NodePath, "#{__dir__}/matcher_builders/node_path")
+    autoload(:NodePrivacy, "#{__dir__}/matcher_builders/node_privacy")
     autoload(:NodeType, "#{__dir__}/matcher_builders/node_type")
     autoload(:NodeValue, "#{__dir__}/matcher_builders/node_value")
     autoload(:Or, "#{__dir__}/matcher_builders/or")

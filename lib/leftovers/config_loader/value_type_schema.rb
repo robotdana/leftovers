@@ -10,6 +10,8 @@ module Leftovers
       value :Array
       value :Hash
       value :Proc
+      value :Method
+      value :Constant
     end
   end
 end

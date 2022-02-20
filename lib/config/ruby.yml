@@ -98,3 +98,75 @@ dynamic:
       - instance_variable_set
       - class_variable_set
     defines: 0
+
+  # Module
+  - name: public
+    unless:
+      has_argument: 0
+    set_default_privacy: public
+
+  - name:
+      - public
+      - public_class_method
+      - public_constant
+    has_argument: 0
+    set_privacy:
+      argument: '*'
+      to: public
+
+  - name:
+      - public
+      - public_class_method
+    has_argument: 0
+    unless:
+      has_argument: 1
+    set_privacy:
+      argument: 0
+      nested:
+        argument: '*'
+      to: public
+
+  - name: protected
+    unless:
+      has_argument: 0
+    set_default_privacy: protected
+
+  - name: protected
+    has_argument: 0
+    set_privacy:
+      argument: '*'
+      to: protected
+
+  - name: protected
+    has_argument: 0
+    unless:
+      has_argument: 1
+    set_privacy:
+      argument: 0
+      nested:
+        argument: '*'
+      to: protected
+
+  - name: private
+    unless:
+      has_argument: 0
+    set_default_privacy: private
+
+  - name:
+      - private
+      - private_class_method
+      - private_constant
+    has_argument: 0
+    set_privacy:
+      argument: '*'
+      to: private
+
+  - name: private
+    has_argument: 0
+    unless:
+      has_argument: 1
+    set_privacy:
+      argument: 0
+      nested:
+        argument: '*'
+      to: private

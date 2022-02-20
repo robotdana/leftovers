@@ -11,10 +11,7 @@ module Leftovers
 
       def process(str, node, method_node)
         definitions = @then_processors.map do |then_processor|
-          processed = then_processor.process(str, node, method_node)
-          return if processed == :keep # rubocop:disable Lint/NonLocalExitFromIterator
-
-          processed
+          then_processor.process(str, node, method_node)
         end
 
         definitions.flatten!
@@ -22,7 +19,7 @@ module Leftovers
 
         return definitions.first if definitions.length <= 1
 
-        ::Leftovers::DefinitionSet.new(definitions)
+        ::Leftovers::DefinitionNodeSet.new(definitions)
       end
     end
   end

@@ -14,7 +14,7 @@ module Leftovers
         return unless positional_arguments
 
         positional_arguments.map do |argument_node|
-          str = argument_node.to_s if argument_node.string_or_symbol?
+          str = argument_node.to_s if argument_node.string_or_symbol_or_def?
 
           @then_processor.process(str, argument_node, method_node)
         end

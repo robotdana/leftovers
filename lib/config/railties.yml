@@ -1,0 +1,11 @@
+keep:
+  - # https://guides.rubyonrails.org/generators.html#generators-lookup
+    path: '**/generators/**/*_generator.rb'
+    # "When a generator is invoked, each public method in the generator is executed sequentially in
+    # the order that it is defined When a generator is invoked, each public method in the generator
+    # is executed sequentially in the order that it is defined"
+    #
+    # https://guides.rubyonrails.org/generators.html
+    privacy: public
+    type: Method
+

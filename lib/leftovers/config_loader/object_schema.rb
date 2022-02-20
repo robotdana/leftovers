@@ -4,29 +4,33 @@ module Leftovers
   class ConfigLoader
     class ObjectSchema < Schema # rubocop:disable Metrics/ClassLength
       class << self
-        def inherit_attributes_from(schema, require_group: true)
-          @attributes ||= []
-          @attributes << schema
+        def inherit_attributes_from(schema, require_group: true, except: nil)
+          attributes_and_schemas_to_inherit_from << schema
+
+          inherit_except[schema] = Leftovers.each_or_self(except)
+
           return if require_group
 
-          @skip_require_group ||= []
-          @skip_require_group << schema
+          skip_require_group << schema
         end
 
         def attributes
-          @attributes ||= []
-          @attributes.map(&:attributes).reduce(:merge)
+          nonexcluded_attributes = attributes_and_schemas_to_inherit_from.map do |attr_or_schema|
+            attr_or_schema.attributes.dup.tap do |attributes_copy|
+              inherit_except[attr_or_schema]&.each { |e| attributes_copy.delete(e) }
+            end
+          end
+
+          nonexcluded_attributes.reduce { |a, e| a.merge(e) { raise 'Duplicate attributes' } }
         end
 
         def aliases
-          @attributes ||= []
-          @attributes.map(&:aliases).reduce(:merge)
+          attributes_and_schemas_to_inherit_from.map(&:aliases)
+            .reduce { |a, e| a.merge(e) { raise 'Duplicate aliases' } }
         end
 
         def require_groups
-          @attributes ||= []
-          @skip_require_group ||= []
-          (@attributes - @skip_require_group)
+          (attributes_and_schemas_to_inherit_from - skip_require_group)
             .map(&:require_groups).each_with_object({}) do |require_groups, hash|
               require_groups.each do |group, keys|
                 hash[group] ||= []
@@ -38,8 +42,7 @@ module Leftovers
         attr_accessor :or_schema
 
         def attribute(name, value_schema, aliases: nil, require_group: nil)
-          @attributes ||= []
-          @attributes << Attribute.new(
+          attributes_and_schemas_to_inherit_from << Attribute.new(
             name,
             value_schema,
             aliases: aliases,
@@ -66,6 +69,18 @@ module Leftovers
         end
 
         private
+
+        def inherit_except
+          @inherit_except ||= {}
+        end
+
+        def skip_require_group
+          @skip_require_group ||= []
+        end
+
+        def attributes_and_schemas_to_inherit_from
+          @attributes_and_schemas_to_inherit_from ||= []
+        end
 
         def pair_to_ruby(key, value)
           key_sym = key.to_sym
@@ -148,7 +163,7 @@ module Leftovers
           missing_groups = require_groups.map do |_name, group|
             next if node.keys.any? { |key| group.include?(key.to_sym) }
 
-            "include at least one of #{(group - aliases.keys).join(', ')}"
+            "include at least one of #{(attributes.keys & group).join(', ')}"
           end.compact
 
           error(node, missing_groups.join(' and ')) unless missing_groups.empty?
