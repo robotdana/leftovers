@@ -33,8 +33,7 @@ end
 RSpec::Matchers.define_negated_matcher :exclude, :include
 RSpec::Matchers.define :have_definitions do |*expected|
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.definitions.flat_map(&:names).uniq
+    @actual = actual.definitions.compact.flat_map(&:names).uniq
     expect(@actual).to contain_exactly(*expected)
   end
 
@@ -42,8 +41,7 @@ RSpec::Matchers.define :have_definitions do |*expected|
 end
 RSpec::Matchers.define :have_non_test_definitions do |*expected|
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.definitions.reject(&:test?).flat_map(&:names).uniq
+    @actual = actual.definitions.compact.reject(&:test?).flat_map(&:names).uniq
     expect(@actual).to contain_exactly(*expected)
   end
 
@@ -52,8 +50,7 @@ end
 
 RSpec::Matchers.define :have_test_only_definitions do |*expected|
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.definitions.select(&:test?).flat_map(&:names).uniq
+    @actual = actual.definitions.compact.select(&:test?).flat_map(&:names).uniq
     expect(@actual).to contain_exactly(*expected)
   end
 
@@ -62,8 +59,7 @@ end
 
 RSpec::Matchers.define :have_calls do |*expected|
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.calls
+    @actual = actual.calls.uniq
     expect(@actual).to contain_exactly(*expected)
   end
 
@@ -71,8 +67,7 @@ RSpec::Matchers.define :have_calls do |*expected|
 end
 RSpec::Matchers.define :have_calls_including do |*expected|
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.calls
+    @actual = actual.calls.uniq
     expect(@actual).to include(*expected)
   end
 
@@ -80,8 +75,7 @@ RSpec::Matchers.define :have_calls_including do |*expected|
 end
 RSpec::Matchers.define :have_calls_excluding do |*expected|
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.calls
+    @actual = actual.calls.uniq
     expect(@actual).to exclude(*expected)
   end
 
@@ -90,8 +84,7 @@ end
 
 RSpec::Matchers.define :have_no_definitions do
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.definitions
+    @actual = actual.definitions.compact
     expect(@actual).to be_empty
   end
 
@@ -100,8 +93,7 @@ end
 
 RSpec::Matchers.define :have_no_non_test_definitions do
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.definitions.reject(&:test?)
+    @actual = actual.definitions.compact.reject(&:test?)
     expect(@actual).to be_empty
   end
 
@@ -110,8 +102,7 @@ end
 
 RSpec::Matchers.define :have_no_test_only_definitions do
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
-    @actual = actual.definitions.select(&:test?)
+    @actual = actual.definitions.compact.select(&:test?)
     expect(@actual).to be_empty
   end
 
@@ -120,7 +111,6 @@ end
 
 RSpec::Matchers.define :have_no_calls do
   match do |actual|
-    actual.squash! if actual.respond_to?(:squash!)
     @actual = actual.calls
     expect(@actual).to be_empty
   end

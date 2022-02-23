@@ -45,7 +45,8 @@ module Leftovers
 
     def print_progress
       Leftovers.print(
-        "\e[2Kchecked #{@count} files, collected #{@count_calls} calls, #{@count_definitions} definitions\r" # rubocop:disable Layout/LineLength
+        "\e[2Kchecked #{@count} files, " \
+          "collected #{@count_calls} calls, #{@count_definitions} definitions\r"
       )
     end
 
