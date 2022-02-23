@@ -611,7 +611,7 @@ considers all public methods defined in rails generators to be called.
 Filter by the literal type
 
 Each entry can be one of
-- `'String'` a literal string, defined with "" (not String.new)
+- `'String'` a literal string, defined with "" or '' (not String.new)
 - `'Symbol'` a literal symbol
 - `'Integer'` a literal integer
 - `'Float'` a literal float
