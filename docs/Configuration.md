@@ -222,6 +222,8 @@ Each entry can be a string (an exact match for a method, constant, or variable n
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
 - [`has_receiver:`](#has_receiver)
+- [`type:`](#type)
+- [`privacy:`](#privacy)
 - [`unless`](#unless)
 
 Arrays are not necessary for single values
@@ -282,9 +284,11 @@ Each entry must have at least one of the following properties to restrict which 
 - [`unless:`](#unless)
 - [`document: true`](#document-true)
 
-And must have one or both of
+And must have at least one of
 - ['calls:`](#calls-defines)
 - [`defines:`](#calls-defines)
+- [`set_privacy:](#set-privacy)
+- [`set_default_privacy:`](#set-default-privacy)
 
 Arrays are not necessary for single values.
 
@@ -407,7 +411,7 @@ and consider it to have created methods like `can_build_house?` and `can_drive_c
 ## `calls:`, `defines:`
 _aliases `call:`, `define:`_
 
-At least one of these must be used in each entry in [`dynamic:`](#dynamic)
+These may be used as entries in [`dynamic:`](#dynamic)
 
 This is a list of values that are called or defined dynamically by the matched method, or eventually after being assigned to the the matched constant or variable.
 
@@ -458,6 +462,43 @@ dynamic:
   name: send
   calls: 1
 ```
+
+## `set_privacy:`
+
+Set privacy has the same requirements as [`calls:` & `defines:`](#calls-defines).
+
+additional it requires a `to:` with one of either `private`, `public`, or `protected`.
+
+For example, from the ruby config:
+```yml
+dynamic:
+  name: private_class_method
+  has_argument: 0
+  set_privacy:
+    argument: '*'
+    to: private
+```
+
+which sets all methods named by the arguments to the privacy_class_method method to private.
+
+these methods could then be filtered using the [`privacy:`](#privacy) method in another [`dynamic:`](#dynamic) or [`keep:`](#keep) rule.
+
+Leftovers limits this to only affect methods defined in the same file.
+
+## `set_default_privacy:`
+
+This must be one of `public`, `private`, or `protected` and will set all subsequent method definitions in this file to that default privacy (unless its then overridden by [`set_privacy`](#set_privacy))
+
+For example, from the default ruby config:
+```yml
+dynamic:
+  name: private
+  unless:
+    has_argument: 0
+  set_default_privacy: private
+```
+
+these methods could then be filtered using the [`privacy:`](#privacy) method in another [`dynamic:`](#dynamic) or [`keep:`](#keep) rule.
 
 ## `arguments:`
 _alias `argument:`_
@@ -550,17 +591,35 @@ Each entry can be one of
 - or have the following property to match the receiver
   - [`has_receiver`](#has_value_has_receiver)
 
+## `privacy:`
+
+filter [`dynamic:`](#dynamic) and [`keep:`](#keep) by method/constant privacy
+
+e.g.
+
+```yml
+keep:
+  - path: '**/generators/**/*_generator.rb'
+    privacy: public
+    type: Method
+```
+
+considers all public methods defined in rails generators to be called.
+
 ## `type:`
 
-Filter [`has_value`](#has_value_has_receiver), by the argument/assigned value type
+Filter by the literal type
 
 Each entry can be one of
-- `'String'`
-- `'Symbol'`
-- `'Integer'`
-- `'Float'`
-- `'Array'`
-- `'Hash'`
+- `'String'` a literal string, defined with "" (not String.new)
+- `'Symbol'` a literal symbol
+- `'Integer'` a literal integer
+- `'Float'` a literal float
+- `'Array'` a literal array defined with [] (not Array.new)
+- `'Hash'` a literal hash, defined with {} (not Hash.new)
+- `'Proc'` a literal proc/lambda, defined with lambda {}, proc {}, or -> {} (not Proc.new)
+- `'Method'` a method call or definition defined with def, (not define_method {})
+- `'Constant'` a constant assignment, or a literal module or class defined with keywords, (not Module/Class.new)
 
 Arrays are not necessary for single values
 

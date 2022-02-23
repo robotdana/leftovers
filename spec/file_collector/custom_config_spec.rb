@@ -2373,6 +2373,32 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
+  context 'with has_receiver lvar' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          name: nonsense
+          has_receiver:
+            - my_lvar
+          calls:
+            argument: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_lvar = 1
+        my_lvar.nonsense(:my_symbol)
+      RUBY
+    end
+
+    it do
+      expect(subject)
+        .to have_no_definitions
+        .and(have_calls(:nonsense, :my_symbol))
+    end
+  end
+
   context 'with nested has_receiver' do
     let(:config) do
       <<~YML

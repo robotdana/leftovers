@@ -251,122 +251,76 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:this, :that)) }
   end
 
-  context 'with inline comment allows' do
+  context 'with method definitions' do
     let(:ruby) do
       <<~RUBY
-        def method_name # leftovers:allow
-        end
-
-        def method_name=(value) # leftovers:allows
-        end
-
-        def method_name? # leftovers:allowed
-        end
-
-        def method_name! # leftovers:skip
-        end
+        def foo; end
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_no_calls) }
+    it { is_expected.to have_definitions(:foo).and(have_no_calls) }
   end
 
-  context 'with inline comment test' do
+  context 'with singleton method definitions' do
     let(:ruby) do
       <<~RUBY
-        def method_name # leftovers:for_test
-        end
-
-        def method_name=(value) # leftovers:for_tests
-        end
-
-        def method_name? # leftovers:testing
-        end
-
-        def method_name! # leftovers:test
+        class MyClass
+          def self.foo; end
         end
       RUBY
     end
 
-    it 'has only test definitions' do
-      expect(collector).to have_no_calls
-        .and have_no_non_test_definitions
-        .and have_test_only_definitions(:method_name, :method_name?, :method_name=, :method_name!)
-    end
+    it { is_expected.to have_definitions(:foo, :MyClass).and(have_no_calls) }
   end
 
-  context 'with inline comment calls' do
+  context 'with multiple ivar assignment' do
     let(:ruby) do
       <<~RUBY
-        def method_name # leftovers:call method_name
-        end
-
-        def method_name=(value) # leftovers:call method_name=
-        end
-
-        def method_name? # leftovers:call method_name?
-        end
-
-        def method_name! # leftovers:call method_name!
-        end
+        @a, @b = my_array
       RUBY
     end
 
-    it do
-      expect(subject).to have_definitions(
-        :method_name, :method_name?, :method_name=, :method_name!
-      ).and(have_calls(
-        :method_name, :method_name?, :method_name=, :method_name!
-      ))
-    end
+    it { is_expected.to have_definitions(:@a, :@b).and(have_calls(:my_array)) }
   end
 
-  context 'with inline comment calls for constants' do
+  context 'with multiple send assignment' do
     let(:ruby) do
       <<~RUBY
-        OVERRIDDEN_CONSTANT='trash' # leftovers:call OVERRIDDEN_CONSTANT
-
-        class MyConstant # leftovers:call MyConstant
-        end
+        self.a, self.b = my_array
       RUBY
     end
 
-    it do
-      expect(subject).to have_definitions(
-        :MyConstant, :OVERRIDDEN_CONSTANT
-      ).and(have_calls(
-        :MyConstant, :OVERRIDDEN_CONSTANT
-      ))
-    end
+    it { is_expected.to have_no_definitions.and(have_calls(:my_array, :a=, :b=)) }
   end
 
-  context 'with inline comment allows for constants' do
+  context 'with multiple cvar assignment' do
     let(:ruby) do
       <<~RUBY
-        OVERRIDDEN_CONSTANT='trash' # leftovers:allow
-
-        class MyConstant # leftovers:allow
-        end
+        @@a, @@b = my_array
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_no_calls) }
+    it { is_expected.to have_definitions(:@@a, :@@b).and(have_calls(:my_array)) }
   end
 
-  context 'with multiple inline comment allows for non alpha methods' do
+  context 'with multiple gvar assignment' do
     let(:ruby) do
       <<~RUBY
-        # leftovers:call [] []= ** ! ~ +@ -@ * / % + - >> <<
-        # leftovers:call & ^ | <= < > >= <=> == === != =~ !~
+        $a, $b = my_array
       RUBY
     end
 
-    it do
-      expect(subject).to have_no_definitions.and(have_calls(
-        :[], :[]=, :**, :!, :~, :+@, :-@, :*, :/, :%, :+, :-, :>>, :<<,
-        :&, :^, :|, :<=, :<, :>, :>=, :<=>, :==, :===, :'!=', :=~, :!~
-      ))
+    it { is_expected.to have_definitions(:$a, :$b).and(have_calls(:my_array)) }
+  end
+
+  context 'with multiple const assignment' do
+    let(:ruby) do
+      <<~RUBY
+        A, B = my_array
+      RUBY
     end
+
+    it { is_expected.to have_definitions(:A, :B).and(have_calls(:my_array)) }
   end
 
   context 'with syntax errors' do

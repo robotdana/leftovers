@@ -58,7 +58,8 @@ module Leftovers
         case type
         when :sym, :int, :float, :str, :true, :false, :nil
           true
-        else false
+        else
+          false
         end
       end
 
@@ -146,7 +147,7 @@ module Leftovers
         @memo[:name] ||= case type
         when :send, :csend, :casgn, :const, :defs
           second
-        when :def, :ivasgn, :ivar, :gvar, :cvar, :gvasgn, :cvasgn, :sym
+        when :def, :ivasgn, :ivar, :gvar, :cvar, :gvasgn, :cvasgn, :sym, :lvar
           first
         when :str
           first.to_sym

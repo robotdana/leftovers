@@ -64,28 +64,6 @@ RSpec.describe 'ruby and stdlib' do
     it { is_expected.to have_definitions(:foo).and(have_calls(:send, :foo)) }
   end
 
-  context 'with method definitions' do
-    let(:ruby) do
-      <<~RUBY
-        def foo; end
-      RUBY
-    end
-
-    it { is_expected.to have_definitions(:foo).and(have_no_calls) }
-  end
-
-  context 'with singleton method definitions' do
-    let(:ruby) do
-      <<~RUBY
-        class MyClass
-          def self.foo; end
-        end
-      RUBY
-    end
-
-    it { is_expected.to have_definitions(:foo, :MyClass).and(have_no_calls) }
-  end
-
   context 'with method calls using send with interpolated lvars' do
     let(:ruby) do
       <<~RUBY
