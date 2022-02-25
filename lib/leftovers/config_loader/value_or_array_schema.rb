@@ -27,9 +27,11 @@ module Leftovers
 
       def to_ruby(node)
         if node.array?
-          node.children.map do |value|
-            value_schema.to_ruby(value)
-          end
+          Leftovers.unwrap_array(
+            node.children.map do |value|
+              value_schema.to_ruby(value)
+            end
+          )
         else
           value_schema.to_ruby(node)
         end

@@ -161,7 +161,7 @@ RSpec.describe Leftovers::ConfigLoader do
       let(:yaml) { 'gems: [rails]' }
 
       it do
-        expect(subject).to eq(gems: ['rails'])
+        expect(subject).to eq(gems: 'rails')
       end
     end
 

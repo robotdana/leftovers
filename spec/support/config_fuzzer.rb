@@ -33,29 +33,19 @@ class ConfigFuzzer
     end
   end
 
-  def sample_required_object_keys(schema)
-    schema.require_groups.each_value.flat_map do |keys|
-      (keys - schema.aliases.keys).sample
-    end
-  end
-
   def sample_object_attributes(schema)
-    length = rand(schema.attributes.keys.length + 1)
-    sample_keys = schema.attributes.keys.sample(length)
-    sample_keys += sample_required_object_keys(schema)
-    schema.attributes.slice(*sample_keys.uniq.shuffle)
-  end
-
-  def sample_alias(schema, key)
-    [*schema.aliases.each_key.select { |aka| aka == key }, key].sample
+    length = rand(schema.attributes.length + 1)
+    attributes = schema.attributes.sample(length)
+    attributes += schema.require_groups.flat_map(&:sample)
+    attributes.uniq.shuffle
   end
 
   def fuzz_object(schema, nesting: 0)
     if schema.or_schema && (rand(2) == 0 || nesting > 3)
       fuzz(schema.or_schema, nesting: nesting + 1)
     else
-      sample_object_attributes(schema).map do |attribute, value_schema|
-        [sample_alias(schema, attribute).to_s, fuzz(value_schema, nesting: nesting + 1)]
+      sample_object_attributes(schema).map do |attr|
+        [[*attr.aliases, attr.name].sample.to_s, fuzz(attr.schema, nesting: nesting + 1)]
       end.to_h
     end
   end
@@ -69,7 +59,8 @@ class ConfigFuzzer
   end
 
   def fuzz_string_enum(schema)
-    sample_alias(schema, schema.values.sample).to_s
+    key = schema.values.sample
+    [*schema.aliases.each_key.select { |aka| aka == key }, key].sample.to_s
   end
 
   def fuzz_integer

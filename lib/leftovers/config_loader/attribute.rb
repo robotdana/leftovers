@@ -3,27 +3,40 @@
 module Leftovers
   class ConfigLoader
     class Attribute
-      def initialize(name, value_schema, aliases: nil, require_group: nil)
+      attr_reader :name, :schema, :aliases
+      attr_accessor :require_group
+
+      def initialize(name, schema, aliases: nil, require_group: nil)
         @name = name
-        @value_schema = value_schema
+        @schema = schema
         @aliases = aliases
         @require_group = require_group
       end
 
+      def without_require_group
+        new = dup
+        new.require_group = nil
+        new
+      end
+
       def attributes
-        { @name => @value_schema }
+        [self]
       end
 
-      def aliases
-        ::Leftovers.each_or_self(@aliases).map do |aka|
-          [aka, @name]
-        end.to_h
+      def name?(name)
+        name = name.to_sym
+
+        @name == name || Leftovers.each_or_self(@aliases).include?(name)
       end
 
-      def require_groups
-        return {} unless @require_group
+      def to_ruby(value)
+        [key_to_ruby, schema.to_ruby(value)]
+      end
 
-        { @require_group => [@name, *::Leftovers.each_or_self(@aliases)] }
+      private
+
+      def key_to_ruby
+        name == :unless ? :unless_arg : name
       end
     end
   end
