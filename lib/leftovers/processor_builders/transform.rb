@@ -46,7 +46,7 @@ module Leftovers
         when 'delete_suffix'
           ::Leftovers::ValueProcessors::DeleteSuffix.new(argument, then_processor)
         # :nocov:
-        else raise
+        else raise Leftovers::UnexpectedCase, "Unhandled value #{transform.to_s.inspect}"
           # :nocov:
         end
       end

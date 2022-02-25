@@ -103,7 +103,7 @@ module Leftovers
       when :ivasgn, :gvasgn, :cvasgn then add_call(node.name)
       when :lvasgn then nil # we don't care about lvasgn
       # :nocov:
-      else raise "Unrecognized op_asgn node type #{node.type}"
+      else raise Leftovers::UnexpectedCase, "Unhandled value #{node.type.inspect}"
         # :nocov:
       end
     end

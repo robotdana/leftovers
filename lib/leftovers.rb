@@ -5,6 +5,7 @@ require 'parser/current' # to get the error message early and once.
 
 module Leftovers # rubocop:disable Metrics/ModuleLength
   class Error < ::StandardError; end
+  class UnexpectedCase < Error; end
 
   autoload(:AST, "#{__dir__}/leftovers/ast")
   autoload(:CLI, "#{__dir__}/leftovers/cli")

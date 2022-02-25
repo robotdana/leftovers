@@ -19,7 +19,7 @@ module Leftovers
           when 'Constant'
             ::Leftovers::Matchers::NodeType.new(Set[:const, :class, :module, :casgn])
           # :nocov:
-          else raise "Unknown type #{type}"
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{type.inspect}"
             # :nocov:
           end
         end

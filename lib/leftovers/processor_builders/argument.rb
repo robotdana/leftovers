@@ -15,7 +15,7 @@ module Leftovers
           when ::String, ::Hash
             ::Leftovers::ProcessorBuilders::KeywordArgument.build(pattern, then_processor)
             # :nocov:
-          else raise
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{pattern.inspect}"
             # :nocov:
           end
         end

@@ -29,7 +29,7 @@ class ConfigFuzzer
     elsif schema == Leftovers::ConfigLoader::ScalarArgumentSchema
       fuzz_string_or_integer
     else
-      raise ArgumentError, "Invalid argument #{schema.inspect}"
+      raise Leftovers::UnexpectedCase, "Unhandled value #{schema.inspect}"
     end
   end
 

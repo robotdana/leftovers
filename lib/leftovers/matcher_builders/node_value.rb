@@ -14,7 +14,7 @@ module Leftovers
             when ::Hash
               build_from_hash(**pat)
             # :nocov:
-            else raise
+            else raise Leftovers::UnexpectedCase, "Unhandled value #{pat.inspect}"
               # :nocov:
             end
           end

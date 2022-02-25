@@ -16,7 +16,7 @@ module Leftovers
 
         case processors.length
         # :nocov:
-        when 0 then raise
+        when 0 then raise Leftovers::UnexpectedCase, "Unhandled value #{processors.inspect}"
         # :nocov:
         when 1 then processors.first
         else ::Leftovers::DynamicProcessors::Each.new(processors)

@@ -15,7 +15,7 @@ module Leftovers
             then_processor
           )
         # :nocov:
-        else raise
+        else raise Leftovers::UnexpectedCase, "Unhandled value #{value.inspect}"
           # :nocov:
         end
       end

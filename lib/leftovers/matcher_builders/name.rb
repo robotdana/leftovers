@@ -19,7 +19,7 @@ module Leftovers
               ::Leftovers::MatcherBuilders::Name.build(unless_arg)
             )
           # :nocov:
-          else raise
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{pat.inspect}"
             # :nocov:
           end
         end

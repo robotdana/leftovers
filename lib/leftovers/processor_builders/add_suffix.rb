@@ -11,7 +11,7 @@ module Leftovers
         when ::String
           ::Leftovers::ValueProcessors::AddSuffix.new(argument, then_processor)
           # :nocov:
-        else raise
+        else raise Leftovers::UnexpectedCase, "Unhandled value #{argument.inspect}"
           # :nocov:
         end
       end

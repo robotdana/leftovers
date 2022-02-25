@@ -15,7 +15,7 @@ module Leftovers
         when ::String
           ::Leftovers::ProcessorBuilders::Transform.build(transforms, true, next_transform)
         # :nocov:
-        else raise
+        else raise Leftovers::UnexpectedCase, "Unhandled value #{transforms.inspect}"
           # :nocov:
         end
       end

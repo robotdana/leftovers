@@ -13,7 +13,7 @@ module Leftovers
           when ::String
             ::Leftovers::ProcessorBuilders::TransformChain.build(transform, build_final(action))
           # :nocov:
-          else raise
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{transform.inspect}"
             # :nocov:
           end
         end
@@ -26,7 +26,7 @@ module Leftovers
         when :definition_node
           ::Leftovers::ProcessorBuilders::EachForDefinitionSet
         # :nocov:
-        else raise "Unknown action #{action}"
+        else raise Leftovers::UnexpectedCase, "Unhandled value #{action.inspect}"
           # :nocov:
         end
       end
@@ -38,7 +38,7 @@ module Leftovers
         when :definition_node
           ::Leftovers::ValueProcessors::ReturnDefinitionNode
         # :nocov:
-        else raise "Unknown action #{action}"
+        else raise Leftovers::UnexpectedCase, "Unhandled value #{action.inspect}"
           # :nocov:
         end
       end

@@ -13,8 +13,7 @@ module Leftovers
           when ::Hash
             build_from_hash(**pat)
           # :nocov:
-          else
-            raise
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{pat.inspect}"
             # :nocov:
           end
         end
@@ -31,7 +30,7 @@ module Leftovers
           when ::String, ::Hash
             keys << k
           # :nocov:
-          else raise
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{k.inspect}"
             # :nocov:
           end
         end
@@ -50,19 +49,15 @@ module Leftovers
         keys, positions = separate_argument_types(at)
 
         value_matcher = ::Leftovers::MatcherBuilders::NodeValue.build(has_value)
-        matcher = if (keys && positions) || (!keys && !positions)
+        matcher = if keys && !positions
+          ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher)
+        elsif positions && !keys
+          ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher)
+        else
           ::Leftovers::MatcherBuilders::Or.build([
             ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher),
             ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher)
           ])
-        elsif keys
-          ::Leftovers::MatcherBuilders::NodeHasKeywordArgument.build(keys, value_matcher)
-        elsif positions
-          ::Leftovers::MatcherBuilders::NodeHasPositionalArgument.build(positions, value_matcher)
-          # :nocov:
-        else
-          raise
-          # :nocov:
         end
 
         ::Leftovers::MatcherBuilders::AndNot.build(

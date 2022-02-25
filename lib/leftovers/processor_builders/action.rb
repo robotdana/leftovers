@@ -11,7 +11,7 @@ module Leftovers
           when ::Hash
             build_from_hash_value(action, **pattern)
           # :nocov:
-          else raise
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{pattern.inspect}"
             # :nocov:
           end
         end
