@@ -57,6 +57,11 @@ module Leftovers
       end
 
       opts.parse(argv)
+    rescue OptionParser::InvalidOption => e
+      stderr.puts("\e[31mCLI Error: #{e.message}\e[0m")
+      stderr.puts ''
+      stderr.puts(opts.help)
+      Leftovers.exit 1
     end
   end
 end

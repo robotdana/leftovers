@@ -48,7 +48,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
         expect(exitstatus).to be 0
       end
 
-      it 'outputs the files when --help' do
+      it 'outputs the help when --help' do
         run '--help'
         expect(stdout).to have_output <<~STDOUT
           Usage: leftovers [options]
@@ -61,6 +61,23 @@ RSpec.describe Leftovers::CLI, type: :cli do
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 0
+      end
+
+      it 'outputs the an error message and help when --nonsense' do
+        run '--nonsense'
+        expect(stderr).to have_output <<~STDERR
+          \e[31mCLI Error: invalid option: --nonsense\e[0m
+
+          Usage: leftovers [options]
+                  --[no-]parallel              Run in parallel or not, default --parallel
+                  --[no-]progress              Show progress counts or not, default --progress
+                  --dry-run                    Output files that will be looked at
+                  --write-todo                 Outputs the unused items in a todo file to gradually fix
+              -v, --version                    Returns the current version
+              -h, --help                       Shows this message
+        STDERR
+        expect(stdout.string).to be_empty
+        expect(exitstatus).to be 1
       end
     end
 
