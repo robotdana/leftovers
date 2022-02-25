@@ -167,10 +167,6 @@ Style/CollectionMethods:
 Style/Documentation:
   Enabled: false
 
-Style/GlobalVars:
-  Exclude:
-    - bin/test_autoload.rb
-
 # [a, b].include?(x) is more unclear than a == x || b == x
 Style/MultipleComparison:
   Enabled: false

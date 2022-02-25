@@ -1,7 +1,6 @@
 # frozen-string-literal: true
 
 require 'yaml'
-require 'leftovers'
 
 module Leftovers
   class ConfigLoader

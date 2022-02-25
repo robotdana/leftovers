@@ -10,6 +10,7 @@ activesupport
 affixxed
 argumentless
 attr
+autoloaded
 barx
 barxfoo
 classnames
@@ -42,6 +43,7 @@ nocov
 nonexcluded
 noninfringement
 okcomputer
+overwritable
 precompiled
 precompiler
 qux
