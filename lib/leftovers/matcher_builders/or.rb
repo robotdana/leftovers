@@ -5,68 +5,68 @@ require 'set'
 module Leftovers
   module MatcherBuilders
     module Or
-      def self.each_or_self(value, &block)
-        case value
-        when nil then nil
-        when Array then build(value.map(&block))
-        else build([yield(value)])
-        end
-      end
-
-      def self.build(matchers)
-        matchers = compact(matchers)
-        case matchers.length
-          # :nocov:
-        when 0 then nil
-          # :nocov:
-        when 1 then matchers.first
-        when 2 then ::Leftovers::Matchers::Or.new(matchers.first, matchers[1])
-        else ::Leftovers::Matchers::Any.new(matchers.dup)
-        end
-      end
-
-      def self.flatten(value) # rubocop:disable Metrics/MethodLength
-        case value
-        when ::Leftovers::Matchers::Or
-          [*flatten(value.lhs), *flatten(value.rhs)]
-        when ::Leftovers::Matchers::Any
-          flatten(value.matchers)
-        when Array
-          ret = value.map { |v| flatten(v) }
-          ret.flatten!(1)
-          ret
-        else
-          value
-        end
-      end
-
-      def self.compact(matchers) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize,
-        return matchers if matchers.length <= 1
-
-        set = Set.new
-        regexps = []
-        uncompactable = []
-
-        matchers = flatten(matchers)
-
-        matchers.each do |matcher|
-          case matcher
+      class << self
+        def each_or_self(value, &block)
+          case value
           when nil then nil
-          when ::Integer, ::Symbol then set << matcher
-          # when ::Set then set.merge(matcher) # may not be necessary
-          when ::Regexp then regexps << matcher
-          else uncompactable << matcher
+          when Array then build(value.map(&block))
+          else build([yield(value)])
           end
         end
 
-        set = set.first if set.length <= 1
-        regexps = if regexps.length <= 1
-          regexps.first
-        else
-          Regexp.union(regexps)
+        def build(matchers)
+          matchers = compact(matchers)
+          case matchers.length
+            # :nocov:
+          when 0 then nil
+            # :nocov:
+          when 1 then matchers.first
+          when 2 then ::Leftovers::Matchers::Or.new(matchers.first, matchers[1])
+          else ::Leftovers::Matchers::Any.new(matchers.dup)
+          end
         end
 
-        [set, regexps].compact.concat(uncompactable)
+        private
+
+        def flatten(value)
+          case value
+          when ::Leftovers::Matchers::Or
+            [*flatten(value.lhs), *flatten(value.rhs)]
+          when ::Leftovers::Matchers::Any
+            flatten(value.matchers)
+          when Array
+            value.flat_map { |v| flatten(v) }
+          else
+            value
+          end
+        end
+
+        def group_by_compactable(matchers)
+          groups = matchers.group_by do |matcher|
+            case matcher
+            when ::Integer, ::Symbol then :set
+            when ::Regexp then :regexp
+            else :uncompactable
+            end
+          end
+
+          groups.transform_values { |v| Leftovers.unwrap_array(v) }
+        end
+
+        def build_grouped(set: nil, regexp: nil, uncompactable: nil)
+          set = set.to_set if set.is_a?(Array)
+          regexp = Regexp.union(regexp) if regexp.is_a?(Array)
+
+          [set, regexp].concat(Array(uncompactable)).compact
+        end
+
+        def compact(matchers)
+          matchers = flatten(matchers)
+
+          return matchers if matchers.length <= 1
+
+          build_grouped(**group_by_compactable(matchers))
+        end
       end
     end
   end

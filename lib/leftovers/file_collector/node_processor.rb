@@ -5,7 +5,7 @@ require 'parser'
 module Leftovers
   class FileCollector
     class NodeProcessor < ::Parser::AST::Processor
-      def initialize(collector) # rubocop:disable Lint/MissingSuper
+      def initialize(collector) # rubocop:disable Lint/MissingSuper # there isn't one to call
         @collector = collector
       end
 

@@ -3,7 +3,7 @@
 module Leftovers
   module MatcherBuilders
     module StringPattern
-      def self.build(match: nil, has_prefix: nil, has_suffix: nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      def self.build(match: nil, has_prefix: nil, has_suffix: nil) # rubocop:disable Metrics
         has_prefix = ::Regexp.escape(has_prefix) if has_prefix
         has_suffix = ::Regexp.escape(has_suffix) if has_suffix
 

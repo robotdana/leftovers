@@ -8,7 +8,7 @@ module Leftovers
   class RakeTask
     include ::Rake::DSL
 
-    def self.generate_task(name = :leftovers, *default_argv) # rubocop:disable
+    def self.generate_task(name = :leftovers, *default_argv)
       new(name, default_argv)
 
       name

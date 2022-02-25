@@ -17,8 +17,11 @@ module Leftovers
         )
           matcher = ::Leftovers::MatcherBuilders::Node.build(**matcher_rules)
 
+          call_action = build_action(call, return_type: :sym)
+          define_action = build_action(define, return_type: :definition_node)
+
           ::Leftovers::ProcessorBuilders::EachDynamic.build([
-            build_call_define_processor(matcher, call, define),
+            build_call_define_processor(matcher, call_action, define_action),
             build_set_privacy_processor(matcher, set_privacy),
             build_set_default_privacy_processor(matcher, set_default_privacy)
           ])
@@ -41,10 +44,7 @@ module Leftovers
           ::Leftovers::DynamicProcessors::SetDefaultPrivacy.new(matcher, set_default_privacy)
         end
 
-        def build_call_define_processor(matcher, call, define) # rubocop:disable Metrics/MethodLength
-          call_action = build_action(call, return_type: :sym)
-          define_action = build_action(define, return_type: :definition_node)
-
+        def build_call_define_processor(matcher, call_action, define_action)
           if call_action && define_action
             # this nonsense saves a method call and array instantiation per method
             ::Leftovers::DynamicProcessors::CallDefinition.new(matcher, call_action, define_action)

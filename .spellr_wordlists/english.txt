@@ -15,6 +15,7 @@ barx
 barxfoo
 classnames
 codebase
+compactable
 config
 cov
 datagrid

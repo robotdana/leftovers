@@ -1869,6 +1869,32 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and have_calls(:bar, :baz, :my_method) }
   end
 
+  context 'with find has_argument with any kw except a named argument' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_receiver:
+              unless: MyClass
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        MyOtherClass.my_method('baz')
+        MyOtherClass::MyClass.my_method('bar')
+        MyClass.my_method('foo')
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:baz, :my_method, :MyClass, :MyOtherClass)
+    end
+  end
+
   context 'with find has_argument with only value type at any position' do
     let(:config) do
       <<~YML

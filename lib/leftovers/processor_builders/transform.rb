@@ -3,7 +3,7 @@
 module Leftovers
   module ProcessorBuilders
     module Transform
-      def self.build(transform, argument, then_processor) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+      def self.build(transform, argument, then_processor) # rubocop:disable Metrics
         case transform.to_s
         when 'original', nil
           then_processor

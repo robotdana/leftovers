@@ -3,12 +3,11 @@
 module Leftovers
   module ProcessorBuilders
     module Keyword
-      def self.build(value, then_processor) # rubocop:disable Metrics/MethodLength
+      def self.build(value, then_processor)
         return unless value && then_processor
 
         case value
-        when true, '**'
-          ::Leftovers::ValueProcessors::EachKeyword.new(then_processor)
+        when true, '**' then ::Leftovers::ValueProcessors::EachKeyword.new(then_processor)
         when ::String, ::Hash, ::Array
           ::Leftovers::ValueProcessors::Keyword.new(
             ::Leftovers::MatcherBuilders::NodePairName.build(value),

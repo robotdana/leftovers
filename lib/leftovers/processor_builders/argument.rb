@@ -3,19 +3,16 @@
 module Leftovers
   module ProcessorBuilders
     module Argument
-      def self.build(patterns, then_processor) # rubocop:disable Metrics/MethodLength
-        ::Leftovers::ProcessorBuilders::EachAction.each_or_self(patterns) do |pattern|
-          case pattern
-          when ::Integer
-            ::Leftovers::ValueProcessors::PositionalArgument.new(pattern, then_processor)
-          when '*'
-            ::Leftovers::ValueProcessors::EachPositionalArgument.new(then_processor)
-          when '**'
-            ::Leftovers::ValueProcessors::EachKeywordArgument.new(then_processor)
+      def self.build(patterns, processor)
+        ::Leftovers::ProcessorBuilders::EachAction.each_or_self(patterns) do |pat|
+          case pat
+          when ::Integer then ::Leftovers::ValueProcessors::PositionalArgument.new(pat, processor)
+          when '*' then ::Leftovers::ValueProcessors::EachPositionalArgument.new(processor)
+          when '**' then ::Leftovers::ValueProcessors::EachKeywordArgument.new(processor)
           when ::String, ::Hash
-            ::Leftovers::ProcessorBuilders::KeywordArgument.build(pattern, then_processor)
+            ::Leftovers::ProcessorBuilders::KeywordArgument.build(pat, processor)
             # :nocov:
-          else raise Leftovers::UnexpectedCase, "Unhandled value #{pattern.inspect}"
+          else raise Leftovers::UnexpectedCase, "Unhandled value #{pat.inspect}"
             # :nocov:
           end
         end

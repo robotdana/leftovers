@@ -23,16 +23,12 @@ module Leftovers
         end
       end
 
-      def self.flatten(value) # rubocop:disable Metrics/MethodLength
+      def self.flatten(value)
         case value
         when ::Leftovers::DynamicProcessors::Each
-          ret = value.processors.map { |v| flatten(v) }
-          ret.flatten!(1)
-          ret
+          value.processors.flat_map { |v| flatten(v) }
         when Array
-          ret = value.map { |v| flatten(v) }
-          ret.flatten!(1)
-          ret
+          value.flat_map { |v| flatten(v) }
         else
           value
         end
