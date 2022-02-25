@@ -11,7 +11,6 @@ require:
 AllCops:
   NewCops: enable
   Exclude:
-    - db/schema*
     - .bundle/**/*
     - tmp/**/*
     - vendor/**/*
@@ -167,6 +166,10 @@ Style/CollectionMethods:
 # we don't rdoc
 Style/Documentation:
   Enabled: false
+
+Style/GlobalVars:
+  Exclude:
+    - bin/test_autoload.rb
 
 # [a, b].include?(x) is more unclear than a == x || b == x
 Style/MultipleComparison:

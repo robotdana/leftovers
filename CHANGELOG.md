@@ -1,3 +1,6 @@
+# v0.7.1
+- collect a call to :my_method= with receiver&.my_method ||= (and += etc)
+
 # v0.7.0
 - Rewrite the config parser/validation
   - to provide clearer error messages with line numbers and everything

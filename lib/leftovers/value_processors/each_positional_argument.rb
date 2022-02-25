@@ -11,9 +11,10 @@ module Leftovers
 
       def process(_str, node, method_node)
         positional_arguments = node.positional_arguments
+
         return unless positional_arguments
 
-        positional_arguments.map do |argument_node|
+        Leftovers.map_or_self(positional_arguments) do |argument_node|
           str = argument_node.to_s if argument_node.string_or_symbol_or_def?
 
           @then_processor.process(str, argument_node, method_node)

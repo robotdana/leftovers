@@ -2213,7 +2213,7 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and have_calls(:baz, :bar, :bit, :my_method) }
   end
 
-  context 'with add_prefix argument with an index' do
+  context 'with add_prefix argument with an unavailable index' do
     let(:config) do
       <<~YML
         dynamic:
@@ -2233,7 +2233,7 @@ RSpec.describe Leftovers::FileCollector do
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:foo_bar, :lol, :my_method)) }
+    it { is_expected.to have_no_definitions.and(have_calls(:foo_bar, :my_method)) }
   end
 
   context 'with add_prefix argument with an index when the value is not a symbol' do
@@ -2282,7 +2282,7 @@ RSpec.describe Leftovers::FileCollector do
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:lol, :my_method)) }
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method)) }
   end
 
   context 'with a method to define based on a method name' do

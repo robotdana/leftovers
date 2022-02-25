@@ -10,20 +10,13 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node) # rubocop:disable Metrics/MethodLength
+      def process(str, node, method_node)
         return unless str
 
         prefixes = @prefix_processor.process(nil, method_node, method_node)
-        if prefixes.is_a?(Array)
-          prefixes.flatten!
-          prefixes.compact!
-          prefixes.uniq!
 
-          prefixes.map do |prefix|
-            @then_processor.process("#{prefix}#{str}", node, method_node)
-          end
-        else
-          @then_processor.process("#{prefixes}#{str}", node, method_node)
+        Leftovers.map_or_self(prefixes) do |prefix|
+          @then_processor.process("#{prefix}#{str}", node, method_node)
         end
       end
     end

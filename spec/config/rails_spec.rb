@@ -369,6 +369,16 @@ RSpec.describe 'rails gem' do
     end
   end
 
+  context 'with validations calls non-symbol validator' do
+    let(:ruby) { 'validates :name, @ivar_key => :inclusion_method, if: :condition?' }
+
+    it do
+      expect(subject).to have_no_definitions.and have_calls(
+        :validates, :name, :condition?, :@ivar_key
+      )
+    end
+  end
+
   context 'with validations calls with inclusion hash' do
     let(:ruby) { 'validates :name, inclusion: { in: :inclusion_method }, if: :condition?' }
 

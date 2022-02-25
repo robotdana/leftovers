@@ -19,26 +19,12 @@ RSpec.describe Leftovers do
       expect { |b| described_class.each_or_self(nil, &b) }.not_to yield_control
     end
 
-    it "doesn't yield arrays of nils" do
-      expect { |b| described_class.each_or_self([nil, [nil]], &b) }.not_to yield_control
-    end
-
-    it "doesn't yield arrays of empty arrays" do
-      expect { |b| described_class.each_or_self([[], [[], []]], &b) }.not_to yield_control
-    end
-
     it 'yields a single value' do
       expect { |b| described_class.each_or_self(1, &b) }.to yield_with_args(1)
     end
 
     it 'yields a single layer array' do
       expect { |b| described_class.each_or_self([1, 2, 3], &b) }.to yield_successive_args(1, 2, 3)
-    end
-
-    it 'yields a multi layer array' do
-      expect do |b|
-        described_class.each_or_self([1, [2, [], 3], [4]], &b)
-      end.to yield_successive_args(1, 2, 3, 4)
     end
 
     it 'yields a hash as a single item' do
@@ -51,14 +37,6 @@ RSpec.describe Leftovers do
         expect { |b| described_class.each_or_self(nil).each(&b) }.not_to yield_control
       end
 
-      it "doesn't yield arrays of nils" do
-        expect { |b| described_class.each_or_self([nil, [nil]]).each(&b) }.not_to yield_control
-      end
-
-      it "doesn't yield arrays of empty arrays" do
-        expect { |b| described_class.each_or_self([[], [[], []]]).each(&b) }.not_to yield_control
-      end
-
       it 'yields a single value' do
         expect { |b| described_class.each_or_self(1).each(&b) }.to yield_with_args(1)
       end
@@ -67,12 +45,6 @@ RSpec.describe Leftovers do
         expect do |b|
           described_class.each_or_self([1, 2, 3]).each(&b)
         end.to yield_successive_args(1, 2, 3)
-      end
-
-      it 'yields a multi layer array' do
-        expect do |b|
-          described_class.each_or_self([1, [2, [], 3], [4]]).each(&b)
-        end.to yield_successive_args(1, 2, 3, 4)
       end
 
       it 'yields a hash as a single item' do
@@ -136,8 +108,7 @@ RSpec.describe Leftovers do
         end
       RUBY
 
-      allow(subject).to receive(:stdout).and_return(StringIO.new) # rubocop:disable RSpec/SubjectStub
-
+      expect { subject.leftovers }.not_to output.to_stderr
       expect(subject.leftovers.flat_map(&:names)).to eq [:check_foo]
       expect(subject.collector).to have_definitions(
         :foo, :foo?, :foo=, :check_foo

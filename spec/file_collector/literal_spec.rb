@@ -83,6 +83,36 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:foo=, :foo)) }
   end
 
+  context 'with &. method calls using =' do
+    let(:ruby) { 'self&.foo = 1' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:foo=)) }
+  end
+
+  context 'with &. method calls using +=' do
+    let(:ruby) { 'self&.foo += 1' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:foo=, :foo)) }
+  end
+
+  context 'with &. method calls using *=' do
+    let(:ruby) { 'self&.foo *= 1' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:foo=, :foo)) }
+  end
+
+  context 'with &. method calls using ||=' do
+    let(:ruby) { 'self&.foo ||= 1' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:foo=, :foo)) }
+  end
+
+  context 'with &. method calls using &&=' do
+    let(:ruby) { 'self&.foo &&= 1' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:foo=, :foo)) }
+  end
+
   context 'with ivar definitions' do
     let(:ruby) { '@foo = 1' }
 

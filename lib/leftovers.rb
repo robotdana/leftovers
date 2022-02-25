@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'parser'
+require 'parser/current' # to get the error message early and once.
+
 module Leftovers # rubocop:disable Metrics/ModuleLength
   class Error < ::StandardError; end
 
@@ -146,8 +149,26 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
 
       case value
       when nil then nil
-      when Array then value.each { |i| each_or_self(i, &block) }
+      when Array then value.each(&block)
       else yield(value)
+      end
+    end
+
+    def map_or_self(value, &block)
+      # return enum_for(__method__, value) unless block
+
+      case value
+      when nil then nil
+      when Array then unwrap_array(value.flat_map(&block).compact)
+      else yield(value)
+      end
+    end
+
+    def unwrap_array(array)
+      if array.length <= 1
+        array.first
+      else
+        array
       end
     end
 

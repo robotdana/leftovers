@@ -13,7 +13,7 @@ module Leftovers
         kwargs = node.kwargs
         return unless kwargs
 
-        kwargs.children.map do |pair|
+        Leftovers.map_or_self(kwargs.children) do |pair|
           next unless pair.type == :pair
 
           argument_node = pair.second

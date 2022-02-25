@@ -2,8 +2,8 @@
 
 # frozen-string-literal: true
 
-$autoload_registry = {} # rubocop:disable Style/GlobalVars
-$exit_code = 0 # rubocop:disable Style/GlobalVars
+$autoload_registry = {}
+$exit_code = 0
 
 module RegisteredAutoload
   def autoload(name, path)
@@ -12,7 +12,7 @@ module RegisteredAutoload
   end
 
   def autoload_registry
-    $autoload_registry[name] ||= [] # rubocop:disable Style/GlobalVars
+    $autoload_registry[name] ||= []
   end
 end
 
@@ -30,7 +30,7 @@ def try_require(parent) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         puts(*e.backtrace)
       end
 
-      $exit_code = 1 # rubocop:disable Style/GlobalVars
+      $exit_code = 1
       next
     end
     puts "\e[2K\e[32m#{parent}::#{const_name}\e[0m" unless ARGV.include?('--only-errors')
@@ -43,4 +43,4 @@ require_relative '../lib/leftovers'
 
 try_require(Leftovers)
 
-exit $exit_code # rubocop:disable Style/GlobalVars
+exit $exit_code

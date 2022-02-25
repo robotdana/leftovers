@@ -12,7 +12,7 @@ module Leftovers
       end
 
       def process(str, node, method_node)
-        @processors.flat_map do |processor|
+        Leftovers.map_or_self(@processors) do |processor|
           processor.process(str, node, method_node)
         end
       end

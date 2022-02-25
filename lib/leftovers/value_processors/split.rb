@@ -13,8 +13,8 @@ module Leftovers
       def process(str, node, method_node)
         return unless str
 
-        str.split(@split_on).map do |substring|
-          @then_processor.process(substring, node, method_node)
+        Leftovers.map_or_self(str.split(@split_on)) do |sub_str|
+          @then_processor.process(sub_str, node, method_node)
         end
       end
     end
