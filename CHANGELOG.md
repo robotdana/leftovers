@@ -1,5 +1,7 @@
 # v0.7.1
+- a lot of refactoring, which revealed some edge cases i was handling
 - collect a call to :my_method= with receiver&.my_method ||= (and += etc)
+- if `add_prefix:` or `add_suffix:` points to another argument for a name that we can't use because it's a variable, it now just don't return the value, rather than returning the value but without the affix
 
 # v0.7.0
 - Rewrite the config parser/validation

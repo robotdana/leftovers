@@ -4,9 +4,10 @@ module Leftovers
   class ConfigLoader
     class ObjectSchema < Schema # rubocop:disable Metrics/ClassLength
       class << self
+        attr_accessor :or_schema
+
         def inherit_attributes_from(schema, require_group: true, except: nil)
           attributes_and_schemas_to_inherit_from << schema
-
           inherit_except[schema] = Leftovers.each_or_self(except)
 
           return if require_group
@@ -30,23 +31,17 @@ module Leftovers
         end
 
         def require_groups
-          (attributes_and_schemas_to_inherit_from - skip_require_group)
-            .map(&:require_groups).each_with_object({}) do |require_groups, hash|
+          (attributes_and_schemas_to_inherit_from - skip_require_group).map(&:require_groups)
+            .each_with_object(Hash.new { |h, k| h[k] = [] }) do |require_groups, hash|
               require_groups.each do |group, keys|
-                hash[group] ||= []
                 hash[group] += keys
               end
             end
         end
 
-        attr_accessor :or_schema
-
         def attribute(name, value_schema, aliases: nil, require_group: nil)
           attributes_and_schemas_to_inherit_from << Attribute.new(
-            name,
-            value_schema,
-            aliases: aliases,
-            require_group: require_group
+            name, value_schema, aliases: aliases, require_group: require_group
           )
         end
 
@@ -101,11 +96,15 @@ module Leftovers
           or_schema.validate(node)
           return true if node.valid?
 
-          if node.string? && valid_keys.include?(node.to_sym)
+          if node.string? && recognized_key?(node)
             node.error = "#{node.name_}#{node.to_sym} must be a hash key"
           else
             node.error += " or a hash with any of #{attributes.keys.join(', ')}"
           end
+        end
+
+        def recognized_key?(node)
+          attributes.key?(node.to_sym) || aliases.key?(node.to_sym)
         end
 
         def validate_is_hash(node)
@@ -118,34 +117,22 @@ module Leftovers
           node.keys.all?(&:valid?)
         end
 
-        def valid_keys
-          attributes.keys + aliases.keys
-        end
-
         def validate_alias_uniqueness_of_keys(node)
           node.keys.select(&:valid?)
             .group_by { |key| aliases[key.to_sym] || key.to_sym }
-            .each_value do |keys|
-              next unless keys.length > 1
-
-              error_message_for_non_unique_keys(node, keys)
-            end
+            .each_value { |keys| error_message_for_non_unique_keys(node, keys) if keys.length > 1 }
         end
 
         def error_message_for_non_unique_keys(node, keys)
-          keys.each do |key|
-            key.error = "#{node.name_}must only use one of #{keys.uniq.join(' or ')}"
-          end
+          keys.each { |k| k.error = "#{node.name_}must only use one of #{keys.uniq.join(' or ')}" }
         end
 
         def validate_recognized_key(key, node)
-          return true if valid_keys.include?(key.to_sym)
+          return true if recognized_key?(key)
 
           suggestions = suggestions_for_unrecognized_key(key, node)
           did_you_mean = "\nDid you mean: #{suggestions.join(', ')}" unless suggestions.empty?
-          for_name = " for #{node.name}" if node.name
-
-          key.error = "unrecognized key #{key}#{for_name}#{did_you_mean}"
+          key.error = "unrecognized key #{key}#{" for #{node.name}" if node.name}#{did_you_mean}"
 
           false
         end
@@ -177,11 +164,7 @@ module Leftovers
         end
 
         def validate_valid_attribute_values(node)
-          node.pairs.each do |(key, value)|
-            next unless key.valid?
-
-            schema_for_attribute(key).validate(value)
-          end
+          node.pairs.each { |(k, v)| schema_for_attribute(k).validate(v) if k.valid? }
         end
       end
     end
