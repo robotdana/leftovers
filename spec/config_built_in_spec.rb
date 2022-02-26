@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'support/config_fuzzer'
-
 RSpec.describe Leftovers::Config do
   config_methods = described_class.new(:rails).public_methods - Class.new.new.public_methods
 

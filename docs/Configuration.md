@@ -113,7 +113,7 @@ and renders the structure of the yaml document as arguments for the [`document:t
 
 so you could, e.g. read the class name out of a yaml document like:
 
-```yml
+```
 class_name: MyClass
 ```
 
@@ -198,7 +198,6 @@ keep:
   - ssl_configured?
   - has_suffix: Helper
     path: /app/helpers
-  ...
 ```
 
 Alternatively, you can mark method/constants/variables in-place using [magic comments](https://github.com/robotdana/leftovers/tree/main/README.md#magic-comments).
@@ -226,7 +225,6 @@ test_only:
   - ssl_configured?
   - has_suffix: Helper
     path: /app/helpers
-  ...
 ```
 
 Alternatively, you can mark method/constants/variables in-place using [magic comments](https://github.com/robotdana/leftovers/tree/main/README.md#magic-comments).
@@ -266,7 +264,6 @@ dynamic:
     calls:
       arguments: '*'
       add_prefix: '@'
-    ...
 ```
 
 ## `names:`
@@ -289,7 +286,6 @@ keep:
   - names:
       has_suffix: Helper
     path: /app/helpers
-  ...
 ```
 
 ## `has_prefix:`, `has_suffix:`
@@ -351,7 +347,7 @@ Instructs to consider the whole document. this is useful when parsing [YAML](#ya
 e.g.
 
 ```yml
-includes: /config/roles.yml
+include_paths: /config/roles.yml
 dynamic:
   - document: true
     path: /config/roles.yml
@@ -362,7 +358,7 @@ dynamic:
 ```
 
 will parse "config/roles.yml"
-```yml
+```
 - build_house
 - drive_car
 ```
@@ -503,11 +499,11 @@ When the keyword argument **keywords** are the thing being called.
 ```yml
 dynamic:
   - name: validates
-      calls:
-        - arguments: '*'
-        - keywords: '**'
-          camelize: true
-          add_suffix: Validator
+    calls:
+      - arguments: '*'
+      - keywords: '**'
+        camelize: true
+        add_suffix: Validator
 ```
 ```ruby
 validates :first_name, :surname, presence: true
@@ -643,6 +639,7 @@ The original method/constant/variable name will continue to be called/defined as
 This can be used in [`calls:`](#calls-defines) and [`defines:`](#calls-defines)
 
 ```yml
+dynamic:
 - name:
     has_prefix: be_
   calls:
@@ -661,6 +658,7 @@ Will supply a literal string value method/constant/variable name itself as the t
 This can be used in [`calls:`](#calls-defines) and [`defines:`](#calls-defines).
 
 ```yml
+dynamic:
 - name: perform_async
   calls:
     value: perform
@@ -703,13 +701,14 @@ Each entry can have a string that is an argumentless transform (e.g. capitalize)
 If any one of these `transforms:` entries are used, all count as being used. To have these be counted independently instead, create multiple entries in the `defines:` list.
 
 ```yml
+dynamic:
 - name: attribute
-    defines:
-      - argument: 1
-        transforms:
-          - original # no transformation
-          - add_suffix: '?'
-          - add_suffix: '='
+  defines:
+    - argument: 1
+      transforms:
+        - original # no transformation
+        - add_suffix: '?'
+        - add_suffix: '='
 ```
 ```ruby
 attribute :first_name
@@ -719,6 +718,7 @@ will count as a definition of `first_name`, `first_name=` and `first_name?`. `fi
 Arrays are not necessary for single values, and if there is just one set of transforms, the `transforms:` keyword can be omitted and everything moved up a level.
 
 ```yml
+dynamic:
 - name: attr_writer
   defines:
     - argument: '*'
