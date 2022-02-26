@@ -82,7 +82,7 @@ benchmark('length-and-out-of-bounds-access') do
   end
 end
 
-benchmark('or-or-any') do
+benchmark('or-or-any-2') do
   Benchmark.ips do |x|
     x.config(config)
     @array = [1, 2]
@@ -105,10 +105,12 @@ end
 benchmark('not-empty') do
   Benchmark.ips do |x|
     x.config(config)
-    x.report(:length_gte_empty, '[].length >= 1')
-    x.report(:length_gt_empty, '[].length > 1')
-    x.report(:first_empty, '[].first')
+    x.report(:length_gte_1, '[].length >= 1')
+    x.report(:length_gt_0, '[].length > 0')
+    x.report(:bang_first, '![].first')
+    x.report(:not_first, 'not [].first')
     x.report(:not_empty, 'not [].empty?')
+    x.report(:bang_empty, '![].empty?')
     x.compare!
   end
 end
