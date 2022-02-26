@@ -16,6 +16,7 @@ module Leftovers
     )
     autoload(:NodeHasPositionalArgument, "#{__dir__}/matchers/node_has_positional_argument")
     autoload(:NodeHasReceiver, "#{__dir__}/matchers/node_has_receiver")
+    autoload(:NodeIsProc, "#{__dir__}/matchers/node_is_proc")
     autoload(:NodeName, "#{__dir__}/matchers/node_name")
     autoload(:NodePairValue, "#{__dir__}/matchers/node_pair_value")
     autoload(:NodePath, "#{__dir__}/matchers/node_path")
@@ -24,6 +25,5 @@ module Leftovers
     autoload(:NodeType, "#{__dir__}/matchers/node_type")
     autoload(:Not, "#{__dir__}/matchers/not")
     autoload(:Or, "#{__dir__}/matchers/or")
-    autoload(:Predicate, "#{__dir__}/matchers/predicate")
   end
 end
