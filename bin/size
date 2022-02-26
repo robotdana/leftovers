@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/leftovers'
+require 'objspace'
+require 'pathname'
+
+files = Pathname.glob("#{__dir__}/../lib/config/*.yml")
+gems = files.map { |f| f.basename.sub_ext('').to_s }
+
+gems.each { |gem| Leftovers.config << Leftovers::Config.new(gem) }
+
+GC.start
+puts ObjectSpace.memsize_of_all

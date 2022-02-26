@@ -18,5 +18,5 @@ end
 
 puts format(
   "\e[1mAverage:\n\e[32m%0.2f real%13.2f user%13.2f sys\e[0m",
-  *times.transpose.map { |n| (n.map(&:to_f).sum / RUNS) }
+  *times.transpose.map { |n| (n.sum(&:to_f) / RUNS) }
 )

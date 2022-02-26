@@ -240,3 +240,6 @@ Style/CommentedKeyword:
 
 Style/EmptyElse:
   Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
