@@ -81,6 +81,27 @@ benchmark('length-and-out-of-bounds-access') do
     x.compare!
   end
 end
+
+benchmark('or-or-any') do
+  Benchmark.ips do |x|
+    x.config(config)
+    @array = [1, 2]
+    @a = 1
+    @b = 2
+    @matcher_first = 0..1
+    @matcher_second = 2..3
+    @matcher_miss = 3..4
+
+    x.report(:any_first) { @array.any?(@matcher_first) }
+    x.report(:any_second) { @array.any?(@matcher_second) }
+    x.report(:any_none) { @array.any?(@matcher_miss) }
+    x.report(:or_first) { @matcher_first === @a || @matcher_first === @b }
+    x.report(:or_second) { @matcher_second === @a || @matcher_second === @b }
+    x.report(:or_none) { @matcher_miss === @a || @matcher_miss === @b }
+    x.compare!
+  end
+end
+
 benchmark('not-empty') do
   Benchmark.ips do |x|
     x.config(config)
