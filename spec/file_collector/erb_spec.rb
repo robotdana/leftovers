@@ -81,4 +81,17 @@ RSpec.describe Leftovers::FileCollector do
       expect(subject).to have_no_definitions.and(have_calls(:query?, :call))
     end
   end
+
+  context 'with invalid? erb file' do
+    # erb just interprets this as literal text
+    let(:erb) do
+      <<~ERB
+        <%= true if query?
+      ERB
+    end
+
+    it do
+      expect(subject).to have_no_definitions.and(have_no_calls)
+    end
+  end
 end

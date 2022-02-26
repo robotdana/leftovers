@@ -166,6 +166,7 @@ Its presence is optional and all of these settings are optional.
 - [`exclude_paths:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#exclude_paths)
 - [`test_paths:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#test_paths)
 - [`requires:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#requires)
+- [`precompile:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#precompile)
 - [`gems:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#gems)
 - [`keep:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#keep)
 - [`test_only:`](https://github.com/robotdana/leftovers/tree/main/docs/Configuration.md#test_only)

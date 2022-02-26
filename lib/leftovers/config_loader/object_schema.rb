@@ -16,9 +16,10 @@ module Leftovers
           attributes_and_schemas_to_inherit_from.flat_map(&:attributes)
         end
 
-        def attribute(name, value_schema, aliases: nil, require_group: nil)
+        def attribute(name, value_schema, aliases: nil, require_group: nil, suggest: true)
           attributes_and_schemas_to_inherit_from << Attribute.new(
-            name, value_schema, aliases: aliases, require_group: require_group
+            name, value_schema,
+            aliases: aliases, require_group: require_group, suggest: suggest
           )
         end
 
@@ -65,7 +66,8 @@ module Leftovers
           if node.string? && attribute_for_key(node)
             node.error = "#{node.name_}#{node.to_sym} must be a hash key"
           else
-            node.error += " or a hash with any of #{attributes.map(&:name).join(', ')}"
+            suggestions = attributes.select(&:suggest?).map(&:name).join(', ')
+            node.error += " or a hash with any of #{suggestions}"
           end
         end
 
@@ -75,7 +77,6 @@ module Leftovers
 
         def validate_is_hash(node)
           error(node, 'be a hash')
-          node.valid?
         end
 
         def validate_attribute_keys(node)
@@ -106,28 +107,27 @@ module Leftovers
         end
 
         def suggester
-          @suggester ||= Suggester.new(attributes.map(&:name))
+          @suggester ||= Suggester.new(attributes.select(&:suggest?).map(&:name))
         end
 
         def suggestions_for_unrecognized_key(key, node)
-          existing_keys = node.keys.map { |k| attribute_for_key(k)&.name }.compact
-          suggester.suggest(key.to_ruby) - existing_keys
+          suggester.suggest(key.to_ruby) - node.keys.map { |k| attribute_for_key(k)&.name }.compact
         end
 
-        def validate_required_keys(node)
+        def validate_required_keys(node) # rubocop:disable Metrics/CyclomaticComplexity
           missing_groups = require_groups.map do |group|
             next if node.keys.any? { |key| group.any? { |attr| attr.name?(key) } }
 
-            "include at least one of #{group.map(&:name).join(', ')}"
+            "include at least one of #{group.select(&:suggest?).map(&:name).join(', ')}"
           end.compact
 
-          error(node, missing_groups.join(' and ')) unless missing_groups.empty?
+          return true if missing_groups.empty?
 
-          node.valid?
+          error(node, missing_groups.join(' and '))
         end
 
         def validate_valid_attribute_values(node)
-          node.pairs.each { |(k, v)| attribute_for_key(k).schema.validate(v) if k.valid? }
+          node.pairs.each { |(k, v)| attribute_for_key(k).validate_value(v) if k.valid? }
         end
       end
     end

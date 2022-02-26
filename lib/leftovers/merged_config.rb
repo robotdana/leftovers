@@ -39,11 +39,7 @@ module Leftovers
       @exclude_paths
       @include_paths
       @test_paths
-      @haml_paths
-      @slim_paths
-      @yaml_paths
-      @json_paths
-      @erb_paths
+      @precompilers
       @dynamic
       @keep
       @test_only
@@ -67,24 +63,8 @@ module Leftovers
       @test_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:test_paths))
     end
 
-    def haml_paths
-      @haml_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:haml_paths))
-    end
-
-    def slim_paths
-      @slim_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:slim_paths))
-    end
-
-    def yaml_paths
-      @yaml_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:yaml_paths))
-    end
-
-    def json_paths
-      @json_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:json_paths))
-    end
-
-    def erb_paths
-      @erb_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:erb_paths))
+    def precompilers
+      @precompilers ||= Leftovers::Precompilers.build(@configs.flat_map(&:precompile))
     end
 
     def dynamic

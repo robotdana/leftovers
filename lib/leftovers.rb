@@ -7,6 +7,23 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   class Error < ::StandardError; end
   class UnexpectedCase < Error; end
 
+  class PrecompileError < Error
+    attr_reader :line, :column
+
+    def initialize(message, line: nil, column: nil)
+      @line = line
+      @column = column
+      super(message)
+    end
+
+    def warn(path:)
+      line_column = ":#{line}#{":#{column}" if column}" if line
+      klass = cause ? cause.class : self.class
+
+      Leftovers.warn "#{klass}: #{path}#{line_column} #{message}"
+    end
+  end
+
   autoload(:AST, "#{__dir__}/leftovers/ast")
   autoload(:CLI, "#{__dir__}/leftovers/cli")
   autoload(:Collector, "#{__dir__}/leftovers/collector")
@@ -17,21 +34,17 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:DefinitionNodeSet, "#{__dir__}/leftovers/definition_node_set")
   autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
   autoload(:DefinitionToAdd, "#{__dir__}/leftovers/definition_to_add")
-  autoload(:ERB, "#{__dir__}/leftovers/erb")
   autoload(:FileCollector, "#{__dir__}/leftovers/file_collector")
   autoload(:FileList, "#{__dir__}/leftovers/file_list")
   autoload(:File, "#{__dir__}/leftovers/file")
-  autoload(:Haml, "#{__dir__}/leftovers/haml")
-  autoload(:YAML, "#{__dir__}/leftovers/yaml")
-  autoload(:JSON, "#{__dir__}/leftovers/json")
   autoload(:MatcherBuilders, "#{__dir__}/leftovers/matcher_builders")
   autoload(:Matchers, "#{__dir__}/leftovers/matchers")
   autoload(:MergedConfig, "#{__dir__}/leftovers/merged_config")
   autoload(:Parser, "#{__dir__}/leftovers/parser")
+  autoload(:Precompilers, "#{__dir__}/leftovers/precompilers")
   autoload(:ProcessorBuilders, "#{__dir__}/leftovers/processor_builders")
   autoload(:RakeTask, "#{__dir__}/leftovers/rake_task")
   autoload(:Reporter, "#{__dir__}/leftovers/reporter")
-  autoload(:Slim, "#{__dir__}/leftovers/slim")
   autoload(:TodoReporter, "#{__dir__}/leftovers/todo_reporter")
   autoload(:DynamicProcessors, "#{__dir__}/leftovers/dynamic_processors")
   autoload(:ValueProcessors, "#{__dir__}/leftovers/value_processors")

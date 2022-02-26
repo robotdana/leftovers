@@ -1,4 +1,6 @@
 include_paths:
   - '*.slim'
-slim_paths:
-  - '*.slim'
+requires: 'slim'
+precompile:
+  paths: '*.slim'
+  format: slim

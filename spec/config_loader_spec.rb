@@ -51,7 +51,7 @@ RSpec.describe Leftovers::ConfigLoader do
       it do
         expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
           \e[2K\e[31mConfig SchemaError: foo.yml:1:0 unrecognized key 1
-          Did you mean: include_paths, exclude_paths, test_paths, haml_paths, slim_paths, yaml_paths, json_paths, erb_paths, requires, gems, keep, test_only, dynamic\e[0m
+          Did you mean: include_paths, exclude_paths, test_paths, precompile, requires, gems, keep, test_only, dynamic\e[0m
         MESSAGE
       end
     end
@@ -124,7 +124,7 @@ RSpec.describe Leftovers::ConfigLoader do
           Config SchemaError: foo.yml:2:0 unrecognized key tests_path
           Did you mean: test_paths
           Config SchemaError: foo.yml:3:0 unrecognized key uncorrectable
-          Did you mean: include_paths, exclude_paths, test_paths, haml_paths, slim_paths, yaml_paths, json_paths, erb_paths, requires, gems, keep, test_only, dynamic\e[0m
+          Did you mean: include_paths, exclude_paths, test_paths, precompile, requires, gems, keep, test_only, dynamic\e[0m
         MESSAGE
       end
     end

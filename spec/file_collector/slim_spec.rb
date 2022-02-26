@@ -45,31 +45,9 @@ RSpec.describe Leftovers::FileCollector do
 
     it 'outputs an error and collects nothing' do
       expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
-        \e[2KSlim::Parser::SyntaxError: "Expected tag" foo.slim:2:5
+        \e[2KSlim::Parser::SyntaxError: foo.slim:2:5 Expected tag
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
-    end
-  end
-
-  context 'with unavailable slim gem' do
-    before do
-      allow(Leftovers).to receive(:try_require_cache).and_call_original
-      allow(Leftovers).to receive(:try_require_cache).with('slim').and_return(false)
-    end
-
-    let(:slim) do
-      <<~SLIM
-        div text
-      SLIM
-    end
-
-    it 'raises an error' do
-      expect { collector }.to output(a_string_including(<<~OUTPUT)).to_stderr
-        \e[2KSkipped parsing foo.slim, because the slim gem was not available
-        `gem install slim`
-      OUTPUT
-
-      expect(collector).to have_no_definitions.and(have_no_calls)
     end
   end
 

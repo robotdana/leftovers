@@ -18,62 +18,16 @@ module Leftovers
       @test = Leftovers.config.test_paths.allowed?(relative_path)
     end
 
-    def ruby # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      precompiled = []
-      precompile = false
+    def ruby
+      read = self.read
 
-      if haml?
-        precompiled << ::Leftovers::Haml.precompile(read, self)
-        precompile = true
-      end
+      precompiled = ::Leftovers.config.precompilers.map do |precompiler|
+        precompiler.precompile(read, self)
+      end.compact
 
-      if json?
-        precompiled << ::Leftovers::JSON.precompile(read, self)
-        precompile = true
-      end
+      return read if precompiled.empty?
 
-      if erb?
-        precompiled << ::Leftovers::ERB.precompile(read, self)
-        precompile = true
-      end
-
-      if slim?
-        precompiled << ::Leftovers::Slim.precompile(read, self)
-        precompile = true
-      end
-
-      if yaml?
-        precompiled << ::Leftovers::YAML.precompile(read, self)
-        precompile = true
-      end
-
-      if precompile
-        precompiled.join("\n")
-      else
-        read
-      end
-    end
-
-    private
-
-    def erb?
-      Leftovers.config.erb_paths.allowed?(relative_path)
-    end
-
-    def haml?
-      Leftovers.config.haml_paths.allowed?(relative_path)
-    end
-
-    def yaml?
-      Leftovers.config.yaml_paths.allowed?(relative_path)
-    end
-
-    def json?
-      Leftovers.config.json_paths.allowed?(relative_path)
-    end
-
-    def slim?
-      Leftovers.config.slim_paths.allowed?(relative_path)
+      precompiled.join("\n")
     end
   end
 end

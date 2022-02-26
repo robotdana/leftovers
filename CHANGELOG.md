@@ -1,7 +1,15 @@
-# v0.7.1
+# v0.8.0
+- Allow custom precompilers
+  ```yml
+    require: './path/to/my_precompiler'
+    precompile:
+      - paths: '*.myCustomFormat'
+        format: { custom: 'MyPrecompiler' }
+  ```
+  the built in precompilers have moved into this system too, with `format: haml` etc. `haml_paths` etc are now deprecated
 - a lot of refactoring, which revealed some edge cases i was handling
-- collect a call to :my_method= with receiver&.my_method ||= (and += etc)
-- if `add_prefix:` or `add_suffix:` points to another argument for a name that we can't use because it's a variable, it now just don't return the value, rather than returning the value but without the affix
+  - collect a call to :my_method= with receiver&.my_method ||= (and += etc)
+  - if `add_prefix:` or `add_suffix:` points to another argument for a name that we can't use because it's a variable, it now just don't return the value, rather than returning the value but without the affix
 
 # v0.7.0
 - Rewrite the config parser/validation

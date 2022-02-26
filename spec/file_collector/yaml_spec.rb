@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::YAML do
+RSpec.describe Leftovers::Precompilers::YAML do
   subject(:collector) do
     collector = Leftovers::FileCollector.new(ruby, file)
     collector.collect
@@ -63,7 +63,7 @@ RSpec.describe Leftovers::YAML do
 
     it 'outputs an error and collects nothing' do
       expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
-        Psych::SyntaxError: (foo.yaml): found unexpected end of stream while scanning a quoted scalar at line 1 column 11
+        Psych::SyntaxError: foo.yaml:1:11 found unexpected end of stream while scanning a quoted scalar
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
     end

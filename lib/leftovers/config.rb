@@ -26,24 +26,8 @@ module Leftovers
       @test_paths ||= Array(yaml[:test_paths])
     end
 
-    def haml_paths
-      @haml_paths ||= Array(yaml[:haml_paths])
-    end
-
-    def slim_paths
-      @slim_paths ||= Array(yaml[:slim_paths])
-    end
-
-    def yaml_paths
-      @yaml_paths ||= Array(yaml[:yaml_paths])
-    end
-
-    def json_paths
-      @json_paths ||= Array(yaml[:json_paths])
-    end
-
-    def erb_paths
-      @erb_paths ||= Array(yaml[:erb_paths])
+    def precompile
+      @precompile ||= Leftovers.each_or_self(yaml[:precompile]).to_a
     end
 
     def dynamic

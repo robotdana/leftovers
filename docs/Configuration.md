@@ -6,11 +6,7 @@ Its presence is optional and all of these settings are optional.
 - [`include_paths:`](#include_paths)
 - [`exclude_paths:`](#exclude_paths)
 - [`test_paths:`](#test_paths)
-- [`haml_paths:`](#haml_paths)
-- [`slim_paths:`](#slim_paths)
-- [`erb_paths:`](#erb_paths)
-- [`yaml_paths:`](#yaml_paths)
-- [`json_paths:`](#json_paths)
+- [`precompile:`](#precompile)
 - [`requires:`](#requires)
 - [`gems:`](#gems)
 - [`keep:`](#keep)
@@ -88,55 +84,32 @@ test_paths:
 
 Arrays are not necessary for single values
 
-## `haml_paths:`
-
-list filenames/paths of test directories that are in the haml format
-Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+## `precompile:`
 
 ```yml
-haml_paths:
-  - '*.haml'
+  require: './path/my_project/my_precompiler'
+  precompile:
+    - paths: '*.myCustomFormat'
+      format: { custom: 'MyProject::MyPrecompiler' }
+    - paths: '*.my.json'
+      format: json
 ```
 
-Arrays are not necessary for single values. `*.haml` is recognized by default
+Define any precompilers and the paths they affect.
 
-## `slim_paths:`
+`paths:` are defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
 
-list filenames/paths of test directories that are in the slim format
-Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+`format:` must be one of the predefined precompilers (erb, haml, [json](#format-json), slim, [yaml](#format-yaml)), or `custom:` with the name of a [custom precompiler]('../Custom-Precompilers.md) module.
+(use [`require:`](#requires) to have leftovers load its file)
 
-```yml
-slim_paths:
-  - '*.slim'
-```
+See [Custom precompilers]('../Custom-Precompilers.md) for more details on the custom precompiler class
 
-Arrays are not necessary for single values. `*.slim` is recognized by default
+Arrays are not necessary for single values.
 
-## `erb_paths:`
+### `format: yaml`
 
-list filenames/paths of test directories that are in the erb format
-Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
-
-```yml
-erb_paths:
-  - '*.erb'
-```
-
-Arrays are not necessary for single values. `*.erb` is recognized by default
-
-## `yaml_paths:`
-
-list filenames/paths of test directories that are in the yaml format
-Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
-
-```yml
-include:
-  - 'config/*.yml'
-yaml_paths:
-  - '*.yml'
-```
-
-These documents will consider yaml tags like `!ruby/class 'MyClass'` to be a call to `MyClass` and render the structure of the yaml as arguments for the [`document:true`](#document-true) rule.
+The yaml precompiler considers yaml tags like `!ruby/class 'MyClass'` to be a call to `MyClass`.
+and renders the structure of the yaml document as arguments for the [`document:true`](#document-true) rule.
 
 so you could, e.g. read the class name out of a yaml document like:
 
@@ -159,21 +132,11 @@ dynamic:
 
 [`nested:`](#nested) may be useful for more complex yaml structures
 
-## `json_paths:`
+### `format: json`
 
-list filenames/paths of test directories that are in the json format
-Defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
+The json precompiler renders the structure of the json document as arguments for the [`document:true`](#document-true) rule.
 
-```yml
-include:
-  - 'config/*.json'
-json_paths:
-  - '*.json'
-```
-
-These documents render the structure of the yaml as arguments for the [`document:true`](#document-true) rule.
-
-so you could, e.g. read the class name out of a yaml document like:
+so you could, e.g. read the class name out of a json document like:
 
 ```json
 { "class_name": "MyClass" }

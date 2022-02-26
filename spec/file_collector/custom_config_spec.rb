@@ -2571,8 +2571,6 @@ RSpec.describe Leftovers::FileCollector do
       YML
     end
 
-    let(:path) { 'roles.yml' }
-
     let(:yaml) do
       <<~YML
         - build_house
@@ -2580,7 +2578,7 @@ RSpec.describe Leftovers::FileCollector do
       YML
     end
 
-    let(:ruby) { ::Leftovers::YAML.precompile(yaml, file) }
+    let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(yaml) }
 
     it do
       expect(subject).to have_no_definitions
@@ -2600,8 +2598,6 @@ RSpec.describe Leftovers::FileCollector do
       YML
     end
 
-    let(:path) { 'roles.yml' }
-
     let(:json) do
       <<~JSON
         [
@@ -2611,7 +2607,7 @@ RSpec.describe Leftovers::FileCollector do
       JSON
     end
 
-    let(:ruby) { ::Leftovers::JSON.precompile(json, file) }
+    let(:ruby) { ::Leftovers::Precompilers::JSON.precompile(json) }
 
     it do
       expect(subject).to have_no_definitions
@@ -2631,8 +2627,6 @@ RSpec.describe Leftovers::FileCollector do
       YML
     end
 
-    let(:path) { 'roles.yml' }
-
     let(:yaml) do
       <<~YML
         build_house: true
@@ -2640,7 +2634,7 @@ RSpec.describe Leftovers::FileCollector do
       YML
     end
 
-    let(:ruby) { ::Leftovers::YAML.precompile(yaml, file) }
+    let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(yaml) }
 
     it do
       expect(subject).to have_no_definitions
@@ -2660,8 +2654,6 @@ RSpec.describe Leftovers::FileCollector do
       YML
     end
 
-    let(:path) { 'roles.yml' }
-
     let(:json) do
       <<~JSON
         {
@@ -2671,7 +2663,7 @@ RSpec.describe Leftovers::FileCollector do
       JSON
     end
 
-    let(:ruby) { ::Leftovers::JSON.precompile(json, file) }
+    let(:ruby) { ::Leftovers::Precompilers::JSON.precompile(json) }
 
     it do
       expect(subject).to have_no_definitions

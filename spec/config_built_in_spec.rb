@@ -14,12 +14,10 @@ RSpec.describe Leftovers::Config do
     gems.each do |gem|
       it gem do
         expect do
-          catch(:leftovers_exit) do
-            described_class.new(gem).tap do |c|
-              config_methods.each { |method| c.send(method) }
-            end
+          described_class.new(gem).tap do |c|
+            config_methods.each { |method| c.send(method) }
           end
-        end.not_to output.to_stderr
+        end.not_to throw_symbol(:leftovers_exit)
       end
     end
   end

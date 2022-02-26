@@ -1,4 +1,6 @@
 include_paths:
   - '*.haml'
-haml_paths:
-  - '*.haml'
+requires: 'haml'
+precompile:
+  format: haml
+  paths: '*.haml'

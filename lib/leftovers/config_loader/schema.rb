@@ -6,6 +6,8 @@ module Leftovers
       class << self
         def error(node, requirement)
           node.error = "#{node.name_}must #{requirement}"
+
+          false
         end
 
         def validate(node)

@@ -378,5 +378,160 @@ RSpec.describe Leftovers::Config do
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:10 type must be a string or an array\e[0m
       MESSAGE
     end
+
+    it 'can report errors when using unavailable precompilers' do
+      config = described_class.new('invalid', content: <<~YML)
+        precompile:
+          - format: { custom: MyPrecompiler }
+            paths: '*.txt'
+      YML
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .to throw_symbol(:leftovers_exit).and(output(<<~MESSAGE).to_stderr)
+          \e[2K\e[31mTried using ::MyPrecompiler, but it wasn't available.
+          add its path to `requires:` in your .leftovers.yml
+          \e[0m
+        MESSAGE
+    end
+
+    it 'can define custom precompilers with leading ::' do
+      config = described_class.new('invalid', content: <<~YML)
+        precompile:
+          - format: { custom: "::Leftovers::Precompilers::Haml" }
+            paths: '*.my.haml'
+      YML
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .not_to throw_symbol(:leftovers_exit)
+    end
+
+    it 'can define custom precompilers with no leading ::' do
+      config = described_class.new('invalid', content: <<~YML)
+        precompile:
+          - format: { custom: "Leftovers::Precompilers::Haml" }
+            paths: '*.my.haml'
+      YML
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .not_to throw_symbol(:leftovers_exit)
+    end
+
+    it 'can print a deprecation warning with haml_paths and continue' do
+      config = described_class.new('invalid', content: <<~YML)
+        haml_paths: '*.my.haml'
+      YML
+
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .to output(<<~MESSAGE).to_stderr
+          \e[2K\e[33m`haml_paths:` is deprecated\e[0m
+          Replace with:
+          \e[32mprecompile:
+          - paths: "*.my.haml"
+            format: haml
+          \e[0m
+        MESSAGE
+
+      expect(config.precompile)
+        .to eq([{ paths: '*.my.haml', format: 'haml' }])
+    end
+
+    it 'can print a deprecation warning with haml_paths and slim_paths and continue' do
+      config = described_class.new('invalid', content: <<~YML)
+        haml_paths: '*.my.haml'
+        slim_paths: '*.my.slim'
+      YML
+
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .to output(<<~MESSAGE).to_stderr
+          \e[2K\e[33m`haml_paths:` is deprecated\e[0m
+          Replace with:
+          \e[32mprecompile:
+          - paths: "*.my.haml"
+            format: haml
+          \e[0m
+          \e[2K\e[33m`slim_paths:` is deprecated\e[0m
+          Replace with:
+          \e[32mprecompile:
+          - paths: "*.my.slim"
+            format: slim
+          \e[0m
+        MESSAGE
+
+      expect(config.precompile)
+        .to eq([{ paths: '*.my.haml', format: 'haml' }, { paths: '*.my.slim', format: 'slim' }])
+    end
+
+    it 'can print a deprecation warning with yaml_paths and continue' do
+      config = described_class.new('invalid', content: <<~YML)
+        yaml_paths: '*.my.yaml'
+      YML
+
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .to output(<<~MESSAGE).to_stderr
+          \e[2K\e[33m`yaml_paths:` is deprecated\e[0m
+          Replace with:
+          \e[32mprecompile:
+          - paths: "*.my.yaml"
+            format: yaml
+          \e[0m
+        MESSAGE
+
+      expect(config.precompile)
+        .to eq([{ paths: '*.my.yaml', format: 'yaml' }])
+    end
+
+    it 'can print a deprecation warning with json_paths and continue' do
+      config = described_class.new('invalid', content: <<~YML)
+        json_paths: '*.my.json'
+      YML
+
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .to output(<<~MESSAGE).to_stderr
+          \e[2K\e[33m`json_paths:` is deprecated\e[0m
+          Replace with:
+          \e[32mprecompile:
+          - paths: "*.my.json"
+            format: json
+          \e[0m
+        MESSAGE
+
+      expect(config.precompile)
+        .to eq([{ paths: '*.my.json', format: 'json' }])
+    end
+
+    it 'can print a deprecation warning with erb_paths and continue' do
+      config = described_class.new('invalid', content: <<~YML)
+        erb_paths: '*.my.erb'
+      YML
+
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .to output(<<~MESSAGE).to_stderr
+          \e[2K\e[33m`erb_paths:` is deprecated\e[0m
+          Replace with:
+          \e[32mprecompile:
+          - paths: "*.my.erb"
+            format: erb
+          \e[0m
+        MESSAGE
+
+      expect(config.precompile)
+        .to eq([{ paths: '*.my.erb', format: 'erb' }])
+    end
+
+    it 'can print a deprecation warning with slim_paths and continue' do
+      config = described_class.new('invalid', content: <<~YML)
+        slim_paths: '*.my.slim'
+      YML
+
+      expect { ::Leftovers::Precompilers.build(config.precompile) }
+        .to output(<<~MESSAGE).to_stderr
+          \e[2K\e[33m`slim_paths:` is deprecated\e[0m
+          Replace with:
+          \e[32mprecompile:
+          - paths: "*.my.slim"
+            format: slim
+          \e[0m
+        MESSAGE
+
+      expect(config.precompile)
+        .to eq([{ paths: '*.my.slim', format: 'slim' }])
+    end
   end
 end

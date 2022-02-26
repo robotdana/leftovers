@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::JSON do
+RSpec.describe Leftovers::Precompilers::JSON do
   subject(:collector) do
     collector = Leftovers::FileCollector.new(ruby, file)
     collector.collect
@@ -20,9 +20,7 @@ RSpec.describe Leftovers::JSON do
   let(:file) do
     temp_file(path, json)
 
-    Leftovers::File.new(Leftovers.pwd + path).tap do |f|
-      allow(f).to receive(:json?).and_return(true)
-    end
+    Leftovers::File.new(Leftovers.pwd + path)
   end
   let(:json) { '' }
   let(:ruby) { file.ruby }
@@ -36,7 +34,7 @@ RSpec.describe Leftovers::JSON do
 
     it 'outputs an error and collects nothing' do
       expect { subject }.to output(match(
-        /JSON::ParserError: \(foo.json\): \d+: unexpected token at ''/
+        /\A\e\[2KJSON::ParserError: foo.json \d+: unexpected token at ''\n\z/
       )).to_stderr
       expect(subject).to have_no_definitions.and(have_no_calls)
     end

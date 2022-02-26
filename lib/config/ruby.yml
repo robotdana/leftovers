@@ -10,25 +10,14 @@ include_paths:
   - '*.erb'
   - '*.rb'
 
-yaml_paths:
-  - '*.yml'
-  - '*.yaml'
-
-json_paths:
-  - '*.json'
-
 test_paths:
   - /tests/
   - /test/
 
-erb_paths:
-  - '*.erb'
-
-haml_paths:
-  - '*.haml'
-
-slim_paths:
-  - '*.slim'
+precompile:
+  - { paths: '*.erb', format: 'erb' }
+  - { paths: ['*.yml', '*.yaml'], format: 'yaml' }
+  - { paths: '*.json', format: 'json' }
 
 keep:
   - initialize # called by new

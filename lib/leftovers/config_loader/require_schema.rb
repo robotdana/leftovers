@@ -3,7 +3,7 @@
 module Leftovers
   class ConfigLoader
     class RequireSchema < ObjectSchema
-      attribute :quiet, StringSchema, aliases: :name, require_group: :quiet
+      attribute :quiet, StringSchema, require_group: :quiet
 
       self.or_schema = StringSchema
     end

@@ -17,6 +17,7 @@ classnames
 codebase
 compactable
 config
+constantize
 cov
 datagrid
 deserialize
@@ -31,8 +32,10 @@ hashbang
 i'd
 i'm
 ips
+jpg
 json
 kchecked
+kjson
 lhs
 lol
 lorem
@@ -45,8 +48,12 @@ nonexcluded
 noninfringement
 okcomputer
 overwritable
+precompilable
+precompile
 precompiled
 precompiler
+precompilers
+precompiling
 qux
 railties
 readme
@@ -62,6 +69,7 @@ sherson
 sidekiq
 simplecov
 stabby
+stderr
 timecop
 todo
 uncompactable
