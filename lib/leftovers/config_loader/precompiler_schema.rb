@@ -2,10 +2,10 @@
 
 module Leftovers
   class ConfigLoader
-    class PrecompilerSchema < ObjectSchema
+    class PrecompilerSchema < ValueOrObjectSchema
       attribute :custom, StringSchema, require_group: :custom
 
-      self.or_schema = BuiltInPrecompilerSchema
+      self.or_value_schema = BuiltInPrecompilerSchema
     end
   end
 end

@@ -2,13 +2,13 @@
 
 module Leftovers
   class ConfigLoader
-    class StringPatternSchema < ObjectSchema
+    class StringPatternSchema < ValueOrObjectSchema
       attribute :match, StringSchema, aliases: :matches, require_group: :matcher
       attribute :has_prefix, StringSchema, require_group: :matcher
       attribute :has_suffix, StringSchema, require_group: :matcher
       attribute :unless, ValueOrArraySchema[StringPatternSchema], require_group: :matcher
 
-      self.or_schema = StringSchema
+      self.or_value_schema = StringSchema
     end
   end
 end

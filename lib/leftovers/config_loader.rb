@@ -34,6 +34,7 @@ module Leftovers
     autoload(:TrueSchema, "#{__dir__}/config_loader/true_schema")
     autoload(:ValueMatcherSchema, "#{__dir__}/config_loader/value_matcher_schema")
     autoload(:ValueOrArraySchema, "#{__dir__}/config_loader/value_or_array_schema")
+    autoload(:ValueOrObjectSchema, "#{__dir__}/config_loader/value_or_object_schema")
     autoload(:ValueProcessorSchema, "#{__dir__}/config_loader/value_processor_schema")
     autoload(:ValueTypeSchema, "#{__dir__}/config_loader/value_type_schema")
 

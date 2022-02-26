@@ -2,10 +2,10 @@
 
 module Leftovers
   class ConfigLoader
-    class StringValueProcessorSchema < ObjectSchema
+    class StringValueProcessorSchema < ValueOrObjectSchema
       inherit_attributes_from ValueProcessorSchema
 
-      self.or_schema = StringSchema
+      self.or_value_schema = StringSchema
     end
   end
 end

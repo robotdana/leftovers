@@ -2,10 +2,10 @@
 
 module Leftovers
   class ConfigLoader
-    class ArgumentPositionSchema < ObjectSchema
+    class ArgumentPositionSchema < ValueOrObjectSchema
       inherit_attributes_from StringPatternSchema
 
-      self.or_schema = ScalarArgumentSchema
+      self.or_value_schema = ScalarArgumentSchema
     end
   end
 end

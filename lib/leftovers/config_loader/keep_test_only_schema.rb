@@ -2,12 +2,12 @@
 
 module Leftovers
   class ConfigLoader
-    class KeepTestOnlySchema < ObjectSchema
+    class KeepTestOnlySchema < ValueOrObjectSchema
       inherit_attributes_from StringPatternSchema, except: :unless
       inherit_attributes_from RulePatternSchema, except: :unless
       attribute :unless, ValueOrArraySchema[KeepTestOnlySchema], require_group: :matcher
 
-      self.or_schema = StringSchema
+      self.or_value_schema = StringSchema
     end
   end
 end

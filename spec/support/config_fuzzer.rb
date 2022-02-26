@@ -16,6 +16,8 @@ class ConfigFuzzer
   def fuzz(schema, nesting: 0) # rubocop:disable Metrics
     if schema.is_a?(Leftovers::ConfigLoader::ValueOrArraySchema)
       fuzz_value_or_array(schema, nesting: nesting)
+    elsif schema < Leftovers::ConfigLoader::ValueOrObjectSchema
+      fuzz_value_or_object(schema, nesting: nesting)
     elsif schema < Leftovers::ConfigLoader::ObjectSchema
       fuzz_object(schema, nesting: nesting)
     elsif schema < Leftovers::ConfigLoader::StringEnumSchema
@@ -40,18 +42,22 @@ class ConfigFuzzer
     attributes.uniq.shuffle
   end
 
-  def fuzz_object(schema, nesting: 0)
-    if schema.or_schema && (rand(2) == 0 || nesting > 3)
-      fuzz(schema.or_schema, nesting: nesting + 1)
+  def fuzz_value_or_object(schema, nesting: 0)
+    if rand(2) == 0 || nesting > 10
+      fuzz(schema.or_value_schema, nesting: nesting + 1)
     else
-      sample_object_attributes(schema).map do |attr|
-        [[*attr.aliases, attr.name].sample.to_s, fuzz(attr.schema, nesting: nesting + 1)]
-      end.to_h
+      fuzz_object(schema, nesting: nesting + 1)
     end
   end
 
+  def fuzz_object(schema, nesting: 0)
+    sample_object_attributes(schema).map do |attr|
+      [[*attr.aliases, attr.name].sample.to_s, fuzz(attr.schema, nesting: nesting + 1)]
+    end.to_h
+  end
+
   def fuzz_value_or_array(schema, nesting: 0)
-    if rand(2) == 0 || nesting > 3
+    if rand(2) == 0 || nesting > 10
       fuzz(schema.value_schema, nesting: nesting + 1)
     else
       Array.new(rand(1..2)) { fuzz(schema.value_schema, nesting: nesting + 1) }

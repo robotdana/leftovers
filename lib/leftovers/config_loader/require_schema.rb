@@ -2,10 +2,10 @@
 
 module Leftovers
   class ConfigLoader
-    class RequireSchema < ObjectSchema
+    class RequireSchema < ValueOrObjectSchema
       attribute :quiet, StringSchema, require_group: :quiet
 
-      self.or_schema = StringSchema
+      self.or_value_schema = StringSchema
     end
   end
 end

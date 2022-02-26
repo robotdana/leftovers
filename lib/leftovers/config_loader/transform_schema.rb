@@ -2,7 +2,7 @@
 
 module Leftovers
   class ConfigLoader
-    class TransformSchema < ObjectSchema
+    class TransformSchema < ValueOrObjectSchema
       ArgumentlessTransformSchema.each_value do |transform|
         attribute(
           transform, TrueSchema,
@@ -11,10 +11,8 @@ module Leftovers
         )
       end
 
-      attribute :add_prefix, ValueOrArraySchema[StringValueProcessorSchema],
-                require_group: :processor
-      attribute :add_suffix, ValueOrArraySchema[StringValueProcessorSchema],
-                require_group: :processor
+      attribute :add_prefix, StringValueProcessorSchema, require_group: :processor
+      attribute :add_suffix, StringValueProcessorSchema, require_group: :processor
 
       attribute :split, StringSchema, require_group: :processor
       attribute :delete_prefix, StringSchema, require_group: :processor
@@ -22,7 +20,7 @@ module Leftovers
       attribute :delete_before, StringSchema, require_group: :processor
       attribute :delete_after, StringSchema, require_group: :processor
 
-      self.or_schema = ArgumentlessTransformSchema
+      self.or_value_schema = ArgumentlessTransformSchema
     end
   end
 end

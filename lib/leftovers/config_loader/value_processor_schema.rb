@@ -2,13 +2,13 @@
 
 module Leftovers
   class ConfigLoader
-    class ValueProcessorSchema < ObjectSchema
+    class ValueProcessorSchema < ValueOrObjectSchema
       inherit_attributes_from ValueMatcherSchema
 
       attribute :transforms, ValueOrArraySchema[TransformSchema]
       inherit_attributes_from TransformSchema, require_group: nil
 
-      self.or_schema = ScalarArgumentSchema
+      self.or_value_schema = ScalarArgumentSchema
     end
   end
 end

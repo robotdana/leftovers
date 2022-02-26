@@ -2,7 +2,7 @@
 
 module Leftovers
   class ConfigLoader
-    class ValueMatcherSchema < ObjectSchema
+    class ValueMatcherSchema < ValueOrObjectSchema
       attribute :arguments, ValueOrArraySchema[ArgumentPositionSchema], aliases: :argument,
         require_group: :matcher
       attribute :keywords, ValueOrArraySchema[StringPatternSchema], aliases: :keyword,
@@ -12,7 +12,7 @@ module Leftovers
       attribute :value, StringSchema, require_group: :matcher
       attribute :recursive, TrueSchema
 
-      self.or_schema = ScalarArgumentSchema
+      self.or_value_schema = ScalarArgumentSchema
     end
   end
 end
