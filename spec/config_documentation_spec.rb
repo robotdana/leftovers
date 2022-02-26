@@ -8,7 +8,7 @@ RSpec.describe Leftovers::Config do
   before { Leftovers.reset }
 
   describe 'config in documentation' do
-    files = FastIgnore.new(include_rules: ['*.md', '!CHANGELOG.md'])
+    files = FastIgnore.new(include_rules: ['*.md', '!CHANGELOG.md', '!vendor'])
     files.each do |file|
       file = ::Leftovers::File.new(file)
       file.read.scan(/(?<=```yml\n)[^`]*(?=\n```\n)/).each.with_index(1) do |yaml, index|
