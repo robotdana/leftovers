@@ -99,10 +99,10 @@ Define any precompilers and the paths they affect.
 
 `paths:` are defined using the [.gitignore pattern format](https://git-scm.com/docs/gitignore#_pattern_format)
 
-`format:` must be one of the predefined precompilers (erb, haml, [json](#format-json), slim, [yaml](#format-yaml)), or `custom:` with the name of a [custom precompiler]('../Custom-Precompilers.md) module.
+`format:` must be one of the predefined precompilers (erb, haml, [json](#format-json), slim, [yaml](#format-yaml)), or `custom:` with the name of a [custom precompiler](https://github.com/robotdana/leftovers/blob/main/docs/Custom-Precompilers.md) module.
 (use [`require:`](#requires) to have leftovers load its file)
 
-See [Custom precompilers]('../Custom-Precompilers.md) for more details on the custom precompiler class
+See [Custom precompilers](https://github.com/robotdana/leftovers/blob/main/docs/Custom-Precompilers.md) for more details on the custom precompiler class
 
 Arrays are not necessary for single values.
 
