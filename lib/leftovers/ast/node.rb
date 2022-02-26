@@ -13,7 +13,8 @@ module Leftovers
         super
       end
 
-      def updated(type = nil, children = nil, properties = nil)
+      # This is called by ::Parser::AST internals
+      def updated(type = nil, children = nil, properties = nil) # leftovers:keep
         maybe_copy = super
 
         class_for_type = Leftovers::AST::Builder.node_class(maybe_copy.type)

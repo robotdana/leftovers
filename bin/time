@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# use mac terminal not vs code terminal
+# ensure nothing else is watching that dir in the filesystem
+
+require 'open3'
+require 'shellwords'
+
+RUNS = 10
+SCRIPT = "time #{__dir__}/../exe/leftovers #{Shellwords.join(ARGV)}"
+
+times = Array.new(RUNS).map do
+  run_times = Open3.capture3(SCRIPT)[1].chomp.split("\n").last
+  puts run_times.lstrip
+  run_times.scan(/(?:\d+(?:.\d+)?)/)
+end
+
+puts format(
+  "\e[1mAverage:\n\e[32m%0.2f real%13.2f user%13.2f sys\e[0m",
+  *times.transpose.map { |n| (n.map(&:to_f).sum / RUNS) }
+)

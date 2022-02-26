@@ -8,10 +8,6 @@ module Leftovers
       end
 
       alias_method :to_sym, :name
-
-      def to_s
-        name.to_s
-      end
     end
   end
 end

@@ -39,6 +39,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(false_node.to_s).to eq 'false'
       expect(nil_node.to_s).to eq ''
       expect(constant_node.to_s).to eq 'FOO'
+      expect(const_then_const_node.to_s).to eq 'Bar'
       expect(def_node.to_s).to eq 'foo'
       expect(ivar_node.to_s).to eq '@foo'
       expect(ivasgn_node.to_s).to eq '@foo'
@@ -50,6 +51,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(module_node.to_s).to eq 'Foo'
       expect(integer_node.to_s).to eq '1'
       expect(float_node.to_s).to eq '1.0'
+      expect(proc_node.to_s).to eq ''
     end
   end
 
@@ -74,6 +76,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(module_node.to_sym).to eq :Foo
       expect(integer_node.to_sym).to eq :'1'
       expect(float_node.to_sym).to eq :'1.0'
+      expect(proc_node.to_sym).to eq :''
     end
   end
 

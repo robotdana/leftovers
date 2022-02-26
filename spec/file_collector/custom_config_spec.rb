@@ -1049,6 +1049,30 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
+  context 'with constant assignment with some other method' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = %i{
+          downcase
+          upcase
+        }.empty?
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: STRING_TRANSFORMS
+            calls:
+              argument: '*'
+      YML
+    end
+
+    it do
+      expect(subject).to have_definitions(:STRING_TRANSFORMS).and(have_calls(:empty?))
+    end
+  end
+
   context 'with constant hash assignment keys' do
     let(:ruby) do
       <<~RUBY
@@ -1533,6 +1557,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', kw: 'foo')
         my_method('lol', 'foo')
         my_method('beep')
+        my_method()
       RUBY
     end
 

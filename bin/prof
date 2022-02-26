@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'ruby-prof'
+
+RubyProf.measure_mode = RubyProf::WALL_TIME
+# RubyProf.measure_mode = RubyProf::ALLOCATIONS
+# RubyProf.measure_mode = RubyProf::MEMORY
+
+RubyProf.start
+
+require_relative '../lib/leftovers'
+
+Leftovers::CLI.new(argv: ARGV).run
+
+profile = RubyProf.stop
+
+printer = RubyProf::GraphPrinter.new(profile)
+printer.print($stdout, min_percent: 2, sort_method: :self_time)
