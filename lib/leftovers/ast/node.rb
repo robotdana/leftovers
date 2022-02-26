@@ -4,13 +4,22 @@ require 'parser'
 
 module Leftovers
   module AST
-    class Node < ::Parser::AST::Node # rubocop:disable Metrics/ClassLength
+    class Node < ::Parser::AST::Node
       def initialize(type, children = [], properties = {})
         # ::AST::Node#initialize freezes itself.
         # so can't use normal memoizations
         @memo = {}
 
         super
+      end
+
+      def updated(type = nil, children = nil, properties = nil)
+        maybe_copy = super
+
+        class_for_type = Leftovers::AST::Builder.node_class(maybe_copy.type)
+        return maybe_copy if maybe_copy.instance_of?(class_for_type)
+
+        class_for_type.new(maybe_copy.type, maybe_copy.children, location: maybe_copy.loc)
       end
 
       def first
@@ -42,118 +51,59 @@ module Leftovers
       end
 
       def to_scalar_value
-        case type
-        when :sym, :int, :float, :str
-          first
-        when :true
-          true
-        when :false
-          false
-        when :nil
-          nil
-        end
+        nil
       end
 
       def scalar?
-        case type
-        when :sym, :int, :float, :str, :true, :false, :nil
-          true
-        else
-          false
-        end
+        false
       end
 
       def to_s
-        @memo[:to_s] ||= name ? name.to_s : to_scalar_value.to_s
+        ''
       end
 
       def to_sym
-        case type
-        when :sym then first
-        when :nil, :true, :false then type
-        else to_s.to_sym
-        end
+        :''
       end
 
       def string_or_symbol?
-        type == :str || type == :sym
+        false
       end
 
       def string_or_symbol_or_def?
-        type == :str || type == :sym || type == :def || type == :defs
+        false
+      end
+
+      def hash?
+        false
       end
 
       def proc?
-        return unless type == :block
+        false
+      end
 
-        name = first.name
-        name == :lambda || name == :proc
+      def as_arguments_list
+        @memo[:as_arguments_list] ||= [self]
       end
 
       def arguments
-        @memo.fetch(:arguments) do
-          @memo[:arguments] = case type
-          when :send, :csend then children.drop(2)
-          when :casgn then assign_arguments(children[2])
-          when :ivasgn, :cvasgn, :gvasgn then assign_arguments(second)
-          when :array then children
-          when :hash then [self]
-          end
-        end
-      end
-
-      def assign_arguments(arguments_list)
-        arguments_list = arguments_list.unwrap_freeze
-        case arguments_list.type
-        when :array
-          arguments_list.children
-        when :hash, :str, :sym
-          [arguments_list]
-        end
+        nil
       end
 
       def positional_arguments
-        @memo.fetch(:positional_arguments) do
-          @memo[:positional_arguments] = kwargs ? arguments[0...-1] : arguments
-        end
+        nil
       end
 
       def receiver
-        case type
-        when :const, :csend, :send
-          first
-        end
-      end
-
-      def unwrap_freeze
-        return self unless type == :send && name == :freeze
-
-        first
+        nil
       end
 
       def kwargs
-        @memo.fetch(:kwargs) do
-          @memo[:kwargs] = begin
-            args = arguments
-            next unless args
-
-            last_arg = args[-1]
-            last_arg if last_arg && last_arg.type == :hash
-          end
-        end
+        nil
       end
 
       def name
-        @memo[:name] ||= case type
-        when :send, :csend, :casgn, :const, :defs
-          second
-        when :def, :ivasgn, :ivar, :gvar, :cvar, :gvasgn, :cvasgn, :sym, :lvar
-          first
-        when :str
-          first.to_sym
-        when :module, :class, :pair
-          first.name
-        end
+        nil
       end
     end
   end

@@ -126,7 +126,7 @@ module Leftovers
     private
 
     def build_send_wrapper_for(node, name)
-      ::Leftovers::AST::Node.new(
+      ::Leftovers::AST::SendNode.new(
         :send, [nil, name.to_sym, *node.arguments], location: node.location
       )
     end
