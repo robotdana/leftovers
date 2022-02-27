@@ -5,6 +5,16 @@ require 'fast_ignore'
 
 module Leftovers
   class MergedConfig
+    MEMOIZED_IVARS = %i{
+      @exclude_paths
+      @include_paths
+      @test_paths
+      @precompilers
+      @dynamic
+      @keep
+      @test_only
+    }.freeze
+
     def initialize(load_defaults: false)
       @configs = []
       @loaded_configs = Set.new
@@ -25,30 +35,6 @@ module Leftovers
       @loaded_configs << config.name
       config.gems.each { |gem| self << gem }
       require_requires(config)
-    end
-
-    def project_config
-      Leftovers::Config.new(:'.leftovers.yml', path: Leftovers.pwd + '.leftovers.yml')
-    end
-
-    def project_todo
-      Leftovers::Config.new(:'.leftovers_todo.yml', path: Leftovers.pwd + '.leftovers_todo.yml')
-    end
-
-    MEMOIZED_IVARS = %i{
-      @exclude_paths
-      @include_paths
-      @test_paths
-      @precompilers
-      @dynamic
-      @keep
-      @test_only
-    }.freeze
-
-    def unmemoize
-      MEMOIZED_IVARS.each do |ivar|
-        remove_instance_variable(ivar) if instance_variable_get(ivar)
-      end
     end
 
     def exclude_paths
@@ -80,6 +66,20 @@ module Leftovers
     end
 
     private
+
+    def project_config
+      Leftovers::Config.new(:'.leftovers.yml', path: Leftovers.pwd + '.leftovers.yml')
+    end
+
+    def project_todo
+      Leftovers::Config.new(:'.leftovers_todo.yml', path: Leftovers.pwd + '.leftovers_todo.yml')
+    end
+
+    def unmemoize
+      MEMOIZED_IVARS.each do |ivar|
+        remove_instance_variable(ivar) if instance_variable_get(ivar)
+      end
+    end
 
     def require_requires(config)
       config.requires.each do |req|
