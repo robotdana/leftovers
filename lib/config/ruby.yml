@@ -1,4 +1,7 @@
 ---
+gems:
+  - ruby/Module
+
 include_paths:
   - '#!:ruby'
   - '*.gemspec'
@@ -40,13 +43,12 @@ keep:
   - _dump # called by Marshal.dump
   - _load # called by Marshal.load
   - inherited # called by Subclass < Klass or Class.new(Klass)
-  - extended # called by extend Module
-  - included # called by include Module
   - $VERBOSE # called by whatever is outputting warnings i guess
   - === # called by when
   - == # called by Array value, Hash value equality, ===
   - hash # called by Hash key equality
   - eql? # called by Hash key equality
+
 dynamic:
   - name:
       - send
@@ -54,108 +56,8 @@ dynamic:
       - __send__
       - method
       - respond_to?
-      - instance_method
     calls: 0
-  - name: attr_reader
-    defines:
-      argument: '*'
-    calls:
-      argument: '*'
-      add_prefix: '@'
-  - name: attr_writer
-    defines:
-      argument: '*'
-      add_suffix: '='
-  - name: attr_accessor
-    defines:
-      - argument: '*'
-        add_suffix: '='
-      - argument: '*'
-    calls:
-      argument: '*'
-      add_prefix: '@'
-  - name: define_method
-    defines: 0
-  - name: alias_method
-    defines: 0
-    calls: 1
-  - name:
-      - instance_variable_get
-      - class_variable_get
+  - name: instance_variable_get
     calls: 0
-  - name:
-      - instance_variable_set
-      - class_variable_set
+  - name: instance_variable_set
     defines: 0
-
-  # Module
-  - name: public
-    unless:
-      has_argument: 0
-    set_default_privacy: public
-
-  - name:
-      - public
-      - public_class_method
-      - public_constant
-    has_argument: 0
-    set_privacy:
-      argument: '*'
-      to: public
-
-  - name:
-      - public
-      - public_class_method
-    has_argument: 0
-    unless:
-      has_argument: 1
-    set_privacy:
-      argument: 0
-      nested:
-        argument: '*'
-      to: public
-
-  - name: protected
-    unless:
-      has_argument: 0
-    set_default_privacy: protected
-
-  - name: protected
-    has_argument: 0
-    set_privacy:
-      argument: '*'
-      to: protected
-
-  - name: protected
-    has_argument: 0
-    unless:
-      has_argument: 1
-    set_privacy:
-      argument: 0
-      nested:
-        argument: '*'
-      to: protected
-
-  - name: private
-    unless:
-      has_argument: 0
-    set_default_privacy: private
-
-  - name:
-      - private
-      - private_class_method
-      - private_constant
-    has_argument: 0
-    set_privacy:
-      argument: '*'
-      to: private
-
-  - name: private
-    has_argument: 0
-    unless:
-      has_argument: 1
-    set_privacy:
-      argument: 0
-      nested:
-        argument: '*'
-      to: private

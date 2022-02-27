@@ -3,10 +3,10 @@
 module Leftovers
   module ProcessorBuilders
     module Value
-      def self.build(value, then_processor)
-        return unless value && then_processor
-
-        ::Leftovers::ValueProcessors::ReplaceValue.new(value, then_processor)
+      def self.build(values, then_processor)
+        ::Leftovers::ProcessorBuilders::Each.each_or_self(values) do |value|
+          ::Leftovers::ValueProcessors::ReplaceValue.new(value, then_processor)
+        end
       end
     end
   end
