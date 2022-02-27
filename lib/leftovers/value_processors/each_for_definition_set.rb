@@ -18,6 +18,8 @@ module Leftovers
 
         ::Leftovers::DefinitionNodeSet.new(definitions)
       end
+
+      freeze
     end
   end
 end

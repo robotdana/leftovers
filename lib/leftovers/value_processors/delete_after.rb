@@ -17,6 +17,8 @@ module Leftovers
         str = str.split(@delete_after, 2).first || str
         @then_processor.process(str, node, method_node)
       end
+
+      freeze
     end
   end
 end

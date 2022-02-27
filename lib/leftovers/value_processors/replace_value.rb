@@ -13,6 +13,8 @@ module Leftovers
       def process(_str, node, method_node)
         @then_processor.process(@value, node, method_node)
       end
+
+      freeze
     end
   end
 end

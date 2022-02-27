@@ -9,6 +9,8 @@ module Leftovers
 
         Leftovers::DefinitionNode.new(node, name: str.to_sym)
       end
+
+      freeze
     end
   end
 end

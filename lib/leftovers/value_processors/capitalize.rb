@@ -14,6 +14,8 @@ module Leftovers
 
         @then_processor.process(str.capitalize, node, method_node)
       end
+
+      freeze
     end
   end
 end

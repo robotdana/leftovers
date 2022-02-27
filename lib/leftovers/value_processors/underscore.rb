@@ -19,6 +19,8 @@ module Leftovers
           `gem install activesupport`, and/or add `requires: ['active_support', 'active_support/core_ext/string']` to your .leftovers.yml
         MESSAGE
       end
+
+      freeze
     end
   end
 end

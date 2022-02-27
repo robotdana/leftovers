@@ -15,6 +15,8 @@ module Leftovers
 
         @then_processor.process("#{@prefix}#{str}", node, method_node)
       end
+
+      freeze
     end
   end
 end

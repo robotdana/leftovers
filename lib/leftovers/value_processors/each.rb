@@ -16,6 +16,8 @@ module Leftovers
           processor.process(str, node, method_node)
         end
       end
+
+      freeze
     end
   end
 end

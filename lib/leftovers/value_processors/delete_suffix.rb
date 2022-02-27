@@ -15,6 +15,8 @@ module Leftovers
 
         @then_processor.process(str.delete_suffix(@suffix), node, method_node)
       end
+
+      freeze
     end
   end
 end
