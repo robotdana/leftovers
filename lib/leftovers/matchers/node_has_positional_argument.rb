@@ -10,7 +10,9 @@ module Leftovers
       end
 
       def ===(node)
-        node.positional_arguments[@position]
+        args = node.positional_arguments
+
+        args[@position] if args
       end
 
       freeze

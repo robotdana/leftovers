@@ -385,7 +385,12 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   context 'with array values' do
-    let(:ruby) { 'flow(whatever, [:method_1, :method_2])' }
+    let(:ruby) do
+      <<~RUBY
+        flow(whatever, [:method_1, :method_2])
+        flow(whatever, [])
+      RUBY
+    end
 
     let(:config) do
       <<~YML
@@ -401,6 +406,93 @@ RSpec.describe Leftovers::FileCollector do
     it do
       expect(subject).to have_no_definitions
         .and have_calls(:flow, :whatever, :method_1, :method_2)
+    end
+  end
+
+  context 'with relevant array value has position' do
+    let(:ruby) do
+      <<~RUBY
+        flow(:whatever, [:one, :two])
+        flow(:whichever, [:one])
+        flow(:whenever, [])
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: flow
+            has_argument:
+              at: 1
+              has_value:
+                has_argument: 1
+            calls:
+              - argument: 0
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
+  context 'with relevant array value has position and value' do
+    let(:ruby) do
+      <<~RUBY
+        flow(:whatever, [:one])
+        flow(:whichever, [1])
+        flow(:whenever, [])
+        flow(:whyever, nil)
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: flow
+            has_argument:
+              at: 1
+              has_value:
+                at: 0
+                has_value:
+                  type: Symbol
+            calls:
+              - argument: 0
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
+    end
+  end
+
+  context 'with relevant array value' do
+    let(:ruby) do
+      <<~RUBY
+        flow(:whatever, [:method_1, :method_2])
+        flow(:whichever, [])
+        flow(:whyever, nil)
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: flow
+            has_argument:
+              at: 1
+              has_value:
+                at: 0
+            calls:
+              - argument: 0
+      YML
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:flow, :whatever)
     end
   end
 
@@ -1583,6 +1675,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', kw: 'foo')
         my_method('lol', 'foo')
         my_method('beep')
+        my_method()
       RUBY
     end
 
@@ -1607,6 +1700,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('yes', kw: 'qux')
         my_method('no', kw: 1)
+        my_method()
       RUBY
     end
 
@@ -1631,6 +1725,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('yes', kw: :qux)
         my_method('no', kw: 'qux')
+        my_method()
       RUBY
     end
 
@@ -1658,6 +1753,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('yes3', kw: lambda {})
         my_method('no', kw: Proc.new {}) # not a "literal"
         my_method('no', kw: thing {})
+        my_method()
       RUBY
     end
 
@@ -1686,6 +1782,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('yes', kw: 1)
         my_method('no', kw: 1.0)
+        my_method()
       RUBY
     end
 
@@ -1710,6 +1807,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('yes', kw: 1.0)
         my_method('no', kw: 1)
+        my_method()
       RUBY
     end
 
@@ -1734,6 +1832,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('yes', kw: [])
         my_method('no', kw: {})
+        my_method()
       RUBY
     end
 
@@ -1758,6 +1857,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('yes', kw: {})
         my_method('no', kw: [])
+        my_method()
       RUBY
     end
 
@@ -1783,6 +1883,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('yes', kw: {})
         my_method('yes2', kw: 'thing')
         my_method('no', kw: 3)
+        my_method()
       RUBY
     end
 
@@ -1809,6 +1910,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', kw: 1)
         my_method('lol', kw: 1.0)
         my_method('foo', 1.0)
+        my_method()
       RUBY
     end
 
@@ -1836,6 +1938,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', 1, 0)
         my_method('lol', 1)
         my_method('foo')
+        my_method()
       RUBY
     end
 
@@ -1862,6 +1965,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', kw: 1)
         my_method('lol', kw: another_method)
         my_method('foo', kw: 1.0)
+        my_method()
       RUBY
     end
 
@@ -1888,6 +1992,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', other_kw: '1')
         my_method('lol', 'position')
         my_method('foo', kw: :no)
+        my_method()
       RUBY
     end
 
@@ -1911,6 +2016,7 @@ RSpec.describe Leftovers::FileCollector do
         MyOtherClass.my_method('baz')
         MyOtherClass::MyClass.my_method('bar')
         MyClass.my_method('foo')
+        MyOtherClass.my_method()
       RUBY
     end
 
@@ -1940,6 +2046,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', '1', kw: 1)
         my_method('lol', 1)
         my_method('foo', 'no', 1)
+        my_method()
       RUBY
     end
 
@@ -1962,6 +2069,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('baz', kw: 'kw1')
         my_method(kw: 'kw2')
+        my_method()
       RUBY
     end
 
@@ -1985,6 +2093,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('baz', kw: 'bar')
         my_method('bar', kw: 'foo')
         my_method('lol', kw: 'qux')
+        my_method()
       RUBY
     end
 
@@ -2006,6 +2115,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('bar', kw: 'foo')
         my_method('lol', 1 => true)
+        my_method()
       RUBY
     end
 
@@ -2028,6 +2138,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('bar', kw: 'foo')
         my_method('lol', 1 => true)
+        my_method()
       RUBY
     end
 
@@ -2051,6 +2162,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('bar', 'A1')
         my_method('lol', '1A')
+        my_method()
       RUBY
     end
 
@@ -2075,6 +2187,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', kw: true)
         my_method('lol', kw: false)
         my_method('no', kw: {})
+        my_method()
       RUBY
     end
 
@@ -2096,6 +2209,7 @@ RSpec.describe Leftovers::FileCollector do
       <<~RUBY
         my_method('bar', "kw" => 'foo')
         my_method('lol', 1 => true)
+        my_method()
       RUBY
     end
 
@@ -2118,6 +2232,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('baz', 'foo', 'bar')
         my_method('bar', 'foo')
         my_method('lol')
+        my_method()
       RUBY
     end
 
@@ -2142,6 +2257,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('baz', 'bar', 'foo')
         my_method('bar', 'foo')
         my_method('foo')
+        my_method()
       RUBY
     end
 
@@ -2166,6 +2282,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('baz', 'bar', 'foo')
         my_method('bar', 'foo')
         my_method('foo')
+        my_method()
       RUBY
     end
 
@@ -2188,6 +2305,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('baz', 'bar', 'foo')
         my_method('bar', 'foo')
         my_method('foo')
+        my_method()
       RUBY
     end
 
@@ -2211,6 +2329,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('baz', 'bar', 'foo')
         my_method('bar', 'foo')
         my_method('foo')
+        my_method()
       RUBY
     end
 
@@ -2235,6 +2354,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('baz', 'bar', kw: 'foo')
         my_method('bar', 'foo')
         my_method('foo')
+        my_method()
       RUBY
     end
 
@@ -2258,6 +2378,7 @@ RSpec.describe Leftovers::FileCollector do
         my_method('bar', 'bar', 'foo')
         my_method('bit', kw: 'foo')
         my_method('lol', wk: 'foo')
+        my_method()
       RUBY
     end
 
