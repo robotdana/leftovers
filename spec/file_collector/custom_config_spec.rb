@@ -14,7 +14,7 @@ RSpec.describe Leftovers::FileCollector do
     allow(Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
 
     Leftovers.reset
-    Leftovers.config << Leftovers::Config.new('test', content: config)
+    Leftovers.config << Leftovers::Config.new('foo.yml', content: config)
   end
 
   after { Leftovers.reset }
@@ -2835,6 +2835,78 @@ RSpec.describe Leftovers::FileCollector do
     it do
       expect(subject).to have_no_definitions
         .and(have_calls(:__leftovers_document, :can_build_house?, :can_drive_car?))
+    end
+  end
+
+  context 'with precompile[] in the config' do
+    let(:config) do
+      <<~YML
+        precompile:
+          - paths: '*.not_ruby'
+            format: { custom: 'MyNamespace::MyLangProcessor' }
+      YML
+    end
+
+    let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(config) }
+    let(:path) { '.leftovers.yml' }
+
+    before do
+      with_temp_dir
+      # need the files to actually exist or fast_ignore doesn't work.
+      temp_file path, config
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:__leftovers_document, :MyNamespace, :MyLangProcessor, :precompile))
+    end
+  end
+
+  context 'with precompile{} in the config' do
+    let(:config) do
+      <<~YML
+        precompile:
+          paths: '*.not_ruby'
+          format: { custom: 'MyNamespace::MyLangProcessor' }
+      YML
+    end
+
+    let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(config) }
+    let(:path) { '.leftovers.yml' }
+
+    before do
+      with_temp_dir
+      # need the files to actually exist or fast_ignore doesn't work.
+      temp_file path, config
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:__leftovers_document, :MyNamespace, :MyLangProcessor, :precompile))
+    end
+  end
+
+  context 'with precompile built in format in the config' do
+    let(:config) do
+      <<~YML
+        precompile:
+          - paths: '*.not_ruby'
+            format: json
+      YML
+    end
+
+    let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(config) }
+    let(:path) { '.leftovers.yml' }
+
+    before do
+      with_temp_dir
+      # need the files to actually exist or fast_ignore doesn't work.
+      temp_file path, config
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:__leftovers_document))
     end
   end
 end

@@ -21,6 +21,7 @@ module Leftovers
       return unless load_defaults
 
       self << :ruby
+      self << :leftovers
       self << project_config
       self << project_todo
       load_bundled_gem_config

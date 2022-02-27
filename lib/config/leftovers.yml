@@ -1,0 +1,45 @@
+precompile:
+  - { paths: ['*.yml', '*.yaml'], format: 'yaml' }
+  - { paths: '*.json', format: 'json' }
+
+dynamic:
+  - document: true
+    path: '.leftovers.yml'
+    has_argument:
+      at: precompile
+      has_value:
+        has_argument:
+          at: '*'
+          has_value:
+            has_argument:
+              at: 'format'
+              has_value:
+                has_argument: custom
+    calls:
+      - value: precompile
+      - argument: precompile
+        nested:
+          - argument: '*'
+            nested:
+              argument: format
+              nested:
+                argument: custom
+        split: '::'
+
+  - document: true
+    path: '.leftovers.yml'
+    has_argument:
+      at: precompile
+      has_value:
+        has_argument:
+          at: 'format'
+          has_value:
+            has_argument: custom
+    calls:
+      - value: precompile
+      - argument: precompile
+        nested:
+          argument: format
+          nested:
+            argument: custom
+        split: '::'

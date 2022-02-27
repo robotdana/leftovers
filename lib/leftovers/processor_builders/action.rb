@@ -30,7 +30,7 @@ module Leftovers
           processor = ::Leftovers::ProcessorBuilders::TransformSet.build(
             transform_args, final_processor
           )
-          processor = build_nested(nested, processor, final_processor) if nested
+          processor = build_nested(nested, processor) if nested
           recursive_placeholder, processor = build_recursive(processor) if recursive
           processor = build_sources(arguments, keywords, itself, value, processor)
 
@@ -42,9 +42,9 @@ module Leftovers
 
         private
 
-        def build_nested(nested, processor, final_processor)
+        def build_nested(nested, processor)
           ::Leftovers::ProcessorBuilders::Each.build([
-            ::Leftovers::ProcessorBuilders::Action.build(nested, final_processor),
+            ::Leftovers::ProcessorBuilders::Action.build(nested, processor),
             processor
           ])
         end
