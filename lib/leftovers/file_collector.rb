@@ -12,14 +12,13 @@ module Leftovers
 
     def initialize(ruby, file)
       @calls = []
-      @definitions_to_add = {}
+      @definition_collection = Leftovers::DefinitionCollection.new
       @allow_lines = Set.new.compare_by_identity
       @test_lines = Set.new.compare_by_identity
       @dynamic_lines = {}
       @ruby = ruby
       @file = file
       @default_method_privacy = :public
-      @definition_sets_to_add = []
     end
 
     def filename
@@ -48,30 +47,6 @@ module Leftovers
       )
     end
 
-    # grab method definitions
-    def add_definition(node, name: node.name, loc: node.loc.name)
-      @definitions_to_add[name] = ::Leftovers::DefinitionToAdd.new(node, name: name, location: loc)
-    end
-
-    def add_definition_set(definition_node_set)
-      @definition_sets_to_add << definition_node_set.definitions.map do |definition_node|
-        ::Leftovers::DefinitionToAdd.new(definition_node, location: definition_node.loc)
-      end
-    end
-
-    def set_privacy(name, to)
-      @definitions_to_add[name]&.privacy = to
-    end
-
-    def definitions
-      @definitions ||= @definitions_to_add.each_value.map { |d| d.to_definition(self) } +
-        @definition_sets_to_add.map do |definition_set|
-          next if definition_set.any? { |d| d.keep?(self) }
-
-          ::Leftovers::DefinitionSet.new(definition_set.map { |d| d.to_definition(self) })
-        end
-    end
-
     def test_line?(line)
       @file.test? || @test_lines.include?(line)
     end
@@ -80,12 +55,28 @@ module Leftovers
       @allow_lines.include?(line)
     end
 
-    def add_call(name)
-      calls << name
+    def add_definition_set(definition_node_set)
+      @definition_collection.add_definition_set(definition_node_set)
+    end
+
+    def set_privacy(node, to)
+      @definition_collection.set_privacy(node, to)
+    end
+
+    def add_definition(node, name: node.name, loc: node.loc.name)
+      @definition_collection.add(node, name: name, loc: loc)
+    end
+
+    def add_definition_node(definition_node)
+      @definition_collection.add_definition_node(definition_node)
+    end
+
+    def definitions
+      @definitions ||= @definition_collection.to_definitions(self)
     end
 
     def collect_send(node)
-      add_call(node.name)
+      calls << node.name
       collect_dynamic(node)
     end
 
@@ -98,9 +89,9 @@ module Leftovers
       node = node.first
       case node.type
       # just collects the :call=, super will collect the :call
-      when :send, :csend then add_call(:"#{node.name}=")
+      when :send, :csend then calls << :"#{node.name}="
       # just collects the call, super will collect the definition
-      when :ivasgn, :gvasgn, :cvasgn then add_call(node.name)
+      when :ivasgn, :gvasgn, :cvasgn then calls << node.name
       when :lvasgn then nil # we don't care about lvasgn
       # :nocov:
       else raise Leftovers::UnexpectedCase, "Unhandled value #{node.type.inspect}"
@@ -115,9 +106,7 @@ module Leftovers
     end
 
     def collect_dynamic(node)
-      node.keep_line = @allow_lines.include?(node.loc.line)
-
-      Leftovers.config.dynamic.process(node, self)
+      Leftovers.config.dynamic.process(nil, node, node, self)
     rescue StandardError => e
       raise ::Leftovers::Error, "#{e.class}: #{e.message}\n" \
         "when processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace

@@ -11,9 +11,9 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node)
-        Leftovers.map_or_self(@processors) do |processor|
-          processor.process(str, node, method_node)
+      def process(str, node, method_node, acc)
+        @processors.each do |processor|
+          processor.process(str, node, method_node, acc)
         end
       end
 

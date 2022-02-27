@@ -31,7 +31,7 @@ RSpec.describe Leftovers::MergedConfig do
       expect(original_precompilers).not_to eq subject.precompilers
 
       expect(
-        ::Leftovers::ProcessorBuilders::EachDynamic.build([original_dynamic, actionpack.dynamic])
+        ::Leftovers::ProcessorBuilders::Each.build([original_dynamic, actionpack.dynamic])
       ).to match_nested_object subject.dynamic
 
       expect(

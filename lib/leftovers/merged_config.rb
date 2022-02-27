@@ -54,7 +54,7 @@ module Leftovers
     end
 
     def dynamic
-      @dynamic ||= ::Leftovers::ProcessorBuilders::EachDynamic.build(@configs.map(&:dynamic))
+      @dynamic ||= ::Leftovers::ProcessorBuilders::Each.build(@configs.map(&:dynamic))
     end
 
     def keep

@@ -1587,6 +1587,27 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :bar)) }
   end
 
+  context 'with add_suffix position argument with no suffix and no joiner' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: 0
+              add_suffix:
+                argument: 1
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method(:bar, baz)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :baz)) }
+  end
+
   context 'with add_suffix position arguments' do
     let(:config) do
       <<~YML

@@ -10,17 +10,17 @@ module Leftovers
         freeze
       end
 
-      def process(_str, node, method_node)
+      def process(_str, node, method_node, acc)
         kwargs = node.kwargs
         return unless kwargs
 
-        Leftovers.map_or_self(kwargs.children) do |pair|
+        kwargs.children.each do |pair|
           next unless @matcher === pair
 
           argument_node = pair.first
           str = argument_node.to_s if argument_node.string_or_symbol?
 
-          @then_processor.process(str, argument_node, method_node)
+          @then_processor.process(str, argument_node, method_node, acc)
         end
       end
 

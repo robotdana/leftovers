@@ -7,8 +7,6 @@ module Leftovers
     autoload(:AddSuffix, "#{__dir__}/processor_builders/add_suffix")
     autoload(:Argument, "#{__dir__}/processor_builders/argument")
     autoload(:Dynamic, "#{__dir__}/processor_builders/dynamic")
-    autoload(:EachAction, "#{__dir__}/processor_builders/each_action")
-    autoload(:EachDynamic, "#{__dir__}/processor_builders/each_dynamic")
     autoload(:EachForDefinitionSet, "#{__dir__}/processor_builders/each_for_definition_set")
     autoload(:Each, "#{__dir__}/processor_builders/each")
     autoload(:Itself, "#{__dir__}/processor_builders/itself")

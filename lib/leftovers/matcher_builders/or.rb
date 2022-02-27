@@ -37,7 +37,7 @@ module Leftovers
           when Array, Set
             value.flat_map { |v| flatten(v) }
           else
-            value
+            [value]
           end
         end
 

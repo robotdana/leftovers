@@ -10,11 +10,11 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node)
+      def process(str, node, method_node, acc)
         return unless str
 
-        Leftovers.map_or_self(str.split(@split_on)) do |sub_str|
-          @then_processor.process(sub_str, node, method_node)
+        str.split(@split_on).each do |sub_str|
+          @then_processor.process(sub_str, node, method_node, acc)
         end
       end
 

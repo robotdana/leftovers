@@ -35,14 +35,6 @@ module Leftovers
         @memo[:path] ||= loc.expression.source_buffer.name.to_s
       end
 
-      def keep_line=(value)
-        @memo[:keep_line] = value
-      end
-
-      def keep_line?
-        @memo[:keep_line]
-      end
-
       def privacy=(value)
         @memo[:privacy] = value
       end

@@ -10,12 +10,12 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node)
+      def process(str, node, method_node, acc)
         return unless str
 
         # TODO: investigate index
         str = str.split(@delete_after, 2).first || str
-        @then_processor.process(str, node, method_node)
+        @then_processor.process(str, node, method_node, acc)
       end
 
       freeze

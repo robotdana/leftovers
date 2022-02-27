@@ -157,7 +157,7 @@ RSpec.describe 'ruby and stdlib' do
 
   context 'with a processing error' do
     before do
-      allow(::Leftovers::ValueProcessors::ReturnSym)
+      allow(::Leftovers::ValueProcessors::AddCall)
         .to receive(:process).and_raise(ArgumentError, 'original message')
     end
 

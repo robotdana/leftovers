@@ -2,12 +2,11 @@
 
 module Leftovers
   module ValueProcessors
-    module ReturnSym
-      def self.process(str, _node, _method_node)
+    module AppendSym
+      def self.process(str, _node, _method_node, acc)
         return unless str
-        return if str.empty?
 
-        str.to_sym
+        acc << str.to_sym
       end
     end
   end

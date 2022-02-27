@@ -30,6 +30,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:ConfigLoader, "#{__dir__}/leftovers/config_loader")
   autoload(:Config, "#{__dir__}/leftovers/config")
   autoload(:Definition, "#{__dir__}/leftovers/definition")
+  autoload(:DefinitionCollection, "#{__dir__}/leftovers/definition_collection")
   autoload(:DefinitionNode, "#{__dir__}/leftovers/definition_node")
   autoload(:DefinitionNodeSet, "#{__dir__}/leftovers/definition_node_set")
   autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
@@ -46,7 +47,6 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:RakeTask, "#{__dir__}/leftovers/rake_task")
   autoload(:Reporter, "#{__dir__}/leftovers/reporter")
   autoload(:TodoReporter, "#{__dir__}/leftovers/todo_reporter")
-  autoload(:DynamicProcessors, "#{__dir__}/leftovers/dynamic_processors")
   autoload(:ValueProcessors, "#{__dir__}/leftovers/value_processors")
   autoload(:VERSION, "#{__dir__}/leftovers/version")
 
@@ -164,16 +164,6 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       case value
       when nil then nil
       when Array then value.each(&block)
-      else yield(value)
-      end
-    end
-
-    def map_or_self(value, &block)
-      # return enum_for(__method__, value) unless block
-
-      case value
-      when nil then nil
-      when Array then unwrap_array(value.flat_map(&block).compact)
       else yield(value)
       end
     end

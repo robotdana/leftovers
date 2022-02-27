@@ -9,14 +9,18 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node)
-        definitions = Leftovers.map_or_self(@then_processors) do |then_processor|
-          then_processor.process(str, node, method_node)
+      def process(str, node, method_node, acc)
+        set = ::Leftovers::DefinitionNodeSet.new
+
+        @then_processors.each do |then_processor|
+          then_processor.process(str, node, method_node, set)
         end
 
-        return definitions unless definitions.is_a?(Array)
-
-        ::Leftovers::DefinitionNodeSet.new(definitions)
+        if set.definitions.length == 1
+          acc.add_definition_node set.definitions.first
+        else
+          acc.add_definition_set set
+        end
       end
 
       freeze

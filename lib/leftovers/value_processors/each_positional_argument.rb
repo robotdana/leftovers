@@ -9,15 +9,15 @@ module Leftovers
         freeze
       end
 
-      def process(_str, node, method_node)
+      def process(_str, node, method_node, acc)
         positional_arguments = node.positional_arguments
 
         return unless positional_arguments
 
-        Leftovers.map_or_self(positional_arguments) do |argument_node|
+        positional_arguments.each do |argument_node|
           str = argument_node.to_s if argument_node.string_or_symbol_or_def?
 
-          @then_processor.process(str, argument_node, method_node)
+          @then_processor.process(str, argument_node, method_node, acc)
         end
       end
 

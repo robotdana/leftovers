@@ -49,7 +49,7 @@ module Leftovers
           match = comment.text.match(LEFTOVERS_CALL_RE)
           return unless match
 
-          match[1].scan(NAME_RE).each { |s| collector.add_call(s.to_sym) }
+          match[1].scan(NAME_RE).each { |s| collector.calls << s.to_sym }
         end
       end
     end

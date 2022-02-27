@@ -5,7 +5,7 @@ module Leftovers
     module Dynamic
       class << self
         def build(dynamic_rules)
-          ::Leftovers::ProcessorBuilders::EachDynamic.each_or_self(dynamic_rules) do |dynamic|
+          ::Leftovers::ProcessorBuilders::Each.each_or_self(dynamic_rules) do |dynamic|
             build_processors(**dynamic)
           end
         end
@@ -17,44 +17,41 @@ module Leftovers
         )
           matcher = ::Leftovers::MatcherBuilders::Node.build(**matcher_rules)
 
-          call_action = build_action(call, return_type: :sym)
-          define_action = build_action(define, return_type: :definition_node)
-
-          ::Leftovers::ProcessorBuilders::EachDynamic.build([
-            build_call_define_processor(matcher, call_action, define_action),
-            build_set_privacy_processor(matcher, set_privacy),
-            build_set_default_privacy_processor(matcher, set_default_privacy)
+          processor = ::Leftovers::ProcessorBuilders::Each.build([
+            build_call_action(call),
+            build_define_action(define),
+            build_set_privacy_action(set_privacy),
+            build_set_default_privacy_action(set_default_privacy)
           ])
+
+          ::Leftovers::ValueProcessors::IfMatcher.new(matcher, processor)
         end
 
-        def build_action(processor_rules, return_type:)
-          ::Leftovers::ProcessorBuilders::Action.build(processor_rules, return_type)
+        def build_call_action(call)
+          ::Leftovers::ProcessorBuilders::Action.build(
+            call, ::Leftovers::ValueProcessors::AddCall
+          )
         end
 
-        def build_set_privacy_processor(matcher, set_privacy)
-          ::Leftovers::ProcessorBuilders::EachDynamic.each_or_self(set_privacy) do |action_values|
-            to = action_values.delete(:to)
-            action = build_action(action_values, return_type: :sym)
+        def build_define_action(define)
+          ::Leftovers::ProcessorBuilders::Action.build(
+            define, ::Leftovers::ValueProcessors::AddDefinitionNode
+          )
+        end
 
-            ::Leftovers::DynamicProcessors::SetPrivacy.new(matcher, action, to)
+        def build_set_privacy_action(set_privacies)
+          ::Leftovers::ProcessorBuilders::Each.each_or_self(set_privacies) do |set_privacy|
+            processor = ::Leftovers::ValueProcessors::SetPrivacy.new(set_privacy.delete(:to))
+            ::Leftovers::ProcessorBuilders::Action.build_from_hash_value(
+              **set_privacy, final_processor: processor
+            )
           end
         end
 
-        def build_set_default_privacy_processor(matcher, set_default_privacy)
-          ::Leftovers::DynamicProcessors::SetDefaultPrivacy.new(matcher, set_default_privacy)
-        end
+        def build_set_default_privacy_action(set_default_privacy)
+          return unless set_default_privacy
 
-        def build_call_define_processor(matcher, call_action, define_action)
-          if call_action && define_action
-            # this nonsense saves a method call and array instantiation per method
-            ::Leftovers::DynamicProcessors::CallDefinition.new(matcher, call_action, define_action)
-          elsif define_action
-            ::Leftovers::DynamicProcessors::Definition.new(matcher, define_action)
-          elsif call_action
-            ::Leftovers::DynamicProcessors::Call.new(matcher, call_action)
-          else
-            ::Leftovers::DynamicProcessors::Null
-          end
+          ::Leftovers::ValueProcessors::SetDefaultPrivacy.new(set_default_privacy)
         end
       end
     end

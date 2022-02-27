@@ -10,13 +10,14 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node)
+      def process(str, node, method_node, acc)
         return unless str
 
-        prefixes = @prefix_processor.process(nil, method_node, method_node)
+        prefixes = []
+        @prefix_processor.process(nil, method_node, method_node, prefixes)
 
-        Leftovers.map_or_self(prefixes) do |prefix|
-          @then_processor.process("#{prefix}#{str}", node, method_node)
+        prefixes.each do |prefix|
+          @then_processor.process("#{prefix}#{str}", node, method_node, acc)
         end
       end
 

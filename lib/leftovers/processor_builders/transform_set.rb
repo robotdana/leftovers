@@ -4,15 +4,15 @@ module Leftovers
   module ProcessorBuilders
     module TransformSet
       class << self
-        def build(transforms, action)
-          each_builder(action).each_or_self(transforms) do |transform|
+        def build(transforms, final_processor)
+          each_builder(final_processor).each_or_self(transforms) do |transform|
             case transform
             when ::Hash
-              next build(transform[:transforms], action) if transform[:transforms]
+              next build(transform[:transforms], final_processor) if transform[:transforms]
 
-              ::Leftovers::ProcessorBuilders::TransformChain.build(transform, build_final(action))
+              ::Leftovers::ProcessorBuilders::TransformChain.build(transform, final_processor)
             when ::String
-              ::Leftovers::ProcessorBuilders::TransformChain.build(transform, build_final(action))
+              ::Leftovers::ProcessorBuilders::TransformChain.build(transform, final_processor)
             # :nocov:
             else raise Leftovers::UnexpectedCase, "Unhandled value #{transform.inspect}"
               # :nocov:
@@ -20,29 +20,13 @@ module Leftovers
           end
         end
 
-        def build_final(action)
-          case action
-          when :sym
-            ::Leftovers::ValueProcessors::ReturnSym
-          when :definition_node
-            ::Leftovers::ValueProcessors::ReturnDefinitionNode
-          # :nocov:
-          else raise Leftovers::UnexpectedCase, "Unhandled value #{action.inspect}"
-            # :nocov:
-          end
-        end
-
         private
 
-        def each_builder(action)
-          case action
-          when :sym
-            ::Leftovers::ProcessorBuilders::Each
-          when :definition_node
+        def each_builder(final_processor)
+          if final_processor == ::Leftovers::ValueProcessors::AddDefinitionNode
             ::Leftovers::ProcessorBuilders::EachForDefinitionSet
-          # :nocov:
-          else raise Leftovers::UnexpectedCase, "Unhandled value #{action.inspect}"
-            # :nocov:
+          else
+            ::Leftovers::ProcessorBuilders::Each
           end
         end
       end

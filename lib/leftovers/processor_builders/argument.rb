@@ -4,7 +4,7 @@ module Leftovers
   module ProcessorBuilders
     module Argument
       def self.build(patterns, processor)
-        ::Leftovers::ProcessorBuilders::EachAction.each_or_self(patterns) do |pat|
+        ::Leftovers::ProcessorBuilders::Each.each_or_self(patterns) do |pat|
           case pat
           when ::Integer then ::Leftovers::ValueProcessors::PositionalArgument.new(pat, processor)
           when '*' then ::Leftovers::ValueProcessors::EachPositionalArgument.new(processor)

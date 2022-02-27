@@ -36,17 +36,17 @@ module Leftovers
       end
 
       def on_ivar(node)
-        @collector.add_call(node.name)
+        @collector.calls << node.name
         super
       end
 
       def on_gvar(node)
-        @collector.add_call(node.name)
+        @collector.calls << node.name
         super
       end
 
       def on_cvar(node)
-        @collector.add_call(node.name)
+        @collector.calls << node.name
         super
       end
 
@@ -77,7 +77,7 @@ module Leftovers
 
       def on_const(node)
         super
-        @collector.add_call(node.name)
+        @collector.calls << node.name
       end
 
       def on_array(node)
@@ -95,7 +95,7 @@ module Leftovers
         super
         return unless node.first.string_or_symbol?
 
-        @collector.add_call(node.first.to_sym)
+        @collector.calls << node.first.to_sym
       end
 
       # grab class Constant or module Constant
@@ -124,7 +124,7 @@ module Leftovers
         @collector.add_definition(
           new_method, name: new_method.children.first, loc: new_method.loc.expression
         )
-        @collector.add_call(original_method.children.first)
+        @collector.calls << original_method.children.first
       end
     end
   end

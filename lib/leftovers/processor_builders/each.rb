@@ -5,9 +5,7 @@ module Leftovers
     module Each
       def self.each_or_self(value, &block)
         case value
-        # :nocov:
-        when nil then raise Leftovers::UnexpectedCase, "Unhandled value #{value.inspect}"
-        # :nocov:
+        when nil then nil
         when Array then build(value.map(&block))
         else build([yield(value)])
         end
@@ -25,11 +23,19 @@ module Leftovers
         end
       end
 
-      def self.compact(processors)
-        processors.flatten!
-        processors.compact!
+      def self.flatten(processors)
+        case processors
+        when ::Leftovers::ValueProcessors::Each
+          flatten(processors.processors)
+        when Array
+          processors.flat_map { |v| flatten(v) }
+        else
+          [processors]
+        end
+      end
 
-        processors
+      def self.compact(processors)
+        flatten(processors).compact
       end
     end
   end
