@@ -17,9 +17,7 @@ module Leftovers
         argument_node = positional_arguments[@index]
         return unless argument_node
 
-        str = argument_node.to_s if argument_node.string_or_symbol?
-
-        @then_processor.process(str, argument_node, method_node, acc)
+        @then_processor.process(argument_node.to_repeatable_s, argument_node, method_node, acc)
       end
 
       freeze

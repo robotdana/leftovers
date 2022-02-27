@@ -59,12 +59,8 @@ module Leftovers
         :''
       end
 
-      def string_or_symbol?
-        false
-      end
-
-      def string_or_symbol_or_def?
-        false
+      def to_repeatable_s
+        nil
       end
 
       def hash?
@@ -72,6 +68,10 @@ module Leftovers
       end
 
       def proc?
+        false
+      end
+
+      def sym?
         false
       end
 

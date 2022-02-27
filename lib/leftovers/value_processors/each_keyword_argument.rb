@@ -16,10 +16,8 @@ module Leftovers
         kwargs.children.each do |pair|
           next unless pair.type == :pair
 
-          argument_node = pair.second
-          str = argument_node.to_s if argument_node.string_or_symbol?
-
-          @then_processor.process(str, argument_node, method_node, acc)
+          value_node = pair.second
+          @then_processor.process(value_node.to_repeatable_s, value_node, method_node, acc)
         end
       end
 

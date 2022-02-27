@@ -10,20 +10,13 @@ module Leftovers
       end
 
       alias_method :to_s, :first
+      alias_method :to_repeatable_s, :to_s
 
       def to_sym
         to_s.to_sym
       end
 
       def scalar?
-        true
-      end
-
-      def string_or_symbol?
-        true
-      end
-
-      def string_or_symbol_or_def?
         true
       end
     end

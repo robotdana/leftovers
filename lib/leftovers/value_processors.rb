@@ -25,7 +25,6 @@ module Leftovers
     autoload(:Each, "#{__dir__}/value_processors/each")
     autoload(:IfMatcher, "#{__dir__}/value_processors/if_matcher")
     autoload(:Itself, "#{__dir__}/value_processors/itself")
-    autoload(:Keyword, "#{__dir__}/value_processors/keyword")
     autoload(:KeywordArgument, "#{__dir__}/value_processors/keyword_argument")
     autoload(:Parameterize, "#{__dir__}/value_processors/parameterize")
     autoload(:Placeholder, "#{__dir__}/value_processors/placeholder")

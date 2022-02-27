@@ -15,9 +15,7 @@ module Leftovers
         return unless positional_arguments
 
         positional_arguments.each do |argument_node|
-          str = argument_node.to_s if argument_node.string_or_symbol_or_def?
-
-          @then_processor.process(str, argument_node, method_node, acc)
+          @then_processor.process(argument_node.to_repeatable_s, argument_node, method_node, acc)
         end
       end
 

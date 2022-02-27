@@ -15,11 +15,9 @@ module Leftovers
         name.to_s
       end
 
-      def string_or_symbol?
-        true
-      end
+      alias_method :to_repeatable_s, :to_s
 
-      def string_or_symbol_or_def?
+      def sym?
         true
       end
     end
