@@ -230,7 +230,10 @@ RSpec.describe Leftovers::FileCollector do
   context 'with constant references' do
     let(:ruby) { 'Whatever.new' }
 
-    it { is_expected.to have_no_definitions.and(have_calls(:Whatever, :new)) }
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:Whatever, :new, :allocate, :initialize))
+    end
   end
 
   context 'with class definitions' do
@@ -254,7 +257,10 @@ RSpec.describe Leftovers::FileCollector do
   context 'with constant assignment' do
     let(:ruby) { 'Whatever = Class.new' }
 
-    it { is_expected.to have_definitions(:Whatever).and(have_calls(:Class, :new)) }
+    it do
+      expect(subject).to have_definitions(:Whatever)
+        .and(have_calls(:Class, :new, :allocate, :initialize))
+    end
   end
 
   context 'with method calls in hash values' do

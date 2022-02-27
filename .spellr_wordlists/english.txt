@@ -47,6 +47,7 @@ namespaced
 nocov
 nonexcluded
 noninfringement
+ofs
 okcomputer
 overwritable
 precompilable

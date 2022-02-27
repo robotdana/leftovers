@@ -1781,7 +1781,10 @@ RSpec.describe Leftovers::FileCollector do
     it do
       expect(subject)
         .to have_no_definitions
-        .and(have_calls(:yes, :yes2, :yes3, :proc, :lambda, :Proc, :new, :my_method, :thing))
+        .and(have_calls(
+          :yes, :yes2, :yes3, :proc, :lambda,
+          :Proc, :new, :allocate, :initialize, :my_method, :thing
+        ))
     end
   end
 
@@ -2535,7 +2538,10 @@ RSpec.describe Leftovers::FileCollector do
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:Caller, :new, :yes, :NotCaller)) }
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:Caller, :new, :allocate, :initialize, :yes, :NotCaller))
+    end
   end
 
   context 'with has_receiver list' do
@@ -2562,7 +2568,7 @@ RSpec.describe Leftovers::FileCollector do
     it do
       expect(subject)
         .to have_no_definitions
-        .and(have_calls(:Caller, :Logger, :yes2, :new, :yes, :NotCaller))
+        .and(have_calls(:Caller, :Logger, :yes2, :new, :allocate, :initialize, :yes, :NotCaller))
     end
   end
 
@@ -2612,7 +2618,10 @@ RSpec.describe Leftovers::FileCollector do
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:Caller, :Leftovers, :new, :yes)) }
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:Caller, :Leftovers, :allocate, :initialize, :new, :yes))
+    end
   end
 
   context 'with definition set and calls defined' do

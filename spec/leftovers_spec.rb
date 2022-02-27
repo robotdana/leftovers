@@ -134,9 +134,9 @@ RSpec.describe Leftovers do
         end
       RUBY
 
-      expect(subject.leftovers.flat_map(&:names)).to eq [:Actions]
+      expect(subject.leftovers.flat_map(&:names)).to contain_exactly(:Actions, :initialize)
       expect(subject.collector).to have_definitions(
-        :Actions, :prepare_params, :sub_params
+        :Actions, :initialize, :prepare_params, :sub_params
       ).and(have_calls(:sub_params, :prepare_params))
     end
   end

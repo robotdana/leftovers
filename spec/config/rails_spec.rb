@@ -233,7 +233,7 @@ RSpec.describe 'rails gem' do
 
     it do
       expect(subject).to have_no_definitions
-        .and have_calls(:User, :new, :first_name=, :last_name=)
+        .and have_calls(:User, :new, :first_name=, :last_name=, :allocate, :initialize)
     end
   end
 
