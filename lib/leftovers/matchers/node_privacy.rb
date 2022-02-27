@@ -3,14 +3,16 @@
 module Leftovers
   module Matchers
     class NodePrivacy
-      def initialize(privacy_matcher)
-        @privacy_matcher = privacy_matcher
+      attr_reader :matcher
+
+      def initialize(matcher)
+        @matcher = matcher
 
         freeze
       end
 
       def ===(node)
-        @privacy_matcher === node.privacy
+        @matcher === node.privacy
       end
 
       freeze

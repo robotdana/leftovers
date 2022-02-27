@@ -3,14 +3,16 @@
 module Leftovers
   module Matchers
     class NodePath
-      def initialize(path_matcher)
-        @path_matcher = path_matcher
+      attr_reader :matcher
+
+      def initialize(matcher)
+        @matcher = matcher
 
         freeze
       end
 
       def ===(node)
-        @path_matcher === node.path
+        @matcher === node.path
       end
 
       freeze

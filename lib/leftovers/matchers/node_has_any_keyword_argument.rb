@@ -3,8 +3,10 @@
 module Leftovers
   module Matchers
     class NodeHasAnyKeywordArgument
-      def initialize(pair_matcher)
-        @pair_matcher = pair_matcher
+      attr_reader :matcher
+
+      def initialize(matcher)
+        @matcher = matcher
 
         freeze
       end
@@ -13,7 +15,7 @@ module Leftovers
         kwargs = node.kwargs
         return false unless kwargs
 
-        kwargs.children.any?(@pair_matcher)
+        kwargs.children.any?(@matcher)
       end
 
       freeze

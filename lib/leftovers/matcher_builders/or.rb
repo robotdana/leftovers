@@ -34,7 +34,7 @@ module Leftovers
             [*flatten(value.lhs), *flatten(value.rhs)]
           when ::Leftovers::Matchers::Any
             flatten(value.matchers)
-          when Array
+          when Array, Set
             value.flat_map { |v| flatten(v) }
           else
             value
@@ -46,18 +46,33 @@ module Leftovers
             case matcher
             when ::Integer, ::Symbol then :set
             when ::Regexp then :regexp
-            else :uncompactable
+            when nil then :nil
+            else matcher.class.to_s.to_sym
             end
           end
 
           groups.transform_values { |v| Leftovers.unwrap_array(v) }
         end
 
-        def build_grouped(set: nil, regexp: nil, uncompactable: nil)
-          set = set.to_set if set.is_a?(Array)
-          regexp = Regexp.union(regexp) if regexp.is_a?(Array)
+        def mergeable?(matcher)
+          matcher.respond_to?(:matcher)
+        end
 
-          [set, regexp].concat(Array(uncompactable)).compact
+        def build_grouped_for_matcher(matchers)
+          return matchers unless matchers.is_a?(Array)
+          return matchers unless mergeable?(matchers.first)
+
+          matchers.first.class.new(build(matchers.map(&:matcher)))
+        end
+
+        def build_grouped(set: nil, regexp: nil, nil: nil, **matcher_classes) # rubocop:disable Lint/UnusedMethodArgument i want to throw away nils
+          set = set.uniq.to_set if set.is_a?(Array)
+          regexp = Regexp.union(regexp) if regexp.is_a?(Array)
+          matcher_classes = matcher_classes.each_value.flat_map do |matchers|
+            build_grouped_for_matcher(matchers)
+          end
+
+          [set, regexp].compact.concat(matcher_classes).uniq
         end
 
         def compact(matchers)

@@ -3,14 +3,16 @@
 module Leftovers
   module Matchers
     class NodePairValue
-      def initialize(value_matcher)
-        @value_matcher = value_matcher
+      attr_reader :matcher
+
+      def initialize(matcher)
+        @matcher = matcher
 
         freeze
       end
 
       def ===(node)
-        @value_matcher === node.second
+        @matcher === node.second
       end
 
       freeze

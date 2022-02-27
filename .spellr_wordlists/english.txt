@@ -41,6 +41,7 @@ lol
 lorem
 memoization
 memoized
+mergeable
 namespace
 namespaced
 nocov
@@ -77,6 +78,7 @@ unfuzzable
 unmemoize
 unmemoizes
 veganstraightedge
+voltron
 warmup
 webdriver
 whatevers

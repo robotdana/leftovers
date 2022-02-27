@@ -3,14 +3,16 @@
 module Leftovers
   module Matchers
     class NodeName
-      def initialize(name_matcher)
-        @name_matcher = name_matcher
+      attr_reader :matcher
+
+      def initialize(matcher)
+        @matcher = matcher
 
         freeze
       end
 
       def ===(node)
-        @name_matcher === node.name
+        @matcher === node.name
       end
 
       freeze

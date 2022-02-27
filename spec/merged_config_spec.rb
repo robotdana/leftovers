@@ -22,24 +22,24 @@ RSpec.describe Leftovers::MergedConfig do
         *::Leftovers::MergedConfig::MEMOIZED_IVARS, :@configs, :@loaded_configs
       )
 
-      rails = Leftovers::Config.new(:rails)
-      subject << rails
+      actionpack = Leftovers::Config.new(:actionpack)
+      subject << actionpack
 
-      expect(original_exclude_paths).not_to eq subject.exclude_paths
+      expect(original_exclude_paths).not_to be subject.exclude_paths # it's a different empty array
       expect(original_include_paths).not_to eq subject.include_paths
       expect(original_test_paths).not_to eq subject.test_paths # it's a different set of FastIgnore
       expect(original_precompilers).not_to eq subject.precompilers
 
       expect(
-        ::Leftovers::ProcessorBuilders::EachDynamic.build([original_dynamic, rails.dynamic])
+        ::Leftovers::ProcessorBuilders::EachDynamic.build([original_dynamic, actionpack.dynamic])
       ).to match_nested_object subject.dynamic
 
       expect(
-        ::Leftovers::MatcherBuilders::Or.build([original_keep, rails.keep])
+        ::Leftovers::MatcherBuilders::Or.build([original_keep, actionpack.keep])
       ).to match_nested_object subject.keep
 
       expect(
-        ::Leftovers::MatcherBuilders::Or.build([original_test_only, rails.test_only])
+        ::Leftovers::MatcherBuilders::Or.build([original_test_only, actionpack.test_only])
       ).to match_nested_object subject.test_only
     end
 
@@ -57,9 +57,13 @@ RSpec.describe Leftovers::MergedConfig do
 
     it "or's correctly" do
       config = Leftovers::Config.new('.valid.yml', content: 'keep: method')
-      config2 = Leftovers::Config.new('.valid2.yml', content: 'keep: method2')
-      config3 = Leftovers::Config.new('.valid3.yml', content: 'keep: [method3, method4]')
-      config4 = Leftovers::Config.new('.valid4.yml', content: 'keep: [method5, method6, method7]')
+      config2 = Leftovers::Config.new('.valid2.yml',
+                                      content: 'keep: [method, { has_receiver: method2 }]')
+      config3 = Leftovers::Config.new('.valid3.yml', content: 'keep: { privacy: private }')
+      config4 = Leftovers::Config.new(
+        '.valid4.yml',
+        content: 'keep: [{ has_receiver: method2 }, { privacy: private }, { type: Array }]'
+      )
 
       subject << config
       expect(subject.keep).to be_a(::Leftovers::Matchers::NodeName)
