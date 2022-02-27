@@ -14,9 +14,7 @@ module Leftovers
       end
 
       def arguments
-        @memo.fetch(:arguments) do
-          @memo[:arguments] = children.drop(2)
-        end
+        @memo[:arguments] ||= children.drop(2)
       end
 
       def as_arguments_list

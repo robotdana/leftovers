@@ -1,3 +1,11 @@
+# v0.8.1
+- Performance improvements
+  - squash the config matching more
+  - simplify the `type: Proc` matcher
+- Add `names:` and `has_arguments:` to the `has_value:`.
+- Fix error when positional `has_arguments:`/`has_value: at:` checks a node without arguments
+- Automatically test the config examples in the documentation
+
 # v0.8.0
 - Allow custom precompilers
   ```yml
