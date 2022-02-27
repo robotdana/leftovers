@@ -20,10 +20,22 @@ module Leftovers
 
         private
 
-        def build_node_name(match, has_prefix, has_suffix)
-          ::Leftovers::MatcherBuilders::NodeName.build(
-            match: match, has_prefix: has_prefix, has_suffix: has_suffix
-          )
+        def build_node_name_matcher(names, match, has_prefix, has_suffix)
+          ::Leftovers::MatcherBuilders::Or.build([
+            ::Leftovers::MatcherBuilders::NodeName.build(names),
+            ::Leftovers::MatcherBuilders::NodeName.build(
+              match: match, has_prefix: has_prefix, has_suffix: has_suffix
+            )
+          ])
+        end
+
+        def build_node_has_argument_matcher(has_arguments, at, has_value)
+          ::Leftovers::MatcherBuilders::Or.build([
+            ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
+            ::Leftovers::MatcherBuilders::NodeHasArgument.build(
+              at: at, has_value: has_value
+            )
+          ])
         end
 
         def build_unless(unless_arg)
@@ -35,15 +47,15 @@ module Leftovers
         end
 
         def build_from_hash( # rubocop:disable Metrics/ParameterLists
-          at: nil, has_value: nil,
-          match: nil, has_prefix: nil, has_suffix: nil,
+          has_arguments: nil, at: nil, has_value: nil,
+          names: nil, match: nil, has_prefix: nil, has_suffix: nil,
           type: nil,
           has_receiver: nil,
           unless_arg: nil
         )
           ::Leftovers::MatcherBuilders::And.build([
-            ::Leftovers::MatcherBuilders::NodeHasArgument.build(at: at, has_value: has_value),
-            build_node_name(match, has_prefix, has_suffix),
+            build_node_has_argument_matcher(has_arguments, at, has_value),
+            build_node_name_matcher(names, match, has_prefix, has_suffix),
             ::Leftovers::MatcherBuilders::NodeType.build(type),
             ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),
             build_unless(unless_arg)

@@ -359,7 +359,7 @@ RSpec.describe Leftovers::Config do
               argument: 1
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:18 has_value value must be any scalar value or a hash with any of match, has_prefix, has_suffix, at, has_value, has_receiver, type, unless\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:18 has_value value must be any scalar value or a hash with any of names, match, has_prefix, has_suffix, has_arguments, at, has_value, has_receiver, type, unless\e[0m
       MESSAGE
     end
 

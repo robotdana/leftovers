@@ -2456,7 +2456,7 @@ RSpec.describe Leftovers::FileCollector do
         dynamic:
           name: new
           has_receiver:
-            match: Caller
+            name: Caller
             has_receiver: Leftovers
           calls:
             argument: 0

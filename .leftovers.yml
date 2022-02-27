@@ -10,9 +10,9 @@ keep:
 dynamic:
   name: new
   has_receiver:
-    match: Predicate
+    name: Predicate
     has_receiver:
-      match: Matchers
+      name: Matchers
       has_receiver: Leftovers
   calls:
     argument: 0
