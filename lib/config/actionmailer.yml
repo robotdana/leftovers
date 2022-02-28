@@ -1,22 +1,90 @@
-# THIS IS INCOMPLETE (you can help by expanding it)
-# rails is _really complicated_ and has a lot of magic which calls methods for you.
-# some is currently impossible to handle (with_options).
-# Some is just corners of rails I haven't hit yet.
+# https://edgeapi.rubyonrails.org/classes/ActionMailer/Base.html
+# https://guides.rubyonrails.org/action_mailer_basics.html
+
 keep:
+  # https://guides.rubyonrails.org/action_mailer_basics.html
   - has_suffix: Preview
-    path: '**/mailers/previews/**/*_preview.rb'
+    path: '/test/mailers/previews/**/*_preview.rb' # this is the default
+
+  # https://guides.rubyonrails.org/action_mailer_basics.html#intercepting-emails
   - delivering_email
+
+  # https://guides.rubyonrails.org/action_mailer_basics.html#observing-emails
   - delivered_email
 
 dynamic:
-  - names:
-      - deliver_now
-      - deliver_later
-    calls:
-      value:
-        deliver
+  # https://guides.rubyonrails.org/action_mailer_basics.html#action-mailer-callbacks
   - names:
       - before_action
       - after_action
       - around_action
     calls: ['*', if, unless]
+
+  # https://guides.rubyonrails.org/action_mailer_basics.html#intercepting-emails
+  - names: interceptors=
+    has_receiver: action_mailer
+    calls:
+      argument: 0
+      nested: '*'
+      split: '::'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionMailer/Base.html#method-c-register_interceptor
+  - names: register_interceptor
+    calls:
+      argument: 0
+      camelize: true
+      split: '::'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionMailer/Base.html#method-c-register_interceptors
+  - names: register_interceptors
+    calls:
+      argument: '*'
+      camelize: true
+      split: '::'
+
+
+  # https://guides.rubyonrails.org/action_mailer_basics.html#observing-emails
+  - names: observers=
+    has_receiver: action_mailer
+    calls:
+      argument: 0
+      nested: '*'
+      split: '::'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionMailer/Base.html#method-c-register_observer
+  - names: register_observer
+    calls:
+      argument: 0
+      camelize: true
+      split: '::'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionMailer/Base.html#method-c-register_observers
+  - names: register_observers
+    calls:
+      argument: '*'
+      camelize: true
+      split: '::'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionMailer/DeliveryMethods/ClassMethods.html#method-i-add_delivery_method
+  # i'm going to skip this because it immediately calls the method it creates
+  # - names: add_delivery_method
+  #   defines:
+  #     argument: 0
+  #     transforms:
+  #       - add_suffix: _settings=
+  #       - add_suffix: _settings
+  #   calls:
+  #     argument: 0
+  #     add_suffix: _settings=
+
+  # https://edgeapi.rubyonrails.org/classes/ActionMailer/Previews/ClassMethods.html#method-i-register_preview_interceptor
+  - names: register_preview_interceptor
+    calls:
+      argument: 0
+      split: '::'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionMailer/Previews/ClassMethods.html#method-i-register_preview_interceptors
+  - names: register_preview_interceptors
+    calls:
+      argument: '*'
+      split: '::'
