@@ -84,9 +84,9 @@ RSpec.describe Leftovers::AST::Node do
     it 'provides a name if it makes sense to do so' do
       expect(send_node.name).to eq :foo
       expect(csend_node.name).to eq :foo
-      expect(true_node.name).to eq nil
-      expect(false_node.name).to eq nil
-      expect(nil_node.name).to eq nil
+      expect(true_node.name).to be_nil
+      expect(false_node.name).to be_nil
+      expect(nil_node.name).to be_nil
       expect(str_node.name).to eq :foo
       expect(sym_node.name).to eq :foo
       expect(constant_node.name).to eq :FOO
@@ -99,30 +99,30 @@ RSpec.describe Leftovers::AST::Node do
       expect(gvasgn_node.name).to eq :$foo
       expect(class_node.name).to eq :Foo
       expect(module_node.name).to eq :Foo
-      expect(integer_node.name).to eq nil
-      expect(float_node.name).to eq nil
+      expect(integer_node.name).to be_nil
+      expect(float_node.name).to be_nil
     end
   end
 
   describe '#to_scalar_value' do
     it 'provides a scalar value if it makes sense to do so' do
-      expect(send_node.to_scalar_value).to eq nil
-      expect(csend_node.to_scalar_value).to eq nil
-      expect(true_node.to_scalar_value).to eq true
-      expect(false_node.to_scalar_value).to eq false
-      expect(nil_node.to_scalar_value).to eq nil
+      expect(send_node.to_scalar_value).to be_nil
+      expect(csend_node.to_scalar_value).to be_nil
+      expect(true_node.to_scalar_value).to be true
+      expect(false_node.to_scalar_value).to be false
+      expect(nil_node.to_scalar_value).to be_nil
       expect(str_node.to_scalar_value).to eq 'foo'
       expect(sym_node.to_scalar_value).to eq :foo
-      expect(constant_node.to_scalar_value).to eq nil
-      expect(def_node.to_scalar_value).to eq nil
-      expect(ivar_node.to_scalar_value).to eq nil
-      expect(ivasgn_node.to_scalar_value).to eq nil
-      expect(cvar_node.to_scalar_value).to eq nil
-      expect(cvasgn_node.to_scalar_value).to eq nil
-      expect(gvar_node.to_scalar_value).to eq nil
-      expect(gvasgn_node.to_scalar_value).to eq nil
-      expect(class_node.to_scalar_value).to eq nil
-      expect(module_node.to_scalar_value).to eq nil
+      expect(constant_node.to_scalar_value).to be_nil
+      expect(def_node.to_scalar_value).to be_nil
+      expect(ivar_node.to_scalar_value).to be_nil
+      expect(ivasgn_node.to_scalar_value).to be_nil
+      expect(cvar_node.to_scalar_value).to be_nil
+      expect(cvasgn_node.to_scalar_value).to be_nil
+      expect(gvar_node.to_scalar_value).to be_nil
+      expect(gvasgn_node.to_scalar_value).to be_nil
+      expect(class_node.to_scalar_value).to be_nil
+      expect(module_node.to_scalar_value).to be_nil
       expect(integer_node.to_scalar_value).to eq 1
       expect(float_node.to_scalar_value).to eq 1.0
     end
