@@ -19,13 +19,13 @@ module Leftovers
         when 0 then raise Leftovers::UnexpectedCase, "Unhandled value #{processors.inspect}"
         # :nocov:
         when 1 then processors.first
-        else ::Leftovers::ValueProcessors::Each.new(processors)
+        else ::Leftovers::Processors::Each.new(processors)
         end
       end
 
       def self.flatten(processors)
         case processors
-        when ::Leftovers::ValueProcessors::Each
+        when ::Leftovers::Processors::Each
           flatten(processors.processors)
         when Array
           processors.flat_map { |v| flatten(v) }

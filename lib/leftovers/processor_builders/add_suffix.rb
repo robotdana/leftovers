@@ -7,11 +7,11 @@ module Leftovers
         case argument
         when ::Hash
           dynamic_suffix = ::Leftovers::ProcessorBuilders::Action.build(
-            argument, ::Leftovers::ValueProcessors::AppendSym
+            argument, ::Leftovers::Processors::AppendSym
           )
-          ::Leftovers::ValueProcessors::AddDynamicSuffix.new(dynamic_suffix, then_processor)
+          ::Leftovers::Processors::AddDynamicSuffix.new(dynamic_suffix, then_processor)
         when ::String
-          ::Leftovers::ValueProcessors::AddSuffix.new(argument, then_processor)
+          ::Leftovers::Processors::AddSuffix.new(argument, then_processor)
           # :nocov:
         else raise Leftovers::UnexpectedCase, "Unhandled value #{argument.inspect}"
           # :nocov:

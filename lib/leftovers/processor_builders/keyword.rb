@@ -9,7 +9,7 @@ module Leftovers
         then_processor = case value
         when true, '**' then then_processor
         when ::String, ::Hash, ::Array
-          ::Leftovers::ValueProcessors::IfMatcher.new(
+          ::Leftovers::Processors::IfMatcher.new(
             ::Leftovers::MatcherBuilders::NodeName.build(value), then_processor
           )
         # :nocov:
@@ -17,7 +17,7 @@ module Leftovers
           # :nocov:
         end
 
-        ::Leftovers::ValueProcessors::EachKeyword.new(then_processor)
+        ::Leftovers::Processors::EachKeyword.new(then_processor)
       end
     end
   end

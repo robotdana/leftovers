@@ -27,30 +27,30 @@ module Leftovers
             build_eval_action(eval)
           ])
 
-          ::Leftovers::ValueProcessors::IfMatcher.new(matcher, processor)
+          ::Leftovers::Processors::IfMatcher.new(matcher, processor)
         end
 
         def build_call_action(call)
           ::Leftovers::ProcessorBuilders::Action.build(
-            call, ::Leftovers::ValueProcessors::AddCall
+            call, ::Leftovers::Processors::AddCall
           )
         end
 
         def build_define_action(define)
           ::Leftovers::ProcessorBuilders::Action.build(
-            define, ::Leftovers::ValueProcessors::AddDefinitionNode
+            define, ::Leftovers::Processors::AddDefinitionNode
           )
         end
 
         def build_eval_action(eval)
           ::Leftovers::ProcessorBuilders::Action.build(
-            eval, ::Leftovers::ValueProcessors::Eval
+            eval, ::Leftovers::Processors::Eval
           )
         end
 
         def build_set_privacy_action(set_privacies)
           ::Leftovers::ProcessorBuilders::Each.each_or_self(set_privacies) do |set_privacy|
-            processor = ::Leftovers::ValueProcessors::SetPrivacy.new(set_privacy.delete(:to))
+            processor = ::Leftovers::Processors::SetPrivacy.new(set_privacy.delete(:to))
             ::Leftovers::ProcessorBuilders::Action.build_from_hash_value(
               **set_privacy, final_processor: processor
             )
@@ -60,7 +60,7 @@ module Leftovers
         def build_set_default_privacy_action(set_default_privacy)
           return unless set_default_privacy
 
-          ::Leftovers::ValueProcessors::SetDefaultPrivacy.new(set_default_privacy)
+          ::Leftovers::Processors::SetDefaultPrivacy.new(set_default_privacy)
         end
       end
     end

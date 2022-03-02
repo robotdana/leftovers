@@ -47,7 +47,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:RakeTask, "#{__dir__}/leftovers/rake_task")
   autoload(:Reporter, "#{__dir__}/leftovers/reporter")
   autoload(:TodoReporter, "#{__dir__}/leftovers/todo_reporter")
-  autoload(:ValueProcessors, "#{__dir__}/leftovers/value_processors")
+  autoload(:Processors, "#{__dir__}/leftovers/processors")
   autoload(:VERSION, "#{__dir__}/leftovers/version")
 
   MEMOIZED_IVARS = %i{

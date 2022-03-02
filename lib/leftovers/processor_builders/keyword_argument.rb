@@ -4,7 +4,7 @@ module Leftovers
   module ProcessorBuilders
     module KeywordArgument
       def self.build(pattern, then_processor)
-        ::Leftovers::ValueProcessors::KeywordArgument.new(
+        ::Leftovers::Processors::KeywordArgument.new(
           ::Leftovers::MatcherBuilders::NodePairName.build(pattern),
           then_processor
         )

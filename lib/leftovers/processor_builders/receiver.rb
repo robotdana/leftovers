@@ -6,7 +6,7 @@ module Leftovers
       def self.build(value, then_processor)
         return unless value
 
-        ::Leftovers::ValueProcessors::Receiver.new(then_processor)
+        ::Leftovers::Processors::Receiver.new(then_processor)
       end
     end
   end

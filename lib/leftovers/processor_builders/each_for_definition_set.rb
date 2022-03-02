@@ -22,7 +22,7 @@ module Leftovers
           when 0 then raise Leftovers::UnexpectedCase, "Unhandled value #{processors.inspect}"
           # :nocov:
           when 1 then processors.first
-          else ::Leftovers::ValueProcessors::EachForDefinitionSet.new(processors)
+          else ::Leftovers::Processors::EachForDefinitionSet.new(processors)
           end
         end
 

@@ -23,7 +23,7 @@ module Leftovers
         private
 
         def each_builder(final_processor)
-          if final_processor == ::Leftovers::ValueProcessors::AddDefinitionNode
+          if final_processor == ::Leftovers::Processors::AddDefinitionNode
             ::Leftovers::ProcessorBuilders::EachForDefinitionSet
           else
             ::Leftovers::ProcessorBuilders::Each

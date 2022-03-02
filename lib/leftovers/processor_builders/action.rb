@@ -61,7 +61,7 @@ module Leftovers
         end
 
         def build_recursive(processor)
-          recursive_placeholder = ::Leftovers::ValueProcessors::Placeholder.new
+          recursive_placeholder = ::Leftovers::Processors::Placeholder.new
           processor = ::Leftovers::ProcessorBuilders::Each.build([recursive_placeholder, processor])
 
           [recursive_placeholder, processor]
