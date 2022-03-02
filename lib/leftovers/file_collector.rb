@@ -36,8 +36,8 @@ module Leftovers
       list
     end
 
-    def collect
-      ast, comments = Leftovers::Parser.parse_with_comments(@ruby, @file.relative_path)
+    def collect(ruby = @ruby, line = 1)
+      ast, comments = Leftovers::Parser.parse_with_comments(ruby, @file.relative_path, line)
       CommentsProcessor.process(comments, self)
       NodeProcessor.new(self).process(ast)
     rescue ::Parser::SyntaxError => e
@@ -45,6 +45,11 @@ module Leftovers
         "\e[31m#{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column} " \
           "SyntaxError: #{e.message}\e[0m"
       )
+    end
+
+    def collect_subfile(string, location)
+      string = (' ' * location.column) + string # match indentation
+      collect(string, location.line)
     end
 
     def test_line?(line)

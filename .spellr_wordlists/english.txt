@@ -23,6 +23,8 @@ datagrid
 deserialize
 erb
 esque
+eval
+eval'd
 firstname
 fuzzer
 gemfile

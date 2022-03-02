@@ -33,7 +33,7 @@ RSpec.describe Leftovers::Config do
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:8 unrecognized key is_argument for add_prefix
         Did you mean: arguments
         Config SchemaError: lib/config/invalid.yml:7:8 unrecognized key joiner for add_prefix
-        Did you mean: arguments, keywords, itself, nested, value, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_after\e[0m
+        Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_after\e[0m
       MESSAGE
     end
 
@@ -185,7 +185,7 @@ RSpec.describe Leftovers::Config do
 
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 unrecognized key tuesday for dynamic value
-        Did you mean: paths, document, has_arguments, has_receiver, type, privacy, unless, define, set_privacy, set_default_privacy\e[0m
+        Did you mean: paths, document, has_arguments, has_receiver, type, privacy, unless, define, set_privacy, set_default_privacy, eval\e[0m
       MESSAGE
     end
 
@@ -237,7 +237,7 @@ RSpec.describe Leftovers::Config do
               add_suffix: foo
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must include at least one of arguments, keywords, itself, value or an array\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must include at least one of arguments, keywords, itself, value, receiver or an array\e[0m
       MESSAGE
     end
 
@@ -250,7 +250,7 @@ RSpec.describe Leftovers::Config do
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for calls
-        Did you mean: arguments, keywords, itself, nested, value, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_after\e[0m
+        Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_after\e[0m
       MESSAGE
     end
 
@@ -264,7 +264,7 @@ RSpec.describe Leftovers::Config do
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for defines
-        Did you mean: arguments, itself, nested, value, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_after\e[0m
+        Did you mean: arguments, itself, nested, value, receiver, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_after\e[0m
       MESSAGE
     end
 

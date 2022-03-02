@@ -10,13 +10,16 @@ module Leftovers
       # but with our parser
       def parse_with_comments(string, file = '(string)', line = 1)
         PARSER.reset
-        source_buffer = ::Parser::CurrentRuby.send(
-          :setup_source_buffer, file, line, string, PARSER.default_encoding
-        )
-        PARSER.parse_with_comments(source_buffer)
+        PARSER.parse_with_comments(new_source_buffer(string, file, line))
       end
 
       private
+
+      def new_source_buffer(string, file, line)
+        ::Parser::CurrentRuby.send(
+          :setup_source_buffer, file, line, string, PARSER.default_encoding
+        )
+      end
 
       # mostly copied from https://github.com/whitequark/parser/blob/master/lib/parser/base.rb
       # but with our builder

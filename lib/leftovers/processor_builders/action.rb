@@ -22,6 +22,7 @@ module Leftovers
           arguments: nil,
           keywords: nil,
           itself: nil,
+          receiver: nil,
           value: nil,
           nested: nil,
           recursive: nil,
@@ -32,7 +33,7 @@ module Leftovers
           )
           processor = build_nested(nested, processor) if nested
           recursive_placeholder, processor = build_recursive(processor) if recursive
-          processor = build_sources(arguments, keywords, itself, value, processor)
+          processor = build_sources(arguments, keywords, itself, receiver, value, processor)
 
           return processor unless recursive
 
@@ -49,11 +50,12 @@ module Leftovers
           ])
         end
 
-        def build_sources(arguments, keywords, itself, value, processor)
+        def build_sources(arguments, keywords, itself, receiver, value, processor) # rubocop:disable Metrics/ParameterLists
           ::Leftovers::ProcessorBuilders::Each.build([
             ::Leftovers::ProcessorBuilders::Argument.build(arguments, processor),
             ::Leftovers::ProcessorBuilders::Keyword.build(keywords, processor),
             ::Leftovers::ProcessorBuilders::Itself.build(itself, processor),
+            ::Leftovers::ProcessorBuilders::Receiver.build(receiver, processor),
             ::Leftovers::ProcessorBuilders::Value.build(value, processor)
           ])
         end

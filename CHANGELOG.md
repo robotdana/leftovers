@@ -1,10 +1,16 @@
-# v0.8.1
+# v0.9.0
 - Performance improvements
   - squash the config matching more
   - simplify the `type: Proc` matcher
 - Add `names:` and `has_arguments:` to the `has_value:`.
 - Fix error when positional `has_arguments:`/`has_value: at:` checks a node without arguments
-- Automatically test the config examples in the documentation
+- Automatically test the config examples in the documentation, and fix the errors
+- Add `eval` as a processing type, alongside `calls:` and `defines:`, this will process allow processing literal calls to instance_eval etc.
+- Allow calling or defining based on the `receiver:`
+- Comprehensively describe ruby core library
+- Mostly comprehensively describe ruby standard library
+- Comprehensively describe actionmailer
+- Mostly comprehensively describe activesupport
 
 # v0.8.0
 - Allow custom precompilers

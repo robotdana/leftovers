@@ -4,7 +4,10 @@
 keep:
   # https://guides.rubyonrails.org/action_mailer_basics.html
   - has_suffix: Preview
-    path: '/test/mailers/previews/**/*_preview.rb' # this is the default
+    path: '/test/mailers/previews/**/*_preview.rb'
+    # this path is the default
+    # if it's overridden copy this into .leftovers.yml with
+    # whatever it was overridden as
 
   # https://guides.rubyonrails.org/action_mailer_basics.html#intercepting-emails
   - delivering_email

@@ -133,6 +133,10 @@ dynamic:
     calls:
       value: singleton_method_undefined
 
+  # https://ruby-doc.org/core/BasicObject.html#method-i-instance_eval
+  - name: instance_eval
+    eval: 0
+
   #     Kernel
   #
   # https://ruby-doc.org/core/Kernel.html
@@ -146,6 +150,10 @@ dynamic:
   - name: Integer
     calls:
       values: [to_int, to_i]
+
+  # https://ruby-doc.org/core/Kernel.html#method-i-eval
+  - name: eval
+    calls: 0
 
 
   #     Object
@@ -431,6 +439,12 @@ dynamic:
   - name: undef_method
     calls:
       value: method_undefined
+
+  # https://ruby-doc.org/core/Module.html#method-i-module_eval
+  # https://ruby-doc.org/core/Module.html#method-i-class_eval
+  - name: [module_eval, class_eval]
+    eval: 0
+
 
   #   Class
   #

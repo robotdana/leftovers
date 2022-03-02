@@ -23,6 +23,36 @@ RSpec.describe 'ruby and stdlib' do
     it { is_expected.to have_no_definitions.and(have_calls(:send, :foo)) }
   end
 
+  context 'with method defined in instance_eval' do
+    let(:ruby) do
+      <<~RUBY
+        instance_eval <<~MY_RUBY, __FILE__, __LINE__ + 1
+          def whatever; end
+        MY_RUBY
+      RUBY
+    end
+
+    it { is_expected.to have_definitions(:whatever).and(have_calls(:+, :instance_eval)) }
+  end
+
+  context 'with block passed to instance_eval' do
+    let(:ruby) { 'instance_eval { 1 + 1 }' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:+, :instance_eval)) }
+  end
+
+  context 'with a variable passed to instance_eval' do
+    let(:ruby) { 'instance_eval a_method_call' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:instance_eval, :a_method_call)) }
+  end
+
+  context 'with an empty string passed to instance_eval (why?)' do
+    let(:ruby) { 'instance_eval ""' }
+
+    it { is_expected.to have_no_definitions.and(have_calls(:instance_eval)) }
+  end
+
   context 'with method definitions using attr_reader' do
     let(:ruby) { 'attr_reader(:cat)' }
 

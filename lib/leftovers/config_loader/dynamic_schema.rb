@@ -12,6 +12,7 @@ module Leftovers
       attribute :set_privacy, ValueOrArraySchema[PrivacyProcessorSchema],
                 require_group: :processor
       attribute :set_default_privacy, PrivacySchema, require_group: :processor
+      attribute :eval, ValueOrArraySchema[ValueProcessorSchema], require_group: :processor
     end
   end
 end

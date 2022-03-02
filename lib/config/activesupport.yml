@@ -1,3 +1,8 @@
+# currently doesn't handle with_options at all
+# probably never will
+
+
+
 requires:
   - 'active_support'
   - 'active_support/core_ext/string'
@@ -9,13 +14,73 @@ requires:
 # some is currently impossible to handle (with_options).
 # Some is just corners of rails I haven't hit yet.
 keep:
-  - ClassMethods # ActiveSupport::Concern
-  - process_action # ActiveSupport::LogSubscriber
-  - format_message # ActiveSupport::Logger
   - APP_PATH
   - APP_ROOT
 
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#to-param
+  # you're expected to redefine this as it's relevant
+  - to_param
+
 dynamic:
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#try
+  - name: [try, try!]
+    calls: 0
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#acts-like-questionmark-duck
+  - name: acts_like?
+    calls:
+      argument: 0
+      add_prefix: acts_like_
+      add_suffix: "?"
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#alias-attribute
+  - name: alias_attribute
+    calls:
+      argument: 1
+      transforms:
+        - original
+        - add_suffix: '?'
+        - add_prefix: '='
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '?'
+        - add_prefix: '='
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#internal-attributes
+  - name: [attr_internal, attr_internal_accessor, attr_internal_writer]
+    defines:
+      argument: '*'
+      add_suffix: '='
+
+  - name: [attr_internal, attr_internal_accessor, attr_internal_reader]
+    defines:
+      argument: '*'
+    calls:
+      argument: '*'
+      add_prefix: '@_'
+      # this ivar pattern is only the default.
+      # if it's overridden copy this into .leftovers.yml with
+      # whatever it was overridden as
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#module-attributes
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#cattr-reader-cattr-writer-and-cattr-accessor
+  - name: [mattr_accessor, mattr_writer, cattr_accessor, cattr_writer]
+    defines:
+      argument: '*'
+      add_suffix: '='
+
+  - name: [mattr_accessor, mattr_reader, cattr_accessor, cattr_reader]
+    defines:
+      argument: '*'
+    calls:
+      argument: '*'
+      add_prefix: '@@'
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#delegate
+  # skipping handling `private: true` because i don't yet support combining multiple has_argument with and
+  # also i expect to be able to run these in any order, and that would be order dependent
   - name: delegate
     has_argument:
       at: prefix
@@ -51,31 +116,101 @@ dynamic:
             type: [String, Symbol]
     calls:
       - argument: to
-  - name:
-      - cattr_accessor
-      - mattr_accessor
-    defines:
-      - argument: '*'
-      - argument: '*'
-        add_suffix: '='
-    calls:
-      - argument: '*'
-        add_prefix: '@'
-  - name:
-      - cattr_reader
-      - mattr_reader
-    defines:
-      - argument: '*'
-    calls:
-      - argument: '*'
-        add_prefix: '@'
-  - name:
-      - cattr_writer
-      - mattr_writer
-    defines:
-      - argument: '*'
-        add_suffix: '='
 
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#delegate-missing-to
+  - name: delegate_missing_to
+    calls:
+      argument: 0
+      split: '::'
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#redefining-methods
+  - name: redefine_method
+    define:
+      argument: 0
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#class-attribute
+  - name: class_attribute
+    defines:
+      argument: '*'
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: '?'
+
+  # https://guides.rubyonrails.org/active_support_core_extensions.html#constantize
+  # https://api.rubyonrails.org/classes/String.html#method-i-safe_constantize
+  - name: [constantize, safe_constantize]
+    calls:
+      receiver: true
+      split: '::'
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Callbacks/ClassMethods.html#method-i-set_callback
+  - name: set_callback
+    calls: [2, if, unless]
+
+  - name: set_callback
+    calls: 1
+    unless:
+      - has_argument: 2
+      # - has_block_argument: true
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Callbacks/ClassMethods.html#method-i-skip_callback
+  - name: skip_callback
+    calls: [if, unless]
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Configurable/ClassMethods.html#method-i-config_accessor
+  - name: config_accessor
+    defines:
+      argument: '*'
+      transforms:
+        - original
+        - add_suffix: '='
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Testing/Assertions.html#method-i-assert_changes
+  # https://api.rubyonrails.org/classes/ActiveSupport/Testing/Assertions.html#method-i-assert_no_changes
+  - name: [assert_changes, assert_no_changes]
+    eval: 0
+    has_argument:
+      at: 0
+      has_value:
+        type: String
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Testing/Assertions.html#method-i-assert_difference
+  - name: assert_difference
+    eval:
+      - argument: 0
+      - argument: 0
+        nested: '*'
+      - argument: 0
+        keywords: '**'
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Testing/Assertions.html#method-i-assert_no_difference
+  - name: assert_difference
+    eval:
+      - argument: 0
+      - argument: 0
+        nested: '*'
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Rescuable/ClassMethods.html#method-i-rescue_from
+  - name: rescue_from
+    calls:
+      - argument: '*'
+        split: '::'
+      - argument: with
+
+  # https://api.rubyonrails.org/classes/ActiveSupport/Reloader.html#method-c-after_class_unload
+  # https://api.rubyonrails.org/classes/ActiveSupport/Reloader.html#method-c-before_class_unload
+  # https://api.rubyonrails.org/classes/ActiveSupport/Reloader.html#method-c-to_prepare
+  # this is not well documented but uses set_callback internally so we can just guess
+  - name: [before_class_unload, after_class_unload, to_prepare]
+    calls: [0, if, unless]
+
+  # https://api.rubyonrails.org/classes/Module/Concerning.html#method-i-concern
+  - name: concern
+    defines: 0
+
+  # https://api.rubyonrails.org/classes/Module.html#method-i-thread_mattr_accessor
+  # https://api.rubyonrails.org/classes/Module.html#method-i-thread_cattr_accessor
   - name:
     - thread_cattr_accessor
     - thread_mattr_accessor
@@ -83,17 +218,20 @@ dynamic:
       - argument: '*'
       - argument: '*'
         add_suffix: '='
+
+  # https://api.rubyonrails.org/classes/Module.html#method-i-thread_mattr_reader
+  # https://api.rubyonrails.org/classes/Module.html#method-i-thread_cattr_reader
   - name:
     - thread_cattr_reader
     - thread_mattr_reader
     defines:
       argument: '*'
+
+  # https://api.rubyonrails.org/classes/Module.html#method-i-thread_mattr_writer
+  # https://api.rubyonrails.org/classes/Module.html#method-i-thread_cattr_writer
   - name:
     - thread_cattr_writer
     - thread_mattr_writer
     defines:
       argument: '*'
       add_suffix: '='
-  - name: delegate_missing_to
-    calls:
-      argument: 0

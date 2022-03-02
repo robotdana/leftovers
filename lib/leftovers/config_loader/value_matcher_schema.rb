@@ -10,6 +10,7 @@ module Leftovers
       attribute :itself, TrueSchema, require_group: :matcher
       attribute :nested, ValueOrArraySchema[ValueMatcherSchema]
       attribute :value, ValueOrArraySchema[StringSchema], require_group: :matcher, aliases: :values
+      attribute :receiver, TrueSchema, require_group: :matcher
       attribute :recursive, TrueSchema
 
       self.or_value_schema = ScalarArgumentSchema

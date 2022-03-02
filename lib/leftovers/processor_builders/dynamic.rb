@@ -12,8 +12,10 @@ module Leftovers
 
         private
 
-        def build_processors(
-          call: nil, define: nil, set_privacy: nil, set_default_privacy: nil, **matcher_rules
+        def build_processors( # rubocop:disable Metrics/ParameterLists
+          call: nil, define: nil,
+          set_privacy: nil, set_default_privacy: nil,
+          eval: nil, **matcher_rules
         )
           matcher = ::Leftovers::MatcherBuilders::Node.build(**matcher_rules)
 
@@ -21,7 +23,8 @@ module Leftovers
             build_call_action(call),
             build_define_action(define),
             build_set_privacy_action(set_privacy),
-            build_set_default_privacy_action(set_default_privacy)
+            build_set_default_privacy_action(set_default_privacy),
+            build_eval_action(eval)
           ])
 
           ::Leftovers::ValueProcessors::IfMatcher.new(matcher, processor)
@@ -36,6 +39,12 @@ module Leftovers
         def build_define_action(define)
           ::Leftovers::ProcessorBuilders::Action.build(
             define, ::Leftovers::ValueProcessors::AddDefinitionNode
+          )
+        end
+
+        def build_eval_action(eval)
+          ::Leftovers::ProcessorBuilders::Action.build(
+            eval, ::Leftovers::ValueProcessors::Eval
           )
         end
 

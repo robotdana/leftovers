@@ -99,6 +99,24 @@ RSpec.describe 'rails gem' do
     end
   end
 
+  context 'with constantize' do
+    let(:ruby) { '"Which::Ever".constantize' }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:constantize, :Which, :Ever)
+    end
+  end
+
+  context 'with constantize without a receiver' do
+    let(:ruby) { 'constantize(:does_something_else)' }
+
+    it do
+      expect(subject).to have_no_definitions
+        .and have_calls(:constantize)
+    end
+  end
+
   context 'with hash key calls' do
     let(:ruby) { 'validates test: true, other: :bar, presence: true' }
 
@@ -388,6 +406,21 @@ RSpec.describe 'rails gem' do
           :validates, :name, :inclusion_method, :condition?,
           :InclusionValidator
         )
+    end
+  end
+
+  context "with eval'd bit" do
+    let(:ruby) do
+      <<~RUBY
+        assert_changes 'Status.all_good?' do
+          post :create, params: { status: { ok: false } }
+        end
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:assert_changes, :Status, :all_good?, :post, :create))
     end
   end
 end
