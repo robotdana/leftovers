@@ -13,9 +13,8 @@ module Leftovers
 
       def ===(node)
         kwargs = node.kwargs
-        return false unless kwargs
 
-        kwargs.children.any?(@matcher)
+        kwargs.children.any?(@matcher) if kwargs # rubocop:disable Style/SafeNavigation because there are multiple steps and this should be a configuration option
       end
 
       freeze

@@ -12,7 +12,7 @@ module Leftovers
 
       def ===(node)
         args = node.positional_arguments
-        return false unless args
+        return unless args
 
         value_node = args[@position]
         @matcher === value_node if value_node

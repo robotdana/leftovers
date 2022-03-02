@@ -12,10 +12,7 @@ module Leftovers
       end
 
       def ===(node)
-        args = node.positional_arguments
-        return false unless args
-
-        args.any?(@matcher)
+        node.positional_arguments&.any?(@matcher)
       end
 
       freeze

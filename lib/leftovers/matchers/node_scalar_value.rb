@@ -12,7 +12,8 @@ module Leftovers
       end
 
       def ===(node)
-        return false unless node.scalar?
+        # can't just check to_scalar_value, it might be false/nil on purpose.
+        return unless node.scalar?
 
         @matcher === node.to_scalar_value
       end

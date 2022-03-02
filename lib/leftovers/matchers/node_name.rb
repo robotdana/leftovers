@@ -12,7 +12,9 @@ module Leftovers
       end
 
       def ===(node)
-        @matcher === node.name
+        name = node.name
+
+        @matcher === name if name
       end
 
       freeze
