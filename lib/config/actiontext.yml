@@ -1,0 +1,5 @@
+gems:
+  - activesupport
+  - activerecord
+  - activestorage
+  - actionpack

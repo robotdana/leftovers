@@ -1,0 +1,36 @@
+# https://guides.rubyonrails.org/action_cable_overview.html
+gems:
+  - activesupport
+  - actionpack
+
+keep:
+  # https://guides.rubyonrails.org/action_cable_overview.html#server-side-components-channels-subscriptions
+  # https://api.rubyonrails.org/v7.0.2.2/classes/ActionCable/Channel/Base.html#method-i-subscribed
+  # it's for overriding
+  - subscribed
+  # https://api.rubyonrails.org/v7.0.2.2/classes/ActionCable/Channel/Base.html#method-i-unsubscribed
+  # it's for overriding
+  - unsubscribed
+
+  # https://api.rubyonrails.org/v7.0.2.2/classes/ActionCable/Channel/Base.html
+  - type: Method
+    privacy: public
+    path: /app/channels/**/*_channel.rb
+
+  - path: /app/channels/**/*_channel.rb
+    has_suffix: Channel
+
+
+dynamic:
+  # https://guides.rubyonrails.org/action_cable_overview.html#connection-setup
+  # it's just attr_accessor
+  - names: identified_by
+    define:
+      - argument: '*'
+        transforms:
+          - original
+          - add_suffix: '='
+    call:
+      - argument: '*'
+        add_prefix: '@'
+

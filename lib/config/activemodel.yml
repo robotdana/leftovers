@@ -5,6 +5,9 @@
 keep:
   - validate_each # ActiveModel::EachValidator
 
+gems:
+  - activesupport
+
 dynamic:
   - names:
       - after_initialize

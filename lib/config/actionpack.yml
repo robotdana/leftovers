@@ -13,6 +13,11 @@ precompile:
       - '*.rhtml'
     format: erb
 
+gems:
+  - activesupport
+  - actionview
+
+
 keep:
   - ssl_configured? # ApplicationController
   - default_url_options # called by url_for

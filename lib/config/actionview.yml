@@ -6,6 +6,9 @@ keep:
   - has_suffix: Helper
     path: /app/helpers
 
+gems:
+  - activesupport
+
 dynamic:
   - name:
     - check_box

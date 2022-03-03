@@ -1,0 +1,26 @@
+# https://guides.rubyonrails.org/active_storage_overview.html
+gems:
+  - activesupport
+  - actionpack
+  - activejob
+  - activerecord
+
+dynamic:
+  - name: has_one_attached
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_prefix: with_attached_
+        - add_suffix: _attachment
+        - add_suffix: _blob
+
+  - name: has_many_attached
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_prefix: with_attached
+        - add_suffix: _attachments
+        - add_suffix: _blobs
+

@@ -1,17 +1,20 @@
-# THIS IS INCOMPLETE (you can help by expanding it)
-# rails is _really complicated_ and has a lot of magic which calls methods for you.
-# some is currently impossible to handle (with_options).
-# Some is just corners of rails I haven't hit yet.
+gem:
+  - activesupport
+
 keep:
+  # https://guides.rubyonrails.org/active_job_basics.html#serializers
   - serialize?
   - serialize
   - deserialize
 dynamic:
+  # https://guides.rubyonrails.org/active_job_basics.html#enqueue-the-job
   - name:
       - perform_later
-      - perform
+      - perform_now
     calls:
       - value: perform
+  # https://api.rubyonrails.org/v7.0.2.2/classes/ActiveJob/Callbacks/ClassMethods.html
+  # These all use if/unless because they call set_callback, though this isn't documented
   - names:
       - before_enqueue
       - around_enqueue
@@ -20,10 +23,14 @@ dynamic:
       - around_perform
       - after_perform
     calls:
-      - arguments: 1
+      - arguments: 0
       - arguments: [if, unless]
         nested:
           arguments: '*'
-  - name: rescue_from
+
+  # https://api.rubyonrails.org/v7.0.2.2/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-discard_on
+  # https://api.rubyonrails.org/v7.0.2.2/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-retry_on
+  - names: [discard_on, retry_on]
     calls:
-      - arguments: 1
+    - argument: '*'
+      split: '::'

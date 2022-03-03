@@ -1,5 +1,10 @@
 # https://edgeapi.rubyonrails.org/classes/ActionMailer/Base.html
 # https://guides.rubyonrails.org/action_mailer_basics.html
+gems:
+  - activesupport
+  - actionpack
+  - actionview
+  - activejob
 
 keep:
   # https://guides.rubyonrails.org/action_mailer_basics.html

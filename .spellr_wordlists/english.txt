@@ -1,11 +1,14 @@
 accessors
 actioncable
+actionmailbox
 actionmailer
 actionpack
+actiontext
 actionview
 activejob
 activemodel
 activerecord
+activestorage
 activesupport
 affixxed
 argumentless

@@ -3,13 +3,17 @@
 # some is currently impossible to handle (with_options).
 # Some is just corners of rails I haven't hit yet.
 gems:
-  - actionmailer
+  - activesupport
   - actionpack
   - actionview
-  - activejob
   - activemodel
   - activerecord
-  - activesupport
+  - actionmailer
+  - activejob
+  - actioncable
+  - activestorage
+  - actionmailbox
+  - actiontext
   - railties
 
 keep:
