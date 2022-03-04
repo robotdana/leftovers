@@ -5,7 +5,7 @@ module Leftovers
     class ValueProcessorSchema < ValueOrObjectSchema
       inherit_attributes_from ValueMatcherSchema
 
-      attribute :transforms, ValueOrArraySchema[TransformSchema]
+      attribute :transforms, ValueOrArraySchema[TransformSchema], aliases: :transform
       inherit_attributes_from TransformSchema, require_group: nil
 
       self.or_value_schema = ScalarArgumentSchema

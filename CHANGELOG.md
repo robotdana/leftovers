@@ -11,6 +11,9 @@
 - Mostly comprehensively describe ruby standard library
 - Comprehensively describe actionmailer
 - Mostly comprehensively describe activesupport
+- Update FastIgnore dependency, make fewer filesystem calls
+- `all: []` & `any: []` arguments to dynamic/keep/test_only
+- add `arguments: 1+` or `has_arguments: { at: 1+, has_value: true }` to match arguments from that position onward
 
 # v0.8.0
 - Allow custom precompilers

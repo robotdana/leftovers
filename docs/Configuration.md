@@ -187,7 +187,9 @@ Each entry can be a string (an exact match for a method, constant, or variable n
 - [`has_receiver:`](#has_receiver)
 - [`type:`](#type)
 - [`privacy:`](#privacy)
-- [`unless`](#unless)
+- [`unless:`](#unless)
+- [`all:`](#any-all)
+- [`any:`](#any-all)
 
 Arrays are not necessary for single values
 
@@ -214,7 +216,12 @@ Each entry can be a string (an exact match for a method, constant, or variable n
   - [`matches:`](#matches)
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
+- [`has_receiver:`](#has_receiver)
+- [`type:`](#type)
+- [`privacy:`](#privacy)
 - [`unless`](#unless)
+- [`all:`](#any-all)
+- [`any:`](#any-all)
 
 Arrays are not necessary for single values
 
@@ -239,17 +246,22 @@ Each entry must have at least one of the following properties to restrict which 
   - [`has_prefix:`](#has_prefix)
   - [`has_suffix:`](#has_suffix)
   - [`matches:`](#matches)
+- [`document: true`](#document-true)
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
 - [`has_receiver:`](#has_receiver)
+- [`type:`](#type)
+- [`privacy:`](#privacy)
 - [`unless:`](#unless)
-- [`document: true`](#document-true)
+- [`all:`](#any-all)
+- [`any:`](#any-all)
 
 And must have at least one of
 - ['calls:`](#calls-defines)
 - [`defines:`](#calls-defines)
 - [`set_privacy:](#set-privacy)
 - [`set_default_privacy:`](#set-default-privacy)
+- [`eval:`](#eval)
 
 Arrays are not necessary for single values.
 
@@ -459,6 +471,27 @@ dynamic:
 
 these methods could then be filtered using the [`privacy:`](#privacy) method in another [`dynamic:`](#dynamic) or [`keep:`](#keep) rule.
 
+## `eval:`
+
+Eval has the same requirements as [`calls:` & `defines:`](#calls-defines).
+
+it parses a string or transformed string as ruby, using the same rules as the containing file
+For example:
+
+```yml
+dynamic:
+  name: eval_later
+  eval:
+    argument: my_ruby_string
+```
+
+with the ruby:
+```ruby
+eval_later(delay: 1000, my_ruby_string: "MyClass.puts 'shenanigans'")
+```
+
+would consider `MyClass`, and `puts` to have been called.
+
 ## `arguments:`
 _alias `argument:`_
 
@@ -522,7 +555,9 @@ This can be used in:
 Each entry can be any of:
 - `'*'`: matches all positional arguments/array positions
 - `'**'`: matches all keyword arguments/hash positions
-- any positive Integer: matches the 1-indexed argument position/array position
+- `1+`, `2+`, etc: matches all positional arguments/array elements at or greater than the 0-indexed position
+- any Integer: matches the 0-indexed argument position/array position
+- negative values match positions counting from the end, e.g. `-1` is the last item
 - any other String: matches the keyword argument or hash value, where the keyword/hash key string or symbol
 - or have at least one of the following properties to match the keyword/hash key string or symbol:
   - [`has_prefix:`](#has_prefix)
@@ -530,6 +565,41 @@ Each entry can be any of:
   - [`matches:`](#matches)
 
 Arrays are not necessary for single values
+
+## `any:`, `all:`
+
+filter by `any:` or `all:` of the argument filters
+
+by default array values match any of the values,
+and hash values are match all of the values
+
+```yml
+dynamic:
+  name: my_method
+  has_receiver: MyReceiver
+  has_arguments:
+    - part_a
+    - part_b
+  calls: 0
+```
+
+will match the first argument of anything named my_method, with the receiver MyReceiver that has the keyword argument part_a and/or part_b.
+
+to avoid this default use `all:` and/or `any:`
+
+```yml
+dynamic:
+  any:
+    - name: my_method
+    - has_receiver: MyReceiver
+  all:
+    - has_argument: part_a
+    - has_argument: part_b
+  calls: 0
+```
+
+will match the first argument of anything named my_method or with the receiver MyReceiver, that have both the keyword arguments part_a and part_b
+
 
 ## `has_value:`, `has_receiver:`
 
@@ -602,7 +672,7 @@ e.g.
 dynamic:
   - names: my_method
     calls:
-      argument: 2
+      argument: 1
       nested:
         argument: '*'
         nested:

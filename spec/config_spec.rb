@@ -185,7 +185,7 @@ RSpec.describe Leftovers::Config do
 
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 unrecognized key tuesday for dynamic value
-        Did you mean: paths, document, has_arguments, has_receiver, type, privacy, unless, define, set_privacy, set_default_privacy, eval\e[0m
+        Did you mean: paths, document, has_arguments, has_receiver, type, privacy, unless, all, any, define, set_privacy, set_default_privacy, eval\e[0m
       MESSAGE
     end
 
@@ -325,7 +325,7 @@ RSpec.describe Leftovers::Config do
         keep: {}
       YML
       expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, names, paths, document, has_arguments, has_receiver, type, privacy, unless or an array\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, names, paths, document, has_arguments, has_receiver, type, privacy, all, any, unless or an array\e[0m
       MESSAGE
     end
 

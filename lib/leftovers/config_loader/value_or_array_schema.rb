@@ -2,21 +2,7 @@
 
 module Leftovers
   class ConfigLoader
-    class ValueOrArraySchema < Schema
-      class << self
-        def [](value_schema)
-          new(value_schema)
-        end
-      end
-
-      attr_reader :value_schema
-
-      def initialize(value_schema)
-        @value_schema = value_schema
-
-        super()
-      end
-
+    class ValueOrArraySchema < ArraySchema
       def validate(node)
         if node.array?
           validate_length(node) && validate_values(node)
@@ -27,11 +13,7 @@ module Leftovers
 
       def to_ruby(node)
         if node.array?
-          Leftovers.unwrap_array(
-            node.children.map do |value|
-              value_schema.to_ruby(value)
-            end
-          )
+          Leftovers.unwrap_array(super)
         else
           value_schema.to_ruby(node)
         end
@@ -46,20 +28,6 @@ module Leftovers
         node.error += ' or an array'
 
         false
-      end
-
-      def validate_length(node)
-        self.class.error(node, 'not be empty') if node.children.empty?
-
-        node.valid?
-      end
-
-      def validate_values(node)
-        node.children.each do |value|
-          value_schema.validate(value)
-        end
-
-        node.children.all?(&:valid?)
       end
     end
   end

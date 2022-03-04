@@ -22,6 +22,7 @@ module Leftovers
     autoload(:EachKeyword, "#{__dir__}/processors/each_keyword")
     autoload(:EachKeywordArgument, "#{__dir__}/processors/each_keyword_argument")
     autoload(:EachPositionalArgument, "#{__dir__}/processors/each_positional_argument")
+    autoload(:EachPositionalArgumentFrom, "#{__dir__}/processors/each_positional_argument_from")
     autoload(:Each, "#{__dir__}/processors/each")
     autoload(:Eval, "#{__dir__}/processors/eval")
     autoload(:IfMatcher, "#{__dir__}/processors/if_matcher")

@@ -1,47 +1,154 @@
-# THIS IS INCOMPLETE (you can help by expanding it)
-# rails is _really complicated_ and has a lot of magic which calls methods for you.
-# some is currently impossible to handle (with_options).
-# Some is just corners of rails I haven't hit yet.
+# https://guides.rubyonrails.org/active_record_basics.html
+
 
 gems:
   - activesupport
   - activemodel
 
-exclude_paths:
-  - db/migrate/*
+keep:
+  # https://guides.rubyonrails.org/active_record_migrations.html#migration-overview
+  - path: db/migrate/*
+    type: Constant
+  - path: db/migrate/*
+    name: [up, down, change]
+
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveModel/Type/Value.html
+  - cast
+  - serialize
+  - deserialize
+  - serializable?
+  - type
+  - changed_in_place?
 
 dynamic:
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Validations/ClassMethods.html
   - names:
-      - after_find
-      - after_touch
-      - before_save
-      - around_save
-      - after_save
-      - before_create
-      - around_create
-      - after_create
-      - before_update
-      - around_update
-      - after_update
-      - before_destroy
-      - around_destroy
-      - after_destroy
-      - after_commit
-      - after_rollback
-      - after_create_commit
-      - after_update_commit
-      - after_destroy_commit
-      - after_save_commit
+      - validates_associated
+      - validates_absence_of
+      - validates_length_of
+      - validates_size_of
+      - validates_numericality_of
+      - validates_presence_of
+      - validates_uniqueness_of
+    calls: ['*', if, unless]
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Aggregations/ClassMethods.html
+  # i had to read the code for this
+  - name: composed_of
     calls:
-      - arguments: 0
-      - arguments: [if, unless]
+      - argument: class_name
+        split: '::'
+      - argument: [converter, constructor]
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+
+  - name: composed_of
+    unless:
+      has_argument: class_name
+    calls:
+      argument: 0
+      camelize: true
+      split: '::'
+
+  - name: composed_of
+    unless:
+      has_argument: constructor
+    calls:
+      value: new
+
+  - name: composed_of
+    has_argument:
+      at: mapping
+      has_value:
+        has_argument:
+          at: 0
+          has_value:
+            type: Array
+    calls:
+      argument: mapping
+      nested:
+        argument: '*'
         nested:
-          arguments: '*'
+          argument: 1
+      transforms:
+        - original
+        - add_suffix: '='
+
+  - name: composed_of
+    has_argument:
+      at: mapping
+      has_value:
+        has_argument:
+          at: 0
+          unless:
+            has_value:
+              type: Array
+    calls:
+      argument: mapping
+      nested:
+        argument: 1
+      transforms:
+        - original
+        - add_suffix: '='
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html
+  - name: has_one
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_prefix: build_
+        - add_prefix: create_
+        - { add_prefix: create_, add_suffix: '!' }
+        - add_prefix: reload_
+
+  - name: belongs_to
+    has_argument: polymorphic
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_prefix: reload_
+        - add_suffix: _changed?
+        - add_suffix: _previously_changed?
+
+  - name: belongs_to
+    unless:
+      has_argument: polymorphic
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_prefix: build_
+        - add_prefix: create_
+        - { add_prefix: create_, add_suffix: '!' }
+        - add_prefix: reload_
+        - add_suffix: _changed?
+        - add_suffix: _previously_changed?
+
+  - name: [has_and_belongs_to_many, has_many]
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+        - singularize: true
+          add_suffix: _ids
+        - singularize: true
+          add_suffix: _ids=
+
   - name:
     - has_one
     - belongs_to
     unless:
-      has_argument: class_name
+      has_argument: [class_name, polymorphic]
     calls:
       argument: 0
       camelize: true
@@ -51,24 +158,15 @@ dynamic:
     - has_many
     - has_and_belongs_to_many
     unless:
-      has_argument: class_name
+      has_argument: [class_name, polymorphic]
     calls:
       - argument: 0
         camelize: true
         singularize: true
         split: '::'
-  - name:
-    - has_many
-    - has_and_belongs_to_many
-    defines:
-      - argument: 0
-        transforms:
-          - original
-          - add_suffix: '='
-          - singularize: true
-            add_suffix: _ids
-          - singularize: true
-            add_suffix: _ids=
+
+
+
   - name:
     - has_many
     - has_one
@@ -84,19 +182,7 @@ dynamic:
           - source_type
           - source
           - through
-  - name:
-      - has_one
-      - belongs_to
-    defines:
-      - argument: 0
-        transforms:
-          - original
-          - add_suffix: '='
-          - add_prefix: build_
-          - add_prefix: create_
-          - add_prefix: create_
-            add_suffix: '!'
-          - add_prefix: reload
+
   - name: belongs_to
     unless:
       has_argument:
@@ -116,33 +202,173 @@ dynamic:
       - argument: inverse_of
       - argument: touch
         add_suffix: '='
+
+  - name: belongs_to
+    calls:
+      argument: ensuring_owner_was
+
+  # these arguments cause something to be done to the association regardless of it being called directly
   - name:
      - has_one
      - has_many
      - belongs_to
      - has_and_belongs_to_many
     has_argument:
-      at: [dependent, inverse_of, touch, validate]
+      at:
+        - dependent
+        - before_add
+        - after_add
+        - before_remove
+        - after_remove
+        - inverse_of
+        - touch
+        - validate
+        - autosave
       unless:
-        has_value: false
+        has_value: [false, null]
     calls:
       argument: 0
-  - name: scope
-    has_argument:
-      at: 1
-      has_value:
-        type: Proc
-    defines:
-      argument: 0
 
+  - name: [has_one, has_many, belongs_to, has_and_belongs_to_many]
+    calls:
+      argument: [before_add, after_add, before_remove, after_remove]
+      nested: '*'
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Associations/CollectionProxy.html
   - name:
     - create
     - create!
     - update
     - update!
+    - build
+    calls:
+      - keyword: '**'
+        add_suffix: '='
+      - argument: 0
+        nested:
+          argument: '*'
+          keyword: '**'
+        add_suffix: '='
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Core.html#method-c-new
+  - name: new
     calls:
       keyword: '**'
       add_suffix: '='
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Attributes/ClassMethods.html#method-i-attribute
+  - name: attribute
+    defines:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: '?'
+        - add_suffix: _before_type_cast
+        - add_suffix: _before_last_save
+        - add_suffix: _change_to_be_saved
+        - add_suffix: _in_database
+        - add_prefix: saved_change_to_
+        - { add_prefix: saved_change_to_, add_suffix: '?' }
+        - { add_prefix: will_save_change_to_, add_suffix: '?' }
+        - add_prefix: find_by_
+
+  - name: { match: 'find_by_\w+_and_\w+' }
+    calls:
+      itself: true
+      delete_prefix: find_by_
+      split: '_and_'
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods.html#method-i-5B-5D
+  - name: '[]'
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods.html#method-i-5B-5D=
+  - name: '[]='
+    calls:
+      argument: 0
+      add_suffix: '='
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods.html#method-i-attribute_for_inspect
+  - name: attribute_for_inspect
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods.html#method-i-attribute_present?
+  - name: attribute_present?
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/BeforeTypeCast.html#method-i-read_attribute_before_type_cast
+  - name: read_attribute_before_type_cast
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Dirty.html#method-i-attribute_before_last_save
+  - name: attribute_before_last_save
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Dirty.html#method-i-attribute_change_to_be_save
+  - name: attribute_change_to_be_saved
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Dirty.html#method-i-saved_change_to_attribute
+  - name: saved_change_to_attribute
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Dirty.html#method-i-saved_change_to_attribute-3F
+  - name: saved_change_to_attribute?
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Dirty.html#method-i-saved_change_to_attribute-3F
+  - name: will_save_change_to_attribute?
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Read.html#method-i-read_attribute
+  - name: read_attribute
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Serialization/ClassMethods.html#method-i-serialize
+  - name: serialize
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Write.html
+  - name: write_attribute
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/DelegatedType.html#method-i-delegated_type
+  - name: delegated_type
+    calls:
+      argument: types
+      nested: '*'
+      split: '::'
+
+
+
+  - names:
+      - after_commit
+      - after_create
+      - after_create_commit
+      - after_destroy
+      - after_destroy_commit
+      - after_find
+      - after_rollback
+      - after_save
+      - after_save_commit
+      - after_touch
+      - after_update
+      - after_update_commit
+      - around_create
+      - around_destroy
+      - around_save
+      - around_update
+      - before_create
+      - before_destroy
+      - before_save
+      - before_update
+    calls:
+      - arguments: 0
+      - arguments: [if, unless]
+        nested:
+          arguments: '*'
+
   - name:
       - includes
       - preload
@@ -153,26 +379,9 @@ dynamic:
     calls:
       arguments: ['*', '**']
       keywords: '**'
-  - name:
-      - string
-      - text
-      - integer
-      - bigint
-      - float
-      - decimal
-      - numeric
-      - datetime
-      - time
-      - date
-      - binary
-      - boolean
-    path: /db/schema.rb
-    calls:
-      argument: 0
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: '?'
+      recursive: true
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/NestedAttributes/ClassMethods.html
   - name: accepts_nested_attributes_for
     defines:
       argument: '*'
@@ -181,3 +390,414 @@ dynamic:
         - add_suffix: _attributes=
     calls:
       argument: reject_if
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Persistence.html#method-i-update_attribute
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Persistence.html#method-i-update_attribute-21
+  - name: [update_attribute, update_attribute!]
+    calls:
+      argument: 0
+      add_suffix: '='
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/QueryMethods.html#method-i-create_with
+  - name: create_with
+    calls:
+      keyword: '**'
+      add_suffix: '='
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Reflection/ClassMethods.html#method-i-reflect_on_aggregation
+  - name: reflect_on_aggregation
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Reflection/ClassMethods.html#method-i-reflect_on_association
+  - name: reflect_on_association
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Relation.html#method-i-create_or_find_by
+  - name: [create_or_find_by, create_or_find_by!, find_or_create_by, find_or_create_by!, find_or_initialize_by]
+    calls:
+      keyword: '**'
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Scoping/Named/ClassMethods.html#method-i-scope
+  - name: scope
+    has_argument:
+      at: 1
+      has_value:
+        type: Proc
+    defines:
+      argument: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Store.html
+  - name: store
+    unless:
+      has_argument: [prefix, suffix]
+    defines:
+      argument: accessors
+      nested: '*'
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  # oh my god this logic is so hard to encode
+  - name: store
+    has_argument:
+      at: prefix
+      has_value: true
+    unless:
+      has_argument: suffix
+    defines:
+      argument: accessors
+      nested: '*'
+      add_prefix:
+        argument: 0
+        add_suffix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store
+    has_argument:
+      at: suffix
+      has_value: true
+    unless:
+      has_argument: prefix
+    defines:
+      argument: accessors
+      nested: '*'
+      add_suffix:
+        argument: 0
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store
+    has_argument:
+      at: prefix
+      has_value:
+        type: [String, Symbol]
+    unless:
+      has_argument: suffix
+    defines:
+      argument: accessors
+      nested: '*'
+      add_prefix:
+        argument: prefix
+        add_suffix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store
+    has_argument:
+      at: suffix
+      has_value:
+        type: [String, Symbol]
+    unless:
+      has_argument: prefix
+    defines:
+      argument: accessors
+      nested: '*'
+      add_suffix:
+        argument: suffix
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store
+    all:
+      - has_argument:
+          at: prefix
+          has_value: true
+      - has_argument:
+          at: suffix
+          has_value: true
+    defines:
+      argument: accessors
+      nested: '*'
+      add_prefix:
+        argument: 0
+        add_suffix: _
+      add_suffix:
+        argument: 0
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store
+    all:
+      - has_argument:
+          at: prefix
+          has_value:
+            type: [String, Symbol]
+      - has_argument:
+          at: suffix
+          has_value: true
+    defines:
+      argument: accessors
+      nested: '*'
+      add_prefix:
+        argument: prefix
+        add_suffix: _
+      add_suffix:
+        argument: 0
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store
+    all:
+      - has_argument:
+          at: prefix
+          has_value: true
+      - has_argument:
+          at: suffix
+          has_value:
+            type: [String, Symbol]
+    defines:
+      argument: accessors
+      nested: '*'
+      add_prefix:
+        argument: 0
+        add_suffix: _
+      add_suffix:
+        argument: suffix
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store
+    all:
+      - has_argument:
+          at: prefix
+          has_value:
+            type: [String, Symbol]
+      - has_argument:
+          at: suffix
+          has_value:
+            type: [String, Symbol]
+    defines:
+      argument: accessors
+      nested: '*'
+      add_prefix:
+        argument: prefix
+        add_suffix: _
+      add_suffix:
+        argument: suffix
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    unless:
+      has_argument: [prefix, suffix]
+    defines:
+      arguments: 1+
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  # oh my god this logic is so hard to encode
+  - name: store_accessor
+    has_argument:
+      at: prefix
+      has_value: true
+    unless:
+      has_argument: suffix
+    defines:
+      arguments: 1+
+      add_prefix:
+        argument: 0
+        add_suffix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    has_argument:
+      at: suffix
+      has_value: true
+    unless:
+      has_argument: prefix
+    defines:
+      arguments: 1+
+      add_suffix:
+        argument: 0
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    has_argument:
+      at: prefix
+      has_value:
+        type: [String, Symbol]
+    unless:
+      has_argument: suffix
+    defines:
+      arguments: 1+
+      add_prefix:
+        argument: prefix
+        add_suffix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    has_argument:
+      at: suffix
+      has_value:
+        type: [String, Symbol]
+    unless:
+      has_argument: prefix
+    defines:
+      arguments: 1+
+      add_suffix:
+        argument: suffix
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    all:
+      - has_argument:
+          at: prefix
+          has_value: true
+      - has_argument:
+          at: suffix
+          has_value: true
+    defines:
+      arguments: 1+
+      add_prefix:
+        argument: 0
+        add_suffix: _
+      add_suffix:
+        argument: 0
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    all:
+      - has_argument:
+          at: prefix
+          has_value:
+            type: [String, Symbol]
+      - has_argument:
+          at: suffix
+          has_value: true
+    defines:
+      arguments: 1+
+      add_prefix:
+        argument: prefix
+        add_suffix: _
+      add_suffix:
+        argument: 0
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    all:
+      - has_argument:
+          at: prefix
+          has_value: true
+      - has_argument:
+          at: suffix
+          has_value:
+            type: [String, Symbol]
+    defines:
+      arguments: 1+
+      add_prefix:
+        argument: 0
+        add_suffix: _
+      add_suffix:
+        argument: suffix
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change
+
+  - name: store_accessor
+    all:
+      - has_argument:
+          at: prefix
+          has_value:
+            type: [String, Symbol]
+      - has_argument:
+          at: suffix
+          has_value:
+            type: [String, Symbol]
+    defines:
+      arguments: 1+
+      add_prefix:
+        argument: prefix
+        add_suffix: _
+      add_suffix:
+        argument: suffix
+        add_prefix: _
+      transforms:
+        - original
+        - add_suffix: '='
+        - add_suffix: _changed?
+        - add_suffix: _was
+        - add_suffix: _change

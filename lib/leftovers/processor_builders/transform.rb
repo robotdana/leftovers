@@ -45,6 +45,8 @@ module Leftovers
           ::Leftovers::Processors::DeletePrefix.new(argument, then_processor)
         when 'delete_suffix'
           ::Leftovers::Processors::DeleteSuffix.new(argument, then_processor)
+        when 'transforms'
+          ::Leftovers::ProcessorBuilders::TransformSet.build(argument, then_processor)
         # :nocov:
         else raise Leftovers::UnexpectedCase, "Unhandled value #{transform.to_s.inspect}"
           # :nocov:

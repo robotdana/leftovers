@@ -423,4 +423,75 @@ RSpec.describe 'rails gem' do
         .and(have_calls(:assert_changes, :Status, :all_good?, :post, :create))
     end
   end
+
+  context 'with store' do
+    let(:ruby) do
+      <<~RUBY
+        class User < ActiveRecord::Base
+          store :settings, accessors: [ :color, :homepage ], coder: JSON
+          store :parent, accessors: [ :name ], coder: JSON, prefix: true
+          store :spouse, accessors: [ :name ], coder: JSON, prefix: :partner
+          store :settings, accessors: [ :two_factor_auth ], suffix: true
+          store :settings, accessors: [ :login_retry ], suffix: :config
+          store :settings, accessors: [ :database ], prefix: :app, suffix: :config
+          store :settings, accessors: [ :username ], prefix: :global, suffix: true
+        end
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(
+        :User,
+        :color, :color=, :color_changed?, :color_was, :color_change,
+        :homepage, :homepage=, :homepage_changed?, :homepage_was, :homepage_change,
+        :parent_name, :parent_name=, :parent_name_changed?, :parent_name_was, :parent_name_change,
+        :partner_name, :partner_name=, :partner_name_changed?, :partner_name_was,
+        :partner_name_change,
+        :two_factor_auth_settings, :two_factor_auth_settings=, :two_factor_auth_settings_changed?,
+        :two_factor_auth_settings_was, :two_factor_auth_settings_change,
+        :login_retry_config, :login_retry_config=, :login_retry_config_changed?,
+        :login_retry_config_was, :login_retry_config_change,
+        :app_database_config, :app_database_config=, :app_database_config_changed?,
+        :app_database_config_was, :app_database_config_change,
+        :global_username_settings, :global_username_settings=, :global_username_settings_changed?,
+        :global_username_settings_was, :global_username_settings_change
+      ).and(have_calls(:store, :ActiveRecord, :Base, :JSON))
+    end
+  end
+
+  context 'with store_accessor' do
+    let(:ruby) do
+      <<~RUBY
+        class User < ActiveRecord::Base
+          store_accessor :settings, :color, :homepage
+          store_accessor :parent, :name, prefix: true
+          store_accessor :spouse, :name, prefix: :partner
+          store_accessor :settings, :two_factor_auth, suffix: true
+          store_accessor :settings, :login_retry, suffix: :config
+          store_accessor :settings, :database, prefix: :app, suffix: :config
+          store_accessor :settings, :username, prefix: :global, suffix: true
+          store_accessor()
+        end
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(
+        :User,
+        :color, :color=, :color_changed?, :color_was, :color_change,
+        :homepage, :homepage=, :homepage_changed?, :homepage_was, :homepage_change,
+        :parent_name, :parent_name=, :parent_name_changed?, :parent_name_was, :parent_name_change,
+        :partner_name, :partner_name=, :partner_name_changed?, :partner_name_was,
+        :partner_name_change,
+        :two_factor_auth_settings, :two_factor_auth_settings=, :two_factor_auth_settings_changed?,
+        :two_factor_auth_settings_was, :two_factor_auth_settings_change,
+        :login_retry_config, :login_retry_config=, :login_retry_config_changed?,
+        :login_retry_config_was, :login_retry_config_change,
+        :app_database_config, :app_database_config=, :app_database_config_changed?,
+        :app_database_config_was, :app_database_config_change,
+        :global_username_settings, :global_username_settings=, :global_username_settings_changed?,
+        :global_username_settings_was, :global_username_settings_change
+      ).and(have_calls(:store_accessor, :ActiveRecord, :Base))
+    end
+  end
 end

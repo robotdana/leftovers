@@ -1141,6 +1141,31 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
+  context 'with constant assignment values 1+ with freeze' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = %i{
+          downcase
+          upcase
+        }.freeze
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: STRING_TRANSFORMS
+            calls:
+              argument: '1+'
+      YML
+    end
+
+    it do
+      expect(subject).to have_definitions(:STRING_TRANSFORMS)
+        .and(have_calls(:upcase, :freeze))
+    end
+  end
+
   context 'with constant assignment with some other method' do
     let(:ruby) do
       <<~RUBY
@@ -1157,6 +1182,30 @@ RSpec.describe Leftovers::FileCollector do
           - name: STRING_TRANSFORMS
             calls:
               argument: '*'
+      YML
+    end
+
+    it do
+      expect(subject).to have_definitions(:STRING_TRANSFORMS).and(have_calls(:empty?))
+    end
+  end
+
+  context 'with constant assignment 1+ with some other method' do
+    let(:ruby) do
+      <<~RUBY
+        STRING_TRANSFORMS = %i{
+          downcase
+          upcase
+        }.empty?
+      RUBY
+    end
+
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: STRING_TRANSFORMS
+            calls:
+              argument: '1+'
       YML
     end
 
@@ -2621,6 +2670,34 @@ RSpec.describe Leftovers::FileCollector do
     it do
       expect(subject).to have_no_definitions
         .and(have_calls(:Caller, :Leftovers, :allocate, :initialize, :new, :yes))
+    end
+  end
+
+  context 'with all has_argument' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          name: my_method
+          all:
+            - has_argument: part_a
+
+            - has_argument: part_b
+          calls:
+            argument: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method(:no, part_a: true)
+        my_method(:no, part_b: true)
+        my_method(:yes, part_a: true, part_b: true)
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:my_method, :yes))
     end
   end
 

@@ -13,6 +13,8 @@ module Leftovers
       attribute :type, ValueOrArraySchema[ValueTypeSchema], require_group: :matcher
       attribute :privacy, ValueOrArraySchema[PrivacySchema], require_group: :matcher
       attribute :unless, ValueOrArraySchema[RulePatternSchema], require_group: :matcher
+      attribute :all, ArraySchema[RulePatternSchema], require_group: :matcher
+      attribute :any, ArraySchema[RulePatternSchema], require_group: :matcher
     end
   end
 end

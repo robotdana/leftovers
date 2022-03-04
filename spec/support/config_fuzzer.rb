@@ -2,7 +2,7 @@
 
 require 'yaml'
 
-class ConfigFuzzer
+class ConfigFuzzer # rubocop:disable Metrics/ClassLength
   def initialize(iteration)
     srand RSpec.configuration.seed + iteration
   end
@@ -16,6 +16,8 @@ class ConfigFuzzer
   def fuzz(schema, nesting: 0) # rubocop:disable Metrics
     if schema.is_a?(Leftovers::ConfigLoader::ValueOrArraySchema)
       fuzz_value_or_array(schema, nesting: nesting)
+    elsif schema.is_a?(Leftovers::ConfigLoader::ArraySchema)
+      fuzz_array(schema, nesting: nesting)
     elsif schema < Leftovers::ConfigLoader::ValueOrObjectSchema
       fuzz_value_or_object(schema, nesting: nesting)
     elsif schema < Leftovers::ConfigLoader::ObjectSchema
@@ -56,11 +58,15 @@ class ConfigFuzzer
     end.to_h
   end
 
+  def fuzz_array(schema, nesting: 0)
+    Array.new(rand(1..2)) { fuzz(schema.value_schema, nesting: nesting + 1) }
+  end
+
   def fuzz_value_or_array(schema, nesting: 0)
     if rand(2) == 0 || nesting > 10
       fuzz(schema.value_schema, nesting: nesting + 1)
     else
-      Array.new(rand(1..2)) { fuzz(schema.value_schema, nesting: nesting + 1) }
+      fuzz_array(schema, nesting: nesting + 1)
     end
   end
 

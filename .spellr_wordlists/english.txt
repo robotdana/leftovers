@@ -28,6 +28,7 @@ erb
 esque
 eval
 eval'd
+filesystem
 firstname
 fuzzer
 gemfile
@@ -52,6 +53,7 @@ namespaced
 nocov
 nonexcluded
 noninfringement
+numericality
 ofs
 okcomputer
 overwritable

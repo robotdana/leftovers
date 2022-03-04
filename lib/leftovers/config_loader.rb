@@ -6,6 +6,7 @@ module Leftovers
   class ConfigLoader
     autoload(:ArgumentPositionSchema, "#{__dir__}/config_loader/argument_position_schema")
     autoload(:ArgumentlessTransformSchema, "#{__dir__}/config_loader/argumentless_transform_schema")
+    autoload(:ArraySchema, "#{__dir__}/config_loader/array_schema")
     autoload(:Attribute, "#{__dir__}/config_loader/attribute")
     autoload(:BuiltInPrecompilerSchema, "#{__dir__}/config_loader/built_in_precompiler_schema")
     autoload(:DocumentSchema, "#{__dir__}/config_loader/document_schema")

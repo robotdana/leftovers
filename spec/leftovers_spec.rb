@@ -97,7 +97,14 @@ RSpec.describe Leftovers do
 
     it "doesn't care about using one of multiple simultaneous defined methods" do
       temp_file '.leftovers.yml', <<~YML
-        gems: rails
+        dynamic:
+          name: attribute
+          defines:
+            argument: 0
+            transforms:
+              - original
+              - add_suffix: '='
+              - add_suffix: '?'
       YML
 
       temp_file 'app/models/foo.rb', <<~RUBY

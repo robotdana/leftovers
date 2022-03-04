@@ -96,6 +96,16 @@ RSpec.describe Leftovers::ConfigLoader do
       end
     end
 
+    context 'with any with a single value' do
+      let(:yaml) { 'keep: { any: { name: yes, has_receiver: Receiver } }' }
+
+      it 'must be an array to avoid the confusion of how hash would still be all' do
+        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
+          \e[2K\e[31mConfig SchemaError: foo.yml:1:13 any must be an array\e[0m
+        MESSAGE
+      end
+    end
+
     context 'with true string value' do
       let(:yaml) { 'dynamic: { document: "true", call: "*" }' }
 
