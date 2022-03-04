@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class NodeHasAnyKeywordArgument
+      include ComparableInstance
+
       attr_reader :matcher
 
       def initialize(matcher)

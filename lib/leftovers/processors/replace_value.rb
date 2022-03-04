@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class ReplaceValue
+      include ComparableInstance
+
       def initialize(value, then_processor)
         @value = value
         @then_processor = then_processor

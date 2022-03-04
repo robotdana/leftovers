@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class Path
+      include ComparableInstance
+
       def initialize(fast_ignore)
         @fast_ignore = fast_ignore
 

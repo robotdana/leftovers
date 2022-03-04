@@ -37,10 +37,22 @@ class ConfigFuzzer # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def sample_object_attributes(schema)
-    length = rand(schema.attributes.length + 1)
-    attributes = schema.attributes.sample(length)
-    attributes += schema.require_groups.flat_map(&:sample)
+  def selectable_attributes(attributes, nesting: 0)
+    return attributes unless nesting > 10
+
+    attributes.reject do |a|
+      a.schema.instance_of?(Leftovers::ConfigLoader::ArraySchema)
+    end
+  end
+
+  def sample_object_attributes(schema, nesting: 0)
+    schema_attributes = selectable_attributes(schema.attributes, nesting: nesting)
+    length = rand(schema_attributes.length + 1)
+    attributes = schema_attributes.sample(length)
+    attributes += schema.require_groups.flat_map do |attrs|
+      selectable_attributes(attrs, nesting: nesting).sample
+    end
+
     attributes.uniq.shuffle
   end
 
@@ -53,7 +65,7 @@ class ConfigFuzzer # rubocop:disable Metrics/ClassLength
   end
 
   def fuzz_object(schema, nesting: 0)
-    sample_object_attributes(schema).map do |attr|
+    sample_object_attributes(schema, nesting: nesting).map do |attr|
       [[*attr.aliases, attr.name].sample.to_s, fuzz(attr.schema, nesting: nesting + 1)]
     end.to_h
   end

@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class KeywordArgument
+      include ComparableInstance
+
       def initialize(matcher, then_processor)
         @matcher = matcher
         @then_processor = then_processor

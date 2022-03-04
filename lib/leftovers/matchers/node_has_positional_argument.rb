@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class NodeHasPositionalArgument
+      include ComparableInstance
+
       def initialize(position)
         @position = position
 

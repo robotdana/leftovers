@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class Not
+      include ComparableInstance
+
       def initialize(matcher)
         @matcher = matcher
 

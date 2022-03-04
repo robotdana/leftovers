@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class AddDynamicPrefix
+      include ComparableInstance
+
       def initialize(prefix_processor, then_processor)
         @prefix_processor = prefix_processor
         @then_processor = then_processor

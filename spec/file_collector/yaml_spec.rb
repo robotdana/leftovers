@@ -11,18 +11,13 @@ RSpec.describe Leftovers::Precompilers::YAML do
 
   before do
     Leftovers.reset
-    with_temp_dir
   end
 
   after { Leftovers.reset }
 
   let(:path) { 'foo.yaml' }
   let(:file) do
-    temp_file(path, yaml)
-
-    Leftovers::File.new(Leftovers.pwd + path).tap do |f|
-      allow(f).to receive(:yaml?).and_return(true)
-    end
+    Leftovers::File.new(Leftovers.pwd + path).tap { |f| allow(f).to receive_messages(read: yaml) }
   end
   let(:yaml) { '' }
   let(:ruby) { file.ruby }

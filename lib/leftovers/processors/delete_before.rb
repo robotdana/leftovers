@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class DeleteBefore
+      include ComparableInstance
+
       def initialize(delete_before, then_processor)
         @delete_before = delete_before
         @then_processor = then_processor

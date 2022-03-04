@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class Split
+      include ComparableInstance
+
       def initialize(split_on, then_processor)
         @split_on = split_on
         @then_processor = then_processor

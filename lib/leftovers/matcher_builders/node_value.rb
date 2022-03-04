@@ -7,8 +7,10 @@ module Leftovers
         def build(patterns)
           ::Leftovers::MatcherBuilders::Or.each_or_self(patterns) do |pattern|
             case pattern
-            when ::Integer, ::Float, true, false, nil
+            when ::Integer, ::Float, true, false
+              # matching scalar on nil will fall afoul of compact and each_or_self etc.
               ::Leftovers::Matchers::NodeScalarValue.new(pattern)
+            when :_leftovers_nil_value then ::Leftovers::Matchers::NodeType.new(:nil)
             when ::String then ::Leftovers::MatcherBuilders::NodeName.build(pattern)
             when ::Hash then build_from_hash(**pattern)
             # :nocov:

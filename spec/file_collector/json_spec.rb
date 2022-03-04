@@ -11,16 +11,13 @@ RSpec.describe Leftovers::Precompilers::JSON do
 
   before do
     Leftovers.reset
-    with_temp_dir
   end
 
   after { Leftovers.reset }
 
   let(:path) { 'foo.json' }
   let(:file) do
-    temp_file(path, json)
-
-    Leftovers::File.new(Leftovers.pwd + path)
+    Leftovers::File.new(Leftovers.pwd + path).tap { |f| allow(f).to receive_messages(read: json) }
   end
   let(:json) { '' }
   let(:ruby) { file.ruby }

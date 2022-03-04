@@ -2936,12 +2936,6 @@ RSpec.describe Leftovers::FileCollector do
     let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(config) }
     let(:path) { '.leftovers.yml' }
 
-    before do
-      with_temp_dir
-      # need the files to actually exist or fast_ignore doesn't work.
-      temp_file path, config
-    end
-
     it do
       expect(subject).to have_no_definitions
         .and(have_calls(:__leftovers_document, :MyNamespace, :MyLangProcessor, :precompile))
@@ -2960,12 +2954,6 @@ RSpec.describe Leftovers::FileCollector do
     let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(config) }
     let(:path) { '.leftovers.yml' }
 
-    before do
-      with_temp_dir
-      # need the files to actually exist or fast_ignore doesn't work.
-      temp_file path, config
-    end
-
     it do
       expect(subject).to have_no_definitions
         .and(have_calls(:__leftovers_document, :MyNamespace, :MyLangProcessor, :precompile))
@@ -2983,12 +2971,6 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:ruby) { ::Leftovers::Precompilers::YAML.precompile(config) }
     let(:path) { '.leftovers.yml' }
-
-    before do
-      with_temp_dir
-      # need the files to actually exist or fast_ignore doesn't work.
-      temp_file path, config
-    end
 
     it do
       expect(subject).to have_no_definitions

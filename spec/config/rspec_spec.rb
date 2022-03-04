@@ -12,13 +12,11 @@ RSpec.describe 'rspec gem' do
   before do
     Leftovers.reset
     Leftovers.config << :rspec
-
-    with_temp_dir
   end
 
   after { Leftovers.reset }
 
-  let(:path) { temp_file 'spec/file_spec.rb' } # the file needs to exist
+  let(:path) { 'spec/file_spec.rb' }
   let(:file) { Leftovers::File.new(Leftovers.pwd + path) }
   let(:ruby) { '' }
 

@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class SetDefaultPrivacy
+      include ComparableInstance
+
       def initialize(to)
         @to = to
 

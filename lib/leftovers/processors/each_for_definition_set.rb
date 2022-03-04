@@ -3,8 +3,12 @@
 module Leftovers
   module Processors
     class EachForDefinitionSet
-      def initialize(then_processors)
-        @then_processors = then_processors
+      include ComparableInstance
+
+      attr_reader :processors
+
+      def initialize(processors)
+        @processors = processors
 
         freeze
       end
@@ -12,8 +16,8 @@ module Leftovers
       def process(str, node, method_node, acc)
         set = ::Leftovers::DefinitionNodeSet.new
 
-        @then_processors.each do |then_processor|
-          then_processor.process(str, node, method_node, set)
+        @processors.each do |processor|
+          processor.process(str, node, method_node, set)
         end
 
         if set.definitions.length == 1

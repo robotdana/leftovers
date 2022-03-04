@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class AddDynamicSuffix
+      include ComparableInstance
+
       def initialize(suffix_processor, then_processor)
         @suffix_processor = suffix_processor
         @then_processor = then_processor

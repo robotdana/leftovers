@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class EachPositionalArgumentFrom
+      include ComparableInstance
+
       def initialize(position, then_processor)
         @position = position
         @then_processor = then_processor

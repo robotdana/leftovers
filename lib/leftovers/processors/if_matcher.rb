@@ -3,6 +3,10 @@
 module Leftovers
   module Processors
     class IfMatcher
+      include ComparableInstance
+
+      attr_reader :matcher, :then_processor
+
       def initialize(matcher, then_processor)
         @matcher = matcher
         @then_processor = then_processor

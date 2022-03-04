@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class Or
+      include ComparableInstance
+
       attr_reader :lhs, :rhs
 
       def initialize(lhs, rhs)

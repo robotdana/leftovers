@@ -11,15 +11,13 @@ RSpec.describe Leftovers::FileCollector do
 
   before do
     Leftovers.reset
-    with_temp_dir
   end
 
   after { Leftovers.reset }
 
   let(:path) { 'foo.slim' }
   let(:file) do
-    temp_file(path, slim)
-    Leftovers::File.new(Leftovers.pwd + path)
+    Leftovers::File.new(Leftovers.pwd + path).tap { |f| allow(f).to receive_messages(read: slim) }
   end
   let(:slim) { '' }
   let(:ruby) { file.ruby }

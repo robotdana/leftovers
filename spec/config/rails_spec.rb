@@ -296,12 +296,6 @@ RSpec.describe 'rails gem' do
   end
 
   context 'with generators with private messages' do
-    before do
-      with_temp_dir
-      # need the files to actually exist or fast_ignore doesn't work.
-      temp_file 'lib/generators/initializer_generator.rb'
-    end
-
     let(:path) { 'lib/generators/initializer_generator.rb' }
     let(:ruby) do
       <<~RUBY

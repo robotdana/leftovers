@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class Downcase
+      include ComparableInstance
+
       def initialize(then_processor)
         @then_processor = then_processor
 

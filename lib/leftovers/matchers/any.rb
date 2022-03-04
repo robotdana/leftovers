@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class Any
+      include ComparableInstance
+
       attr_reader :matchers
 
       def initialize(matchers)

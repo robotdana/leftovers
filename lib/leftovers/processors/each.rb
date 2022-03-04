@@ -3,6 +3,8 @@
 module Leftovers
   module Processors
     class Each
+      include ComparableInstance
+
       attr_reader :processors
 
       def initialize(processors)

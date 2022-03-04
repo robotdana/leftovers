@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class NodePath
+      include ComparableInstance
+
       attr_reader :matcher
 
       def initialize(matcher)

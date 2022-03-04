@@ -1,6 +1,5 @@
 # frozen-string-literal: true
 
-# TODO: find a way for this to remove itself from the chain
 module Leftovers
   module Processors
     class Placeholder

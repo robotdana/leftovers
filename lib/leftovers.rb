@@ -27,6 +27,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
   autoload(:AST, "#{__dir__}/leftovers/ast")
   autoload(:CLI, "#{__dir__}/leftovers/cli")
   autoload(:Collector, "#{__dir__}/leftovers/collector")
+  autoload(:ComparableInstance, "#{__dir__}/leftovers/comparable_instance")
   autoload(:ConfigLoader, "#{__dir__}/leftovers/config_loader")
   autoload(:Config, "#{__dir__}/leftovers/config")
   autoload(:Definition, "#{__dir__}/leftovers/definition")
