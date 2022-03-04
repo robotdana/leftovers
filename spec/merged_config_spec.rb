@@ -22,8 +22,8 @@ RSpec.describe Leftovers::MergedConfig do
         *::Leftovers::MergedConfig::MEMOIZED_IVARS, :@configs, :@loaded_configs
       )
 
-      actionpack = Leftovers::Config.new(:actionpack)
-      subject << actionpack
+      slim = Leftovers::Config.new(:slim)
+      subject << slim
 
       expect(original_exclude_paths).not_to be subject.exclude_paths # it's a different empty array
       expect(original_include_paths).not_to eq subject.include_paths
@@ -31,15 +31,15 @@ RSpec.describe Leftovers::MergedConfig do
       expect(original_precompilers).not_to eq subject.precompilers
 
       expect(
-        ::Leftovers::ProcessorBuilders::Each.build([original_dynamic, actionpack.dynamic])
+        ::Leftovers::ProcessorBuilders::Each.build([original_dynamic, slim.dynamic])
       ).to match_nested_object subject.dynamic
 
       expect(
-        ::Leftovers::MatcherBuilders::Or.build([original_keep, actionpack.keep])
+        ::Leftovers::MatcherBuilders::Or.build([original_keep, slim.keep])
       ).to match_nested_object subject.keep
 
       expect(
-        ::Leftovers::MatcherBuilders::Or.build([original_test_only, actionpack.test_only])
+        ::Leftovers::MatcherBuilders::Or.build([original_test_only, slim.test_only])
       ).to match_nested_object subject.test_only
     end
 

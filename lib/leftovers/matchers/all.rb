@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class All
+      attr_reader :matchers
+
       def initialize(matchers)
         @matchers = matchers
 

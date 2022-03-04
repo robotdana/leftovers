@@ -15,7 +15,7 @@ module Leftovers
     def test?
       return @test if defined?(@test)
 
-      @test = Leftovers.config.test_paths.allowed?(relative_path)
+      @test = Leftovers.config.test_paths === relative_path
     end
 
     def ruby

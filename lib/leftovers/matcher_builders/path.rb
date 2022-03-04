@@ -8,7 +8,9 @@ module Leftovers
       def self.build(path_pattern)
         return if path_pattern.nil? || path_pattern.empty?
 
-        ::FastIgnore.new(include_rules: path_pattern, gitignore: false, root: Leftovers.pwd)
+        ::Leftovers::Matchers::Path.new(
+          ::FastIgnore.new(include_rules: path_pattern, gitignore: false, root: Leftovers.pwd)
+        )
       end
     end
   end

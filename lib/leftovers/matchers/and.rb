@@ -3,6 +3,8 @@
 module Leftovers
   module Matchers
     class And
+      attr_reader :lhs, :rhs
+
       def initialize(lhs, rhs)
         @lhs = lhs
         @rhs = rhs

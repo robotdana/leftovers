@@ -32,7 +32,7 @@ module Leftovers
       end
 
       def path
-        @memo[:path] ||= loc.expression.source_buffer.name.to_s
+        loc.expression.source_buffer.name
       end
 
       def privacy=(value)

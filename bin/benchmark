@@ -182,3 +182,21 @@ benchmark('match-vs-count') do
     x.compare!
   end
 end
+
+benchmark('match-vs-include') do
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:include_miss, '"my-string".include?("<")')
+    x.report(:match_miss, '"my-string".match?(/</)')
+    x.report(:include_hit_start, '"<my-string".include?("<")')
+    x.report(:match_hit_start, '"<my-string".match?(/</)')
+    x.report(:include_hit_end, '"my-string>".include?(">")')
+    x.report(:match_hit_end, '"my-string>".match?(/>/)')
+    x.report(:include_hit_long_start, "'<#{'my-string ' * 20_000}'.include?('<')")
+    x.report(:match_hit_long_start, "'<#{'my-string ' * 20_000}'.match?(/</)")
+
+    x.report(:include_hit_long_end, "'#{'my-string ' * 20_000}>'.include?('>')")
+    x.report(:match_hit_long_end, "'#{'my-string ' * 20_000}>'.match?(/>/)")
+    x.compare!
+  end
+end
