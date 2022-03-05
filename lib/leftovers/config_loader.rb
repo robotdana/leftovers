@@ -21,6 +21,7 @@ module Leftovers
     autoload(:PrecompilerSchema, "#{__dir__}/config_loader/precompiler_schema")
     autoload(:PrivacyProcessorSchema, "#{__dir__}/config_loader/privacy_processor_schema")
     autoload(:PrivacySchema, "#{__dir__}/config_loader/privacy_schema")
+    autoload(:RegexpSchema, "#{__dir__}/config_loader/regexp_schema")
     autoload(:RequireSchema, "#{__dir__}/config_loader/require_schema")
     autoload(:RulePatternSchema, "#{__dir__}/config_loader/rule_pattern_schema")
     autoload(:ScalarArgumentSchema, "#{__dir__}/config_loader/scalar_argument_schema")

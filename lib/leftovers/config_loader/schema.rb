@@ -17,6 +17,16 @@ module Leftovers
         def to_ruby(node)
           node.to_ruby
         end
+
+        def ===(other) # leftovers:test_only
+          # :nocov:
+          if other.is_a?(Module)
+            self >= other
+          else
+            other.is_a?(self)
+          end
+          # :nocov:
+        end
       end
     end
   end

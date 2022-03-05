@@ -229,6 +229,28 @@ RSpec.describe Leftovers::Config do
       MESSAGE
     end
 
+    it 'can report errors when match has an invalid regex' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep:
+          matches: '***'
+      YML
+
+      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:11 matches must be a string with a valid ruby regexp (target of repeat operator is not specified: /***/)\e[0m
+      MESSAGE
+    end
+
+    it 'can report errors when match has an non-string value' do
+      config = described_class.new('invalid', content: <<~YML)
+        keep:
+          matches: 5
+      YML
+
+      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:11 matches must be a string with a valid ruby regexp\e[0m
+      MESSAGE
+    end
+
     it 'can report errors when using missing argument etc' do
       config = described_class.new('invalid', content: <<~YML)
         dynamic:
