@@ -183,6 +183,36 @@ benchmark('match-vs-count') do
   end
 end
 
+benchmark('delete-before') do
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:split_miss, 's="my-own-string"; (s.split("+", 2)[1] || s)')
+    x.report(:index_miss, 's="my-own-string"; (index = s.index("+")) ? s[(index + 1)..-1] : s')
+    x.report(:sub_miss, 's="my-own-string"; s.sub(/\\A.*?\\+/m, "")')
+
+    x.report(:split_hit, 's="my-own-string"; (s.split("-", 2)[1] || s)')
+    x.report(:index_hit, 's="my-own-string"; (index = s.index("-")) ? s[(index + 1)..-1] : s')
+    x.report(:sub_hit, 's="my-own-string"; s.sub(/\\A.*?-/m, "")')
+    x.compare!
+  end
+end
+
+benchmark('delete-after') do
+  Benchmark.ips do |x|
+    x.config(config)
+    x.report(:split_miss, 's="my-own-string"; s.split("+", 2).first')
+    x.report(:index_miss, 's="my-own-string"; (index = s.index("+")) ? s[0...index] : s')
+    x.report(:sub_miss, 's="my-own-string"; s.sub(/\\+.*\\z/m, "")')
+    x.report(:match_miss, 's="my-own-string"; s.match(/\\A(.*?)\\+/m)&.[](1)')
+
+    x.report(:split_hit, 's="my-own-string"; s.split("-", 2).first')
+    x.report(:index_hit, 's="my-own-string"; (index = s.index("-")) ? s[0...index] : s')
+    x.report(:sub_hit, 's="my-own-string"; s.sub(/-.*\\z/m, "")')
+    x.report(:match_hit, 's="my-own-string"; s.match(/\\A(.*?)-/m)&.[](1)')
+    x.compare!
+  end
+end
+
 benchmark('match-vs-include') do
   Benchmark.ips do |x|
     x.config(config)

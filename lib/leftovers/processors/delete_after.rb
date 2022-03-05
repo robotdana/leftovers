@@ -15,8 +15,8 @@ module Leftovers
       def process(str, node, method_node, acc)
         return unless str
 
-        # TODO: investigate index
-        str = str.split(@delete_after, 2).first || str
+        index = str.index(@delete_after)
+        str = str[0...index] if index
         @then_processor.process(str, node, method_node, acc)
       end
 

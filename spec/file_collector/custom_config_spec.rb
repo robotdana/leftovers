@@ -1547,6 +1547,71 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:my_method)) }
   end
 
+  context 'with multi-character delete_after and delete_before on an empty string and nil' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: '*'
+              transforms:
+                - delete_after: xy
+                - delete_before: xy
+                - delete_prefix: xy
+                - delete_suffix: xy
+                - split: xy
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('xy', '', nil)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method)) }
+  end
+
+  context 'with multi-character delete_after' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: '*'
+              delete_after: _xx_
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', 'yes_xx_no', 'yes_xx__xx_no')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes)) }
+  end
+
+  context 'with multi-character delete_before' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: '*'
+              delete_before: _xx_
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', 'no_xx_yes', 'no_xx__xx_double')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes, :_xx_double)) }
+  end
+
   context 'with add_suffix argument with a suffix' do
     let(:config) do
       <<~YML
