@@ -1536,6 +1536,8 @@ RSpec.describe Leftovers::FileCollector do
               transforms:
                 - delete_after: x
                 - delete_before: x
+                - delete_after_last: x
+                - delete_before_last: x
                 - delete_prefix: x
                 - delete_suffix: x
                 - split: x
@@ -1561,6 +1563,8 @@ RSpec.describe Leftovers::FileCollector do
               transforms:
                 - delete_after: xy
                 - delete_before: xy
+                - delete_after_last: xy
+                - delete_before_last: xy
                 - delete_prefix: xy
                 - delete_suffix: xy
                 - split: xy
@@ -1596,6 +1600,26 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes)) }
   end
 
+  context 'with multi-character delete_after_last' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: '*'
+              delete_after_last: _xx_
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', 'yes_xx_no', 'double_xx__xx_no')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes, :double_xx_)) }
+  end
+
   context 'with multi-character delete_before' do
     let(:config) do
       <<~YML
@@ -1614,6 +1638,26 @@ RSpec.describe Leftovers::FileCollector do
     end
 
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes, :_xx_double)) }
+  end
+
+  context 'with multi-character delete_before_last' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: '*'
+              delete_before_last: _xx_
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', 'no_xx_yes', 'no_xx__xx_yes')
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes)) }
   end
 
   context 'with add_suffix argument with a suffix' do

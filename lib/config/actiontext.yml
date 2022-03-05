@@ -13,7 +13,23 @@ keep:
 dynamic:
   # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html#method-i-rich_text_area
   - name: rich_text_area
-    calls: [0,1]
+    has_receiver: true
+    calls:
+      argument: 0
+      transforms:
+        - original
+        - add_suffix: '='
+
+  - name: rich_text_area
+    unless:
+      has_receiver: true
+    calls:
+      - argument: 1
+        transforms:
+         - original
+         - add_suffix: '='
+      - argument: 0
+        add_prefix: '@'
 
   # https://edgeapi.rubyonrails.org/classes/ActionText/Attribute.html#method-i-has_rich_text
   - name: has_rich_text

@@ -35,8 +35,12 @@ module Leftovers
           ::Leftovers::Processors::Split.new(argument, then_processor)
         when 'delete_before'
           ::Leftovers::Processors::DeleteBefore.new(argument, then_processor)
+        when 'delete_before_last'
+          ::Leftovers::Processors::DeleteBeforeLast.new(argument, then_processor)
         when 'delete_after'
           ::Leftovers::Processors::DeleteAfter.new(argument, then_processor)
+        when 'delete_after_last'
+          ::Leftovers::Processors::DeleteAfterLast.new(argument, then_processor)
         when 'add_prefix'
           ::Leftovers::ProcessorBuilders::AddPrefix.build(argument, then_processor)
         when 'add_suffix'

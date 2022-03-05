@@ -401,8 +401,10 @@ also there may be any or all of these properties:
   - [`add_suffix:`](#add_prefix-add_suffix)
   - [`delete_prefix:`](#delete_prefix-delete_suffix)
   - [`delete_suffix:`](#delete_prefix-delete_suffix)
-  - [`delete_before:`](#delete_before-delete_after)
-  - [`delete_after:`](#delete_before-delete_after)
+  - [`delete_before:`](#delete_before-delete_after--delete_before_last-delete_after_last)
+  - [`delete_after:`](#delete_before-delete_after--delete_before_last-delete_after_last)
+  - [`delete_before_last:`](#delete_before-delete_after-delete_before_last-delete_after_last)
+  - [`delete_after_last:`](#delete_before-delete_after-delete_before_last-delete_after_last)
   - [`split:`](#split)
   - [`downcase:`](#downcase-upcase-capitalize-swapcase)
   - [`upcase:`](#downcase-upcase-capitalize-swapcase)
@@ -751,8 +753,10 @@ Each entry can have a string that is an argumentless transform (e.g. capitalize)
 - [`add_suffix:`](#add_prefix-add_suffix)
 - [`delete_prefix:`](#delete_prefix-delete_suffix)
 - [`delete_suffix:`](#delete_prefix-delete_suffix)
-- [`delete_before:`](#delete_before-delete_after)
-- [`delete_after:`](#delete_before-delete_after)
+- [`delete_before:`](#delete_before-delete_after-delete_before_last-delete_after_last)
+- [`delete_after:`](#delete_before-delete_after-delete_before_last-delete_after_last)
+- [`delete_before_last:`](#delete_before-delete_after-delete_before_last-delete_after_last)
+- [`delete_after_last:`](#delete_before-delete_after-delete_before_last-delete_after_last)
 - [`split:`](#split)
 - [`downcase`](#downcase-upcase-capitalize-swapcase) or `downcase: true`
 - [`upcase`](#downcase-upcase-capitalize-swapcase) or `upcase: true`
@@ -858,11 +862,16 @@ if multiple transform results are possible (from multiple entries), then all res
 
 Arrays are not necessary for single values
 
-## `delete_before:`, `delete_after:`
+## `delete_before:`, `delete_after:`, `delete_before_last:`, `delete_after_last:`
 
 Can be used in the [`transforms:`](#transforms) list (or anywhere `transforms:` is able to be omitted).
 
-Each entry is a literal string, and _if present_ the string and everything before/after will be removed from the incoming value (if it's not present, this transform will continue to the next transform/result unmodified). if it's present multiple times then it will always be everything before/after the first substring match
+Each entry is a literal string, and _if present_ the string and everything before/after will be removed from the incoming value (if it's not present, this transform will continue to the next transform/result unmodified).
+
+- `delete_before:` will delete everything before and including the _first_ occurrence
+- `delete_after:` will delete everything after and including the _first_ occurrence
+- `delete_before_last:` will delete everything before and including the _last_ occurrence
+- `delete_after_last:` will delete everything after and including the _last_ occurrence
 
 if multiple transform results are possible (from multiple entries), then all results will be used.
 

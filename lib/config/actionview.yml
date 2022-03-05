@@ -1,67 +1,202 @@
-# THIS IS INCOMPLETE (you can help by expanding it)
-# rails is _really complicated_ and has a lot of magic which calls methods for you.
-# some is currently impossible to handle (with_options).
-# Some is just corners of rails I haven't hit yet.
-keep:
-  - has_suffix: Helper
-    path: /app/helpers
-
-gems:
-  - activesupport
-
 dynamic:
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Base.html
+  - name: render
+    has_argument: 0
+    defines:
+      keywords: '**'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/PartialRenderer.html
+  - name: render
+    has_argument: [object, collection]
+    unless:
+      has_argument: as
+    defines:
+      argument: partial
+      delete_before_last: '/'
+
+  - name: render
+    all:
+      - has_argument: [object, collection]
+      - has_argument: as
+    defines: as
+
+  - name: render
+    defines:
+      argument: locals
+      nested:
+        keywords: '**'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Template.html#method-i-local_assigns
+  - name: '[]'
+    has_receiver: local_assigns
+    calls: 0
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormBuilder.html
   - name:
-    - check_box
-    - date_select
-    - datetime_select
-    - file_field
-    - hidden_field
-    - label
-    - radio_button
-    - select
-    - time_select
-    - time_zone_select
-    - color_field
-    - date_field
-    - datetime_field
-    - datetime_local_field
-    - email_field
-    - month_field
-    - number_field
-    - password_field
-    - phone_field
-    - range_field
-    - search_field
-    - telephone_field
-    - text_area
-    - text_field
-    - time_field
-    - url_field
-    - week_field
+      - check_box
+      - color_field
+      - date_field
+      - date_select
+      - datetime_field
+      - datetime_local_field
+      - datetime_select
+      - email_field
+      - file_field
+      - hidden_field
+      - month_field
+      - number_field
+      - password_field
+      - phone_field
+      - radio_button
+      - range_field
+      - search_field
+      - select
+      - telephone_field
+      - text_area
+      - text_field
+      - time_field
+      - time_select
+      - time_zone_select
+      - url_field
+      - week_field
+      - weekday_select
+    has_receiver: true
     calls:
-      - arguments: [0,1] # 0: with a receiver, 1: with no receiver
-      - arguments: [0,1]
-        add_suffix: '='
+      - argument: 0
+        transforms:
+          - original
+          - add_suffix: '='
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormBuilder.html#method-i-fields_for
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html#method-i-fields_for
   - name: fields_for
+    has_receiver: true
     calls:
-      argument: 1
-      add_suffix: _attributes
-  - name: options_from_collection_for_select
+      argument: 0
+      transforms:
+        add_suffix: _attributes=
+
+  - name: fields_for
+    unless:
+      any:
+        - has_receiver: true
+        - has_argument: 1
     calls:
-      - arguments: [1,2]
+      argument: 0
+      add_prefix: '@'
+
+  - name: form_for
+    has_argument:
+      at: 0
+      has_value:
+        type: [String, Symbol]
+    calls:
+      argument: 0
+      add_prefix: '@'
+
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/DateHelper.html
+  - name:
+      - check_box
+      - color_field
+      - date_field
+      - date_select
+      - datetime_field
+      - datetime_local_field
+      - datetime_select
+      - email_field
+      - file_field
+      - hidden_field
+      - month_field
+      - number_field
+      - password_field
+      - phone_field
+      - radio_button
+      - range_field
+      - search_field
+      - select
+      - telephone_field
+      - text_area
+      - text_field
+      - time_field
+      - time_select
+      - time_zone_select
+      - url_field
+      - week_field
+      - weekday_select
+    unless:
+      has_receiver: true
+    calls:
+      - argument: 1
+        transforms:
+         - original
+         - add_suffix: '='
+      - argument: 0
+        add_prefix: '@'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormBuilder.html#method-i-collection_check_boxes
   - name:
       - collection_select
       - collection_check_boxes
       - collection_radio_buttons
+    has_receiver: true
+    calls:
+      - argument: 0
+        transforms:
+          - original
+          - add_suffix: '='
+      - arguments: [2,3]
+
+  - name:
+      - collection_select
+      - collection_check_boxes
+      - collection_radio_buttons
+    unless:
+      has_receiver: true
     calls:
       - argument: 1
-        add_suffix: '='
+        transforms:
+          - original
+          - add_suffix: '='
       - arguments: [3,4]
+      - argument: 0
+        add_prefix: '@'
+
   - name: grouped_collection_select
+    has_receiver: true
+    calls:
+      - argument: 0
+        transforms:
+          - original
+          - add_suffix: '='
+      - arguments: [2,3,4,5]
+
+  - name: grouped_collection_select
+    unless:
+      has_receiver: true
     calls:
       - argument: 1
-        add_suffix: '='
+        transforms:
+          - original
+          - add_suffix: '='
       - arguments: [3,4,5,6]
+      - argument: 0
+        add_prefix: '@'
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormOptionsHelper.html#method-i-option_groups_from_collection_for_select
   - name: option_groups_from_collection_for_select
-    calls:
-      - arguments: [0,1,2,3]
+    calls: [1,2,3,4]
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormOptionsHelper.html#method-i-options_from_collection_for_select
+  - name: options_from_collection_for_select
+    calls: [1,2]
+
+
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Layouts.html
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Layouts/ClassMethods.html#method-i-layout
+  - name: layout
+    has_argument:
+      at: 0
+      has_value:
+        type: Symbol
+    calls: 0
