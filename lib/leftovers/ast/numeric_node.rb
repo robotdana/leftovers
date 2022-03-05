@@ -12,6 +12,7 @@ module Leftovers
       def to_s
         to_scalar_value.to_s
       end
+      alias_method :to_literal_s, :to_s
 
       def to_sym
         to_s.to_sym

@@ -1221,7 +1221,7 @@ RSpec.describe Leftovers::FileCollector do
         STRING_TRANSFORMS = {
           downcase: true,
           upcase: true,
-          1 => true,
+          one => true,
           **rest
         }
       RUBY
@@ -1233,10 +1233,14 @@ RSpec.describe Leftovers::FileCollector do
           - name: STRING_TRANSFORMS
             calls:
               keywords: '**'
+              add_suffix: _call
       YML
     end
 
-    it { is_expected.to have_definitions(:STRING_TRANSFORMS).and(have_calls(:downcase, :upcase)) }
+    it do
+      expect(subject).to have_definitions(:STRING_TRANSFORMS)
+        .and(have_calls(:downcase_call, :upcase_call, :one))
+    end
   end
 
   context 'with constant specific hash assignment keys' do

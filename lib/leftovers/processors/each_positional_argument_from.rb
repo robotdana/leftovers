@@ -20,7 +20,7 @@ module Leftovers
         positional_arguments.each_with_index do |argument_node, index|
           next if index < @position
 
-          @then_processor.process(argument_node.to_repeatable_s, argument_node, method_node, acc)
+          @then_processor.process(argument_node.to_literal_s, argument_node, method_node, acc)
         end
       end
 

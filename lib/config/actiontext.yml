@@ -1,5 +1,40 @@
+# https://edgeguides.rubyonrails.org/action_text_overview.html
+
 gems:
   - activesupport
   - activerecord
   - activestorage
   - actionpack
+
+keep:
+  # https://edgeguides.rubyonrails.org/action_text_overview.html#rendering-attachments
+  - to_attachable_partial_path
+
+dynamic:
+  # https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html#method-i-rich_text_area
+  - name: rich_text_area
+    calls: [0,1]
+
+  # https://edgeapi.rubyonrails.org/classes/ActionText/Attribute.html#method-i-has_rich_text
+  - name: has_rich_text
+    defines:
+      argument: 0
+      transforms:
+        # defines its own methods
+        - original
+        - add_suffix: '?'
+        - add_suffix: '='
+        # some scopes
+        - add_prefix: with_rich_text_
+        - { add_prefix: with_rich_text_, add_suffix: _and_embeds }
+        # and has_one with this prefix
+        - add_prefix: rich_text_
+          transforms:
+            # these are copied from has_one
+            - original
+            - add_suffix: '='
+            - add_prefix: build_
+            - add_prefix: create_
+            - { add_prefix: create_, add_suffix: '!' }
+            - add_prefix: reload_
+

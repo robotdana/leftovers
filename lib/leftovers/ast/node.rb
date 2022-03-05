@@ -59,7 +59,7 @@ module Leftovers
         :''
       end
 
-      def to_repeatable_s
+      def to_literal_s
         nil
       end
 

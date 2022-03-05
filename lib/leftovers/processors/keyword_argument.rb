@@ -20,7 +20,7 @@ module Leftovers
           next unless @matcher === pair
 
           value_node = pair.second
-          @then_processor.process(value_node.to_repeatable_s, value_node, method_node, acc)
+          @then_processor.process(value_node.to_literal_s, value_node, method_node, acc)
         end
       end
 

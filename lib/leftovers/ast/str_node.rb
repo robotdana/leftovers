@@ -10,7 +10,7 @@ module Leftovers
       end
 
       alias_method :to_s, :first
-      alias_method :to_repeatable_s, :to_s
+      alias_method :to_literal_s, :to_s
 
       def to_sym
         to_s.to_sym

@@ -425,13 +425,13 @@ dynamic:
       - send
     calls:
       arguments:
-        - 1
+        - 0
 ```
 is equivalent to:
 ```yml
 dynamic:
   name: send
-  calls: 1
+  calls: 0
 ```
 
 ## `set_privacy:`
@@ -767,6 +767,7 @@ Each entry can have a string that is an argumentless transform (e.g. capitalize)
   - [`deconstantize`](#pluralize-singularize-camelize-demodulize-deconstantize-parameterize-titleize-underscore) or `deconstantize: true`
   - [`titleize`](#pluralize-singularize-camelize-demodulize-deconstantize-parameterize-titleize-underscore) or `titleize: true`
   - [`parameterize`](#pluralize-singularize-camelize-demodulize-deconstantize-parameterize-titleize-underscore) or `parameterize: true`
+  - `transforms:`
 
 If any one of these `transforms:` entries are used, all count as being used. To have these be counted independently instead, create multiple entries in the `defines:` list.
 
@@ -774,7 +775,7 @@ If any one of these `transforms:` entries are used, all count as being used. To 
 dynamic:
 - name: attribute
   defines:
-    - argument: 1
+    - argument: 0
       transforms:
         - original # no transformation
         - add_suffix: '?'
@@ -784,6 +785,20 @@ dynamic:
 attribute :first_name
 ```
 will count as a definition of `first_name`, `first_name=` and `first_name?`. `firstname=` wouldn't be reported on, even if only `first_name` and `first_name?` were used.
+
+```yml
+dynamic:
+- name: attr_accessor
+  defines:
+    - argument: '*'
+    - argument: '*'
+      transforms:
+        add_suffix: '='
+```
+```ruby
+attr_accessor :first_name
+```
+will count the calls to `first_name` and `first_name=` separately, with the understand it can be swapped to attr_reader or attr_writer if one or other isn't used.
 
 Arrays are not necessary for single values, and if there is just one set of transforms, the `transforms:` keyword can be omitted and everything moved up a level.
 
@@ -798,6 +813,21 @@ dynamic:
 attr_writer :first_name, :surname
 ```
 will count as the definition of `first_name=`, and `surname=`
+
+Multiple transform arguments will be applied sequentially
+```yml
+dynamic:
+- name: has_many
+  calls:
+    - argument: 0
+      singularize: true
+      camelize: true
+      split: '::'
+```
+```ruby
+has_many :users
+```
+counts as a call to `User`
 
 ## `original`
 

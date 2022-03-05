@@ -17,7 +17,7 @@ module Leftovers
         return unless positional_arguments
 
         positional_arguments.each do |argument_node|
-          @then_processor.process(argument_node.to_repeatable_s, argument_node, method_node, acc)
+          @then_processor.process(argument_node.to_literal_s, argument_node, method_node, acc)
         end
       end
 

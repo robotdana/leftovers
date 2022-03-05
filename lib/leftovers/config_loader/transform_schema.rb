@@ -19,6 +19,8 @@ module Leftovers
       attribute :delete_suffix, StringSchema, require_group: :processor
       attribute :delete_before, StringSchema, require_group: :processor
       attribute :delete_after, StringSchema, require_group: :processor
+      attribute :transforms, ValueOrArraySchema[TransformSchema], require_group: :processor,
+        aliases: :transform
 
       self.or_value_schema = ArgumentlessTransformSchema
     end

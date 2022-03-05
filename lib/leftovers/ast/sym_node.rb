@@ -15,7 +15,7 @@ module Leftovers
         name.to_s
       end
 
-      alias_method :to_repeatable_s, :to_s
+      alias_method :to_literal_s, :to_s
 
       def sym?
         true

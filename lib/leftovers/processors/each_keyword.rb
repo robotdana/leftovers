@@ -19,7 +19,7 @@ module Leftovers
           next unless pair.type == :pair
 
           key_node = pair.first
-          @then_processor.process(key_node.to_repeatable_s, key_node, method_node, acc)
+          @then_processor.process(key_node.to_literal_s, key_node, method_node, acc)
         end
       end
 
