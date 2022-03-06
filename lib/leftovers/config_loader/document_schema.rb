@@ -27,8 +27,9 @@ module Leftovers
         read_hash.each do |key, value|
           next unless PRECOMPILERS.include?(key)
 
-          value = { paths: value, format: key.to_s.delete_suffix('_paths') }
-          yaml = { 'precompile' => [value.transform_keys(&:to_s)] }.to_yaml.delete_prefix("---\n")
+          value = { paths: value, format: key.to_s.delete_suffix('_paths').to_sym }
+          yaml = { 'precompile' => [value.transform_keys(&:to_s).transform_values(&:to_s)] }
+            .to_yaml.delete_prefix("---\n")
 
           Leftovers.warn(<<~MESSAGE)
             \e[33m`#{key}:` is deprecated\e[0m

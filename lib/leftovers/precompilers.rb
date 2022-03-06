@@ -23,11 +23,11 @@ module Leftovers
 
       def build_precompiler(format)
         case format
-        when 'erb' then ::Leftovers::Precompilers::ERB
-        when 'haml' then ::Leftovers::Precompilers::Haml
-        when 'json' then ::Leftovers::Precompilers::JSON
-        when 'slim' then ::Leftovers::Precompilers::Slim
-        when 'yaml' then ::Leftovers::Precompilers::YAML
+        when :erb then ::Leftovers::Precompilers::ERB
+        when :haml then ::Leftovers::Precompilers::Haml
+        when :json then ::Leftovers::Precompilers::JSON
+        when :slim then ::Leftovers::Precompilers::Slim
+        when :yaml then ::Leftovers::Precompilers::YAML
         when Hash then constantize_precompiler(format[:custom])
           # :nocov:
         else raise Leftovers::UnexpectedCase, "Unhandled value #{format}"

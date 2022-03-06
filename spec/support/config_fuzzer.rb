@@ -111,7 +111,7 @@ class ConfigFuzzer # rubocop:disable Metrics/ClassLength
   # more likely as we nest
   def weighted_rand(weight)
     return rand(2) == 0 if weight <= 1 # 1/2
-    return rand(weight) < weight - 2 if weight <= 5 # linear
+    return rand(weight) < weight - 2 if weight <= 10 # linear
     return rand(weight * weight) < (weight * weight) - 2 if weight <= 20
 
     true # never

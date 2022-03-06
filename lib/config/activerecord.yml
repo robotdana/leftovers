@@ -426,190 +426,39 @@ dynamic:
 
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Store.html
   - name: store
-    unless:
-      has_argument: [prefix, suffix]
-    defines:
-      argument: accessors
-      nested: '*'
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  # oh my god this logic is so hard to encode
-  - name: store
-    has_argument:
-      at: prefix
-      has_value: true
-    unless:
-      has_argument: suffix
     defines:
       argument: accessors
       nested: '*'
       add_prefix:
-        argument: 0
-        add_suffix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store
-    has_argument:
-      at: suffix
-      has_value: true
-    unless:
-      has_argument: prefix
-    defines:
-      argument: accessors
-      nested: '*'
+        - value: ''
+          unless:
+            has_argument: prefix
+        - has_argument:
+            at: prefix
+            has_value: true
+          argument: 0
+          add_suffix: _
+        - has_argument:
+            at: prefix
+            has_value:
+              type: [String, Symbol]
+          argument: prefix
+          add_suffix: _
       add_suffix:
-        argument: 0
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store
-    has_argument:
-      at: prefix
-      has_value:
-        type: [String, Symbol]
-    unless:
-      has_argument: suffix
-    defines:
-      argument: accessors
-      nested: '*'
-      add_prefix:
-        argument: prefix
-        add_suffix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store
-    has_argument:
-      at: suffix
-      has_value:
-        type: [String, Symbol]
-    unless:
-      has_argument: prefix
-    defines:
-      argument: accessors
-      nested: '*'
-      add_suffix:
-        argument: suffix
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store
-    all:
-      - has_argument:
-          at: prefix
-          has_value: true
-      - has_argument:
-          at: suffix
-          has_value: true
-    defines:
-      argument: accessors
-      nested: '*'
-      add_prefix:
-        argument: 0
-        add_suffix: _
-      add_suffix:
-        argument: 0
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store
-    all:
-      - has_argument:
-          at: prefix
-          has_value:
-            type: [String, Symbol]
-      - has_argument:
-          at: suffix
-          has_value: true
-    defines:
-      argument: accessors
-      nested: '*'
-      add_prefix:
-        argument: prefix
-        add_suffix: _
-      add_suffix:
-        argument: 0
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store
-    all:
-      - has_argument:
-          at: prefix
-          has_value: true
-      - has_argument:
-          at: suffix
-          has_value:
-            type: [String, Symbol]
-    defines:
-      argument: accessors
-      nested: '*'
-      add_prefix:
-        argument: 0
-        add_suffix: _
-      add_suffix:
-        argument: suffix
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store
-    all:
-      - has_argument:
-          at: prefix
-          has_value:
-            type: [String, Symbol]
-      - has_argument:
-          at: suffix
-          has_value:
-            type: [String, Symbol]
-    defines:
-      argument: accessors
-      nested: '*'
-      add_prefix:
-        argument: prefix
-        add_suffix: _
-      add_suffix:
-        argument: suffix
-        add_prefix: _
+        - value: ''
+          unless:
+            has_argument: suffix
+        - has_argument:
+            at: suffix
+            has_value: true
+          argument: 0
+          add_prefix: _
+        - has_argument:
+            at: suffix
+            has_value:
+              type: [String, Symbol]
+          argument: suffix
+          add_prefix: _
       transforms:
         - original
         - add_suffix: '='
@@ -618,181 +467,38 @@ dynamic:
         - add_suffix: _change
 
   - name: store_accessor
-    unless:
-      has_argument: [prefix, suffix]
-    defines:
-      arguments: 1+
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  # oh my god this logic is so hard to encode
-  - name: store_accessor
-    has_argument:
-      at: prefix
-      has_value: true
-    unless:
-      has_argument: suffix
     defines:
       arguments: 1+
       add_prefix:
-        argument: 0
-        add_suffix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store_accessor
-    has_argument:
-      at: suffix
-      has_value: true
-    unless:
-      has_argument: prefix
-    defines:
-      arguments: 1+
+        - value: ''
+          unless:
+            has_argument: prefix
+        - has_argument:
+            at: prefix
+            has_value: true
+          argument: 0
+          add_suffix: _
+        - has_argument:
+            at: prefix
+            has_value:
+              type: [String, Symbol]
+          argument: prefix
+          add_suffix: _
       add_suffix:
-        argument: 0
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store_accessor
-    has_argument:
-      at: prefix
-      has_value:
-        type: [String, Symbol]
-    unless:
-      has_argument: suffix
-    defines:
-      arguments: 1+
-      add_prefix:
-        argument: prefix
-        add_suffix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store_accessor
-    has_argument:
-      at: suffix
-      has_value:
-        type: [String, Symbol]
-    unless:
-      has_argument: prefix
-    defines:
-      arguments: 1+
-      add_suffix:
-        argument: suffix
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store_accessor
-    all:
-      - has_argument:
-          at: prefix
-          has_value: true
-      - has_argument:
-          at: suffix
-          has_value: true
-    defines:
-      arguments: 1+
-      add_prefix:
-        argument: 0
-        add_suffix: _
-      add_suffix:
-        argument: 0
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store_accessor
-    all:
-      - has_argument:
-          at: prefix
-          has_value:
-            type: [String, Symbol]
-      - has_argument:
-          at: suffix
-          has_value: true
-    defines:
-      arguments: 1+
-      add_prefix:
-        argument: prefix
-        add_suffix: _
-      add_suffix:
-        argument: 0
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store_accessor
-    all:
-      - has_argument:
-          at: prefix
-          has_value: true
-      - has_argument:
-          at: suffix
-          has_value:
-            type: [String, Symbol]
-    defines:
-      arguments: 1+
-      add_prefix:
-        argument: 0
-        add_suffix: _
-      add_suffix:
-        argument: suffix
-        add_prefix: _
-      transforms:
-        - original
-        - add_suffix: '='
-        - add_suffix: _changed?
-        - add_suffix: _was
-        - add_suffix: _change
-
-  - name: store_accessor
-    all:
-      - has_argument:
-          at: prefix
-          has_value:
-            type: [String, Symbol]
-      - has_argument:
-          at: suffix
-          has_value:
-            type: [String, Symbol]
-    defines:
-      arguments: 1+
-      add_prefix:
-        argument: prefix
-        add_suffix: _
-      add_suffix:
-        argument: suffix
-        add_prefix: _
+        - value: ''
+          unless:
+            has_argument: suffix
+        - has_argument:
+            at: suffix
+            has_value: true
+          argument: 0
+          add_prefix: _
+        - has_argument:
+            at: suffix
+            has_value:
+              type: [String, Symbol]
+          argument: suffix
+          add_prefix: _
       transforms:
         - original
         - add_suffix: '='

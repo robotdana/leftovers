@@ -11,16 +11,21 @@ module Leftovers
         )
       end
 
-      attribute :add_prefix, StringValueProcessorSchema, require_group: :processor
-      attribute :add_suffix, StringValueProcessorSchema, require_group: :processor
+      attribute(
+        :add_prefix, ValueOrArraySchema[StringValueProcessorSchema], require_group: :processor
+      )
+
+      attribute(
+        :add_suffix, ValueOrArraySchema[StringValueProcessorSchema], require_group: :processor
+      )
 
       attribute :split, StringSchema, require_group: :processor
-      attribute :delete_prefix, StringSchema, require_group: :processor
-      attribute :delete_suffix, StringSchema, require_group: :processor
-      attribute :delete_before, StringSchema, require_group: :processor
-      attribute :delete_before_last, StringSchema, require_group: :processor
-      attribute :delete_after, StringSchema, require_group: :processor
-      attribute :delete_after_last, StringSchema, require_group: :processor
+      attribute :delete_prefix, ValueOrArraySchema[StringSchema], require_group: :processor
+      attribute :delete_suffix, ValueOrArraySchema[StringSchema], require_group: :processor
+      attribute :delete_before, ValueOrArraySchema[StringSchema], require_group: :processor
+      attribute :delete_before_last, ValueOrArraySchema[StringSchema], require_group: :processor
+      attribute :delete_after, ValueOrArraySchema[StringSchema], require_group: :processor
+      attribute :delete_after_last, ValueOrArraySchema[StringSchema], require_group: :processor
       attribute :transforms, ValueOrArraySchema[TransformSchema], require_group: :processor,
         aliases: :transform
 

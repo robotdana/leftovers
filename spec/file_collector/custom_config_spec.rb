@@ -2620,6 +2620,32 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
+  context 'with add_prefix array argument' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments: 0
+              add_prefix:
+                - call_
+                - send_
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method(:foo)
+        my_method('bar')
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:call_foo, :call_bar, :send_foo, :send_bar, :my_method))
+    end
+  end
+
   context 'with add_prefix argument with nothing to prefix' do
     let(:config) do
       <<~YML

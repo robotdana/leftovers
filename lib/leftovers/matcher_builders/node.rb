@@ -16,6 +16,28 @@ module Leftovers
           end
         end
 
+        def build_from_hash( # rubocop:disable Metrics/ParameterLists
+          names: nil, match: nil, has_prefix: nil, has_suffix: nil,
+          document: false,
+          paths: nil,
+          has_arguments: nil,
+          has_receiver: nil,
+          type: nil,
+          privacy: nil,
+          unless_arg: nil, all: nil, any: nil
+        )
+          ::Leftovers::MatcherBuilders::And.build([
+            build_node_name_matcher(names, match, has_prefix, has_suffix),
+            ::Leftovers::MatcherBuilders::Document.build(document),
+            ::Leftovers::MatcherBuilders::NodePath.build(paths),
+            ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
+            ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),
+            ::Leftovers::MatcherBuilders::NodePrivacy.build(privacy),
+            ::Leftovers::MatcherBuilders::NodeType.build(type),
+            build_unless_matcher(unless_arg), build_all_matcher(all), build_any_matcher(any)
+          ])
+        end
+
         private
 
         def build_node_name_matcher(names, match, has_prefix, has_suffix)
@@ -45,28 +67,6 @@ module Leftovers
 
         def build_any_matcher(any)
           ::Leftovers::MatcherBuilders::Node.build(any)
-        end
-
-        def build_from_hash( # rubocop:disable Metrics/ParameterLists
-          names: nil, match: nil, has_prefix: nil, has_suffix: nil,
-          document: false,
-          paths: nil,
-          has_arguments: nil,
-          has_receiver: nil,
-          type: nil,
-          privacy: nil,
-          unless_arg: nil, all: nil, any: nil
-        )
-          ::Leftovers::MatcherBuilders::And.build([
-            build_node_name_matcher(names, match, has_prefix, has_suffix),
-            ::Leftovers::MatcherBuilders::Document.build(document),
-            ::Leftovers::MatcherBuilders::NodePath.build(paths),
-            ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
-            ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),
-            ::Leftovers::MatcherBuilders::NodePrivacy.build(privacy),
-            ::Leftovers::MatcherBuilders::NodeType.build(type),
-            build_unless_matcher(unless_arg), build_all_matcher(all), build_any_matcher(any)
-          ])
         end
       end
     end

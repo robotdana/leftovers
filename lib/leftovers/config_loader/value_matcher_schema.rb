@@ -13,6 +13,8 @@ module Leftovers
       attribute :receiver, TrueSchema, require_group: :matcher
       attribute :recursive, TrueSchema
 
+      inherit_attributes_from ValueMatcherConditionSchema
+
       self.or_value_schema = ScalarArgumentSchema
     end
   end

@@ -7,9 +7,7 @@ module Leftovers
         def build(matchers)
           matchers = flatten(matchers).compact
           case matchers.length
-          # :nocov:
           when 0 then nil
-          # :nocov:
           when 1 then matchers.first
           when 2 then ::Leftovers::Matchers::And.new(matchers.first, matchers[1])
           else ::Leftovers::Matchers::All.new(matchers.dup)

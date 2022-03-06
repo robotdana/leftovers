@@ -28,7 +28,7 @@ module Leftovers
         end
 
         def to_ruby(node)
-          aliases[node.to_sym]&.to_s || node.to_ruby
+          aliases[node.to_sym] || node.to_sym
         end
 
         def validate(node)

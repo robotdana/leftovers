@@ -7,7 +7,7 @@ module Leftovers
         def build(transforms, final_processor)
           each_builder(final_processor).each_or_self(transforms) do |transform|
             case transform
-            when ::Hash, ::String
+            when ::Hash, ::Symbol
               ::Leftovers::ProcessorBuilders::TransformChain.build(transform, final_processor)
             # :nocov:
             else raise Leftovers::UnexpectedCase, "Unhandled value #{transform.inspect}"

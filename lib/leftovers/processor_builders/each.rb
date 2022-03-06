@@ -86,6 +86,8 @@ module Leftovers
       end
 
       def compact_matchers(matchers)
+        return [] unless matchers
+
         matchers = compact_matchers_with_same_processor(matchers)
         compact_matchers_with_same_matcher(matchers)
       end

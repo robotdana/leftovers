@@ -26,6 +26,10 @@ module Leftovers
           value: nil,
           nested: nil,
           recursive: nil,
+
+          has_arguments: nil,
+          has_receiver: nil,
+          unless_arg: nil, all: nil, any: nil,
           **transform_args
         )
           processor = ::Leftovers::ProcessorBuilders::TransformSet.build(
@@ -34,7 +38,7 @@ module Leftovers
           processor = build_nested(nested, processor) if nested
           recursive_placeholder, processor = build_recursive(processor) if recursive
           processor = build_sources(arguments, keywords, itself, receiver, value, processor)
-
+          processor = build_matcher(has_arguments, has_receiver, unless_arg, all, any, processor)
           return processor unless recursive
 
           recursive_placeholder.processor = processor
@@ -65,6 +69,20 @@ module Leftovers
           processor = ::Leftovers::ProcessorBuilders::Each.build([recursive_placeholder, processor])
 
           [recursive_placeholder, processor]
+        end
+
+        def build_matcher(has_arguments, has_receiver, unless_arg, all, any, processor) # rubocop:disable Metrics/ParameterLists
+          matcher = Leftovers::MatcherBuilders::Node.build_from_hash(
+            has_arguments: has_arguments,
+            has_receiver: has_receiver,
+            unless_arg: unless_arg,
+            all: all,
+            any: any
+          )
+
+          return processor unless matcher
+
+          ::Leftovers::Processors::MatchMatchedNode.new(matcher, processor)
         end
       end
     end

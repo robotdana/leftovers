@@ -25,15 +25,15 @@ RSpec.describe Leftovers::Config do
             calls:
               arguments: 1
               add_prefix:
-                is_argument: foo
+                arg_men: foo
                 joiner: baz
       YML
 
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:8 unrecognized key is_argument for add_prefix
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:8 unrecognized key arg_men for add_prefix
         Did you mean: arguments
         Config SchemaError: lib/config/invalid.yml:7:8 unrecognized key joiner for add_prefix
-        Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
+        Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, has_arguments, has_receiver, unless, all, any, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
       MESSAGE
     end
 
@@ -48,7 +48,7 @@ RSpec.describe Leftovers::Config do
                 add_prefix: baz
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:8 delete_prefix must be a string\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:8 delete_prefix must be a string or an array\e[0m
       MESSAGE
     end
 
@@ -272,7 +272,7 @@ RSpec.describe Leftovers::Config do
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for calls
-        Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
+        Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, has_arguments, has_receiver, unless, all, any, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
       MESSAGE
     end
 
@@ -286,7 +286,7 @@ RSpec.describe Leftovers::Config do
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for defines
-        Did you mean: arguments, itself, nested, value, receiver, recursive, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
+        Did you mean: arguments, itself, nested, value, receiver, recursive, has_arguments, has_receiver, unless, all, any, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
       MESSAGE
     end
 
@@ -451,7 +451,7 @@ RSpec.describe Leftovers::Config do
         MESSAGE
 
       expect(config.precompile)
-        .to eq([{ paths: '*.my.haml', format: 'haml' }])
+        .to eq([{ paths: '*.my.haml', format: :haml }])
     end
 
     it 'can print a deprecation warning with haml_paths and slim_paths and continue' do
@@ -477,7 +477,7 @@ RSpec.describe Leftovers::Config do
         MESSAGE
 
       expect(config.precompile)
-        .to eq([{ paths: '*.my.haml', format: 'haml' }, { paths: '*.my.slim', format: 'slim' }])
+        .to eq([{ paths: '*.my.haml', format: :haml }, { paths: '*.my.slim', format: :slim }])
     end
 
     it 'can print a deprecation warning with yaml_paths and continue' do
@@ -496,7 +496,7 @@ RSpec.describe Leftovers::Config do
         MESSAGE
 
       expect(config.precompile)
-        .to eq([{ paths: '*.my.yaml', format: 'yaml' }])
+        .to eq([{ paths: '*.my.yaml', format: :yaml }])
     end
 
     it 'can print a deprecation warning with json_paths and continue' do
@@ -515,7 +515,7 @@ RSpec.describe Leftovers::Config do
         MESSAGE
 
       expect(config.precompile)
-        .to eq([{ paths: '*.my.json', format: 'json' }])
+        .to eq([{ paths: '*.my.json', format: :json }])
     end
 
     it 'can print a deprecation warning with erb_paths and continue' do
@@ -534,7 +534,7 @@ RSpec.describe Leftovers::Config do
         MESSAGE
 
       expect(config.precompile)
-        .to eq([{ paths: '*.my.erb', format: 'erb' }])
+        .to eq([{ paths: '*.my.erb', format: :erb }])
     end
 
     it 'can print a deprecation warning with slim_paths and continue' do
@@ -553,7 +553,7 @@ RSpec.describe Leftovers::Config do
         MESSAGE
 
       expect(config.precompile)
-        .to eq([{ paths: '*.my.slim', format: 'slim' }])
+        .to eq([{ paths: '*.my.slim', format: :slim }])
     end
   end
 end
