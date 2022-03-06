@@ -11,13 +11,10 @@ module Leftovers
         )
       end
 
-      attribute(
-        :add_prefix, ValueOrArraySchema[StringValueProcessorSchema], require_group: :processor
-      )
-
-      attribute(
-        :add_suffix, ValueOrArraySchema[StringValueProcessorSchema], require_group: :processor
-      )
+      attribute :add_prefix, ValueOrArraySchema[StringValueProcessorSchema],
+                require_group: :processor
+      attribute :add_suffix, ValueOrArraySchema[StringValueProcessorSchema],
+                require_group: :processor
 
       attribute :split, StringSchema, require_group: :processor
       attribute :delete_prefix, ValueOrArraySchema[StringSchema], require_group: :processor
