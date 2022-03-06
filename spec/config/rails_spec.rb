@@ -30,20 +30,20 @@ RSpec.describe 'rails gem' do
   end
 
   context 'with method calls using a method that calls multiple methods with keyword arguments' do
-    let(:ruby) { 'skip_before_action :method_one, :method_two, if: :other_method?' }
+    let(:ruby) { 'before_action :method_one, :method_two, if: :other_method?' }
 
     it do
       expect(subject).to have_no_definitions
-        .and have_calls(:skip_before_action, :method_one, :method_two, :other_method?)
+        .and have_calls(:before_action, :method_one, :method_two, :other_method?)
     end
   end
 
   context 'with method calls using a method that calls multiple keyword arguments with splat' do
-    let(:ruby) { 'skip_before_action :method_one, :method_two, **conditions' }
+    let(:ruby) { 'before_action :method_one, :method_two, **conditions' }
 
     it do
       expect(subject).to have_no_definitions
-        .and have_calls(:skip_before_action, :method_one, :method_two, :conditions)
+        .and have_calls(:before_action, :method_one, :method_two, :conditions)
     end
   end
 

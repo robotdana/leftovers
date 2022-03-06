@@ -14,13 +14,19 @@ gems:
 
 
 keep:
-  - ssl_configured? # ApplicationController
-  - default_url_options # called by url_for
   - matches? # called by route constraints
+
+  # https://edgeapi.rubyonrails.org/classes/AbstractController/Rendering.html#method-i-view_assigns
+  - view_assigns
+
+  # https://edgeapi.rubyonrails.org/classes/ActionController/RequestForgeryProtection/ClassMethods.html#method-i-protect_from_forgery
+  - handle_unverified_request
+
   - has_suffix: Helper
     path: /app/helpers
 
 dynamic:
+  # https://edgeapi.rubyonrails.org/classes/AbstractController/Callbacks.html
   - names:
       - after_action
       - append_after_action
@@ -31,11 +37,41 @@ dynamic:
       - prepend_after_action
       - prepend_around_action
       - prepend_before_action
-      - skip_before_action
-      - skip_after_action
-      - skip_around_action
     calls:
       - arguments: ['*', if, unless]
+
+  - names:
+    - skip_after_action
+    - skip_around_action
+    - skip_before_action
+    calls: [if, unless]
+
+  - names: protect_from_forgery
+    calls: [if, unless]
+
+
+  # https://edgeapi.rubyonrails.org/classes/ActionController/Logging/ClassMethods.html#method-i-log_at
+  - names: log_at
+    calls: [if, unless]
+
+
+  - name: helper
+    calls:
+      - arguments: '*'
+        camelize: true
+
+  # https://edgeapi.rubyonrails.org/classes/ActionController/TestCase/Behavior.html
+  - names: [delete, get, head, patch, put, post]
+    unless:
+      has_argument: 1
+    calls: 0
+
+  - names: process
+    calls: 0
+    unless:
+      has_argument: 1
+
+  # https://edgeapi.rubyonrails.org/classes/AbstractController/Helpers/ClassMethods.html
   - name: scope
     unless:
       has_argument:
@@ -192,12 +228,13 @@ dynamic:
         pluralize: true
         add_suffix: Controller
         split: '::'
+
+  # this is not technically calling these,
+  # but it feels useful nonetheless as permit will (generally) be used to process
+  # before calling AR or AM #create or #update
   - name: permit
     calls:
       arguments: ['*', '**']
       keywords: '**'
       add_suffix: "="
       recursive: true
-  - name: layout
-    calls:
-      argument: 0

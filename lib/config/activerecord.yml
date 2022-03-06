@@ -165,8 +165,6 @@ dynamic:
         singularize: true
         split: '::'
 
-
-
   - name:
     - has_many
     - has_one
@@ -252,6 +250,8 @@ dynamic:
 
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Core.html#method-c-new
   - name: new
+    unless:
+      has_argument: 0
     calls:
       keyword: '**'
       add_suffix: '='
@@ -339,8 +339,6 @@ dynamic:
       argument: types
       nested: '*'
       split: '::'
-
-
 
   - names:
       - after_commit
