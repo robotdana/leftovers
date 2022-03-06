@@ -11,7 +11,7 @@ module Leftovers
         freeze
       end
 
-      def process(_str, _node, _method_node, acc)
+      def process(_str, _current_node, _matched_node, acc)
         acc.default_method_privacy = @to
       end
 

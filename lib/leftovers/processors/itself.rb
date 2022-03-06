@@ -11,8 +11,8 @@ module Leftovers
         freeze
       end
 
-      def process(_str, node, method_node, acc)
-        @then_processor.process(method_node.to_s, node, method_node, acc)
+      def process(_str, current_node, matched_node, acc)
+        @then_processor.process(current_node.to_s, current_node, matched_node, acc)
       end
 
       freeze

@@ -11,11 +11,11 @@ module Leftovers
         freeze
       end
 
-      def process(_str, node, method_node, acc)
-        receiver = method_node.receiver
+      def process(_str, current_node, matched_node, acc)
+        receiver = matched_node.receiver
         return unless receiver
 
-        @then_processor.process(receiver.to_s, node, method_node, acc)
+        @then_processor.process(receiver.to_s, current_node, matched_node, acc)
       end
 
       freeze

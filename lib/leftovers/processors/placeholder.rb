@@ -9,8 +9,8 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node, acc)
-        @processor.process(str, node, method_node, acc)
+      def process(str, current_node, matched_node, acc)
+        @processor.process(str, current_node, matched_node, acc)
       end
 
       freeze

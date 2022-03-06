@@ -3,7 +3,7 @@
 module Leftovers
   module Processors
     module AddCall
-      def self.process(str, _node, _method_node, acc)
+      def self.process(str, _current_node, _matched_node, acc)
         return unless str
         return if str.empty?
 

@@ -12,14 +12,14 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node, acc)
+      def process(str, current_node, matched_node, acc)
         return unless str
 
         suffixes = []
-        @suffix_processor.process(nil, method_node, method_node, suffixes)
+        @suffix_processor.process(nil, matched_node, matched_node, suffixes)
 
         suffixes.each do |suffix|
-          @then_processor.process("#{str}#{suffix}", node, method_node, acc)
+          @then_processor.process("#{str}#{suffix}", current_node, matched_node, acc)
         end
       end
 

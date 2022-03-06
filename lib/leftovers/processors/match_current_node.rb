@@ -2,21 +2,21 @@
 
 module Leftovers
   module Processors
-    class DeleteAfter
+    class MatchCurrentNode
       include ComparableInstance
 
-      def initialize(delete_after, then_processor)
-        @delete_after = delete_after
+      attr_reader :matcher, :then_processor
+
+      def initialize(matcher, then_processor)
+        @matcher = matcher
         @then_processor = then_processor
 
         freeze
       end
 
       def process(str, current_node, matched_node, acc)
-        return unless str
+        return unless @matcher === current_node
 
-        index = str.index(@delete_after)
-        str = str[0...index] if index
         @then_processor.process(str, current_node, matched_node, acc)
       end
 

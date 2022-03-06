@@ -50,14 +50,14 @@ module Leftovers
           flatten(processors.processors)
         when Array
           processors.flat_map { |v| flatten(v) }
-        when ::Leftovers::Processors::IfMatcher
-          flatten_if_matcher(processors)
+        when ::Leftovers::Processors::MatchCurrentNode, ::Leftovers::Processors::MatchMatchedNode
+          flatten_matchers(processors)
         else
           [processors]
         end
       end
 
-      def flatten_if_matcher(processor)
+      def flatten_matchers(processor)
         then_processors = flatten(processor.then_processor)
         return processor if then_processors.length <= 1
 
@@ -66,37 +66,28 @@ module Leftovers
         end
       end
 
-      def group_same_processor(if_matchers)
-        if_matchers.group_by(&:then_processor).map do |then_processor, group|
+      def compact_matchers_with_same_processor(matchers)
+        matchers.group_by(&:then_processor).map do |then_processor, group|
           next group.first unless group.length > 1
 
-          ::Leftovers::Processors::IfMatcher.new(
+          group.first.class.new(
             ::Leftovers::MatcherBuilders::Or.build(group.map(&:matcher)),
             then_processor
           )
         end
       end
 
-      def group_same_matcher(if_matchers)
-        if_matchers.group_by(&:matcher).map do |matcher, group|
+      def compact_matchers_with_same_matcher(matchers)
+        matchers.group_by(&:matcher).map do |matcher, group|
           next group.first unless group.length > 1
 
-          ::Leftovers::Processors::IfMatcher.new(
-            matcher,
-            build(group.map(&:then_processor))
-          )
+          group.first.class.new(matcher, build(group.map(&:then_processor)))
         end
       end
 
-      def group_if_matcher(processors)
-        if_matchers, other_processors = processors.partition do |processor|
-          processor.is_a?(::Leftovers::Processors::IfMatcher)
-        end
-
-        if_matchers = group_same_processor(if_matchers)
-        if_matchers = group_same_matcher(if_matchers)
-
-        if_matchers + other_processors
+      def compact_matchers(matchers)
+        matchers = compact_matchers_with_same_processor(matchers)
+        compact_matchers_with_same_matcher(matchers)
       end
 
       def compact(processors)
@@ -104,7 +95,11 @@ module Leftovers
 
         return processors if processors.length <= 1
 
-        group_if_matcher(processors)
+        group = processors.group_by(&:class)
+
+        compact_matchers(group.delete(::Leftovers::Processors::MatchCurrentNode)) +
+          compact_matchers(group.delete(::Leftovers::Processors::MatchMatchedNode)) +
+          group.values.flatten(1)
       end
     end
   end

@@ -11,15 +11,15 @@ module Leftovers
         freeze
       end
 
-      def process(_str, node, method_node, acc)
-        kwargs = node.kwargs
+      def process(_str, current_node, matched_node, acc)
+        kwargs = current_node.kwargs
         return unless kwargs
 
         kwargs.children.each do |pair|
           next unless pair.type == :pair
 
           value_node = pair.second
-          @then_processor.process(value_node.to_literal_s, value_node, method_node, acc)
+          @then_processor.process(value_node.to_literal_s, value_node, matched_node, acc)
         end
       end
 

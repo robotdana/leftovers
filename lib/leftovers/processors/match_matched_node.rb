@@ -2,7 +2,7 @@
 
 module Leftovers
   module Processors
-    class IfMatcher
+    class MatchMatchedNode
       include ComparableInstance
 
       attr_reader :matcher, :then_processor
@@ -14,10 +14,10 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, module_node, acc)
-        return unless @matcher === node
+      def process(str, current_node, matched_node, acc)
+        return unless @matcher === matched_node
 
-        @then_processor.process(str, node, module_node, acc)
+        @then_processor.process(str, current_node, matched_node, acc)
       end
 
       freeze

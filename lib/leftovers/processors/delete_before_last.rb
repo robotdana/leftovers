@@ -13,12 +13,12 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node, acc)
+      def process(str, current_node, matched_node, acc)
         return unless str
 
         index = str.rindex(@delete_before)
         str = str[(index + @delete_before_length)..-1] if index
-        @then_processor.process(str, node, method_node, acc)
+        @then_processor.process(str, current_node, matched_node, acc)
       end
 
       freeze

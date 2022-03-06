@@ -11,7 +11,7 @@ module Leftovers
         freeze
       end
 
-      def process(str, _node, _method_node, acc)
+      def process(str, _current_node, _matched_node, acc)
         return unless str
 
         acc.set_privacy(str.to_sym, @to)

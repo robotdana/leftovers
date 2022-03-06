@@ -3,11 +3,11 @@
 module Leftovers
   module Processors
     module AddDefinitionNode
-      def self.process(str, node, _method_node, acc)
+      def self.process(str, current_node, _matched_node, acc)
         return unless str
         return if str.empty?
 
-        acc.add_definition_node Leftovers::DefinitionNode.new(node, name: str.to_sym)
+        acc.add_definition_node Leftovers::DefinitionNode.new(current_node, name: str.to_sym)
       end
 
       freeze

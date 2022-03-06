@@ -11,13 +11,13 @@ module Leftovers
         freeze
       end
 
-      def process(_str, node, method_node, acc)
-        positional_arguments = node.positional_arguments
+      def process(_str, current_node, matched_node, acc)
+        positional_arguments = current_node.positional_arguments
 
         return unless positional_arguments
 
         positional_arguments.each do |argument_node|
-          @then_processor.process(argument_node.to_literal_s, argument_node, method_node, acc)
+          @then_processor.process(argument_node.to_literal_s, argument_node, matched_node, acc)
         end
       end
 

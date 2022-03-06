@@ -27,7 +27,7 @@ module Leftovers
             build_eval_action(eval)
           ])
 
-          ::Leftovers::Processors::IfMatcher.new(matcher, processor)
+          ::Leftovers::Processors::MatchMatchedNode.new(matcher, processor)
         end
 
         def build_call_action(call)

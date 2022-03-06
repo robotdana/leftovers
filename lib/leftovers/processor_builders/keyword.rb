@@ -9,7 +9,7 @@ module Leftovers
         then_processor = case value
         when true, '**' then then_processor
         when ::String, ::Hash, ::Array
-          ::Leftovers::Processors::IfMatcher.new(
+          ::Leftovers::Processors::MatchCurrentNode.new(
             ::Leftovers::MatcherBuilders::NodeName.build(value), then_processor
           )
         # :nocov:

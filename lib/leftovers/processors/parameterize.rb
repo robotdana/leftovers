@@ -11,10 +11,10 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node, acc)
+      def process(str, current_node, matched_node, acc)
         return unless str
 
-        @then_processor.process(str.parameterize, node, method_node, acc)
+        @then_processor.process(str.parameterize, current_node, matched_node, acc)
       rescue NoMethodError
         Leftovers.error <<~MESSAGE
           Tried using the String#parameterize method, but the activesupport gem was not available and/or not required

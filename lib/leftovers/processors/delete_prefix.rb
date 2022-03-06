@@ -12,10 +12,10 @@ module Leftovers
         freeze
       end
 
-      def process(str, node, method_node, acc)
+      def process(str, current_node, matched_node, acc)
         return unless str
 
-        @then_processor.process(str.delete_prefix(@prefix), node, method_node, acc)
+        @then_processor.process(str.delete_prefix(@prefix), current_node, matched_node, acc)
       end
 
       freeze
