@@ -141,21 +141,21 @@ This would consider `puts` and `warn` to both have been called
 To mark a dynamic call for literal hash and array values without enumerating everything in the comment again, use `leftovers:dynamic:`  on the same line as the beginning of the array or hash
 
 ```ruby
-[ # leftovers:dynamic:call_login
+[ # leftovers:dynamic:call_attributes
   :user,
   :admin
-].each { |method| send("#{method}_login") }
+].map { |method| send("#{method}_attributes") }
 ```
 
 with the following configuration matching the `name: value` to the `leftovers:dynamic:process_name`
 
 ```yaml
 dynamic:
-  name: call_login
+  name: call_attributes
   arguments: '*'
-  add_suffix: '_login'
+  add_suffix: '_attributes'
 ```
-This would consider `user_login` and `admin_login` to both have been called.
+This would consider `user_attributes` and `admin_attributes` to both have been called.
 
 ## Configuration file
 
