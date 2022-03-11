@@ -6,7 +6,9 @@ require 'simplecov-console'
 SimpleCov.enable_coverage(:branch)
 SimpleCov.root __dir__
 SimpleCov.add_filter '/spec/'
-SimpleCov.track_files '/lib/**/*.rb'
+SimpleCov.add_filter 'lib/leftovers/rake_task.rb' # TODO
+SimpleCov.add_filter 'lib/leftovers/version.rb' # loads early
+SimpleCov.track_files 'lib/**/*.rb'
 SimpleCov.enable_for_subprocesses true
 SimpleCov.print_error_status = true
 SimpleCov.minimum_coverage line: 100, branch: 100

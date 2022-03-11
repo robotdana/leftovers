@@ -12,7 +12,7 @@ module Leftovers
     autoload(:NodeHasPositionalArgument, "#{__dir__}/matcher_builders/node_has_positional_argument")
     autoload(:NodeHasReceiver, "#{__dir__}/matcher_builders/node_has_receiver")
     autoload(:NodeName, "#{__dir__}/matcher_builders/node_name")
-    autoload(:NodePairName, "#{__dir__}/matcher_builders/node_pair_name")
+    autoload(:NodePairKey, "#{__dir__}/matcher_builders/node_pair_key")
     autoload(:NodePairValue, "#{__dir__}/matcher_builders/node_pair_value")
     autoload(:NodePath, "#{__dir__}/matcher_builders/node_path")
     autoload(:NodePrivacy, "#{__dir__}/matcher_builders/node_privacy")

@@ -16,7 +16,6 @@ module Leftovers
     autoload(:NilNode, "#{__dir__}/ast/nil_node")
     autoload(:Node, "#{__dir__}/ast/node")
     autoload(:NumericNode, "#{__dir__}/ast/numeric_node")
-    autoload(:PairNode, "#{__dir__}/ast/pair_node")
     autoload(:SendNode, "#{__dir__}/ast/send_node")
     autoload(:StrNode, "#{__dir__}/ast/str_node")
     autoload(:SymNode, "#{__dir__}/ast/sym_node")

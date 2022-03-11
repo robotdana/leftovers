@@ -1,8 +1,3 @@
-# THIS IS INCOMPLETE (you can help by expanding it)
-# rails is _really complicated_ and has a lot of magic which calls methods for you.
-# some is currently impossible to handle (with_options).
-# Some is just corners of rails I haven't hit yet.
-
 include_paths: '*.rjs'
 precompile:
   - paths: '*.rjs'
@@ -14,7 +9,11 @@ gems:
 
 
 keep:
-  - matches? # called by route constraints
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-constraints
+  - matches?
+
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Concerns.html#method-i-concern
+  - call
 
   # https://edgeapi.rubyonrails.org/classes/AbstractController/Rendering.html#method-i-view_assigns
   - view_assigns
@@ -82,32 +81,73 @@ dynamic:
       argument: module # routes
       camelize: true
       split: '::'
-  - name: namespace
-    calls:
-      - argument: 0
-        camelize: true
-        split: '::'
+
   - name:
-      - rescue_from
-    calls:
-      - argument: [1, with]
-  - name:
+      # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-match
       - match
+      # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/HttpHelpers.html
       - delete
       - get
+      - options
       - patch
       - post
       - put
+      # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Resources.html#method-i-namespace
       - root
     calls:
-      - arguments: [0, action]
-      - argument: '**'
+      - argument: action
+      - argument: controller
+        camelize: true
+        add_suffix: Controller
+        split: '::'
+      - argument: 'to'
         delete_before: '#'
-      - argument: '**'
+      - argument: 'to'
         delete_after: '#'
         camelize: true
         add_suffix: Controller
         split: '::'
+      - argument: module
+        camelize: true
+        split: '::'
+      # these might not make sense for root
+      - argument: { type: String }
+        delete_before: '#'
+      - argument: { type: String }
+        delete_after: '#'
+        camelize: true
+        add_suffix: Controller
+        split: '::'
+    defines:
+      # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-match
+      # my logic is, `as:` generates a method you chose, everything else you might just be setting up the routes to be whatever.
+      argument: as
+      add_suffix: [_path, _url]
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Resources.html#method-i-root
+  # in addition to the above nonsense, root can also have the to: as the first positional argument
+  - name: root
+    calls:
+    - argument: 0
+      delete_before: '#'
+    - argument: 0
+      delete_after: '#'
+      camelize: true
+      add_suffix: Controller
+      split: '::'
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/CustomUrls.html#method-i-direct
+  - name: direct
+    defines:
+      argument: 0
+      add_suffix: [_path, _url]
+
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/CustomUrls.html#method-i-resolve
+  - name: resolve
+    calls:
+      argument: 0
+      split: '::'
+
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Resources.html#method-i-resources
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Resources.html#method-i-resource
   - name:
       - resource
       - resources
@@ -214,8 +254,8 @@ dynamic:
   - name:
       - resources
       - resource
+      # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-controller
       - controller
-      - namespace
     calls:
       - argument: 0
         camelize: true
@@ -228,6 +268,21 @@ dynamic:
         pluralize: true
         add_suffix: Controller
         split: '::'
+
+  # https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-namespace
+  - name: namespace
+    has_argument: module
+    calls:
+      argument: module
+      camelize: true
+      split: '::'
+  - name: namespace
+    unless:
+      has_argument: module
+    calls:
+      argument: 0
+      camelize: true
+      split: '::'
 
   # this is not technically calling these,
   # but it feels useful nonetheless as permit will (generally) be used to process

@@ -18,6 +18,7 @@ module Leftovers
     autoload(:NodeHasReceiver, "#{__dir__}/matchers/node_has_receiver")
     autoload(:NodeIsProc, "#{__dir__}/matchers/node_is_proc")
     autoload(:NodeName, "#{__dir__}/matchers/node_name")
+    autoload(:NodePairKey, "#{__dir__}/matchers/node_pair_key")
     autoload(:NodePairValue, "#{__dir__}/matchers/node_pair_value")
     autoload(:NodePath, "#{__dir__}/matchers/node_path")
     autoload(:NodePrivacy, "#{__dir__}/matchers/node_privacy")

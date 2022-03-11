@@ -15,6 +15,7 @@ module Leftovers
     autoload(:HasValueSchema, "#{__dir__}/config_loader/has_value_schema")
     autoload(:InheritSchemaAttributes, "#{__dir__}/config_loader/inherit_schema_attributes")
     autoload(:KeepTestOnlySchema, "#{__dir__}/config_loader/keep_test_only_schema")
+    autoload(:KeywordArgumentSchema, "#{__dir__}/config_loader/keyword_argument_schema")
     autoload(:Node, "#{__dir__}/config_loader/node")
     autoload(:ObjectSchema, "#{__dir__}/config_loader/object_schema")
     autoload(:PrecompilerSchema, "#{__dir__}/config_loader/precompiler_schema")

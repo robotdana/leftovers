@@ -20,7 +20,9 @@ module Leftovers
           if ::Leftovers.each_or_self(keywords).include?('**')
             ::Leftovers::Matchers::NodeType.new(:pair)
           else
-            ::Leftovers::MatcherBuilders::NodePairName.build(keywords)
+            ::Leftovers::MatcherBuilders::NodePairKey.build(
+              ::Leftovers::MatcherBuilders::Node.build(keywords)
+            )
           end
         end
       end

@@ -24,7 +24,6 @@ module Leftovers
         when :ivasgn, :cvasgn, :gvasgn then ::Leftovers::AST::VasgnNode
         when :module, :class then ::Leftovers::AST::ModuleNode
         when :nil then ::Leftovers::AST::NilNode
-        when :pair then ::Leftovers::AST::PairNode
         when :send, :csend then ::Leftovers::AST::SendNode
         when :str then ::Leftovers::AST::StrNode
         when :sym then ::Leftovers::AST::SymNode

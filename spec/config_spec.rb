@@ -197,7 +197,7 @@ RSpec.describe Leftovers::Config do
               argument: true
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:16 argument must be a string or an integer or a hash with any of match, has_prefix, has_suffix, unless or an array\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:16 argument must be a string or an integer or a hash with any of match, has_prefix, has_suffix, type, unless or an array\e[0m
       MESSAGE
     end
 

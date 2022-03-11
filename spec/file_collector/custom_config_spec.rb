@@ -2498,6 +2498,29 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:bar, :baz, :my_method)) }
   end
 
+  context 'with keyword argument with keyword type' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            calls:
+              arguments:
+                match: foo
+                type: String
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('foo' => 'yes')
+        my_method(foo: 'no')
+        my_method(foo: :no, 'foo' => :yes2, 'bar' => :no)
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes, :yes2)) }
+  end
+
   context 'with find has_argument with an index array at at' do
     let(:config) do
       <<~YML
