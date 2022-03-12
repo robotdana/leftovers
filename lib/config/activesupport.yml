@@ -235,3 +235,8 @@ dynamic:
     defines:
       argument: '*'
       add_suffix: '='
+
+  # https://api.rubyonrails.org/classes/ActiveModel/Serializers/JSON.html
+  - name: to_json
+    calls:
+      value: as_json

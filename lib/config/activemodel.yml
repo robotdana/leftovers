@@ -1,14 +1,82 @@
-# THIS IS INCOMPLETE (you can help by expanding it)
-# rails is _really complicated_ and has a lot of magic which calls methods for you.
-# some is currently impossible to handle (with_options).
-# Some is just corners of rails I haven't hit yet.
 keep:
-  - validate_each # ActiveModel::EachValidator
+  # https://api.rubyonrails.org/classes/ActiveModel/EachValidator.html#method-i-validate_each
+  - validate_each
+
+  # https://api.rubyonrails.org/classes/ActiveModel/Validator.html#method-i-validate
+  - validate
+
+  # https://api.rubyonrails.org/classes/ActiveModel/API.html
+  # ActiveModel::API implements persisted? to return false, which is the most common case. You may want to override it in your class
+  - persisted?
+
+  # https://edgeapi.rubyonrails.org/classes/ActiveModel/Type/Value.html
+  - cast
+  - serialize
+  - deserialize
+  - serializable?
+  - type
+  - changed_in_place?
 
 gems:
   - activesupport
 
 dynamic:
+
+  # https://api.rubyonrails.org/classes/ActiveModel/API.html#method-c-new
+  # https://api.rubyonrails.org/classes/ActiveModel/AttributeAssignment.html#method-i-assign_attributes
+  - name: [new, assign_attributes, attributes=]
+    unless:
+      has_argument: 0
+    calls:
+      keyword: '**'
+      add_suffix: '='
+
+  # https://api.rubyonrails.org/classes/ActiveModel/Callbacks.html#method-i-define_model_callbacks
+  - name: define_model_callbacks
+    has_argument: only
+    defines:
+      argument: '*'
+      add_prefix:
+        - value: 'before_'
+          any:
+            - has_argument:
+                at: only
+                has_value: before
+            - has_argument:
+                at: only
+                has_value:
+                  has_argument:
+                    at: '*'
+                    has_value: before
+            - unless:
+                has_argument: only
+        - value: 'after_'
+          any:
+            - has_argument:
+                at: only
+                has_value: after
+            - has_argument:
+                at: only
+                has_value:
+                  has_argument:
+                    at: '*'
+                    has_value: after
+            - unless:
+                has_argument: only
+        - value: 'around_'
+          any:
+            - has_argument:
+                at: only
+                has_value: around
+            - has_argument:
+                at: only
+                has_value:
+                  has_argument:
+                    at: '*'
+                    has_value: around
+            - unless:
+                has_argument: only
+
   - names:
       - after_initialize
       - before_validation
@@ -22,45 +90,131 @@ dynamic:
       - validates_associated
     calls:
       - arguments: ['*', if, unless]
-  - name: validates
+  # https://api.rubyonrails.org/classes/ActiveModel/Validations/ClassMethods.html#method-i-validates
+  - name: [validates, validates!]
     calls:
       - arguments:
           - '*'
           - within
           - inclusion
+          - exclusion
           - scope
           - if
           - unless
-      - arguments: inclusion
+      - arguments: [if, unless]
+        nested: '*'
+      - arguments: [inclusion, exclusion]
         nested:
-          arguments: 'in'
+          arguments:
+            - 'in'
+            - within
+      - arguments: [comparison, numericality]
+        nested:
+          arguments:
+            - greater_than
+            - greater_than_or_equal_to
+            - equal_to
+            - less_than
+            - less_than_or_equal_to
+            - other_than
       - keywords:
           unless: [if, unless]
         camelize: true
         add_suffix: Validator
         split: '::'
-  - names:
-      - validate
-      - validate_associated
+    eval:
+      - arguments: [if, unless]
+      - arguments: [if, unless]
+        nested: '*'
+
+  - name: validates_confirmation_of
+    calls:
+      argument: '*'
+      transforms:
+        - original
+        - add_suffix: '_confirmation'
+  - name: [validates, validates!]
+    has_argument: confirmation
+    calls:
+      argument: '*'
+      add_suffix: _confirmation
+
+  - name: validates_comparison_of
+    calls:
+      argument:
+        - '*'
+        - greater_than
+        - greater_than_or_equal_to
+        - equal_to
+        - less_than
+        - less_than_or_equal_to
+        - other_than
+
+  - name: [validates_exclusion_of, validates_inclusion_of]
+    calls:
+      argument:
+        - '*'
+        - 'in'
+        - within
+
+  - name:
+      - validates_absence_of
+      - validates_acceptance_of
+      - validates_comparison_of
+      - validates_confirmation_of
+      - validates_exclusion_of
+      - validates_format_of
+      - validates_inclusion_of
+      - validates_length_of
+      - validates_numericality_of
+      - validates_presence_of
+      - validates_size_of
     calls:
       - arguments: ['*', if, unless]
-  - name:
-      - attribute
-      - alias_attribute
-    path: app/models/*
+    eval:
+      - arguments: [if, unless]
+      - arguments: [if, unless]
+        nested: '*'
+
+  - names:
+      # https://api.rubyonrails.org/classes/ActiveModel/Validations/ClassMethods.html#method-i-validate
+      # https://api.rubyonrails.org/classes/ActiveModel/Validations/ClassMethods.html#method-i-validates_each
+      - validate
+      - validate_associated
+      - validates_each
+    calls:
+      - arguments: ['*', if, unless]
+    eval:
+      - arguments: [if, unless]
+      - arguments: [if, unless]
+        nested: '*'
+
+  # https://api.rubyonrails.org/classes/ActiveModel/Validations/ClassMethods.html#method-i-validates_with
+  - name: validates_with
+    calls:
+      arguments: [if, unless]
+    eval:
+      - arguments: [if, unless]
+      - arguments: [if, unless]
+        nested: '*'
+
+  # https://api.rubyonrails.org/classes/ActiveModel/AttributeMethods/ClassMethods.html#method-i-alias_attribute
+  # https://api.rubyonrails.org/classes/ActiveModel/Dirty.html
+  - name: [attribute, alias_attribute]
     defines:
       argument: 0
       transforms:
         - original
-        - add_suffix: '?'
         - add_suffix: '='
+        - add_suffix: '?'
+        - add_suffix: _was
+        - add_suffix: _changed?
+        - add_suffix: _previously_changed?
+        - add_suffix: _previously_was
+        - add_suffix: _will_change!
   - name: alias_attribute
     calls:
-      - argument: 1
-      - argument: 1
-        add_suffix: '?'
-      - argument: 1
-        add_suffix: '='
+      argument: 1
   - name: resource
     calls:
       - argument: 0

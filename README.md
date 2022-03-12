@@ -15,7 +15,7 @@ Code that never gets executed is code that you shouldn't need to maintain
 
 Leftovers will use static analysis to find these bits of code for you.
 
-It's aware of how some gems call methods for you, including (still somewhat incomplete) support for rails.
+It's aware of how some gems call methods for you, including support for much of rails.
 
 ## Features
 
@@ -201,7 +201,7 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/robotdana/leftovers.
 
-I especially encourage issues and improvements to the default config, whether expanding the existing config/*.yml (rails.yml is particularly incomplete) or adding new gems.
+I especially encourage issues and improvements to the default config, whether expanding the existing config/*.yml or adding new gems.
 The file should be named `[rubygems name].yml` and its structure is identical to the [project config](#configuration)
 
 ## License

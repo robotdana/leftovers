@@ -12,15 +12,6 @@ keep:
   - path: db/migrate/*
     name: [up, down, change]
 
-
-  # https://edgeapi.rubyonrails.org/classes/ActiveModel/Type/Value.html
-  - cast
-  - serialize
-  - deserialize
-  - serializable?
-  - type
-  - changed_in_place?
-
 dynamic:
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Validations/ClassMethods.html
   - names:
@@ -247,14 +238,6 @@ dynamic:
           argument: '*'
           keyword: '**'
         add_suffix: '='
-
-  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Core.html#method-c-new
-  - name: new
-    unless:
-      has_argument: 0
-    calls:
-      keyword: '**'
-      add_suffix: '='
 
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Attributes/ClassMethods.html#method-i-attribute
   - name: attribute
