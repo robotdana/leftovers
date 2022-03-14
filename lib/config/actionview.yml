@@ -1,9 +1,21 @@
+keep:
+  # https://guides.rubyonrails.org/layouts_and_rendering.html#rendering-objects
+  - render_in
+
 dynamic:
   # https://edgeapi.rubyonrails.org/classes/ActionView/Base.html
   - name: render
     has_argument: 0
     defines:
-      keywords: '**'
+      keywords:
+        unless:
+          # https://guides.rubyonrails.org/layouts_and_rendering.html#options-for-render
+          - content_type
+          - layout
+          - location
+          - status
+          - formats
+          - variants
 
   # https://edgeapi.rubyonrails.org/classes/ActionView/PartialRenderer.html
   - name: render
