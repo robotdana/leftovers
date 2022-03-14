@@ -119,7 +119,7 @@ RSpec.describe Leftovers do
       expect(subject.leftovers.flat_map(&:names)).to eq [:check_foo]
       expect(subject.collector).to have_definitions(
         :foo, :foo?, :foo=, :check_foo
-      ).and(have_calls(:attribute, :foo?))
+      ).and(have_calls(:attribute, :foo?, :__leftovers_document))
     end
 
     it "doesn't think method calls in the same file are leftovers" do

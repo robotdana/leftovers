@@ -2,6 +2,9 @@ precompile:
   - { paths: ['*.yml', '*.yaml'], format: 'yaml' }
   - { paths: '*.json', format: 'json' }
 
+include_paths:
+  .leftovers.yml
+
 dynamic:
   - document: true
     path: '.leftovers.yml'

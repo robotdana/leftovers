@@ -36,3 +36,9 @@ Define which paths use the custom precompiler using [`precompile:`](https://gith
 reference the name of the precompiler with `format: { custom: MyNotRubyPrecompiler }`
 
 If the `precompile` method raises any errors while precompiling, a warning will be printed to stderr and the file will be skipped
+
+To test the output of the precompiler you can use the `--view-compiled` flag with a list of paths or path patterns, like so:
+
+`bundle exec leftovers --view-compiled '*.not_rb'`
+
+

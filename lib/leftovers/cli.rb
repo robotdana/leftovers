@@ -42,6 +42,12 @@ module Leftovers
         Leftovers.exit
       end
 
+      opts.on('--view-compiled', 'Output the compiled content of the files') do
+        Leftovers::FileList.new(argv_rules: argv)
+          .each { |f| stdout.puts "\e[0;2m#{f.relative_path}\e[0m\n#{f.ruby}" }
+        Leftovers.exit
+      end
+
       opts.on('--write-todo', 'Outputs the unused items in a todo file to gradually fix') do
         Leftovers.reporter = Leftovers::TodoReporter.new
       end
@@ -56,7 +62,7 @@ module Leftovers
         Leftovers.exit
       end
 
-      opts.parse(argv)
+      opts.parse!(argv)
     rescue OptionParser::InvalidOption => e
       stderr.puts("\e[31mCLI Error: #{e.message}\e[0m")
       stderr.puts ''

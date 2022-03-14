@@ -55,6 +55,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
                   --[no-]parallel              Run in parallel or not, default --parallel
                   --[no-]progress              Show progress counts or not, default --progress
                   --dry-run                    Output files that will be looked at
+                  --view-compiled              Output the compiled content of the files
                   --write-todo                 Outputs the unused items in a todo file to gradually fix
               -v, --version                    Returns the current version
               -h, --help                       Shows this message
@@ -72,6 +73,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
                   --[no-]parallel              Run in parallel or not, default --parallel
                   --[no-]progress              Show progress counts or not, default --progress
                   --dry-run                    Output files that will be looked at
+                  --view-compiled              Output the compiled content of the files
                   --write-todo                 Outputs the unused items in a todo file to gradually fix
               -v, --version                    Returns the current version
               -h, --help                       Shows this message
@@ -119,6 +121,28 @@ RSpec.describe Leftovers::CLI, type: :cli do
       end
     end
 
+    context 'with an erb file' do
+      before do
+        temp_file 'test/foo.erb', <<~HAML
+          <%= bar %>
+        HAML
+      end
+
+      it 'runs with --view-compiled' do
+        run('--view-compiled *.erb')
+
+        expect(stdout).to have_output <<~STDOUT
+          \e[0;2mtest/foo.erb\e[0m
+          #coding:UTF-8
+
+           bar
+          ;
+        STDOUT
+        expect(stderr.string).to be_empty
+        expect(exitstatus).to be 0
+      end
+    end
+
     context 'with files with linked config' do
       before do
         temp_file '.leftovers.yml', <<~YML
@@ -140,7 +164,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
         run
 
         expect(stdout).to have_output <<~STDOUT
-          checked 1 files, collected 1 calls, 1 definitions
+          checked 2 files, collected 2 calls, 1 definitions
           \e[31mNot directly called at all:\e[0m
           \e[36mapp/foo.rb:1:13\e[0m test, test? \e[2mtest_method \e[33m:test\e[0;2m\e[0m
 
@@ -156,7 +180,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
         run('--no-parallel --write-todo') # so i get consistent order
 
         expect(stdout).to have_output <<~STDOUT
-          checked 1 files, collected 1 calls, 1 definitions
+          checked 2 files, collected 2 calls, 1 definitions
           generated .leftovers_todo.yml.
           running leftovers again will read this file and not alert you to any unused items mentioned in it.
 

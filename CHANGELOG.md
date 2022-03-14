@@ -13,6 +13,7 @@
   - add `arguments: 1+` or `has_arguments: { at: 1+, has_value: true }` to match arguments from that position onward
   - allow `has_arguments:` and `has_receiver:` (and `unless:` and `all:` and `any:` of those) to go within `calls:`,`defines:`,`set_privacy:`,`add_prefix:`,`add_suffix:` for cases like the `delegate prefix: true` vs `delegate prefix: :value` without having to redefine everything.
   - allow `has_arguments.at` and `arguments:` to have a `type:` to distinguish between e.g. symbol keys and string keys.
+- Add a way to test custom precompilers with --view-compiled [PATH_PATTERNS...]
 
 # v0.8.0
 - Allow custom precompilers

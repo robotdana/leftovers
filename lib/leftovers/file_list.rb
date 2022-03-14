@@ -4,11 +4,12 @@ require 'fast_ignore'
 
 module Leftovers
   class FileList < ::FastIgnore
-    def initialize
+    def initialize(**arguments)
       super(
         ignore_rules: Leftovers.config.exclude_paths,
         include_rules: Leftovers.config.include_paths,
-        root: Leftovers.pwd
+        root: Leftovers.pwd,
+        **arguments
       )
     end
 
