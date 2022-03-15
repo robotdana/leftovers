@@ -1,8 +1,3 @@
-# THIS IS INCOMPLETE (you can help by expanding it)
-# rails is _really complicated_ and has a lot of magic which calls methods for you.
-# some is currently impossible to handle (with_options).
-# Some is just corners of rails I haven't hit yet.
-
 gems:
   - actionpack
   - activesupport
@@ -17,4 +12,7 @@ keep:
     # https://guides.rubyonrails.org/generators.html
     privacy: public
     type: Method
+
+  - path: '**/generators/**/*_generator.rb'
+    name: { has_suffix: Generator }
 

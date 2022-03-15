@@ -315,7 +315,7 @@ RSpec.describe 'rails gem' do
 
     it do
       # keep drops things from definitions
-      expect(subject).to have_definitions(:InitializerGenerator, :leftover_support_method)
+      expect(subject).to have_definitions(:leftover_support_method)
         .and have_calls(:Rails, :Generators, :Base, :create_file, :private)
     end
   end
