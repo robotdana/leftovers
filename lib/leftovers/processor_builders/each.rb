@@ -59,7 +59,7 @@ module Leftovers
 
       def flatten_matchers(processor)
         then_processors = flatten(processor.then_processor)
-        return processor if then_processors.length <= 1
+        return [processor] if then_processors.length <= 1
 
         then_processors.map do |then_processor|
           processor.class.new(processor.matcher, then_processor)
