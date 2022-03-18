@@ -24,32 +24,8 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  autoload(:AST, "#{__dir__}/leftovers/ast")
-  autoload(:CLI, "#{__dir__}/leftovers/cli")
-  autoload(:Collector, "#{__dir__}/leftovers/collector")
-  autoload(:ComparableInstance, "#{__dir__}/leftovers/comparable_instance")
-  autoload(:ConfigLoader, "#{__dir__}/leftovers/config_loader")
-  autoload(:Config, "#{__dir__}/leftovers/config")
-  autoload(:Definition, "#{__dir__}/leftovers/definition")
-  autoload(:DefinitionCollection, "#{__dir__}/leftovers/definition_collection")
-  autoload(:DefinitionNode, "#{__dir__}/leftovers/definition_node")
-  autoload(:DefinitionNodeSet, "#{__dir__}/leftovers/definition_node_set")
-  autoload(:DefinitionSet, "#{__dir__}/leftovers/definition_set")
-  autoload(:DefinitionToAdd, "#{__dir__}/leftovers/definition_to_add")
-  autoload(:FileCollector, "#{__dir__}/leftovers/file_collector")
-  autoload(:FileList, "#{__dir__}/leftovers/file_list")
-  autoload(:File, "#{__dir__}/leftovers/file")
-  autoload(:MatcherBuilders, "#{__dir__}/leftovers/matcher_builders")
-  autoload(:Matchers, "#{__dir__}/leftovers/matchers")
-  autoload(:MergedConfig, "#{__dir__}/leftovers/merged_config")
-  autoload(:Parser, "#{__dir__}/leftovers/parser")
-  autoload(:Precompilers, "#{__dir__}/leftovers/precompilers")
-  autoload(:ProcessorBuilders, "#{__dir__}/leftovers/processor_builders")
-  autoload(:RakeTask, "#{__dir__}/leftovers/rake_task")
-  autoload(:Reporter, "#{__dir__}/leftovers/reporter")
-  autoload(:TodoReporter, "#{__dir__}/leftovers/todo_reporter")
-  autoload(:Processors, "#{__dir__}/leftovers/processors")
-  autoload(:VERSION, "#{__dir__}/leftovers/version")
+  require_relative 'leftovers/autoloader'
+  include Autoloader
 
   MEMOIZED_IVARS = %i{
     @config

@@ -2,12 +2,7 @@
 
 module Leftovers
   module Precompilers
-    autoload(:ERB, "#{__dir__}/precompilers/erb")
-    autoload(:Haml, "#{__dir__}/precompilers/haml")
-    autoload(:JSON, "#{__dir__}/precompilers/json")
-    autoload(:Precompiler, "#{__dir__}/precompilers/precompiler")
-    autoload(:Slim, "#{__dir__}/precompilers/slim")
-    autoload(:YAML, "#{__dir__}/precompilers/yaml")
+    include Autoloader
 
     class << self
       def build(precompilers)

@@ -4,48 +4,7 @@ require 'yaml'
 
 module Leftovers
   class ConfigLoader
-    autoload(:ArgumentlessTransformSchema, "#{__dir__}/config_loader/argumentless_transform_schema")
-    autoload(:ArgumentPositionSchema, "#{__dir__}/config_loader/argument_position_schema")
-    autoload(:ArraySchema, "#{__dir__}/config_loader/array_schema")
-    autoload(:Attribute, "#{__dir__}/config_loader/attribute")
-    autoload(:BoolSchema, "#{__dir__}/config_loader/bool_schema")
-    autoload(:BuiltInPrecompilerSchema, "#{__dir__}/config_loader/built_in_precompiler_schema")
-    autoload(:DocumentSchema, "#{__dir__}/config_loader/document_schema")
-    autoload(:DynamicSchema, "#{__dir__}/config_loader/dynamic_schema")
-    autoload(:HasArgumentSchema, "#{__dir__}/config_loader/has_argument_schema")
-    autoload(:HasValueSchema, "#{__dir__}/config_loader/has_value_schema")
-    autoload(:HasReceiverSchema, "#{__dir__}/config_loader/has_receiver_schema")
-    autoload(:InheritSchemaAttributes, "#{__dir__}/config_loader/inherit_schema_attributes")
-    autoload(:KeepTestOnlySchema, "#{__dir__}/config_loader/keep_test_only_schema")
-    autoload(:KeywordArgumentSchema, "#{__dir__}/config_loader/keyword_argument_schema")
-    autoload(:Node, "#{__dir__}/config_loader/node")
-    autoload(:ObjectSchema, "#{__dir__}/config_loader/object_schema")
-    autoload(:PrecompilerSchema, "#{__dir__}/config_loader/precompiler_schema")
-    autoload(:PrecompileSchema, "#{__dir__}/config_loader/precompile_schema")
-    autoload(:PrivacyProcessorSchema, "#{__dir__}/config_loader/privacy_processor_schema")
-    autoload(:PrivacySchema, "#{__dir__}/config_loader/privacy_schema")
-    autoload(:RegexpSchema, "#{__dir__}/config_loader/regexp_schema")
-    autoload(:RequireSchema, "#{__dir__}/config_loader/require_schema")
-    autoload(:RulePatternSchema, "#{__dir__}/config_loader/rule_pattern_schema")
-    autoload(:ScalarArgumentSchema, "#{__dir__}/config_loader/scalar_argument_schema")
-    autoload(:ScalarValueSchema, "#{__dir__}/config_loader/scalar_value_schema")
-    autoload(:Schema, "#{__dir__}/config_loader/schema")
-    autoload(:StringEnumSchema, "#{__dir__}/config_loader/string_enum_schema")
-    autoload(:StringPatternSchema, "#{__dir__}/config_loader/string_pattern_schema")
-    autoload(:StringSchema, "#{__dir__}/config_loader/string_schema")
-    autoload(:StringValueProcessorSchema, "#{__dir__}/config_loader/string_value_processor_schema")
-    autoload(:Suggester, "#{__dir__}/config_loader/suggester")
-    autoload(:TransformSchema, "#{__dir__}/config_loader/transform_schema")
-    autoload(:TrueSchema, "#{__dir__}/config_loader/true_schema")
-    autoload(
-      :ValueMatcherConditionSchema,
-      "#{__dir__}/config_loader/value_matcher_condition_schema"
-    )
-    autoload(:ValueMatcherSchema, "#{__dir__}/config_loader/value_matcher_schema")
-    autoload(:ValueOrArraySchema, "#{__dir__}/config_loader/value_or_array_schema")
-    autoload(:ValueOrObjectSchema, "#{__dir__}/config_loader/value_or_object_schema")
-    autoload(:ValueProcessorSchema, "#{__dir__}/config_loader/value_processor_schema")
-    autoload(:ValueTypeSchema, "#{__dir__}/config_loader/value_type_schema")
+    include Autoloader
 
     def self.load(name, path: nil, content: nil)
       new(name, path: path, content: content).load

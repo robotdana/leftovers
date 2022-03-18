@@ -4,8 +4,7 @@ require 'set'
 
 module Leftovers
   class FileCollector
-    autoload(:CommentsProcessor, "#{__dir__}/file_collector/comments_processor.rb")
-    autoload(:NodeProcessor, "#{__dir__}/file_collector/node_processor.rb")
+    include Autoloader
 
     attr_reader :calls, :allow_lines, :test_lines, :dynamic_lines
     attr_accessor :default_method_privacy
