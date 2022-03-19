@@ -27,6 +27,7 @@ module Leftovers
         when ScalarValueSchema then fuzz_scalar
         when TrueSchema then fuzz_true
         when ScalarArgumentSchema then fuzz_string_or_integer
+        when BoolSchema then fuzz_bool
         else raise UnexpectedCase, "Unhandled value #{schema.inspect}"
         end
       end
@@ -121,12 +122,16 @@ module Leftovers
         true # never
       end
 
-      def fuzz_character(max = 0x100)
-        low_rand(max).chr('UTF-8').match(/[[:alpha:]]/)&.[](0) || ''
+      def fuzz_character(max = 0x1000)
+        low_rand(max).chr('UTF-8').match(/[[:print:]]/)&.[](0) || ''
       end
 
       def fuzz_true
         [true, 'true'].sample
+      end
+
+      def fuzz_bool
+        [true, 'true', false, 'false'].sample
       end
 
       def fuzz_string_or_integer
@@ -134,13 +139,11 @@ module Leftovers
       end
 
       def fuzz_scalar
-        case rand(6)
+        case rand(5)
         when 0 then fuzz_integer
         when 1 then fuzz_float
         when 2 then fuzz_string
-        when 3 then true
-        when 4 then false
-        when 5 then nil
+        when 3 then fuzz_bool
         end
       end
     end
