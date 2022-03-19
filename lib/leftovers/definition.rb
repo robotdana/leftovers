@@ -35,11 +35,11 @@ module Leftovers
     end
 
     def in_collection?
-      Leftovers.collector.calls.include?(@name) || (@test && in_test_collection?)
+      ::Leftovers.collector.calls.include?(@name) || (@test && in_test_collection?)
     end
 
     def in_test_collection?
-      Leftovers.collector.test_calls.include?(@name)
+      ::Leftovers.collector.test_calls.include?(@name)
     end
   end
 end

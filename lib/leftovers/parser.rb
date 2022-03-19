@@ -24,7 +24,7 @@ module Leftovers
       # mostly copied from https://github.com/whitequark/parser/blob/master/lib/parser/base.rb
       # but with our builder
       def parser
-        p = ::Parser::CurrentRuby.new(Leftovers::AST::Builder.new)
+        p = ::Parser::CurrentRuby.new(AST::Builder.new)
         p.diagnostics.all_errors_are_fatal = true
         p.diagnostics.ignore_warnings = true
 

@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class StrNode < ::Leftovers::AST::Node
+    class StrNode < Node
       alias_method :to_scalar_value, :first
 
       def name

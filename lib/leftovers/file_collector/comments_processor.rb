@@ -4,12 +4,12 @@ module Leftovers
   class FileCollector
     module CommentsProcessor
       METHOD_NAME_RE = /[[:alpha:]_][[:alnum:]_]*\b[?!=]?/.freeze
-      NON_ALNUM_METHOD_NAME_RE = Regexp.union(%w{
+      NON_ALNUM_METHOD_NAME_RE = ::Regexp.union(%w{
         []= [] ** ~ +@ -@ * / % + - >> << &
         ^ | <=> <= >= < > === == != =~ !~ !
-      }.map { |op| /#{Regexp.escape(op)}/ })
+      }.map { |op| /#{::Regexp.escape(op)}/ })
       CONSTANT_NAME_RE = /[[:upper:]][[:alnum:]_]*\b/.freeze
-      NAME_RE = Regexp.union(METHOD_NAME_RE, NON_ALNUM_METHOD_NAME_RE, CONSTANT_NAME_RE)
+      NAME_RE = ::Regexp.union(METHOD_NAME_RE, NON_ALNUM_METHOD_NAME_RE, CONSTANT_NAME_RE)
       NAME_LIST_RE = /#{NAME_RE}(?:[, :]+#{NAME_RE})*/.freeze
       LEFTOVERS_CALL_RE = /\bleftovers:call(?:s|e(?:d|rs?))? (#{NAME_LIST_RE})/.freeze
       LEFTOVERS_ALLOW_RE = /\bleftovers:(?:keeps?|skip(?:s|ped|)|allow(?:s|ed|))\b/.freeze

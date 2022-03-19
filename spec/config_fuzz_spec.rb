@@ -2,17 +2,17 @@
 
 require 'support/config_fuzzer'
 
-RSpec.describe Leftovers::Config do
-  next if ENV['COVERAGE']
+::RSpec.describe ::Leftovers::Config do
+  next if ::ENV['COVERAGE']
 
-  config_methods = described_class.new(:rails).public_methods - Class.new.new.public_methods
+  config_methods = described_class.new(:rails).public_methods - ::Class.new.new.public_methods
 
-  before { Leftovers.reset }
+  before { ::Leftovers.reset }
 
   describe 'fuzzed config' do
-    ENV.fetch('FUZZ_ITERATIONS', 10).to_i.times do |n|
+    ::ENV.fetch('FUZZ_ITERATIONS', 10).to_i.times do |n|
       context "iteration #{n}" do
-        let(:yaml) { ConfigFuzzer.new(n).to_yaml }
+        let(:yaml) { ::Leftovers::ConfigLoader::Fuzzer.new(n).to_yaml }
 
         it do
           puts yaml

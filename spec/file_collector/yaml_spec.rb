@@ -2,29 +2,30 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::Precompilers::YAML do
+::RSpec.describe ::Leftovers::Precompilers::YAML do
   subject(:collector) do
-    collector = Leftovers::FileCollector.new(ruby, file)
+    collector = ::Leftovers::FileCollector.new(ruby, file)
     collector.collect
     collector
   end
 
   before do
-    Leftovers.reset
+    ::Leftovers.reset
   end
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'foo.yaml' }
   let(:file) do
-    Leftovers::File.new(Leftovers.pwd + path).tap { |f| allow(f).to receive_messages(read: yaml) }
+    ::Leftovers::File.new(::Leftovers.pwd + path)
+      .tap { |f| allow(f).to receive_messages(read: yaml) }
   end
   let(:yaml) { '' }
   let(:ruby) { file.ruby }
 
   context 'with yaml files with constant' do
     let(:yaml) do
-      stub_const('This::That', Module.new)
+      stub_const('This::That', ::Module.new)
       [This::That].to_yaml
     end
 
@@ -33,7 +34,7 @@ RSpec.describe Leftovers::Precompilers::YAML do
 
   context 'with yaml files with instance' do
     let(:yaml) do
-      stub_const('This::That', Class.new)
+      stub_const('This::That', ::Class.new)
       [This::That.new].to_yaml
     end
 
@@ -42,7 +43,7 @@ RSpec.describe Leftovers::Precompilers::YAML do
 
   context 'with yaml files with e.g. exception subclass' do
     let(:yaml) do
-      stub_const('This::That', Class.new(RuntimeError))
+      stub_const('This::That', ::Class.new(RuntimeError))
       [This::That].to_yaml
     end
 

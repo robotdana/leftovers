@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::FileCollector do
+::RSpec.describe ::Leftovers::FileCollector do
   subject(:collector) do
     collector = described_class.new(ruby, file)
     collector.collect
@@ -10,18 +10,18 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   before do
-    allow(Leftovers).to receive(:try_require_cache).and_call_original
-    allow(Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
+    allow(::Leftovers).to receive(:try_require_cache).and_call_original
+    allow(::Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
 
-    Leftovers.reset
-    Leftovers.config << Leftovers::Config.new('foo.yml', content: config)
+    ::Leftovers.reset
+    ::Leftovers.config << ::Leftovers::Config.new('foo.yml', content: config)
   end
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:config) { '' }
   let(:path) { 'foo.rb' }
-  let(:file) { Leftovers::File.new(Leftovers.pwd + path) }
+  let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }
 
   context 'with affixxed methods' do
@@ -355,7 +355,8 @@ RSpec.describe Leftovers::FileCollector do
     }.each do |method|
       context "for #{method}" do
         before do
-          allow_any_instance_of(::String).to receive(method).and_raise(::NoMethodError) # rubocop:disable RSpec/AnyInstance # not sure how else i'd solve this
+          allow_any_instance_of(::String).to receive(method) # rubocop:disable RSpec/AnyInstance # not sure how else i'd solve this
+            .and_raise(::NoMethodError)
         end
 
         let(:ruby) { 'my_method(:value)' }
@@ -373,7 +374,7 @@ RSpec.describe Leftovers::FileCollector do
 
         it do
           message = <<~MESSAGE
-            Tried using the String##{method} method, but the activesupport gem was not available and/or not required
+            Tried using the ::String##{method} method, but the activesupport gem was not available and/or not required
             `gem install activesupport`, and/or add `requires: ['active_support', 'active_support/core_ext/string']` to your .leftovers.yml\n\e[0m
           MESSAGE
 
@@ -2980,7 +2981,7 @@ RSpec.describe Leftovers::FileCollector do
 
     let(:ruby) do
       <<~RUBY
-        Leftovers::Caller.new(:yes)
+        ::Leftovers::Caller.new(:yes)
         Caller.new(:no)
       RUBY
     end

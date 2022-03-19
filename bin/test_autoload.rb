@@ -6,7 +6,7 @@
 
 module AutoloadRegistry
   def autoload(name, path)
-    AutoloadRegistry[self] << name
+    ::AutoloadRegistry[self] << name
     super
   end
 
@@ -16,7 +16,7 @@ module AutoloadRegistry
   end
 end
 
-Module.prepend AutoloadRegistry
+::Module.prepend ::AutoloadRegistry
 
 def print_overwritable_blue(text)
   print "\e[2K\r\e[33m#{text}\e[0m\r"
@@ -40,28 +40,28 @@ def try_get_const(parent, const_name)
   const = parent.const_get(const_name, false)
 rescue ::LoadError, ::NameError => e
   print_red("#{parent}::#{const_name}")
-  print_error(e) if ARGV.include?('--verbose')
+  print_error(e) if ::ARGV.include?('--verbose')
 
   false
 else
-  print_green("#{parent}::#{const_name}") unless ARGV.include?('--only-errors')
+  print_green("#{parent}::#{const_name}") unless ::ARGV.include?('--only-errors')
   const
 end
 
 def try_require(parent)
-  AutoloadRegistry[parent].shuffle.each do |const_name|
+  ::AutoloadRegistry[parent].shuffle.each do |const_name|
     const = try_get_const(parent, const_name)
     exit(1) unless const
 
     @count += 1
 
-    try_require(const) if const.is_a?(Module)
+    try_require(const) if const.is_a?(::Module)
   end
 end
 
 require_relative '../lib/leftovers'
 
-try_require(Leftovers)
+try_require(::Leftovers)
 
 require 'fast_ignore'
 

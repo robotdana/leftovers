@@ -2,19 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::FileCollector do
+::RSpec.describe ::Leftovers::FileCollector do
   subject(:collector) do
     collector = described_class.new(ruby, file)
     collector.collect
     collector
   end
 
-  before { Leftovers.reset }
+  before { ::Leftovers.reset }
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'foo.rb' }
-  let(:file) { Leftovers::File.new(Leftovers.pwd + path) }
+  let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }
 
   context 'with inline comment allows' do

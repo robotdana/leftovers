@@ -2,22 +2,23 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::Precompilers::JSON do
+::RSpec.describe ::Leftovers::Precompilers::JSON do
   subject(:collector) do
-    collector = Leftovers::FileCollector.new(ruby, file)
+    collector = ::Leftovers::FileCollector.new(ruby, file)
     collector.collect
     collector
   end
 
   before do
-    Leftovers.reset
+    ::Leftovers.reset
   end
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'foo.json' }
   let(:file) do
-    Leftovers::File.new(Leftovers.pwd + path).tap { |f| allow(f).to receive_messages(read: json) }
+    ::Leftovers::File.new(::Leftovers.pwd + path)
+      .tap { |f| allow(f).to receive_messages(read: json) }
   end
   let(:json) { '' }
   let(:ruby) { file.ruby }

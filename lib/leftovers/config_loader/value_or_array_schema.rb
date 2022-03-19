@@ -13,7 +13,7 @@ module Leftovers
 
       def to_ruby(node)
         if node.array?
-          Leftovers.unwrap_array(super)
+          ::Leftovers.unwrap_array(super)
         else
           value_schema.to_ruby(node)
         end

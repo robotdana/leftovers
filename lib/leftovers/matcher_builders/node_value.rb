@@ -5,16 +5,16 @@ module Leftovers
     module NodeValue
       class << self
         def build(patterns)
-          ::Leftovers::MatcherBuilders::Or.each_or_self(patterns) do |pattern|
+          Or.each_or_self(patterns) do |pattern|
             case pattern
             when ::Integer, ::Float, true, false
               # matching scalar on nil will fall afoul of compact and each_or_self etc.
-              ::Leftovers::Matchers::NodeScalarValue.new(pattern)
-            when :_leftovers_nil_value then ::Leftovers::Matchers::NodeType.new(:nil)
-            when ::String then ::Leftovers::MatcherBuilders::NodeName.build(pattern)
+              Matchers::NodeScalarValue.new(pattern)
+            when :_leftovers_nil_value then Matchers::NodeType.new(:nil)
+            when ::String then NodeName.build(pattern)
             when ::Hash then build_from_hash(**pattern)
             # :nocov:
-            else raise Leftovers::UnexpectedCase, "Unhandled value #{pattern.inspect}"
+            else raise UnexpectedCase, "Unhandled value #{pattern.inspect}"
               # :nocov:
             end
           end
@@ -23,29 +23,23 @@ module Leftovers
         private
 
         def build_node_name_matcher(names, match, has_prefix, has_suffix)
-          ::Leftovers::MatcherBuilders::Or.build([
-            ::Leftovers::MatcherBuilders::NodeName.build(names),
-            ::Leftovers::MatcherBuilders::NodeName.build(
-              match: match, has_prefix: has_prefix, has_suffix: has_suffix
-            )
+          Or.build([
+            NodeName.build(names),
+            NodeName.build(match: match, has_prefix: has_prefix, has_suffix: has_suffix)
           ])
         end
 
         def build_node_has_argument_matcher(has_arguments, at, has_value)
-          ::Leftovers::MatcherBuilders::Or.build([
-            ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
-            ::Leftovers::MatcherBuilders::NodeHasArgument.build(
-              at: at, has_value: has_value
-            )
+          Or.build([
+            NodeHasArgument.build(has_arguments),
+            NodeHasArgument.build(at: at, has_value: has_value)
           ])
         end
 
         def build_unless(unless_arg)
           return unless unless_arg
 
-          ::Leftovers::MatcherBuilders::Unless.build(
-            ::Leftovers::MatcherBuilders::NodeValue.build(unless_arg)
-          )
+          Unless.build(build(unless_arg))
         end
 
         def build_from_hash( # rubocop:disable Metrics/ParameterLists
@@ -56,12 +50,12 @@ module Leftovers
           literal: nil,
           unless_arg: nil
         )
-          ::Leftovers::MatcherBuilders::And.build([
+          And.build([
             build_node_has_argument_matcher(has_arguments, at, has_value),
             build_node_name_matcher(names, match, has_prefix, has_suffix),
-            ::Leftovers::MatcherBuilders::NodeType.build(type),
-            ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),
-            ::Leftovers::MatcherBuilders::NodeValue.build(literal),
+            NodeType.build(type),
+            NodeHasReceiver.build(has_receiver),
+            NodeValue.build(literal),
             build_unless(unless_arg)
           ])
         end

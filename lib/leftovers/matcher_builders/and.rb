@@ -9,8 +9,8 @@ module Leftovers
           case matchers.length
           when 0 then nil
           when 1 then matchers.first
-          when 2 then ::Leftovers::Matchers::And.new(matchers.first, matchers[1])
-          else ::Leftovers::Matchers::All.new(matchers.dup)
+          when 2 then Matchers::And.new(matchers.first, matchers[1])
+          else Matchers::All.new(matchers.dup)
           end
         end
 
@@ -18,13 +18,13 @@ module Leftovers
 
         def flatten(value)
           case value
-          when ::Leftovers::Matchers::And
+          when Matchers::And
             [*flatten(value.lhs), *flatten(value.rhs)]
           # :nocov: # not sure how to make this happen
-          when ::Leftovers::Matchers::All
+          when Matchers::All
             flatten(value.matchers)
           # :nocov:
-          when Array
+          when ::Array
             value.flat_map { |v| flatten(v) }
           else
             [value]

@@ -3,9 +3,9 @@
 module Leftovers
   class ConfigLoader
     class Node
-      class_loader = Psych::ClassLoader::Restricted.new([], [])
-      ToRuby = Psych::Visitors::ToRuby.new(
-        Psych::ScalarScanner.new(class_loader),
+      class_loader = ::Psych::ClassLoader::Restricted.new([], [])
+      TO_RUBY_INSTANCE = ::Psych::Visitors::ToRuby.new(
+        ::Psych::ScalarScanner.new(class_loader),
         class_loader
       )
 
@@ -39,7 +39,7 @@ module Leftovers
       end
 
       def hash?
-        node.is_a?(Psych::Nodes::Mapping)
+        node.is_a?(::Psych::Nodes::Mapping)
       end
 
       def location
@@ -69,7 +69,7 @@ module Leftovers
       end
 
       def to_ruby
-        @to_ruby ||= ToRuby.accept(node)
+        @to_ruby ||= TO_RUBY_INSTANCE.accept(node)
       end
 
       def to_sym
@@ -77,7 +77,7 @@ module Leftovers
       end
 
       def string?
-        to_ruby.is_a?(String)
+        to_ruby.is_a?(::String)
       end
 
       def scalar?
@@ -85,11 +85,11 @@ module Leftovers
       end
 
       def array?
-        node.is_a?(Psych::Nodes::Sequence)
+        node.is_a?(::Psych::Nodes::Sequence)
       end
 
       def integer?
-        to_ruby.is_a?(Integer)
+        to_ruby.is_a?(::Integer)
       end
 
       private

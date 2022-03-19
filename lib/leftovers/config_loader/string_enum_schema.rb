@@ -6,7 +6,7 @@ module Leftovers
       class << self
         def value(value, aliases: nil)
           values << value
-          Leftovers.each_or_self(aliases) do |alias_name|
+          ::Leftovers.each_or_self(aliases) do |alias_name|
             self.aliases[alias_name] = value
           end
         end

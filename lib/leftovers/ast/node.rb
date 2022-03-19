@@ -17,7 +17,7 @@ module Leftovers
       def updated(type = nil, children = nil, properties = nil) # leftovers:keep
         maybe_copy = super
 
-        class_for_type = Leftovers::AST::Builder.node_class(maybe_copy.type)
+        class_for_type = Builder.node_class(maybe_copy.type)
         return maybe_copy if maybe_copy.instance_of?(class_for_type)
 
         class_for_type.new(maybe_copy.type, maybe_copy.children, location: maybe_copy.loc)

@@ -9,15 +9,15 @@ module Leftovers
         then_processor = case value
         when true, '**' then then_processor
         when ::String, ::Hash, ::Array
-          ::Leftovers::Processors::MatchCurrentNode.new(
-            ::Leftovers::MatcherBuilders::NodeName.build(value), then_processor
+          Processors::MatchCurrentNode.new(
+            MatcherBuilders::NodeName.build(value), then_processor
           )
         # :nocov:
-        else raise Leftovers::UnexpectedCase, "Unhandled value #{value.inspect}"
+        else raise UnexpectedCase, "Unhandled value #{value.inspect}"
           # :nocov:
         end
 
-        ::Leftovers::Processors::EachKeyword.new(then_processor)
+        Processors::EachKeyword.new(then_processor)
       end
     end
   end

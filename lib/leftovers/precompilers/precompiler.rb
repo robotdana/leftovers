@@ -15,11 +15,11 @@ module Leftovers
 
         begin
           @precompiler.precompile(content)
-        rescue Leftovers::PrecompileError => e
+        rescue PrecompileError => e
           e.warn(path: file.relative_path)
           ''
-        rescue StandardError => e
-          Leftovers.warn "#{e.class}: #{file.relative_path} #{e.message}"
+        rescue ::StandardError => e
+          ::Leftovers.warn "#{e.class}: #{file.relative_path} #{e.message}"
           ''
         end
       end

@@ -2,8 +2,8 @@
 
 module Leftovers
   module AST
-    class CasgnNode < ::Leftovers::AST::Node
-      include Leftovers::AST::HasArguments
+    class CasgnNode < Node
+      include HasArguments
 
       alias_method :name, :second
       alias_method :to_sym, :second

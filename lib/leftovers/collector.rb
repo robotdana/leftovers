@@ -18,17 +18,17 @@ module Leftovers
     end
 
     def collect
-      Leftovers.reporter.prepare
-      collect_file_list(Leftovers::FileList.new)
+      ::Leftovers.reporter.prepare
+      collect_file_list(FileList.new)
       print_progress
-      Leftovers.newline
+      ::Leftovers.newline
       @calls = @calls.to_set.freeze
       @test_calls = @test_calls.to_set.freeze
     end
 
     def collect_file_list(list)
-      if Leftovers.parallel?
-        Parallel.each(list, finish: method(:finish_file)) do |file|
+      if ::Leftovers.parallel?
+        ::Parallel.each(list, finish: method(:finish_file)) do |file|
           collect_file(file)
         end
       else
@@ -37,14 +37,14 @@ module Leftovers
     end
 
     def collect_file(file)
-      file_collector = ::Leftovers::FileCollector.new(file.ruby, file)
+      file_collector = FileCollector.new(file.ruby, file)
       file_collector.collect
 
       file_collector.to_h
     end
 
     def print_progress
-      Leftovers.print(
+      ::Leftovers.print(
         "\e[2Kchecked #{@count} files, " \
           "collected #{@count_calls} calls, #{@count_definitions} definitions\r"
       )
@@ -54,7 +54,7 @@ module Leftovers
       @count += 1
       @count_calls += result[:calls].length
       @count_definitions += result[:definitions].length
-      print_progress if Leftovers.progress?
+      print_progress if ::Leftovers.progress?
       if result[:test?]
         @test_calls.concat(result[:calls])
       else

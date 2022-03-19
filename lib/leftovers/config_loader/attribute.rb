@@ -35,7 +35,7 @@ module Leftovers
       def name?(name)
         name = name.to_sym
 
-        @name == name || Leftovers.each_or_self(@aliases).include?(name)
+        @name == name || ::Leftovers.each_or_self(@aliases).include?(name)
       end
 
       def to_ruby(value)

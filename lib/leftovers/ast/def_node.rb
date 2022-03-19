@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class DefNode < ::Leftovers::AST::Node
+    class DefNode < Node
       alias_method :name, :first
       alias_method :to_sym, :first
 

@@ -2,8 +2,8 @@
 
 module Leftovers
   module AST
-    class HashNode < ::Leftovers::AST::Node
-      include Leftovers::AST::HasArguments
+    class HashNode < Node
+      include HasArguments
 
       def arguments
         @memo[:arguments] ||= [self]

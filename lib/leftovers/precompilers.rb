@@ -9,7 +9,7 @@ module Leftovers
         precompilers.group_by { |p| build_precompiler(p[:format]) }.map do |format, precompiler|
           Precompiler.new(
             format,
-            Leftovers::MatcherBuilders::Path.build(precompiler.flat_map { |p| p[:paths] })
+            MatcherBuilders::Path.build(precompiler.flat_map { |p| p[:paths] })
           )
         end
       end
@@ -18,14 +18,14 @@ module Leftovers
 
       def build_precompiler(format)
         case format
-        when :erb then ::Leftovers::Precompilers::ERB
-        when :haml then ::Leftovers::Precompilers::Haml
-        when :json then ::Leftovers::Precompilers::JSON
-        when :slim then ::Leftovers::Precompilers::Slim
-        when :yaml then ::Leftovers::Precompilers::YAML
-        when Hash then constantize_precompiler(format[:custom])
+        when :erb then ERB
+        when :haml then Haml
+        when :json then JSON
+        when :slim then Slim
+        when :yaml then YAML
+        when ::Hash then constantize_precompiler(format[:custom])
           # :nocov:
-        else raise Leftovers::UnexpectedCase, "Unhandled value #{format}"
+        else raise UnexpectedCase, "Unhandled value #{format}"
           # :nocov:
         end
       end
@@ -33,9 +33,9 @@ module Leftovers
       def constantize_precompiler(precompiler)
         precompiler = "::#{precompiler}" unless precompiler.start_with?('::')
 
-        Object.const_get(precompiler, false)
+        ::Object.const_get(precompiler, false)
       rescue ::NameError
-        Leftovers.error <<~MESSAGE
+        ::Leftovers.error <<~MESSAGE
           Tried using #{precompiler}, but it wasn't available.
           add its path to `requires:` in your .leftovers.yml
         MESSAGE

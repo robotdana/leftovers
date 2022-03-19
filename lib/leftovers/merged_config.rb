@@ -17,7 +17,7 @@ module Leftovers
 
     def initialize(load_defaults: false)
       @configs = []
-      @loaded_configs = Set.new
+      @loaded_configs = ::Set.new
       return unless load_defaults
 
       self << :ruby
@@ -28,7 +28,7 @@ module Leftovers
     end
 
     def <<(config)
-      config = Leftovers::Config.new(config) unless config.is_a?(Leftovers::Config)
+      config = Config.new(config) unless config.is_a?(Config)
       return if @loaded_configs.include?(config.name)
 
       unmemoize
@@ -47,55 +47,53 @@ module Leftovers
     end
 
     def test_paths
-      @test_paths ||= Leftovers::MatcherBuilders::Path.build(@configs.flat_map(&:test_paths))
+      @test_paths ||= MatcherBuilders::Path.build(@configs.flat_map(&:test_paths))
     end
 
     def precompilers
-      @precompilers ||= Leftovers::Precompilers.build(@configs.flat_map(&:precompile))
+      @precompilers ||= Precompilers.build(@configs.flat_map(&:precompile))
     end
 
     def dynamic
-      @dynamic ||= ::Leftovers::ProcessorBuilders::Each.build(@configs.map(&:dynamic))
+      @dynamic ||= ProcessorBuilders::Each.build(@configs.map(&:dynamic))
     end
 
     def keep
-      @keep ||= ::Leftovers::MatcherBuilders::Or.build(@configs.map(&:keep))
+      @keep ||= MatcherBuilders::Or.build(@configs.map(&:keep))
     end
 
     def test_only
-      @test_only ||= ::Leftovers::MatcherBuilders::Or.build(@configs.map(&:test_only))
+      @test_only ||= MatcherBuilders::Or.build(@configs.map(&:test_only))
     end
 
     private
 
     def project_config
-      Leftovers::Config.new(:'.leftovers.yml', path: Leftovers.pwd + '.leftovers.yml')
+      Config.new(:'.leftovers.yml', path: ::Leftovers.pwd + '.leftovers.yml')
     end
 
     def project_todo
-      Leftovers::Config.new(:'.leftovers_todo.yml', path: Leftovers.pwd + '.leftovers_todo.yml')
+      Config.new(:'.leftovers_todo.yml', path: ::Leftovers.pwd + '.leftovers_todo.yml')
     end
 
     def unmemoize
-      MEMOIZED_IVARS.each do |ivar|
-        remove_instance_variable(ivar) if instance_variable_get(ivar)
-      end
+      MEMOIZED_IVARS.each { |ivar| remove_instance_variable(ivar) if instance_variable_get(ivar) }
     end
 
     def require_requires(config)
       config.requires.each do |req|
-        if req.is_a?(Hash) && req[:quiet]
-          Leftovers.try_require(req[:quiet])
+        if req.is_a?(::Hash) && req[:quiet]
+          ::Leftovers.try_require(req[:quiet])
         else
-          Leftovers.try_require(req, message: "cannot require '#{req}' from #{config.name}.yml")
+          ::Leftovers.try_require(req, message: "cannot require '#{req}' from #{config.name}.yml")
         end
       end
     end
 
     def load_bundled_gem_config
-      return unless Leftovers.try_require('bundler')
+      return unless ::Leftovers.try_require('bundler')
 
-      Bundler.locked_gems.specs.each do |spec|
+      ::Bundler.locked_gems.specs.each do |spec|
         self << spec.name
       end
     end

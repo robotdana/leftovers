@@ -5,10 +5,7 @@ module Leftovers
     module AndNot
       class << self
         def build(positive_matcher, negative_matcher)
-          ::Leftovers::MatcherBuilders::And.build([
-            positive_matcher,
-            ::Leftovers::MatcherBuilders::Unless.build(negative_matcher)
-          ])
+          And.build([positive_matcher, Unless.build(negative_matcher)])
         end
       end
     end

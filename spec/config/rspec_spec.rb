@@ -2,22 +2,22 @@
 
 require 'spec_helper'
 
-RSpec.describe 'rspec gem' do
+::RSpec.describe 'rspec gem' do
   subject(:collector) do
-    collector = Leftovers::FileCollector.new(ruby, file)
+    collector = ::Leftovers::FileCollector.new(ruby, file)
     collector.collect
     collector
   end
 
   before do
-    Leftovers.reset
-    Leftovers.config << :rspec
+    ::Leftovers.reset
+    ::Leftovers.config << :rspec
   end
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'spec/file_spec.rb' }
-  let(:file) { Leftovers::File.new(Leftovers.pwd + path) }
+  let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }
 
   context 'with method calls using be_' do

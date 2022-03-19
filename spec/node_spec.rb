@@ -1,34 +1,34 @@
 # frozen_string_literal: true
 
-RSpec.describe Leftovers::AST::Node do
-  let(:send_node) { Leftovers::Parser.parse_with_comments('foo()').first }
-  let(:send_then_send_node) { Leftovers::Parser.parse_with_comments('foo().bar()').first }
-  let(:const_then_send_node) { Leftovers::Parser.parse_with_comments('Foo.bar()').first }
-  let(:csend_node) { Leftovers::Parser.parse_with_comments('true&.foo()').first }
-  let(:send_then_csend_node) { Leftovers::Parser.parse_with_comments('foo()&.bar()').first }
-  let(:true_node) { Leftovers::Parser.parse_with_comments('true').first }
-  let(:false_node) { Leftovers::Parser.parse_with_comments('false').first }
-  let(:nil_node) { Leftovers::Parser.parse_with_comments('nil').first }
-  let(:str_node) { Leftovers::Parser.parse_with_comments('"foo"').first }
-  let(:sym_node) { Leftovers::Parser.parse_with_comments(':foo').first }
-  let(:constant_node) { Leftovers::Parser.parse_with_comments('FOO = true').first }
-  let(:const_then_const_node) { Leftovers::Parser.parse_with_comments('Foo::Bar').first }
-  let(:def_node) { Leftovers::Parser.parse_with_comments('def foo; end').first }
-  let(:ivar_node) { Leftovers::Parser.parse_with_comments('@foo').first }
-  let(:ivasgn_node) { Leftovers::Parser.parse_with_comments('@foo = true').first }
-  let(:cvar_node) { Leftovers::Parser.parse_with_comments('@@foo').first }
-  let(:cvasgn_node) { Leftovers::Parser.parse_with_comments('@@foo = true').first }
-  let(:gvar_node) { Leftovers::Parser.parse_with_comments('$foo').first }
-  let(:gvasgn_node) { Leftovers::Parser.parse_with_comments('$foo = true').first }
-  let(:class_node) { Leftovers::Parser.parse_with_comments('class Foo; end').first }
-  let(:module_node) { Leftovers::Parser.parse_with_comments('module Foo; end').first }
-  let(:integer_node) { Leftovers::Parser.parse_with_comments('1').first }
-  let(:float_node) { Leftovers::Parser.parse_with_comments('1.0').first }
-  let(:proc_node) { Leftovers::Parser.parse_with_comments('proc {}').first }
-  let(:lambda_node) { Leftovers::Parser.parse_with_comments('lambda {}').first }
-  let(:do_end_lambda_node) { Leftovers::Parser.parse_with_comments('lambda do; end').first }
-  let(:stabby_lambda_node) { Leftovers::Parser.parse_with_comments('-> {}').first }
-  let(:leftovers_definition_node) { Leftovers::DefinitionNode.new(sym_node, name: :foo) }
+RSpec.describe ::Leftovers::AST::Node do
+  let(:send_node) { ::Leftovers::Parser.parse_with_comments('foo()').first }
+  let(:send_then_send_node) { ::Leftovers::Parser.parse_with_comments('foo().bar()').first }
+  let(:const_then_send_node) { ::Leftovers::Parser.parse_with_comments('Foo.bar()').first }
+  let(:csend_node) { ::Leftovers::Parser.parse_with_comments('true&.foo()').first }
+  let(:send_then_csend_node) { ::Leftovers::Parser.parse_with_comments('foo()&.bar()').first }
+  let(:true_node) { ::Leftovers::Parser.parse_with_comments('true').first }
+  let(:false_node) { ::Leftovers::Parser.parse_with_comments('false').first }
+  let(:nil_node) { ::Leftovers::Parser.parse_with_comments('nil').first }
+  let(:str_node) { ::Leftovers::Parser.parse_with_comments('"foo"').first }
+  let(:sym_node) { ::Leftovers::Parser.parse_with_comments(':foo').first }
+  let(:constant_node) { ::Leftovers::Parser.parse_with_comments('FOO = true').first }
+  let(:const_then_const_node) { ::Leftovers::Parser.parse_with_comments('Foo::Bar').first }
+  let(:def_node) { ::Leftovers::Parser.parse_with_comments('def foo; end').first }
+  let(:ivar_node) { ::Leftovers::Parser.parse_with_comments('@foo').first }
+  let(:ivasgn_node) { ::Leftovers::Parser.parse_with_comments('@foo = true').first }
+  let(:cvar_node) { ::Leftovers::Parser.parse_with_comments('@@foo').first }
+  let(:cvasgn_node) { ::Leftovers::Parser.parse_with_comments('@@foo = true').first }
+  let(:gvar_node) { ::Leftovers::Parser.parse_with_comments('$foo').first }
+  let(:gvasgn_node) { ::Leftovers::Parser.parse_with_comments('$foo = true').first }
+  let(:class_node) { ::Leftovers::Parser.parse_with_comments('class Foo; end').first }
+  let(:module_node) { ::Leftovers::Parser.parse_with_comments('module Foo; end').first }
+  let(:integer_node) { ::Leftovers::Parser.parse_with_comments('1').first }
+  let(:float_node) { ::Leftovers::Parser.parse_with_comments('1.0').first }
+  let(:proc_node) { ::Leftovers::Parser.parse_with_comments('proc {}').first }
+  let(:lambda_node) { ::Leftovers::Parser.parse_with_comments('lambda {}').first }
+  let(:do_end_lambda_node) { ::Leftovers::Parser.parse_with_comments('lambda do; end').first }
+  let(:stabby_lambda_node) { ::Leftovers::Parser.parse_with_comments('-> {}').first }
+  let(:leftovers_definition_node) { ::Leftovers::DefinitionNode.new(sym_node, name: :foo) }
 
   describe '#to_s' do
     it 'provides a string representation' do

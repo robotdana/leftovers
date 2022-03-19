@@ -8,7 +8,7 @@ module Leftovers
       def self.precompile(file)
         ::Slim::Engine.new(file: file).call(file)
       rescue ::Slim::Parser::SyntaxError => e
-        raise Leftovers::PrecompileError.new(e.error, line: e.lineno, column: e.column)
+        raise PrecompileError.new(e.error, line: e.lineno, column: e.column)
       end
     end
   end

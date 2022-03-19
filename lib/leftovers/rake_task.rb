@@ -27,7 +27,7 @@ module Leftovers
     def escaped_argv(argv = @default_argv)
       return if argv.empty?
 
-      Shellwords.shelljoin(argv)
+      ::Shellwords.shelljoin(argv)
     end
 
     def describe_task
@@ -49,7 +49,7 @@ module Leftovers
     end
 
     def run(argv)
-      exitstatus = Leftovers::CLI.new(argv: argv).run
+      exitstatus = CLI.new(argv: argv).run
 
       exit exitstatus unless exitstatus == 0
     end

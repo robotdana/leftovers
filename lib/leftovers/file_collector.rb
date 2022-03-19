@@ -11,9 +11,9 @@ module Leftovers
 
     def initialize(ruby, file)
       @calls = []
-      @definition_collection = Leftovers::DefinitionCollection.new
-      @allow_lines = Set.new.compare_by_identity
-      @test_lines = Set.new.compare_by_identity
+      @definition_collection = DefinitionCollection.new
+      @allow_lines = ::Set.new.compare_by_identity
+      @test_lines = ::Set.new.compare_by_identity
       @dynamic_lines = {}
       @ruby = ruby
       @file = file
@@ -36,11 +36,11 @@ module Leftovers
     end
 
     def collect(ruby = @ruby, line = 1)
-      ast, comments = Leftovers::Parser.parse_with_comments(ruby, @file.relative_path, line)
+      ast, comments = Parser.parse_with_comments(ruby, @file.relative_path, line)
       CommentsProcessor.process(comments, self)
       NodeProcessor.new(self).process(ast)
     rescue ::Parser::SyntaxError => e
-      Leftovers.warn(
+      ::Leftovers.warn(
         "\e[31m#{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column} " \
           "SyntaxError: #{e.message}\e[0m"
       )
@@ -99,7 +99,7 @@ module Leftovers
       when :lvasgn then nil # we don't check local variable use, rubocop already covers this
 
       # :nocov:
-      else raise Leftovers::UnexpectedCase, "Unhandled value #{node.type.inspect}"
+      else raise UnexpectedCase, "Unhandled value #{node.type.inspect}"
         # :nocov:
       end
     end
@@ -111,18 +111,16 @@ module Leftovers
     end
 
     def collect_dynamic(node)
-      Leftovers.config.dynamic.process(nil, node, node, self)
-    rescue StandardError => e
-      raise ::Leftovers::Error, "#{e.class}: #{e.message}\n" \
+      ::Leftovers.config.dynamic.process(nil, node, node, self)
+    rescue ::StandardError => e
+      raise Error, "#{e.class}: #{e.message}\n" \
         "when processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace
     end
 
     private
 
     def build_send_wrapper_for(node, name)
-      ::Leftovers::AST::SendNode.new(
-        :send, [nil, name.to_sym, *node.arguments], location: node.location
-      )
+      AST::SendNode.new(:send, [nil, name.to_sym, *node.arguments], location: node.location)
     end
   end
 end

@@ -23,7 +23,7 @@ module Leftovers
     def report_instructions
       puts <<~HELP
 
-        how to resolve: #{green Leftovers.resolution_instructions_link}
+        how to resolve: #{green ::Leftovers.resolution_instructions_link}
       HELP
     end
 
@@ -41,7 +41,7 @@ module Leftovers
     end
 
     def puts(string)
-      Leftovers.puts(string)
+      ::Leftovers.puts(string)
     end
 
     def red(string)

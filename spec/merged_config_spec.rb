@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe Leftovers::MergedConfig do
-  before { Leftovers.reset }
+::RSpec.describe ::Leftovers::MergedConfig do
+  before { ::Leftovers.reset }
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   describe '<<' do
     it 'handles clearing memoization' do
@@ -22,7 +22,7 @@ RSpec.describe Leftovers::MergedConfig do
         *::Leftovers::MergedConfig::MEMOIZED_IVARS, :@configs, :@loaded_configs
       )
 
-      slim = Leftovers::Config.new(:slim)
+      slim = ::Leftovers::Config.new(:slim)
       subject << slim
 
       expect(original_exclude_paths).not_to be subject.exclude_paths # it's a different empty array
@@ -44,7 +44,7 @@ RSpec.describe Leftovers::MergedConfig do
     end
 
     it 'can report when requiring' do
-      config = Leftovers::Config.new('.invalid', content: <<~YML)
+      config = ::Leftovers::Config.new('.invalid', content: <<~YML)
         require: 'ruby' # is a reserved gem
       YML
 
@@ -56,11 +56,13 @@ RSpec.describe Leftovers::MergedConfig do
     end
 
     it "or's correctly" do
-      config = Leftovers::Config.new('.valid.yml', content: 'keep: method')
-      config2 = Leftovers::Config.new('.valid2.yml',
-                                      content: 'keep: [method, { has_receiver: method2 }]')
-      config3 = Leftovers::Config.new('.valid3.yml', content: 'keep: { privacy: private }')
-      config4 = Leftovers::Config.new(
+      config = ::Leftovers::Config.new('.valid.yml', content: 'keep: method')
+      config2 = ::Leftovers::Config.new(
+        '.valid2.yml',
+        content: 'keep: [method, { has_receiver: method2 }]'
+      )
+      config3 = ::Leftovers::Config.new('.valid3.yml', content: 'keep: { privacy: private }')
+      config4 = ::Leftovers::Config.new(
         '.valid4.yml',
         content: 'keep: [{ has_receiver: method2 }, { privacy: private }, { type: Array }]'
       )
@@ -78,7 +80,7 @@ RSpec.describe Leftovers::MergedConfig do
 
   describe 'new' do
     it 'can work without bundler' do
-      allow(Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
+      allow(::Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
       expect_any_instance_of(described_class).to receive(:<<).exactly(4).times.and_call_original # rubocop:disable RSpec/AnyInstance
       # not sure how i can expect a particular instance because it's called in the initializer
 
@@ -86,8 +88,8 @@ RSpec.describe Leftovers::MergedConfig do
     end
 
     it 'only tries loading rspec once' do
-      config = Leftovers::Config.new('.valid.yml', content: 'gems: rspec')
-      config2 = Leftovers::Config.new('.valid2.yml', content: 'gems: rspec')
+      config = ::Leftovers::Config.new('.valid.yml', content: 'gems: rspec')
+      config2 = ::Leftovers::Config.new('.valid2.yml', content: 'gems: rspec')
 
       subject << config
       subject << config2

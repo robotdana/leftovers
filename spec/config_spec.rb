@@ -2,8 +2,8 @@
 
 require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
 
-RSpec.describe Leftovers::Config do
-  before { Leftovers.reset }
+::RSpec.describe ::Leftovers::Config do
+  before { ::Leftovers.reset }
 
   describe '.dynamic' do
     it 'can report config parse errors' do

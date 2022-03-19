@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class SymNode < ::Leftovers::AST::Node
+    class SymNode < Node
       alias_method :name, :first
       alias_method :to_scalar_value, :first
       alias_method :to_sym, :first

@@ -7,10 +7,9 @@ module Leftovers
         def build(transforms, final_processor)
           each_builder(final_processor).each_or_self(transforms) do |transform|
             case transform
-            when ::Hash, ::Symbol
-              ::Leftovers::ProcessorBuilders::TransformChain.build(transform, final_processor)
+            when ::Hash, ::Symbol then TransformChain.build(transform, final_processor)
             # :nocov:
-            else raise Leftovers::UnexpectedCase, "Unhandled value #{transform.inspect}"
+            else raise UnexpectedCase, "Unhandled value #{transform.inspect}"
               # :nocov:
             end
           end
@@ -19,10 +18,10 @@ module Leftovers
         private
 
         def each_builder(final_processor)
-          if final_processor == ::Leftovers::Processors::AddDefinitionNode
-            ::Leftovers::ProcessorBuilders::Each[:each_for_definition_set]
+          if final_processor == Processors::AddDefinitionNode
+            Each[:each_for_definition_set]
           else
-            ::Leftovers::ProcessorBuilders::Each[:each]
+            Each[:each]
           end
         end
       end

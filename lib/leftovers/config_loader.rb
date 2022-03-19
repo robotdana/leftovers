@@ -19,13 +19,13 @@ module Leftovers
     end
 
     def load
-      document = ::Leftovers::ConfigLoader::Node.new(parse, file)
+      document = Node.new(parse, file)
       DocumentSchema.validate(document)
 
       all_errors = document.all_errors
       return DocumentSchema.to_ruby(document) if all_errors.empty?
 
-      Leftovers.error(all_errors.join("\n"))
+      ::Leftovers.error(all_errors.join("\n"))
     end
 
     private
@@ -35,7 +35,7 @@ module Leftovers
     end
 
     def file
-      @file ||= ::Leftovers::File.new(path)
+      @file ||= File.new(path)
     end
 
     def content
@@ -43,12 +43,12 @@ module Leftovers
     end
 
     def parse
-      parsed = Psych.parse(content)
-      parsed ||= Psych.parse('{}')
+      parsed = ::Psych.parse(content)
+      parsed ||= ::Psych.parse('{}')
       parsed.children.first
     rescue ::Psych::SyntaxError => e
       message = [e.problem, e.context].compact.join(' ')
-      Leftovers.error "Config SyntaxError: #{file.relative_path}:#{e.line}:#{e.column} #{message}"
+      ::Leftovers.error "Config SyntaxError: #{file.relative_path}:#{e.line}:#{e.column} #{message}"
     end
   end
 end

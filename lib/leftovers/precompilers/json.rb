@@ -14,7 +14,7 @@ module Leftovers
 
         def to_ruby_argument(value)
           ruby = value.inspect
-          return ruby unless value.is_a?(Array)
+          return ruby unless value.is_a?(::Array)
 
           ruby.delete_prefix!('[')
           ruby.delete_suffix!(']')

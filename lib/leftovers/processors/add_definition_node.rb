@@ -7,7 +7,7 @@ module Leftovers
         return unless str
         return if str.empty?
 
-        acc.add_definition_node Leftovers::DefinitionNode.new(current_node, name: str.to_sym)
+        acc.add_definition_node DefinitionNode.new(current_node, name: str.to_sym)
       end
 
       freeze

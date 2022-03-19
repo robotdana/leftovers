@@ -37,7 +37,7 @@ module Leftovers
     end
 
     def path
-      Leftovers.pwd.join('.leftovers_todo.yml')
+      ::Leftovers.pwd.join('.leftovers_todo.yml')
     end
 
     def generate_file_body(only_test, none)
@@ -59,7 +59,7 @@ module Leftovers
     def resolution_instructions
       <<~YML
         # for instructions on how to address these
-        # see #{Leftovers.resolution_instructions_link}
+        # see #{::Leftovers.resolution_instructions_link}
       YML
     end
 
@@ -96,7 +96,7 @@ module Leftovers
     end
 
     def puts(string)
-      Leftovers.puts(string)
+      ::Leftovers.puts(string)
     end
   end
 end

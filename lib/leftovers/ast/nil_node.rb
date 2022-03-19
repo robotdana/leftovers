@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class NilNode < ::Leftovers::AST::Node
+    class NilNode < Node
       def to_scalar_value
         nil
       end

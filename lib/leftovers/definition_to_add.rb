@@ -25,7 +25,7 @@ module Leftovers
     def to_definition(file_collector)
       return if keep?(file_collector)
 
-      Leftovers::Definition.new(name, location: location, test: test?(file_collector))
+      Definition.new(name, location: location, test: test?(file_collector))
     end
   end
 end

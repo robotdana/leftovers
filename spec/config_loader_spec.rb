@@ -2,8 +2,8 @@
 
 require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
 
-RSpec.describe Leftovers::ConfigLoader do
-  before { Leftovers.reset }
+::RSpec.describe ::Leftovers::ConfigLoader do
+  before { ::Leftovers.reset }
 
   let(:name) { 'foo' }
   let(:path) { "#{name}.yml" }

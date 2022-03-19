@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Leftovers do
+::RSpec.describe ::Leftovers do
   before { described_class.reset }
 
   after { described_class.reset }
@@ -70,7 +70,7 @@ RSpec.describe Leftovers do
       original_parallel = described_class.parallel = true
       original_progress = described_class.progress = true
 
-      # Leftovers.pwd is stubbed by with_temp_dir
+      # ::Leftovers.pwd is stubbed by with_temp_dir
       expect(
         subject.instance_variables
       ).to contain_exactly(
@@ -231,31 +231,31 @@ RSpec.describe Leftovers do
     end
   end
 
-  describe 'Leftovers::PrecompileError' do
+  describe '::Leftovers::PrecompileError' do
     describe '#warn' do
       it 'can include a line and column' do
-        error = Leftovers::PrecompileError.new('the message', line: 1, column: 5)
+        error = ::Leftovers::PrecompileError.new('the message', line: 1, column: 5)
         expect { error.warn(path: 'whatever.jpg') }.to output(<<~MESSAGE).to_stderr
           \e[2KLeftovers::PrecompileError: whatever.jpg:1:5 the message
         MESSAGE
       end
 
       it 'can include a line' do
-        error = Leftovers::PrecompileError.new('the message', line: 1)
+        error = ::Leftovers::PrecompileError.new('the message', line: 1)
         expect { error.warn(path: 'whatever.jpg') }.to output(<<~MESSAGE).to_stderr
           \e[2KLeftovers::PrecompileError: whatever.jpg:1 the message
         MESSAGE
       end
 
       it "doesn't print the column with no line" do
-        error = Leftovers::PrecompileError.new('the message', column: 1)
+        error = ::Leftovers::PrecompileError.new('the message', column: 1)
         expect { error.warn(path: 'whatever.jpg') }.to output(<<~MESSAGE).to_stderr
           \e[2KLeftovers::PrecompileError: whatever.jpg the message
         MESSAGE
       end
 
       it 'can be given no line or column' do
-        error = Leftovers::PrecompileError.new('the message')
+        error = ::Leftovers::PrecompileError.new('the message')
         expect { error.warn(path: 'whatever.jpg') }.to output(<<~MESSAGE).to_stderr
           \e[2KLeftovers::PrecompileError: whatever.jpg the message
         MESSAGE
@@ -264,11 +264,11 @@ RSpec.describe Leftovers do
       it 'prints the cause class instead if there is one' do
         error = begin
           begin
-            raise ArgumentError, 'bad times'
-          rescue ArgumentError
-            raise Leftovers::PrecompileError.new('the message', line: 1, column: 5)
+            raise ::ArgumentError, 'bad times'
+          rescue ::ArgumentError
+            raise ::Leftovers::PrecompileError.new('the message', line: 1, column: 5)
           end
-        rescue Leftovers::PrecompileError => e
+        rescue ::Leftovers::PrecompileError => e
           e
         end
         expect { error.warn(path: 'whatever.jpg') }.to output(<<~MESSAGE).to_stderr

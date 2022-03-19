@@ -6,7 +6,7 @@ module Leftovers
     ALL_CAPS_NAMES = %w{ast cli version erb json yaml}.freeze
 
     def self.included(klass)
-      Dir[glob_children(klass)].each_entry do |path|
+      ::Dir[glob_children(klass)].each_entry do |path|
         klass.autoload(class_from_path(path), path)
       end
     end

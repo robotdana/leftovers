@@ -4,9 +4,9 @@ lib = ::File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'leftovers/version'
 
-Gem::Specification.new do |spec|
+::Gem::Specification.new do |spec|
   spec.name = 'leftovers'
-  spec.version = Leftovers::VERSION
+  spec.version = ::Leftovers::VERSION
   spec.authors = ['Dana Sherson']
   spec.email = ['robot@dana.sh']
 
@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.metadata['rubygems_mfa_required'] = 'true'
   spec.required_ruby_version = '>= 2.5.0'
 
-  spec.files = Dir.glob('{lib,exe,docs}/**/{*,.*}') + %w{
+  spec.files = ::Dir.glob('{lib,exe,docs}/**/{*,.*}') + %w{
     CHANGELOG.md
     Gemfile
     LICENSE.txt

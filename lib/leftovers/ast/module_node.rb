@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class ModuleNode < ::Leftovers::AST::Node
+    class ModuleNode < Node
       def name
         first.name
       end

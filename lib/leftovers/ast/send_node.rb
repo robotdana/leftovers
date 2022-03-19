@@ -2,8 +2,8 @@
 
 module Leftovers
   module AST
-    class SendNode < ::Leftovers::AST::Node
-      include Leftovers::AST::HasArguments
+    class SendNode < Node
+      include HasArguments
 
       alias_method :receiver, :first
       alias_method :name, :second

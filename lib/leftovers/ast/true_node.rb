@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class TrueNode < ::Leftovers::AST::Node
+    class TrueNode < Node
       def to_scalar_value
         true
       end

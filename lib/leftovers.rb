@@ -4,26 +4,6 @@ require 'parser'
 require 'parser/current' # to get the error message early and once.
 
 module Leftovers # rubocop:disable Metrics/ModuleLength
-  class Error < ::StandardError; end
-  class UnexpectedCase < Error; end
-
-  class PrecompileError < Error
-    attr_reader :line, :column
-
-    def initialize(message, line: nil, column: nil)
-      @line = line
-      @column = column
-      super(message)
-    end
-
-    def warn(path:)
-      line_column = ":#{line}#{":#{column}" if column}" if line
-      klass = cause ? cause.class : self.class
-
-      Leftovers.warn "#{klass}: #{path}#{line_column} #{message}"
-    end
-  end
-
   require_relative 'leftovers/autoloader'
   include Autoloader
 
@@ -55,15 +35,15 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
 
     def config
-      @config ||= Leftovers::MergedConfig.new(load_defaults: true)
+      @config ||= MergedConfig.new(load_defaults: true)
     end
 
     def collector
-      @collector ||= Leftovers::Collector.new
+      @collector ||= Collector.new
     end
 
     def reporter
-      @reporter ||= Leftovers::Reporter.new
+      @reporter ||= Reporter.new
     end
 
     def leftovers
@@ -73,7 +53,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       end
     end
 
-    def run(stdout: StringIO.new, stderr: StringIO.new) # rubocop:disable Metrics/MethodLength
+    def run(stdout: ::StringIO.new, stderr: ::StringIO.new) # rubocop:disable Metrics/MethodLength
       @stdout = stdout
       @stderr = stderr
       return reporter.report_success if leftovers.empty?
@@ -98,7 +78,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
 
     def resolution_instructions_link
-      "https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve"
+      "https://github.com/robotdana/leftovers/tree/v#{VERSION}/README.md#how-to-resolve"
     end
 
     def warn(message)
@@ -123,7 +103,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
     end
 
     def pwd
-      @pwd ||= Pathname.new(Dir.pwd + '/')
+      @pwd ||= ::Pathname.new(::Dir.pwd + '/')
     end
 
     def exit(status = 0)
@@ -140,7 +120,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
 
       case value
       when nil then nil
-      when Array then value.each(&block)
+      when ::Array then value.each(&block)
       else yield(value)
       end
     end
@@ -161,7 +141,7 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       @try_require_cache.fetch(requirable) do
         require requirable
         @try_require_cache[requirable] = true
-      rescue LoadError
+      rescue ::LoadError
         @try_require_cache[requirable] = false
       end
     end

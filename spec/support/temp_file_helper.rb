@@ -5,8 +5,8 @@ require 'pathname'
 
 module TempFileHelper
   def with_temp_dir
-    @__temp_dir = Pathname.new(Dir.mktmpdir + '/')
-    allow(Leftovers).to receive_messages(pwd: @__temp_dir)
+    @__temp_dir = ::Pathname.new(::Dir.mktmpdir + '/')
+    allow(::Leftovers).to receive_messages(pwd: @__temp_dir)
   end
 
   def temp_file(filename, body = '')
@@ -21,7 +21,7 @@ module TempFileHelper
   end
 end
 
-RSpec.configure do |config|
+::RSpec.configure do |config|
   config.include TempFileHelper
   config.after do
     @__temp_dir&.rmtree

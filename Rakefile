@@ -7,10 +7,10 @@ require 'rubocop/rake_task'
 require 'spellr/rake_task'
 require_relative 'lib/leftovers/rake_task'
 
-RuboCop::RakeTask.new
-RSpec::Core::RakeTask.new(:spec)
-Spellr::RakeTask.generate_task
-Leftovers::RakeTask.generate_task
+::RuboCop::RakeTask.new
+::RSpec::Core::RakeTask.new(:spec)
+::Spellr::RakeTask.generate_task
+::Leftovers::RakeTask.generate_task
 
 desc 'Test autoload'
 task :test_autoload, [:times] do |_, args|

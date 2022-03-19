@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::DefinitionSet do
+::RSpec.describe ::Leftovers::DefinitionSet do
   describe 'to_s' do
     it 'has multiple names' do
       ds = described_class.new(%w{one two})

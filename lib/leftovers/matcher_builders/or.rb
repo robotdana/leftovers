@@ -9,7 +9,7 @@ module Leftovers
         def each_or_self(value, &block)
           case value
           when nil then nil
-          when Array then build(value.map(&block))
+          when ::Array then build(value.map(&block))
           else build([yield(value)])
           end
         end
@@ -21,8 +21,8 @@ module Leftovers
           when 0 then nil
             # :nocov:
           when 1 then matchers.first
-          when 2 then ::Leftovers::Matchers::Or.new(matchers.first, matchers[1])
-          else ::Leftovers::Matchers::Any.new(matchers.dup)
+          when 2 then Matchers::Or.new(matchers.first, matchers[1])
+          else Matchers::Any.new(matchers.dup)
           end
         end
 
@@ -30,11 +30,11 @@ module Leftovers
 
         def flatten(value)
           case value
-          when ::Leftovers::Matchers::Or
+          when Matchers::Or
             [*flatten(value.lhs), *flatten(value.rhs)]
-          when ::Leftovers::Matchers::Any
+          when Matchers::Any
             flatten(value.matchers)
-          when Array, Set
+          when ::Array, ::Set
             value.flat_map { |v| flatten(v) }
           else
             [value]
@@ -51,7 +51,7 @@ module Leftovers
             end
           end
 
-          groups.transform_values { |v| Leftovers.unwrap_array(v) }
+          groups.transform_values { |v| ::Leftovers.unwrap_array(v) }
         end
 
         def mergeable?(matcher)
@@ -59,15 +59,15 @@ module Leftovers
         end
 
         def build_grouped_for_matcher(matchers)
-          return matchers unless matchers.is_a?(Array)
+          return matchers unless matchers.is_a?(::Array)
           return matchers unless mergeable?(matchers.first)
 
           matchers.first.class.new(build(matchers.map(&:matcher)))
         end
 
         def build_grouped(set: nil, regexp: nil, nil: nil, **matcher_classes) # rubocop:disable Lint/UnusedMethodArgument i want to throw away nils
-          set = set.to_set.compare_by_identity if set.is_a?(Array)
-          regexp = Regexp.union(regexp) if regexp.is_a?(Array)
+          set = set.to_set.compare_by_identity if set.is_a?(::Array)
+          regexp = ::Regexp.union(regexp) if regexp.is_a?(::Array)
           matcher_classes = matcher_classes.each_value.flat_map do |matchers|
             build_grouped_for_matcher(matchers)
           end

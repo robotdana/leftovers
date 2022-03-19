@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Leftovers::FileCollector do
+::RSpec.describe ::Leftovers::FileCollector do
   subject(:collector) do
     collector = described_class.new(ruby, file)
     collector.collect
@@ -10,14 +10,15 @@ RSpec.describe Leftovers::FileCollector do
   end
 
   before do
-    Leftovers.reset
+    ::Leftovers.reset
   end
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'foo.haml' }
   let(:file) do
-    Leftovers::File.new(Leftovers.pwd + path).tap { |f| allow(f).to receive_messages(read: haml) }
+    ::Leftovers::File.new(::Leftovers.pwd + path)
+      .tap { |f| allow(f).to receive_messages(read: haml) }
   end
   let(:haml) { '' }
   let(:ruby) { file.ruby }

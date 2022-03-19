@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-FileUtils.rm_rf(File.join(__dir__, '..', 'coverage'))
+::FileUtils.rm_rf(::File.join(__dir__, '..', 'coverage'))
 require 'bundler/setup'
 
-require 'simplecov' if ENV['COVERAGE']
+require 'simplecov' if ::ENV['COVERAGE']
 
 require_relative '../lib/leftovers'
 require 'timecop'
 
-RSpec.configure do |config|
+::RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'
 
-  # Disable RSpec exposing methods globally on `Module` and `main`
+  # Disable ::RSpec exposing methods globally on `::Module` and `main`
   config.disable_monkey_patching!
   config.order = :random
 
@@ -30,8 +30,8 @@ RSpec.configure do |config|
   end
 end
 
-RSpec::Matchers.define_negated_matcher :exclude, :include
-RSpec::Matchers.define :have_definitions do |*expected|
+::RSpec::Matchers.define_negated_matcher :exclude, :include
+::RSpec::Matchers.define :have_definitions do |*expected|
   match do |actual|
     @actual = actual.definitions.compact.flat_map(&:names).uniq
     expect(@actual).to contain_exactly(*expected)
@@ -39,7 +39,7 @@ RSpec::Matchers.define :have_definitions do |*expected|
 
   diffable
 end
-RSpec::Matchers.define :have_non_test_definitions do |*expected|
+::RSpec::Matchers.define :have_non_test_definitions do |*expected|
   match do |actual|
     @actual = actual.definitions.compact.reject(&:test?).flat_map(&:names).uniq
     expect(@actual).to contain_exactly(*expected)
@@ -48,7 +48,7 @@ RSpec::Matchers.define :have_non_test_definitions do |*expected|
   diffable
 end
 
-RSpec::Matchers.define :have_test_only_definitions do |*expected|
+::RSpec::Matchers.define :have_test_only_definitions do |*expected|
   match do |actual|
     @actual = actual.definitions.compact.select(&:test?).flat_map(&:names).uniq
     expect(@actual).to contain_exactly(*expected)
@@ -57,7 +57,7 @@ RSpec::Matchers.define :have_test_only_definitions do |*expected|
   diffable
 end
 
-RSpec::Matchers.define :have_calls do |*expected|
+::RSpec::Matchers.define :have_calls do |*expected|
   match do |actual|
     @actual = actual.calls.uniq
     expect(@actual).to contain_exactly(*expected)
@@ -65,7 +65,7 @@ RSpec::Matchers.define :have_calls do |*expected|
 
   diffable
 end
-RSpec::Matchers.define :have_calls_including do |*expected|
+::RSpec::Matchers.define :have_calls_including do |*expected|
   match do |actual|
     @actual = actual.calls.uniq
     expect(@actual).to include(*expected)
@@ -73,7 +73,7 @@ RSpec::Matchers.define :have_calls_including do |*expected|
 
   diffable
 end
-RSpec::Matchers.define :have_calls_excluding do |*expected|
+::RSpec::Matchers.define :have_calls_excluding do |*expected|
   match do |actual|
     @actual = actual.calls.uniq
     expect(@actual).to exclude(*expected)
@@ -82,7 +82,7 @@ RSpec::Matchers.define :have_calls_excluding do |*expected|
   diffable
 end
 
-RSpec::Matchers.define :have_no_definitions do
+::RSpec::Matchers.define :have_no_definitions do
   match do |actual|
     @actual = actual.definitions.compact
     expect(@actual).to be_empty
@@ -91,7 +91,7 @@ RSpec::Matchers.define :have_no_definitions do
   diffable
 end
 
-RSpec::Matchers.define :have_no_non_test_definitions do
+::RSpec::Matchers.define :have_no_non_test_definitions do
   match do |actual|
     @actual = actual.definitions.compact.reject(&:test?)
     expect(@actual).to be_empty
@@ -100,7 +100,7 @@ RSpec::Matchers.define :have_no_non_test_definitions do
   diffable
 end
 
-RSpec::Matchers.define :have_no_test_only_definitions do
+::RSpec::Matchers.define :have_no_test_only_definitions do
   match do |actual|
     @actual = actual.definitions.compact.select(&:test?)
     expect(@actual).to be_empty
@@ -109,7 +109,7 @@ RSpec::Matchers.define :have_no_test_only_definitions do
   diffable
 end
 
-RSpec::Matchers.define :have_no_calls do
+::RSpec::Matchers.define :have_no_calls do
   match do |actual|
     @actual = actual.calls
     expect(@actual).to be_empty
@@ -118,7 +118,7 @@ RSpec::Matchers.define :have_no_calls do
   diffable
 end
 
-RSpec::Matchers.define :match_nested_object do |expected|
+::RSpec::Matchers.define :match_nested_object do |expected|
   match do |actual|
     @actual = actual
     expect(@actual.class).to eq expected.class

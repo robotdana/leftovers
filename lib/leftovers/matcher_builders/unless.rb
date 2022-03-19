@@ -6,7 +6,7 @@ module Leftovers
       def self.build(matcher)
         return unless matcher
 
-        ::Leftovers::Matchers::Not.new(matcher)
+        Matchers::Not.new(matcher)
       end
     end
   end

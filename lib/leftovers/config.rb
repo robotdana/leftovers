@@ -27,19 +27,19 @@ module Leftovers
     end
 
     def precompile
-      @precompile ||= Leftovers.each_or_self(yaml[:precompile]).to_a
+      @precompile ||= ::Leftovers.each_or_self(yaml[:precompile]).to_a
     end
 
     def dynamic
-      @dynamic ||= ::Leftovers::ProcessorBuilders::Dynamic.build(yaml[:dynamic])
+      @dynamic ||= ProcessorBuilders::Dynamic.build(yaml[:dynamic])
     end
 
     def keep
-      @keep ||= ::Leftovers::MatcherBuilders::Node.build(yaml[:keep])
+      @keep ||= MatcherBuilders::Node.build(yaml[:keep])
     end
 
     def test_only
-      @test_only ||= ::Leftovers::MatcherBuilders::Node.build(yaml[:test_only])
+      @test_only ||= MatcherBuilders::Node.build(yaml[:test_only])
     end
 
     def requires
@@ -49,7 +49,7 @@ module Leftovers
     private
 
     def yaml
-      @yaml ||= ::Leftovers::ConfigLoader.load(name, path: @path, content: @content)
+      @yaml ||= ConfigLoader.load(name, path: @path, content: @content)
     end
   end
 end

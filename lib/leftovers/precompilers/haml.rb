@@ -8,7 +8,7 @@ module Leftovers
       def self.precompile(haml)
         ::Haml::Engine.new(haml).precompiled
       rescue ::Haml::SyntaxError => e
-        raise Leftovers::PrecompileError.new(e.message, line: e.line)
+        raise PrecompileError.new(e.message, line: e.line)
       end
     end
   end

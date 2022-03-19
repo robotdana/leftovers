@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class ConstNode < ::Leftovers::AST::Node
+    class ConstNode < Node
       alias_method :receiver, :first
       alias_method :name, :second
       alias_method :to_sym, :second

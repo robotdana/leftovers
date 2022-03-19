@@ -6,7 +6,7 @@ module Leftovers
       def initialize(schema, require_group: true, except: nil)
         @schema = schema
         @use_require_groups = require_group
-        @except = Leftovers.each_or_self(except)
+        @except = ::Leftovers.each_or_self(except)
       end
 
       def attributes

@@ -2,22 +2,22 @@
 
 require 'spec_helper'
 
-RSpec.describe 'rails gem' do
+::RSpec.describe 'rails gem' do
   subject(:collector) do
-    collector = Leftovers::FileCollector.new(ruby, file)
+    collector = ::Leftovers::FileCollector.new(ruby, file)
     collector.collect
     collector
   end
 
   before do
-    Leftovers.reset
-    Leftovers.config << :rails
+    ::Leftovers.reset
+    ::Leftovers.config << :rails
   end
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'foo.rb' }
-  let(:file) { Leftovers::File.new(Leftovers.pwd + path) }
+  let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }
 
   context 'with method calls using a method that calls multiple methods' do

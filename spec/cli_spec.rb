@@ -2,11 +2,11 @@
 
 require 'parallel'
 
-RSpec.describe Leftovers::CLI, type: :cli do
+::RSpec.describe ::Leftovers::CLI, type: :cli do
   describe 'leftovers' do
     before do
-      allow(Leftovers).to receive(:try_require_cache).and_call_original
-      allow(Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
+      allow(::Leftovers).to receive(:try_require_cache).and_call_original
+      allow(::Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
 
       with_temp_dir
     end
@@ -35,7 +35,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
       it 'outputs the version when --version' do
         run '--version'
         expect(stdout).to have_output <<~STDOUT
-          #{Leftovers::VERSION}
+          #{::Leftovers::VERSION}
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 0
@@ -110,14 +110,14 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{::Leftovers::VERSION}/README.md#how-to-resolve
 
           keep:
             # Not directly called at all:
             - "test_method" # test/bar.rb:1:5 def test_method; end
         FILE
 
-        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
+        ::Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
     end
 
@@ -168,7 +168,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           \e[31mNot directly called at all:\e[0m
           \e[36mapp/foo.rb:1:13\e[0m test, test? \e[2mtest_method \e[33m:test\e[0;2m\e[0m
 
-          how to resolve: \e[32m#{Leftovers.resolution_instructions_link}\e[0m
+          how to resolve: \e[32m#{::Leftovers.resolution_instructions_link}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -194,7 +194,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{::Leftovers::VERSION}/README.md#how-to-resolve
 
           keep:
             # Not directly called at all:
@@ -202,7 +202,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - "test?" # app/foo.rb:1:13 test_method :test
         FILE
 
-        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
+        ::Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
     end
 
@@ -229,7 +229,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           \e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
           \e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
 
-          how to resolve: \e[32m#{Leftovers.resolution_instructions_link}\e[0m
+          how to resolve: \e[32m#{::Leftovers.resolution_instructions_link}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -254,7 +254,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{::Leftovers::VERSION}/README.md#how-to-resolve
 
           keep:
             # Not directly called at all:
@@ -263,7 +263,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - "unused_method" # app/foo.rb:3:5 def unused_method
         FILE
 
-        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
+        ::Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
 
       it 'runs with --write-todo and a preexisting TODO file' do
@@ -289,7 +289,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           # Generated at: 2021-06-14 22:03:35 UTC
           #
           # for instructions on how to address these
-          # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
+          # see https://github.com/robotdana/leftovers/tree/v#{::Leftovers::VERSION}/README.md#how-to-resolve
 
           keep:
             # Not directly called at all:
@@ -298,7 +298,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             - "unused_method" # app/foo.rb:3:5 def unused_method
         FILE
 
-        Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
+        ::Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml')).keep
       end
 
       it 'runs with --no-parallel' do
@@ -313,7 +313,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           \e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
           \e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
 
-          how to resolve: \e[32m#{Leftovers.resolution_instructions_link}\e[0m
+          how to resolve: \e[32m#{::Leftovers.resolution_instructions_link}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -331,7 +331,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
           \e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
           \e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
 
-          how to resolve: \e[32m#{Leftovers.resolution_instructions_link}\e[0m
+          how to resolve: \e[32m#{::Leftovers.resolution_instructions_link}\e[0m
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 1
@@ -340,7 +340,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
       it 'outputs the version when --version' do
         run '--version'
         expect(stdout).to have_output <<~STDOUT
-          #{Leftovers::VERSION}
+          #{::Leftovers::VERSION}
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 0
@@ -374,7 +374,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
               \e[2K\e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
               \e[2K\e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
               \e[2K
-              how to resolve: \e[32m#{Leftovers.resolution_instructions_link}\e[0m
+              how to resolve: \e[32m#{::Leftovers.resolution_instructions_link}\e[0m
             STDOUT
           ).or(
             eq(
@@ -385,7 +385,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
                 \e[2K\e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
                 \e[2K\e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
                 \e[2K
-                how to resolve: \e[32m#{Leftovers.resolution_instructions_link}\e[0m
+                how to resolve: \e[32m#{::Leftovers.resolution_instructions_link}\e[0m
               STDOUT
             )
           )
@@ -403,7 +403,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             \e[2K\e[36mapp/foo.rb:3:5\e[0m unused_method \e[2mdef \e[33munused_method\e[0;2m\e[0m
             \e[2K\e[36mapp/foo.rb:4:3\e[0m @bar \e[2m\e[33m@bar\e[0;2m = true\e[0m
             \e[2K
-            how to resolve: \e[32m#{Leftovers.resolution_instructions_link}\e[0m
+            how to resolve: \e[32m#{::Leftovers.resolution_instructions_link}\e[0m
           STDOUT
           expect(stderr.string).to be_empty
           expect(exitstatus).to be 1
@@ -432,7 +432,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             # Generated at: 2021-06-14 22:03:35 UTC
             #
             # for instructions on how to address these
-            # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
+            # see https://github.com/robotdana/leftovers/tree/v#{::Leftovers::VERSION}/README.md#how-to-resolve
 
             test_only:
               # Only directly called in tests:
@@ -445,7 +445,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
               - "test_method" # test/bar.rb:1:5 def test_method; end
           FILE
 
-          config = Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml'))
+          config = ::Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml'))
           config.keep
           config.test_only
         end
@@ -481,7 +481,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
             # Generated at: 2021-06-14 22:03:35 UTC
             #
             # for instructions on how to address these
-            # see https://github.com/robotdana/leftovers/tree/v#{Leftovers::VERSION}/README.md#how-to-resolve
+            # see https://github.com/robotdana/leftovers/tree/v#{::Leftovers::VERSION}/README.md#how-to-resolve
 
             test_only:
               # Only directly called in tests:
@@ -494,7 +494,7 @@ RSpec.describe Leftovers::CLI, type: :cli do
               - "test_method" # test/bar.rb:1:5 def test_method; end
           FILE
 
-          config = Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml'))
+          config = ::Leftovers::Config.new(:todo, path: temp_dir.join('.leftovers_todo.yml'))
           config.keep
           config.test_only
         end

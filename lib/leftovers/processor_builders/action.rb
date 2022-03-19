@@ -5,13 +5,13 @@ module Leftovers
     module Action
       class << self
         def build(patterns, final_processor)
-          ::Leftovers::ProcessorBuilders::Each.each_or_self(patterns) do |pattern|
+          Each.each_or_self(patterns) do |pattern|
             case pattern
             when ::String, ::Integer
-              ::Leftovers::ProcessorBuilders::Argument.build(pattern, final_processor)
+              Argument.build(pattern, final_processor)
             when ::Hash then build_from_hash_value(**pattern, final_processor: final_processor)
             # :nocov:
-            else raise Leftovers::UnexpectedCase, "Unhandled value #{pattern.inspect}"
+            else raise UnexpectedCase, "Unhandled value #{pattern.inspect}"
               # :nocov:
             end
           end
@@ -32,7 +32,7 @@ module Leftovers
           unless_arg: nil, all: nil, any: nil,
           **transform_args
         )
-          processor = ::Leftovers::ProcessorBuilders::TransformSet.build(
+          processor = TransformSet.build(
             transform_args, final_processor
           )
           processor = build_nested(nested, processor) if nested
@@ -48,31 +48,31 @@ module Leftovers
         private
 
         def build_nested(nested, processor)
-          ::Leftovers::ProcessorBuilders::Each.build([
-            ::Leftovers::ProcessorBuilders::Action.build(nested, processor),
+          Each.build([
+            Action.build(nested, processor),
             processor
           ])
         end
 
         def build_sources(arguments, keywords, itself, receiver, value, processor) # rubocop:disable Metrics/ParameterLists
-          ::Leftovers::ProcessorBuilders::Each.build([
-            ::Leftovers::ProcessorBuilders::Argument.build(arguments, processor),
-            ::Leftovers::ProcessorBuilders::Keyword.build(keywords, processor),
-            ::Leftovers::ProcessorBuilders::Itself.build(itself, processor),
-            ::Leftovers::ProcessorBuilders::Receiver.build(receiver, processor),
-            ::Leftovers::ProcessorBuilders::Value.build(value, processor)
+          Each.build([
+            Argument.build(arguments, processor),
+            Keyword.build(keywords, processor),
+            Itself.build(itself, processor),
+            Receiver.build(receiver, processor),
+            Value.build(value, processor)
           ])
         end
 
         def build_recursive(processor)
-          recursive_placeholder = ::Leftovers::Processors::Placeholder.new
-          processor = ::Leftovers::ProcessorBuilders::Each.build([recursive_placeholder, processor])
+          recursive_placeholder = Processors::Placeholder.new
+          processor = Each.build([recursive_placeholder, processor])
 
           [recursive_placeholder, processor]
         end
 
         def build_matcher(has_arguments, has_receiver, unless_arg, all, any, processor) # rubocop:disable Metrics/ParameterLists
-          matcher = Leftovers::MatcherBuilders::Node.build_from_hash(
+          matcher = MatcherBuilders::Node.build_from_hash(
             has_arguments: has_arguments,
             has_receiver: has_receiver,
             unless_arg: unless_arg,
@@ -82,7 +82,7 @@ module Leftovers
 
           return processor unless matcher
 
-          ::Leftovers::Processors::MatchMatchedNode.new(matcher, processor)
+          Processors::MatchMatchedNode.new(matcher, processor)
         end
       end
     end

@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class BlockNode < ::Leftovers::AST::Node
+    class BlockNode < Node
       def proc?
         name = first.name
         name == :lambda || name == :proc

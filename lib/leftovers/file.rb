@@ -3,11 +3,11 @@
 require 'pathname'
 
 module Leftovers
-  class File < Pathname
+  class File < ::Pathname
     def relative_path
       @relative_path ||= begin
-        relative_path_from(Leftovers.pwd)
-      rescue ArgumentError
+        relative_path_from(::Leftovers.pwd)
+      rescue ::ArgumentError
         self
       end
     end
@@ -15,7 +15,7 @@ module Leftovers
     def test?
       return @test if defined?(@test)
 
-      @test = Leftovers.config.test_paths === relative_path
+      @test = ::Leftovers.config.test_paths === relative_path
     end
 
     def ruby

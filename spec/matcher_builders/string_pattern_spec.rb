@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ::Leftovers::MatcherBuilders::StringPattern do
+::RSpec.describe ::Leftovers::MatcherBuilders::StringPattern do
   describe '.build' do
     it 'returns nil when given nothing' do
       expect(described_class.build).to be_nil

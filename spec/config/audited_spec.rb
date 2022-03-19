@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'audited gem' do
+::RSpec.describe 'audited gem' do
   subject(:collector) do
     collector = ::Leftovers::FileCollector.new(ruby, file)
     collector.collect
@@ -10,14 +10,14 @@ RSpec.describe 'audited gem' do
   end
 
   before do
-    Leftovers.reset
-    Leftovers.config << :audited
+    ::Leftovers.reset
+    ::Leftovers.config << :audited
   end
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'foo.rb' }
-  let(:file) { ::Leftovers::File.new(Leftovers.pwd + path) }
+  let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }
 
   context 'with current_user_method=' do

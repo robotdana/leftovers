@@ -31,13 +31,13 @@ module Leftovers
           yaml = { 'precompile' => [value.transform_keys(&:to_s).transform_values(&:to_s)] }
             .to_yaml.delete_prefix("---\n")
 
-          Leftovers.warn(<<~MESSAGE)
+          ::Leftovers.warn(<<~MESSAGE)
             \e[33m`#{key}:` is deprecated\e[0m
             Replace with:
             \e[32m#{yaml}\e[0m
           MESSAGE
 
-          write_hash[:precompile] = Leftovers.each_or_self(write_hash[:precompile]).to_a
+          write_hash[:precompile] = ::Leftovers.each_or_self(write_hash[:precompile]).to_a
           write_hash[:precompile] << value
           write_hash.delete(key)
         end

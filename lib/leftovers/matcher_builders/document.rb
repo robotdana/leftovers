@@ -6,7 +6,7 @@ module Leftovers
       def self.build(true_arg)
         return unless true_arg
 
-        ::Leftovers::Matchers::NodeName.new(:__leftovers_document)
+        Matchers::NodeName.new(:__leftovers_document)
       end
     end
   end

@@ -1,7 +1,7 @@
 # frozen-string-literal: true
 
 module Leftovers
-  class DefinitionNode < ::Leftovers::AST::Node
+  class DefinitionNode < AST::Node
     attr_reader :name, :path
     alias_method :to_sym, :name
 

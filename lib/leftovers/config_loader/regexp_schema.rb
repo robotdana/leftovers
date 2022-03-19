@@ -16,7 +16,7 @@ module Leftovers
 
         def validate_regexp(node)
           /#{node.to_ruby}/
-        rescue RegexpError, ArgumentError => e
+        rescue ::RegexpError, ::ArgumentError => e
           error(node, "be a string with a valid ruby regexp (#{e.message})")
         else
           true

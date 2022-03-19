@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class VarNode < ::Leftovers::AST::Node
+    class VarNode < Node
       alias_method :name, :first
       alias_method :to_sym, :first
 

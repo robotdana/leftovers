@@ -2,8 +2,8 @@
 
 module Leftovers
   module AST
-    class VasgnNode < ::Leftovers::AST::Node
-      include Leftovers::AST::HasArguments
+    class VasgnNode < Node
+      include HasArguments
 
       alias_method :name, :first
       alias_method :to_sym, :first

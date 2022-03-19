@@ -24,16 +24,16 @@ module Leftovers
           position = 0 if all_positions?(positions)
           position ||= ::Leftovers.each_or_self(positions).min
 
-          ::Leftovers::Matchers::NodeHasPositionalArgument.new(position)
+          Matchers::NodeHasPositionalArgument.new(position)
         end
 
         def build_has_any_positional_value_matcher(value_matcher)
-          ::Leftovers::Matchers::NodeHasAnyPositionalArgumentWithValue.new(value_matcher)
+          Matchers::NodeHasAnyPositionalArgumentWithValue.new(value_matcher)
         end
 
         def build_has_positional_value_matcher(positions, value_matcher)
-          ::Leftovers::MatcherBuilders::Or.each_or_self(positions) do |position|
-            ::Leftovers::Matchers::NodeHasPositionalArgumentWithValue.new(position, value_matcher)
+          Or.each_or_self(positions) do |position|
+            Matchers::NodeHasPositionalArgumentWithValue.new(position, value_matcher)
           end
         end
       end

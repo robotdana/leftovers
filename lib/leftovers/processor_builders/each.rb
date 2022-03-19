@@ -13,21 +13,21 @@ module Leftovers
 
       def self.[](processor_name)
         @each ||= {
-          each: new(::Leftovers::Processors::Each),
-          each_for_definition_set: new(::Leftovers::Processors::EachForDefinitionSet)
+          each: new(Processors::Each),
+          each_for_definition_set: new(Processors::EachForDefinitionSet)
         }
 
         @each.fetch(processor_name)
       end
 
-      def initialize(processor_class = ::Leftovers::Processors::Each)
+      def initialize(processor_class = Processors::Each)
         @processor_class = processor_class
       end
 
       def each_or_self(value, &block)
         case value
         when nil then nil
-        when Array then build(value.map(&block))
+        when ::Array then build(value.map(&block))
         else build([yield(value)])
         end
       end
@@ -37,7 +37,7 @@ module Leftovers
 
         case processors.length
         # :nocov:
-        when 0 then raise Leftovers::UnexpectedCase, "Unhandled value #{processors.inspect}"
+        when 0 then raise UnexpectedCase, "Unhandled value #{processors.inspect}"
         # :nocov:
         when 1 then processors.first
         else @processor_class.new(processors)
@@ -46,11 +46,11 @@ module Leftovers
 
       def flatten(processors)
         case processors
-        when ::Leftovers::Processors::Each, @processor_class
+        when Processors::Each, @processor_class
           flatten(processors.processors)
-        when Array
+        when ::Array
           processors.flat_map { |v| flatten(v) }
-        when ::Leftovers::Processors::MatchCurrentNode, ::Leftovers::Processors::MatchMatchedNode
+        when Processors::MatchCurrentNode, Processors::MatchMatchedNode
           flatten_matchers(processors)
         else
           [processors]
@@ -71,7 +71,7 @@ module Leftovers
           next group.first unless group.length > 1
 
           group.first.class.new(
-            ::Leftovers::MatcherBuilders::Or.build(group.map(&:matcher)),
+            MatcherBuilders::Or.build(group.map(&:matcher)),
             then_processor
           )
         end
@@ -99,8 +99,8 @@ module Leftovers
 
         group = processors.group_by(&:class)
 
-        compact_matchers(group.delete(::Leftovers::Processors::MatchCurrentNode)) +
-          compact_matchers(group.delete(::Leftovers::Processors::MatchMatchedNode)) +
+        compact_matchers(group.delete(Processors::MatchCurrentNode)) +
+          compact_matchers(group.delete(Processors::MatchMatchedNode)) +
           group.values.flatten(1)
       end
     end

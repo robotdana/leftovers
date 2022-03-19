@@ -11,28 +11,29 @@ module Leftovers
 
       def self.node_class(type) # rubocop:disable Metrics
         case type
-        when :array then ::Leftovers::AST::ArrayNode
-        when :block then ::Leftovers::AST::BlockNode
-        when :casgn then ::Leftovers::AST::CasgnNode
-        when :const then ::Leftovers::AST::ConstNode
-        when :def then ::Leftovers::AST::DefNode
-        when :defs then ::Leftovers::AST::DefsNode
-        when :false then ::Leftovers::AST::FalseNode
-        when :hash then ::Leftovers::AST::HashNode
-        when :int, :float then ::Leftovers::AST::NumericNode
-        when :lvar, :ivar, :gvar, :cvar then ::Leftovers::AST::VarNode
-        when :ivasgn, :cvasgn, :gvasgn then ::Leftovers::AST::VasgnNode
-        when :module, :class then ::Leftovers::AST::ModuleNode
-        when :nil then ::Leftovers::AST::NilNode
-        when :send, :csend then ::Leftovers::AST::SendNode
-        when :str then ::Leftovers::AST::StrNode
-        when :sym then ::Leftovers::AST::SymNode
-        when :true then ::Leftovers::AST::TrueNode
-        else ::Leftovers::AST::Node
+        when :array then ArrayNode
+        when :block then BlockNode
+        when :casgn then CasgnNode
+        when :const then ConstNode
+        when :def then DefNode
+        when :defs then DefsNode
+        when :false then FalseNode
+        when :hash then HashNode
+        when :int, :float then NumericNode
+        when :lvar, :ivar, :gvar, :cvar then VarNode
+        when :ivasgn, :cvasgn, :gvasgn then VasgnNode
+        when :module, :class then ModuleNode
+        when :nil then NilNode
+        when :send, :csend then SendNode
+        when :str then StrNode
+        when :sym then SymNode
+        when :true then TrueNode
+        else Node
         end
       end
 
       # Don't complain about invalid strings
+      # This is called by ::Parser::AST internals
       def string_value(token) # leftovers:keep
         value(token)
       end

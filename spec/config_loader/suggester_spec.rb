@@ -2,7 +2,7 @@
 
 require 'did_you_mean'
 
-RSpec.describe ::Leftovers::ConfigLoader::Suggester do
+::RSpec.describe ::Leftovers::ConfigLoader::Suggester do
   subject { described_class.new(%w{cat bar dog}) }
 
   describe '#suggest' do

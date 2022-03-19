@@ -14,7 +14,7 @@ module Leftovers
       end
 
       def process(str, current_node, matched_node, acc)
-        set = ::Leftovers::DefinitionNodeSet.new
+        set = DefinitionNodeSet.new
 
         @processors.each do |processor|
           processor.process(str, current_node, matched_node, set)

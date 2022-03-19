@@ -2,19 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe 'ruby and stdlib' do
+::RSpec.describe 'ruby and stdlib' do
   subject(:collector) do
     collector = ::Leftovers::FileCollector.new(ruby, file)
     collector.collect
     collector
   end
 
-  before { Leftovers.reset }
+  before { ::Leftovers.reset }
 
-  after { Leftovers.reset }
+  after { ::Leftovers.reset }
 
   let(:path) { 'foo.rb' }
-  let(:file) { Leftovers::File.new(Leftovers.pwd + path) }
+  let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }
 
   context 'with method calls using send' do
@@ -198,14 +198,14 @@ RSpec.describe 'ruby and stdlib' do
   context 'with a processing error' do
     before do
       allow(::Leftovers::Processors::AddCall)
-        .to receive(:process).and_raise(ArgumentError, 'original message')
+        .to receive(:process).and_raise(::ArgumentError, 'original message')
     end
 
     let(:ruby) { 'attr_reader :method_name # leftovers:allow' }
 
     it 'raises an error with the filename of the file being checked' do
       expect { collector }.to raise_error(
-        Leftovers::Error,
+        ::Leftovers::Error,
         "ArgumentError: original message\nwhen processing attr_reader at foo.rb:1:0"
       )
     end

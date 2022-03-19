@@ -2,7 +2,7 @@
 
 module Leftovers
   module AST
-    class NumericNode < ::Leftovers::AST::Node
+    class NumericNode < Node
       alias_method :to_scalar_value, :first
 
       def scalar?

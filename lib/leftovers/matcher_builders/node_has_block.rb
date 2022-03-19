@@ -8,11 +8,9 @@ module Leftovers
           return if has_block.nil?
 
           if has_block
-            ::Leftovers::Matchers::NodeHasBlock
+            Matchers::NodeHasBlock
           else
-            ::Leftovers::Matchers::Not.new(
-              ::Leftovers::Matchers::NodeHasBlock
-            )
+            Matchers::Not.new(Matchers::NodeHasBlock)
           end
         end
       end
