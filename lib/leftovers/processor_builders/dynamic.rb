@@ -17,29 +17,17 @@ module Leftovers
           set_privacy: nil, set_default_privacy: nil,
           eval: nil, **matcher_rules
         )
-          matcher = MatcherBuilders::Node.build(**matcher_rules)
+          matcher = MatcherBuilders::Node.build_from_hash(**matcher_rules)
 
           processor = Each.build([
-            build_call_action(call),
-            build_define_action(define),
+            Action.build(call, Processors::AddCall),
+            Action.build(define, Processors::AddDefinitionNode),
             build_set_privacy_action(set_privacy),
             build_set_default_privacy_action(set_default_privacy),
-            build_eval_action(eval)
+            Action.build(eval, Processors::Eval)
           ])
 
           Processors::MatchMatchedNode.new(matcher, processor)
-        end
-
-        def build_call_action(call)
-          Action.build(call, Processors::AddCall)
-        end
-
-        def build_define_action(define)
-          Action.build(define, Processors::AddDefinitionNode)
-        end
-
-        def build_eval_action(eval)
-          Action.build(eval, Processors::Eval)
         end
 
         def build_set_privacy_action(set_privacies)

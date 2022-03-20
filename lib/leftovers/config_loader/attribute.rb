@@ -13,7 +13,7 @@ module Leftovers
       def initialize(name, schema, aliases: nil, require_group: nil, suggest: true)
         @name = name
         @schema = schema
-        @aliases = aliases
+        @aliases = Array(aliases)
         @require_group = require_group
         @suggest = suggest
       end
@@ -35,7 +35,7 @@ module Leftovers
       def name?(name)
         name = name.to_sym
 
-        @name == name || ::Leftovers.each_or_self(@aliases).include?(name)
+        @name == name || @aliases.include?(name)
       end
 
       def to_ruby(value)

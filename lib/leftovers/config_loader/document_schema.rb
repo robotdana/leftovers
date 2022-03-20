@@ -37,7 +37,7 @@ module Leftovers
             \e[32m#{yaml}\e[0m
           MESSAGE
 
-          write_hash[:precompile] = ::Leftovers.each_or_self(write_hash[:precompile]).to_a
+          write_hash[:precompile] = ::Leftovers.wrap_array(write_hash[:precompile])
           write_hash[:precompile] << value
           write_hash.delete(key)
         end

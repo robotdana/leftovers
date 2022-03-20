@@ -12,9 +12,10 @@ module Leftovers
     def run
       catch(:leftovers_exit) do
         ::Leftovers.reset
+        @runner = Runner.new(stdout: @stdout, stderr: @stderr)
         parse_options
 
-        ::Leftovers.run(stdout: stdout, stderr: stderr)
+        @runner.run
       end
     end
 
@@ -24,17 +25,15 @@ module Leftovers
 
     def parse_options # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       opts = ::OptionParser.new
-      ::Leftovers.parallel = true
-      ::Leftovers.progress = true
 
       opts.banner = 'Usage: leftovers [options]'
 
       opts.on('--[no-]parallel', 'Run in parallel or not, default --parallel') do |p|
-        ::Leftovers.parallel = p
+        @runner.parallel = p
       end
 
       opts.on('--[no-]progress', 'Show progress counts or not, default --progress') do |p|
-        ::Leftovers.progress = p
+        @runner.progress = p
       end
 
       opts.on('--dry-run', 'Output files that will be looked at') do
@@ -49,7 +48,7 @@ module Leftovers
       end
 
       opts.on('--write-todo', 'Outputs the unused items in a todo file to gradually fix') do
-        ::Leftovers.reporter = TodoReporter.new
+        @runner.reporter = TodoReporter
       end
 
       opts.on('-v', '--version', 'Returns the current version') do

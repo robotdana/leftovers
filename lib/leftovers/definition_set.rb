@@ -26,16 +26,16 @@ module Leftovers
       @definitions.first.highlighted_source(*args)
     end
 
-    def in_collection?
-      @definitions.any?(&:in_collection?)
+    def in_collection?(collection)
+      @definitions.any? { |d| d.in_collection?(collection) }
     end
 
     def test?
       @definitions.any?(&:test?)
     end
 
-    def in_test_collection?
-      @definitions.any?(&:in_test_collection?)
+    def in_test_collection?(collection)
+      @definitions.any? { |d| d.in_test_collection?(collection) }
     end
   end
 end

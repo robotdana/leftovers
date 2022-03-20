@@ -3,10 +3,8 @@
 module Leftovers
   module ProcessorBuilders
     module Itself
-      def self.build(value, then_processor)
-        return unless value
-
-        Processors::Itself.new(then_processor)
+      def self.build(true_arg, then_processor)
+        Processors::Itself.new(then_processor) if true_arg
       end
     end
   end

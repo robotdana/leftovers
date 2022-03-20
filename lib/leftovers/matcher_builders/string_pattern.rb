@@ -21,6 +21,8 @@ module Leftovers
           /\A#{has_prefix}/
         elsif has_suffix
           /#{has_suffix}\z/
+        else
+          nil
         end
       end
     end

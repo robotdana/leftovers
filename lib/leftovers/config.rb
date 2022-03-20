@@ -27,7 +27,7 @@ module Leftovers
     end
 
     def precompile
-      @precompile ||= ::Leftovers.each_or_self(yaml[:precompile]).to_a
+      @precompile ||= ::Leftovers.wrap_array(yaml[:precompile])
     end
 
     def dynamic

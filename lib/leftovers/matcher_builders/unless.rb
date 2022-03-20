@@ -4,9 +4,7 @@ module Leftovers
   module MatcherBuilders
     module Unless
       def self.build(matcher)
-        return unless matcher
-
-        Matchers::Not.new(matcher)
+        Matchers::Not.new(matcher) if matcher
       end
     end
   end

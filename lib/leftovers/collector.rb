@@ -1,33 +1,29 @@
 # frozen_string_literal: true
 
-require 'fast_ignore'
-require 'set'
 require 'parallel'
 
 module Leftovers
   class Collector
-    attr_reader :calls, :test_calls, :definitions
+    attr_writer :progress, :parallel
+    attr_reader :collection
 
-    def initialize
-      @calls = []
-      @test_calls = []
-      @definitions = []
+    def initialize(collection = Collection.new)
       @count = 0
       @count_calls = 0
       @count_definitions = 0
+      @progress = true
+      @parallel = true
+      @collection ||= collection
     end
 
     def collect
-      ::Leftovers.reporter.prepare
       collect_file_list(FileList.new)
       print_progress
       ::Leftovers.newline
-      @calls = @calls.to_set.freeze
-      @test_calls = @test_calls.to_set.freeze
     end
 
     def collect_file_list(list)
-      if ::Leftovers.parallel?
+      if @parallel
         ::Parallel.each(list, finish: method(:finish_file)) do |file|
           collect_file(file)
         end
@@ -54,14 +50,14 @@ module Leftovers
       @count += 1
       @count_calls += result[:calls].length
       @count_definitions += result[:definitions].length
-      print_progress if ::Leftovers.progress?
+      print_progress if @progress
       if result[:test?]
-        @test_calls.concat(result[:calls])
+        @collection.test_calls.concat(result[:calls])
       else
-        @calls.concat(result[:calls])
+        @collection.calls.concat(result[:calls])
       end
 
-      @definitions.concat(result[:definitions])
+      @collection.definitions.concat(result[:definitions])
     end
   end
 end

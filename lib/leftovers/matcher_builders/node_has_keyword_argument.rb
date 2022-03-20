@@ -17,7 +17,7 @@ module Leftovers
         private
 
         def build_keyword_matcher(keywords)
-          if ::Leftovers.each_or_self(keywords).include?('**')
+          if ::Leftovers.wrap_array(keywords).include?('**')
             Matchers::NodeType.new(:pair)
           else
             NodePairKey.build(Node.build(keywords))

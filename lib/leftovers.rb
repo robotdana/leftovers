@@ -3,28 +3,20 @@
 require 'parser'
 require 'parser/current' # to get the error message early and once.
 
-module Leftovers # rubocop:disable Metrics/ModuleLength
+module Leftovers
   require_relative 'leftovers/autoloader'
   include Autoloader
 
   MEMOIZED_IVARS = %i{
     @config
-    @collector
-    @reporter
-    @leftovers
     @try_require_cache
     @stdout
     @stderr
-    @parallel
     @pwd
-    @progress
   }.freeze
 
   class << self
-    attr_accessor :parallel, :progress
-    attr_writer :reporter
-    alias_method :parallel?, :parallel
-    alias_method :progress?, :progress
+    attr_writer :stdout, :stderr
 
     def stdout
       @stdout ||= $stdout
@@ -36,39 +28,6 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
 
     def config
       @config ||= MergedConfig.new(load_defaults: true)
-    end
-
-    def collector
-      @collector ||= Collector.new
-    end
-
-    def reporter
-      @reporter ||= Reporter.new
-    end
-
-    def leftovers
-      @leftovers ||= begin
-        collector.collect
-        collector.definitions.reject(&:in_collection?)
-      end
-    end
-
-    def run(stdout: ::StringIO.new, stderr: ::StringIO.new) # rubocop:disable Metrics/MethodLength
-      @stdout = stdout
-      @stderr = stderr
-      return reporter.report_success if leftovers.empty?
-
-      only_test = []
-      none = []
-      leftovers.sort_by(&:location_s).each do |definition|
-        if !definition.test? && definition.in_test_collection?
-          only_test << definition
-        else
-          none << definition
-        end
-      end
-
-      reporter.report(only_test: only_test, none: none)
     end
 
     def reset
@@ -115,13 +74,11 @@ module Leftovers # rubocop:disable Metrics/ModuleLength
       try_require_cache(requirable)
     end
 
-    def each_or_self(value, &block)
-      return enum_for(__method__, value) unless block
-
+    def wrap_array(value)
       case value
-      when nil then nil
-      when ::Array then value.each(&block)
-      else yield(value)
+      when nil then []
+      when ::Array then value
+      else [value]
       end
     end
 

@@ -19,9 +19,9 @@ module Leftovers
 
         def each_builder(final_processor)
           if final_processor == Processors::AddDefinitionNode
-            Each[:each_for_definition_set]
+            EachForDefinitionSet
           else
-            Each[:each]
+            Each
           end
         end
       end

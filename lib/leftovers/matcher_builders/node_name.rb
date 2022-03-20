@@ -6,9 +6,7 @@ module Leftovers
       def self.build(name_pattern)
         matcher = Name.build(name_pattern)
 
-        return unless matcher
-
-        Matchers::NodeName.new(matcher)
+        Matchers::NodeName.new(matcher) if matcher
       end
     end
   end

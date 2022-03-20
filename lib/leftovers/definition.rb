@@ -34,12 +34,12 @@ module Leftovers
         @source_line[@location_column_range_end..-1].rstrip
     end
 
-    def in_collection?
-      ::Leftovers.collector.calls.include?(@name) || (@test && in_test_collection?)
+    def in_collection?(collection)
+      collection.calls.include?(@name) || (@test && in_test_collection?(collection))
     end
 
-    def in_test_collection?
-      ::Leftovers.collector.test_calls.include?(@name)
+    def in_test_collection?(collection)
+      collection.test_calls.include?(@name)
     end
   end
 end

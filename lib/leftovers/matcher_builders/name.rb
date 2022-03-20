@@ -19,7 +19,7 @@ module Leftovers
         private
 
         def build_from_hash(unless_arg: nil, **pattern)
-          AndNot.build(StringPattern.build(**pattern), build(unless_arg))
+          And.build([StringPattern.build(**pattern), Unless.build(build(unless_arg))])
         end
       end
     end

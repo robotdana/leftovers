@@ -10,12 +10,9 @@ module Leftovers
             when ::Integer then Processors::PositionalArgument.new(pat, processor)
             when '*' then Processors::EachPositionalArgument.new(processor)
             when '**' then Processors::EachKeywordArgument.new(processor)
-            when /\A(\d+)\+\z/
-              Processors::EachPositionalArgumentFrom.new(pat.to_i, processor)
-            when ::String
-              KeywordArgument.build(pat, processor)
-            when ::Hash
-              build_hash(processor, pat)
+            when /\A(\d+)\+\z/ then Processors::EachPositionalArgumentFrom.new(pat.to_i, processor)
+            when ::String then KeywordArgument.build(pat, processor)
+            when ::Hash then build_hash(processor, pat)
               # :nocov:
             else raise UnexpectedCase, "Unhandled value #{pat.inspect}"
               # :nocov:

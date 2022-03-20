@@ -5,11 +5,9 @@ module Leftovers
     module NodeHasBlock
       class << self
         def build(has_block)
-          return if has_block.nil?
-
           if has_block
             Matchers::NodeHasBlock
-          else
+          elsif has_block == false
             Matchers::Not.new(Matchers::NodeHasBlock)
           end
         end

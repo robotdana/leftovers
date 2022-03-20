@@ -2522,13 +2522,14 @@ require 'spec_helper'
     it { is_expected.to have_no_definitions.and(have_calls(:my_method, :yes, :yes2)) }
   end
 
-  context 'with find has_argument with an index array at at' do
+  context 'with find has_argument with an index array at and value' do
     let(:config) do
       <<~YML
         dynamic:
           - name: my_method
             has_argument:
               at: [1,2]
+              has_value: 'foo'
             calls:
               arguments: 0
       YML
@@ -2536,14 +2537,63 @@ require 'spec_helper'
 
     let(:ruby) do
       <<~RUBY
-        my_method('baz', 'bar', 'foo')
-        my_method('bar', 'foo')
+        my_method('yes', 'bar', 'foo')
+        my_method('yes2', 'foo')
+        my_method('no', 'bar')
         my_method('foo')
         my_method()
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:bar, :baz, :my_method)) }
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :yes2, :my_method)) }
+  end
+
+  context 'with find has_argument with an index array at' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: [1,2] # it's the same as `has_argument: 1` because if you have 2 you must have 1.
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', 'bar', 'foo')
+        my_method('yes2', 'foo')
+        my_method('foo')
+        my_method()
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :yes2, :my_method)) }
+  end
+
+  context 'with find has_argument with an index array at descending' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_argument:
+              at: [2,1] # it's the same as `has_argument: 1` because if you have 2 you must have 1.
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        my_method('yes', 'bar', 'foo')
+        my_method('yes2', 'foo')
+        my_method('foo')
+        my_method()
+      RUBY
+    end
+
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :yes2, :my_method)) }
   end
 
   context 'with find has_argument with a mix of kw and index array and value' do
@@ -2561,14 +2611,14 @@ require 'spec_helper'
 
     let(:ruby) do
       <<~RUBY
-        my_method('baz', 'bar', kw: 'foo')
-        my_method('bar', 'foo')
+        my_method('yes', 'bar', kw: 'foo')
+        my_method('yes2', 'foo')
         my_method('foo')
         my_method()
       RUBY
     end
 
-    it { is_expected.to have_no_definitions.and(have_calls(:bar, :baz, :my_method)) }
+    it { is_expected.to have_no_definitions.and(have_calls(:yes, :yes2, :my_method)) }
   end
 
   context 'with dynamic has_block' do

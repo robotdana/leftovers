@@ -36,7 +36,9 @@ module Leftovers
             NodeHasReceiver.build(has_receiver),
             NodePrivacy.build(privacy),
             NodeType.build(type),
-            build_unless_matcher(unless_arg), build_all_matcher(all), build_any_matcher(any)
+            Unless.build(build(unless_arg)),
+            build_all_matcher(all),
+            build(any)
           ])
         end
 
@@ -49,20 +51,8 @@ module Leftovers
           ])
         end
 
-        def build_unless_matcher(unless_arg)
-          return unless unless_arg
-
-          Unless.build(build(unless_arg))
-        end
-
         def build_all_matcher(all)
-          return unless all
-
-          And.build(all.map { |pattern| build(pattern) })
-        end
-
-        def build_any_matcher(any)
-          build(any)
+          And.build(all.map { |pattern| build(pattern) }) if all
         end
       end
     end

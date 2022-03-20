@@ -7,8 +7,7 @@ module Leftovers
         def build(patterns, final_processor)
           Each.each_or_self(patterns) do |pattern|
             case pattern
-            when ::String, ::Integer
-              Argument.build(pattern, final_processor)
+            when ::String, ::Integer then Argument.build(pattern, final_processor)
             when ::Hash then build_from_hash_value(**pattern, final_processor: final_processor)
             # :nocov:
             else raise UnexpectedCase, "Unhandled value #{pattern.inspect}"
@@ -48,10 +47,7 @@ module Leftovers
         private
 
         def build_nested(nested, processor)
-          Each.build([
-            Action.build(nested, processor),
-            processor
-          ])
+          Each.build([Action.build(nested, processor), processor])
         end
 
         def build_sources(arguments, keywords, itself, receiver, value, processor) # rubocop:disable Metrics/ParameterLists

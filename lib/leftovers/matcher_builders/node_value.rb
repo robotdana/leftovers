@@ -7,9 +7,8 @@ module Leftovers
         def build(patterns)
           Or.each_or_self(patterns) do |pattern|
             case pattern
-            when ::Integer, ::Float, true, false
-              # matching scalar on nil will fall afoul of compact and each_or_self etc.
-              Matchers::NodeScalarValue.new(pattern)
+            when ::Integer, ::Float, true, false then Matchers::NodeScalarValue.new(pattern)
+            # matching scalar on nil will fall afoul of compact and each_or_self etc.
             when :_leftovers_nil_value then Matchers::NodeType.new(:nil)
             when ::String then NodeName.build(pattern)
             when ::Hash then build_from_hash(**pattern)
@@ -36,12 +35,6 @@ module Leftovers
           ])
         end
 
-        def build_unless(unless_arg)
-          return unless unless_arg
-
-          Unless.build(build(unless_arg))
-        end
-
         def build_from_hash( # rubocop:disable Metrics/ParameterLists
           has_arguments: nil, at: nil, has_value: nil,
           names: nil, match: nil, has_prefix: nil, has_suffix: nil,
@@ -56,7 +49,7 @@ module Leftovers
             NodeType.build(type),
             NodeHasReceiver.build(has_receiver),
             NodeValue.build(literal),
-            build_unless(unless_arg)
+            Unless.build(build(unless_arg))
           ])
         end
       end
