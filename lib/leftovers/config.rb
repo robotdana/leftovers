@@ -3,6 +3,18 @@
 module Leftovers
   class Config
     attr_reader :name
+    alias_method :to_sym, :name
+
+    def self.[](name_or_config)
+      return name_or_config if name_or_config.is_a?(self)
+
+      @loaded_configs ||= {}
+      @loaded_configs[name_or_config] ||= new(name_or_config)
+    end
+
+    def self.reset
+      @loaded_configs = {}
+    end
 
     def initialize(name, path: nil, content: nil)
       @name = name.to_sym

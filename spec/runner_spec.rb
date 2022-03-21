@@ -1,14 +1,8 @@
 # frozen-string-literal: true
 
 ::RSpec.describe ::Leftovers::Runner do
-  before { ::Leftovers.reset }
-
-  after { ::Leftovers.reset }
-
-  describe '.leftovers' do
+  describe '.leftovers', :with_temp_dir do
     subject { described_class.new.tap(&:run).collection }
-
-    before { with_temp_dir }
 
     it "doesn't care about using one of multiple simultaneous defined methods" do
       temp_file '.leftovers.yml', <<~YML

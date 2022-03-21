@@ -4,12 +4,9 @@ require 'tmpdir'
 require 'pathname'
 
 module TempFileHelper
-  def with_temp_dir
-    @__temp_dir = ::Pathname.new(::Dir.mktmpdir + '/')
-    allow(::Leftovers).to receive_messages(pwd: @__temp_dir)
-  end
-
   def temp_file(filename, body = '')
+    raise 'Add :with_temp_dir to the metadata' unless @__temp_dir
+
     path = @__temp_dir.join(filename)
     path.parent.mkpath
     path.write(body)
@@ -23,7 +20,17 @@ end
 
 ::RSpec.configure do |config|
   config.include TempFileHelper
-  config.after do
-    @__temp_dir&.rmtree
+
+  config.before(:each, :with_temp_dir) do
+    @__temp_dir = ::Pathname.new(::Dir.mktmpdir + '/')
+    ::Leftovers::Config.reset # MatcherBuilders::Path calls Leftovers.pwd, make it forget
+    ::Leftovers.reset
+    allow(::Leftovers).to receive_messages(pwd: @__temp_dir)
+  end
+
+  config.after(:each, :with_temp_dir) do
+    @__temp_dir.rmtree
+    ::Leftovers::Config.reset # MatcherBuilders::Path calls Leftovers.pwd, make it forget
+    ::Leftovers.reset
   end
 end

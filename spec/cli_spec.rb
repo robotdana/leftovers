@@ -3,12 +3,10 @@
 require 'parallel'
 
 ::RSpec.describe ::Leftovers::CLI, type: :cli do
-  describe 'leftovers' do
+  describe 'leftovers', :with_temp_dir do
     before do
       allow(::Leftovers).to receive(:try_require_cache).and_call_original
       allow(::Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
-
-      with_temp_dir
     end
 
     context 'with no files' do

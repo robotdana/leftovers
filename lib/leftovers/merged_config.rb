@@ -28,7 +28,8 @@ module Leftovers
     end
 
     def <<(config)
-      config = Config.new(config) unless config.is_a?(Config)
+      config = Config[config]
+
       return if @loaded_configs.include?(config.name)
 
       unmemoize
