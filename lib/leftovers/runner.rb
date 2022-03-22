@@ -6,8 +6,6 @@ module Leftovers
 
     def run
       reporter.prepare
-      collector.collect
-
       return reporter.report_success if collection.empty?
 
       reporter.report(collection)
@@ -22,7 +20,11 @@ module Leftovers
     end
 
     def collection
-      collector.collection
+      @collection ||= begin
+        collector.collect
+
+        collector.collection
+      end
     end
 
     private

@@ -2,11 +2,9 @@
 
 ::RSpec.describe ::Leftovers::Runner do
   describe '.leftovers', :with_temp_dir do
-    subject { described_class.new.tap(&:run).collection }
+    subject { described_class.new.collection }
 
     it "doesn't care about using one of multiple simultaneous defined methods" do
-      expects_output!
-
       temp_file '.leftovers.yml', <<~YML
         dynamic:
           name: attribute
@@ -26,7 +24,10 @@
         end
       RUBY
 
-      expect { subject.leftovers }.not_to output.to_stderr
+      expect { subject.leftovers }.to print_output(<<~STDOUT)
+        checked 2 files, collected 3 calls, 2 definitions
+      STDOUT
+
       expect(subject.leftovers.flat_map(&:names)).to eq [:check_foo]
       expect(subject).to have_definitions(
         :foo, :foo?, :foo=, :check_foo
@@ -34,8 +35,6 @@
     end
 
     it "doesn't think method calls in the same file are leftovers" do
-      expects_output!
-
       temp_file 'foo.rb', <<~RUBY
         class Actions
           def initialize(params)
@@ -53,6 +52,10 @@
           end
         end
       RUBY
+
+      expect { subject.leftovers }.to print_output(<<~STDOUT)
+        checked 1 files, collected 2 calls, 4 definitions
+      STDOUT
 
       expect(subject.leftovers.flat_map(&:names)).to contain_exactly(:Actions, :initialize)
       expect(subject).to have_definitions(
