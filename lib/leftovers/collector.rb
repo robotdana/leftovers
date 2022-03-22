@@ -10,13 +10,13 @@ module Leftovers
     attr_writer :progress, :parallel
     attr_reader :collection
 
-    def initialize(collection = Collection.new)
+    def initialize
       @count = 0
       @count_calls = 0
       @count_definitions = 0
       @progress = true
       @parallel = true
-      @collection ||= collection
+      @collection ||= Collection.new
     end
 
     def collect
