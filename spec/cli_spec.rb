@@ -51,12 +51,12 @@ require 'parallel'
         expect(stdout).to have_output <<~STDOUT
           Usage: leftovers [options]
                   --[no-]parallel              Run in parallel or not, default --parallel
-                  --[no-]progress              Show progress counts or not, default --progress
-                  --dry-run                    Output files that will be looked at
-                  --view-compiled              Output the compiled content of the files
-                  --write-todo                 Outputs the unused items in a todo file to gradually fix
-              -v, --version                    Returns the current version
-              -h, --help                       Shows this message
+                  --[no-]progress              Show live counts or not, default --progress
+                  --dry-run                    Print a list of files that would be looked at
+                  --view-compiled              Print the compiled content of the files
+                  --write-todo                 Create a config file with the existing unused items
+              -v, --version                    Print the current version
+              -h, --help                       Print this message
         STDOUT
         expect(stderr.string).to be_empty
         expect(exitstatus).to be 0
@@ -69,12 +69,12 @@ require 'parallel'
 
           Usage: leftovers [options]
                   --[no-]parallel              Run in parallel or not, default --parallel
-                  --[no-]progress              Show progress counts or not, default --progress
-                  --dry-run                    Output files that will be looked at
-                  --view-compiled              Output the compiled content of the files
-                  --write-todo                 Outputs the unused items in a todo file to gradually fix
-              -v, --version                    Returns the current version
-              -h, --help                       Shows this message
+                  --[no-]progress              Show live counts or not, default --progress
+                  --dry-run                    Print a list of files that would be looked at
+                  --view-compiled              Print the compiled content of the files
+                  --write-todo                 Create a config file with the existing unused items
+              -v, --version                    Print the current version
+              -h, --help                       Print this message
         STDERR
         expect(stdout.string).to be_empty
         expect(exitstatus).to be 1

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+
 module Leftovers
   class CLI
     def initialize(argv: [], stdout: $stdout, stderr: $stderr)
@@ -12,10 +13,9 @@ module Leftovers
     def run
       catch(:leftovers_exit) do
         ::Leftovers.reset
-        @runner = Runner.new(stdout: @stdout, stderr: @stderr)
         parse_options
 
-        @runner.run
+        runner.run
       end
     end
 
@@ -23,50 +23,77 @@ module Leftovers
 
     attr_reader :argv, :stdout, :stderr
 
-    def parse_options # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      opts = ::OptionParser.new
+    def option_parser
+      @option_parser ||= ::OptionParser.new do |o|
+        o.banner = 'Usage: leftovers [options]'
 
-      opts.banner = 'Usage: leftovers [options]'
-
-      opts.on('--[no-]parallel', 'Run in parallel or not, default --parallel') do |p|
-        @runner.parallel = p
+        o.on('--[no-]parallel', 'Run in parallel or not, default --parallel') { |p| parallel(p) }
+        o.on('--[no-]progress', 'Show live counts or not, default --progress') { |p| progress(p) }
+        o.on('--dry-run', 'Print a list of files that would be looked at') { dry_run }
+        o.on('--view-compiled', 'Print the compiled content of the files') { view_compiled }
+        o.on('--write-todo', 'Create a config file with the existing unused items') { write_todo }
+        o.on('-v', '--version', 'Print the current version') { print_version }
+        o.on('-h', '--help', 'Print this message') { print_help }
       end
+    end
 
-      opts.on('--[no-]progress', 'Show progress counts or not, default --progress') do |p|
-        @runner.progress = p
-      end
-
-      opts.on('--dry-run', 'Output files that will be looked at') do
-        FileList.new.each { |f| stdout.puts f.relative_path }
-        ::Leftovers.exit
-      end
-
-      opts.on('--view-compiled', 'Output the compiled content of the files') do
-        FileList.new(argv_rules: argv)
-          .each { |f| stdout.puts "\e[0;2m#{f.relative_path}\e[0m\n#{f.ruby}" }
-        ::Leftovers.exit
-      end
-
-      opts.on('--write-todo', 'Outputs the unused items in a todo file to gradually fix') do
-        @runner.reporter = TodoReporter
-      end
-
-      opts.on('-v', '--version', 'Returns the current version') do
-        stdout.puts(VERSION)
-        ::Leftovers.exit
-      end
-
-      opts.on('-h', '--help', 'Shows this message') do
-        stdout.puts(opts.help)
-        ::Leftovers.exit
-      end
-
-      opts.parse!(argv)
-    rescue ::OptionParser::InvalidOption => e
+    def parse_options
+      option_parser.parse!(argv)
+    rescue ::OptionParser::ParseError => e
       stderr.puts("\e[31mCLI Error: #{e.message}\e[0m")
       stderr.puts ''
-      stderr.puts(opts.help)
-      ::Leftovers.exit 1
+      stderr.puts(option_parser.help)
+      exit 1
+    end
+
+    def runner
+      @runner ||= Runner.new(stdout: @stdout, stderr: @stderr)
+    end
+
+    def parallel_option(parallel)
+      runner.parallel = parallel
+    end
+
+    def exit(status = 0)
+      ::Leftovers.exit status
+    end
+
+    def dry_run
+      FileList.new.each { |file| stdout.puts file.relative_path }
+
+      exit
+    end
+
+    def view_compiled
+      FileList.new(argv_rules: argv).each do |file|
+        stdout.puts "\e[0;2m#{file.relative_path}\e[0m\n#{file.ruby}"
+      end
+
+      exit
+    end
+
+    def print_version
+      stdout.puts(VERSION)
+
+      exit
+    end
+
+    def print_help
+      stdout.puts(option_parser.help)
+
+      exit
+    end
+
+    def parallel(value)
+      runner.parallel = value
+    end
+
+    def progress(value)
+      runner.progress = value
+    end
+
+    def write_todo
+      runner.reporter = TodoReporter
     end
   end
 end
