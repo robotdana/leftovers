@@ -3,8 +3,6 @@
 require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
 
 ::RSpec.describe ::Leftovers::ConfigLoader do
-  before { ::Leftovers.reset }
-
   let(:name) { 'foo' }
   let(:path) { "#{name}.yml" }
 
@@ -27,8 +25,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { 'kept: my_method' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:0 unrecognized key kept
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:0 unrecognized key kept
           Did you mean: keep\e[0m
         MESSAGE
       end
@@ -38,8 +36,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { '{ require: path, requires: path }' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:2 must only use one of require or requires
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:2 must only use one of require or requires
           Config SchemaError: foo.yml:1:17 must only use one of require or requires\e[0m
         MESSAGE
       end
@@ -49,8 +47,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { '1: 0' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:0 unrecognized key 1
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:0 unrecognized key 1
           Did you mean: include_paths, exclude_paths, test_paths, precompile, requires, gems, keep, test_only, dynamic\e[0m
         MESSAGE
       end
@@ -60,8 +58,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { 'dynamic: { name: name, calls: { argument: 0, transforms: [ add_prefix ] } }' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:59 transforms value add_prefix must be a hash key\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:59 transforms value add_prefix must be a hash key\e[0m
         MESSAGE
       end
     end
@@ -70,8 +68,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { 'keep: []' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:6 keep must not be empty\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:6 keep must not be empty\e[0m
         MESSAGE
       end
     end
@@ -82,8 +80,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       end
 
       it "skips all suggestions because they're already there" do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:67 unrecognized key nonsense for name\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:67 unrecognized key nonsense for name\e[0m
         MESSAGE
       end
     end
@@ -100,8 +98,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { 'keep: { any: { name: yes, has_receiver: Receiver } }' }
 
       it 'must be an array to avoid the confusion of how hash would still be all' do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:13 any must be an array\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:13 any must be an array\e[0m
         MESSAGE
       end
     end
@@ -118,8 +116,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { 'dynamic: { document: false, call: "*" }' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:21 document must be true\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:21 document must be true\e[0m
         MESSAGE
       end
     end
@@ -128,8 +126,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { "kept: my_method\ntests_path: spec\nuncorrectable: value" }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:0 unrecognized key kept
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:0 unrecognized key kept
           Did you mean: keep
           Config SchemaError: foo.yml:2:0 unrecognized key tests_path
           Did you mean: test_paths
@@ -143,8 +141,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { 'gems: 1' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:6 gems must be a string or an array\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:6 gems must be a string or an array\e[0m
         MESSAGE
       end
     end
@@ -153,8 +151,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { 'gems: [1]' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:7 gems value must be a string\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:7 gems value must be a string\e[0m
         MESSAGE
       end
     end
@@ -179,8 +177,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { '[' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SyntaxError: foo.yml:2:1 did not find expected node content while parsing a flow node\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SyntaxError: foo.yml:2:1 did not find expected node content while parsing a flow node\e[0m
         MESSAGE
       end
     end
@@ -189,8 +187,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       let(:yaml) { '[]' }
 
       it do
-        expect { catch(:leftovers_exit) { subject } }.to output(<<~MESSAGE).to_stderr
-          \e[2K\e[31mConfig SchemaError: foo.yml:1:0 must be a hash\e[0m
+        expect { subject }.to print_error_and_exit(<<~MESSAGE)
+          \e[31mConfig SchemaError: foo.yml:1:0 must be a hash\e[0m
         MESSAGE
       end
     end

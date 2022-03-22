@@ -3,8 +3,6 @@
 require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
 
 ::RSpec.describe ::Leftovers::Config do
-  before { ::Leftovers.reset }
-
   describe '.dynamic' do
     it 'can report config parse errors' do
       config = described_class.new('invalid', content: <<~YML)
@@ -13,8 +11,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             - calls:
             arguments: 1
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SyntaxError: lib/config/invalid.yml:2:5 did not find expected key while parsing a block mapping\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SyntaxError: lib/config/invalid.yml:2:5 did not find expected key while parsing a block mapping\e[0m
       MESSAGE
     end
 
@@ -29,8 +27,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
                 joiner: baz
       YML
 
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:8 unrecognized key arg_men for add_prefix
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:6:8 unrecognized key arg_men for add_prefix
         Did you mean: arguments
         Config SchemaError: lib/config/invalid.yml:7:8 unrecognized key joiner for add_prefix
         Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, has_arguments, has_receiver, unless, all, any, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
@@ -47,8 +45,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
                 argument: foo
                 add_prefix: baz
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:8 delete_prefix must be a string or an array\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:6:8 delete_prefix must be a string or an array\e[0m
       MESSAGE
     end
 
@@ -63,8 +61,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
               transforms:
                 infix: how
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:8:8 unrecognized key infix for transforms
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:8:8 unrecognized key infix for transforms
         Did you mean: original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last, transforms\e[0m
       MESSAGE
     end
@@ -80,8 +78,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
               transforms:
                 - add_prefix
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:8:10 transforms value add_prefix must be a hash key\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:8:10 transforms value add_prefix must be a hash key\e[0m
       MESSAGE
     end
 
@@ -96,8 +94,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
               transforms:
                 - origin
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:8:10 unrecognized value origin for transforms value
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:8:10 unrecognized value origin for transforms value
         Did you mean: original or a hash with any of original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last, transforms\e[0m
       MESSAGE
     end
@@ -108,8 +106,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
           - names: my_other_method
             name: my_method
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:4 keep value must only use one of names or name
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:4 keep value must only use one of names or name
         Config SchemaError: lib/config/invalid.yml:3:4 keep value must only use one of names or name\e[0m
       MESSAGE
     end
@@ -121,8 +119,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             path: ./app
             paths: ./lib
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 keep value must only use one of path or paths
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:3:4 keep value must only use one of path or paths
         Config SchemaError: lib/config/invalid.yml:4:4 keep value must only use one of path or paths\e[0m
       MESSAGE
     end
@@ -136,8 +134,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             call:
               argument: 2
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 dynamic value must only use one of calls or call
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:3:4 dynamic value must only use one of calls or call
         Config SchemaError: lib/config/invalid.yml:5:4 dynamic value must only use one of calls or call\e[0m
       MESSAGE
     end
@@ -151,8 +149,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             define:
               argument: 2
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 dynamic value must only use one of defines or define
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:3:4 dynamic value must only use one of defines or define
         Config SchemaError: lib/config/invalid.yml:5:4 dynamic value must only use one of defines or define\e[0m
       MESSAGE
     end
@@ -166,8 +164,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             calls: 1
             call: 2
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 dynamic value must only use one of defines or define
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:3:4 dynamic value must only use one of defines or define
         Config SchemaError: lib/config/invalid.yml:4:4 dynamic value must only use one of defines or define
         Config SchemaError: lib/config/invalid.yml:5:4 dynamic value must only use one of calls or call
         Config SchemaError: lib/config/invalid.yml:6:4 dynamic value must only use one of calls or call\e[0m
@@ -183,8 +181,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
               argument: 1
       YML
 
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 unrecognized key tuesday for dynamic value
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:3:4 unrecognized key tuesday for dynamic value
         Did you mean: paths, document, has_arguments, has_receiver, has_block, type, privacy, unless, all, any, define, set_privacy, set_default_privacy, eval\e[0m
       MESSAGE
     end
@@ -196,8 +194,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             calls:
               argument: true
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:16 argument must be a string or an integer or a hash with any of match, has_prefix, has_suffix, type, unless or an array\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:4:16 argument must be a string or an integer or a hash with any of match, has_prefix, has_suffix, type, unless or an array\e[0m
       MESSAGE
     end
 
@@ -209,8 +207,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
               argument: 1
               arguments: kw
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must only use one of argument or arguments
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must only use one of argument or arguments
         Config SchemaError: lib/config/invalid.yml:5:6 defines must only use one of argument or arguments\e[0m
       MESSAGE
     end
@@ -223,8 +221,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
               keyword: '**'
               keywords: '**'
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must only use one of keyword or keywords
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must only use one of keyword or keywords
         Config SchemaError: lib/config/invalid.yml:5:6 defines must only use one of keyword or keywords\e[0m
       MESSAGE
     end
@@ -235,8 +233,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
           matches: '***'
       YML
 
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:11 matches must be a string with a valid ruby regexp (target of repeat operator is not specified: /***/)\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:11 matches must be a string with a valid ruby regexp (target of repeat operator is not specified: /***/)\e[0m
       MESSAGE
     end
 
@@ -246,8 +244,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
           matches: 5
       YML
 
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:11 matches must be a string with a valid ruby regexp\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:11 matches must be a string with a valid ruby regexp\e[0m
       MESSAGE
     end
 
@@ -258,8 +256,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             defines:
               add_suffix: foo
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must include at least one of arguments, keywords, itself, value, receiver or an array\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:4:6 defines must include at least one of arguments, keywords, itself, value, receiver or an array\e[0m
       MESSAGE
     end
 
@@ -270,8 +268,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             calls:
               param: foo
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for calls
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for calls
         Did you mean: arguments, keywords, itself, nested, value, receiver, recursive, has_arguments, has_receiver, unless, all, any, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
       MESSAGE
     end
@@ -284,8 +282,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
               param: foo
               keyword: bar
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for defines
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:4:6 unrecognized key param for defines
         Did you mean: arguments, itself, nested, value, receiver, recursive, has_arguments, has_receiver, unless, all, any, transforms, original, pluralize, singularize, camelize, underscore, titleize, demodulize, deconstantize, parameterize, downcase, upcase, capitalize, swapcase, add_prefix, add_suffix, split, delete_prefix, delete_suffix, delete_before, delete_before_last, delete_after, delete_after_last\e[0m
       MESSAGE
     end
@@ -296,8 +294,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
           - names:
               starts_with: my_method
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:6 unrecognized key starts_with for names
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:3:6 unrecognized key starts_with for names
         Did you mean: match, has_prefix, has_suffix, unless\e[0m
       MESSAGE
     end
@@ -307,8 +305,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         keep:
           - names: 1.0
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:11 names must be a string or a hash with any of match, has_prefix, has_suffix, unless or an array\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:11 names must be a string or a hash with any of match, has_prefix, has_suffix, unless or an array\e[0m
       MESSAGE
     end
 
@@ -317,8 +315,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         keep:
           - has_prefix: 1.0
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
       MESSAGE
     end
 
@@ -327,8 +325,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         keep:
           - has_prefix: 1
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
       MESSAGE
     end
 
@@ -337,8 +335,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         keep:
           - has_prefix: []
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
       MESSAGE
     end
 
@@ -346,8 +344,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
       config = described_class.new('invalid', content: <<~YML)
         keep: {}
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, names, paths, document, has_arguments, has_receiver, has_block, type, privacy, all, any, unless or an array\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, names, paths, document, has_arguments, has_receiver, has_block, type, privacy, all, any, unless or an array\e[0m
       MESSAGE
     end
 
@@ -356,8 +354,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         keep:
           - has_prefix: true
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
       MESSAGE
     end
 
@@ -366,8 +364,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         keep:
           - has_prefix: null
       YML
-      expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
+      expect { config.keep }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:2:16 has_prefix must be a string\e[0m
       MESSAGE
     end
 
@@ -380,8 +378,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             calls:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:18 has_value value must be any scalar value or a hash with any of names, match, has_prefix, has_suffix, has_arguments, at, has_value, has_receiver, type, unless\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:4:18 has_value value must be any scalar value or a hash with any of names, match, has_prefix, has_suffix, has_arguments, at, has_value, has_receiver, type, unless\e[0m
       MESSAGE
     end
 
@@ -393,8 +391,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             calls:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:15 has_block must be true or false\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:3:15 has_block must be true or false\e[0m
       MESSAGE
     end
 
@@ -409,8 +407,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             calls:
               argument: 1
       YML
-      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:6:10 type must be a string or an array\e[0m
+      expect { config.dynamic }.to print_error_and_exit(<<~MESSAGE)
+        \e[31mConfig SchemaError: lib/config/invalid.yml:6:10 type must be a string or an array\e[0m
       MESSAGE
     end
 
@@ -421,8 +419,8 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
             paths: '*.txt'
       YML
       expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .to throw_symbol(:leftovers_exit).and(output(<<~MESSAGE).to_stderr)
-          \e[2K\e[31mTried using ::MyPrecompiler, but it wasn't available.
+        .to print_error_and_exit(<<~MESSAGE)
+          \e[31mTried using ::MyPrecompiler, but it wasn't available.
           add its path to `requires:` in your .leftovers.yml
           \e[0m
         MESSAGE
@@ -434,8 +432,10 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
           - format: { custom: "::Leftovers::Precompilers::Haml" }
             paths: '*.my.haml'
       YML
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .not_to throw_symbol(:leftovers_exit)
+      expect(::Leftovers::Precompilers::Precompiler).to receive(:new)
+        .with(::Leftovers::Precompilers::Haml, be_a(::Leftovers::Matchers::Path))
+
+      ::Leftovers::Precompilers.build(config.precompile)
     end
 
     it 'can define custom precompilers with no leading ::' do
@@ -444,8 +444,10 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
           - format: { custom: "Leftovers::Precompilers::Haml" }
             paths: '*.my.haml'
       YML
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .not_to throw_symbol(:leftovers_exit)
+      expect(::Leftovers::Precompilers::Precompiler).to receive(:new)
+        .with(::Leftovers::Precompilers::Haml, be_a(::Leftovers::Matchers::Path))
+
+      ::Leftovers::Precompilers.build(config.precompile)
     end
 
     it 'can print a deprecation warning with haml_paths and continue' do
@@ -453,9 +455,9 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         haml_paths: '*.my.haml'
       YML
 
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .to output(<<~MESSAGE).to_stderr
-          \e[2K\e[33m`haml_paths:` is deprecated\e[0m
+      expect { config.precompile }
+        .to print_warning(<<~MESSAGE)
+          \e[33m`haml_paths:` is deprecated\e[0m
           Replace with:
           \e[32mprecompile:
           - paths: "*.my.haml"
@@ -473,21 +475,20 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         slim_paths: '*.my.slim'
       YML
 
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .to output(<<~MESSAGE).to_stderr
-          \e[2K\e[33m`haml_paths:` is deprecated\e[0m
-          Replace with:
-          \e[32mprecompile:
-          - paths: "*.my.haml"
-            format: haml
-          \e[0m
-          \e[2K\e[33m`slim_paths:` is deprecated\e[0m
-          Replace with:
-          \e[32mprecompile:
-          - paths: "*.my.slim"
-            format: slim
-          \e[0m
-        MESSAGE
+      expect { config.precompile }.to print_warning(<<~MESSAGE)
+        \e[33m`haml_paths:` is deprecated\e[0m
+        Replace with:
+        \e[32mprecompile:
+        - paths: "*.my.haml"
+          format: haml
+        \e[0m
+        \e[33m`slim_paths:` is deprecated\e[0m
+        Replace with:
+        \e[32mprecompile:
+        - paths: "*.my.slim"
+          format: slim
+        \e[0m
+      MESSAGE
 
       expect(config.precompile)
         .to eq([{ paths: '*.my.haml', format: :haml }, { paths: '*.my.slim', format: :slim }])
@@ -498,15 +499,14 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         yaml_paths: '*.my.yaml'
       YML
 
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .to output(<<~MESSAGE).to_stderr
-          \e[2K\e[33m`yaml_paths:` is deprecated\e[0m
-          Replace with:
-          \e[32mprecompile:
-          - paths: "*.my.yaml"
-            format: yaml
-          \e[0m
-        MESSAGE
+      expect { config.precompile }.to print_warning(<<~MESSAGE)
+        \e[33m`yaml_paths:` is deprecated\e[0m
+        Replace with:
+        \e[32mprecompile:
+        - paths: "*.my.yaml"
+          format: yaml
+        \e[0m
+      MESSAGE
 
       expect(config.precompile)
         .to eq([{ paths: '*.my.yaml', format: :yaml }])
@@ -517,15 +517,14 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         json_paths: '*.my.json'
       YML
 
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .to output(<<~MESSAGE).to_stderr
-          \e[2K\e[33m`json_paths:` is deprecated\e[0m
-          Replace with:
-          \e[32mprecompile:
-          - paths: "*.my.json"
-            format: json
-          \e[0m
-        MESSAGE
+      expect { config.precompile }.to print_warning(<<~MESSAGE)
+        \e[33m`json_paths:` is deprecated\e[0m
+        Replace with:
+        \e[32mprecompile:
+        - paths: "*.my.json"
+          format: json
+        \e[0m
+      MESSAGE
 
       expect(config.precompile)
         .to eq([{ paths: '*.my.json', format: :json }])
@@ -536,15 +535,14 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         erb_paths: '*.my.erb'
       YML
 
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .to output(<<~MESSAGE).to_stderr
-          \e[2K\e[33m`erb_paths:` is deprecated\e[0m
-          Replace with:
-          \e[32mprecompile:
-          - paths: "*.my.erb"
-            format: erb
-          \e[0m
-        MESSAGE
+      expect { config.precompile }.to print_warning(<<~MESSAGE)
+        \e[33m`erb_paths:` is deprecated\e[0m
+        Replace with:
+        \e[32mprecompile:
+        - paths: "*.my.erb"
+          format: erb
+        \e[0m
+      MESSAGE
 
       expect(config.precompile)
         .to eq([{ paths: '*.my.erb', format: :erb }])
@@ -555,15 +553,14 @@ require 'did_you_mean' # force 2.5 and 2.6 to have suggestions.
         slim_paths: '*.my.slim'
       YML
 
-      expect { ::Leftovers::Precompilers.build(config.precompile) }
-        .to output(<<~MESSAGE).to_stderr
-          \e[2K\e[33m`slim_paths:` is deprecated\e[0m
-          Replace with:
-          \e[32mprecompile:
-          - paths: "*.my.slim"
-            format: slim
-          \e[0m
-        MESSAGE
+      expect { config.precompile }.to print_warning(<<~MESSAGE)
+        \e[33m`slim_paths:` is deprecated\e[0m
+        Replace with:
+        \e[32mprecompile:
+        - paths: "*.my.slim"
+          format: slim
+        \e[0m
+      MESSAGE
 
       expect(config.precompile)
         .to eq([{ paths: '*.my.slim', format: :slim }])

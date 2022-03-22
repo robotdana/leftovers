@@ -25,7 +25,7 @@ module Leftovers
     end
 
     def to_h
-      { test?: @file.test?, calls: squash!(calls), definitions: squash!(definitions) }
+      { test: @file.test?, calls: squash!(calls), definitions: squash!(definitions) }
     end
 
     def squash!(list)

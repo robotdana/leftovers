@@ -9,10 +9,6 @@ require 'spec_helper'
     collector
   end
 
-  before { ::Leftovers.reset }
-
-  after { ::Leftovers.reset }
-
   let(:path) { 'foo.rb' }
   let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }
@@ -383,11 +379,9 @@ require 'spec_helper'
     end
 
     it 'has an error message' do
-      expect do
-        collector
-      end.to output(
-        a_string_including("\e[2K\e[31mfoo.rb:3:0 SyntaxError: unexpected token $end\e[0m\n")
-      ).to_stderr
+      expect { collector }.to print_warning(<<~MESSAGE)
+        \e[31mfoo.rb:3:0 SyntaxError: unexpected token $end\e[0m
+      MESSAGE
     end
   end
 end

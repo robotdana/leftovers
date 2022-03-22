@@ -8,6 +8,7 @@ require 'simplecov' if ::ENV['COVERAGE']
 
 require_relative '../lib/leftovers'
 require 'timecop'
+require 'tty_string'
 
 ::RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -24,6 +25,7 @@ require 'timecop'
   end
   require_relative './support/temp_file_helper'
   require_relative './support/cli_helper'
+  require_relative './support/expects_output_helper'
 
   config.after do
     Timecop.return
@@ -130,4 +132,82 @@ end
   end
 
   diffable
+end
+
+::RSpec::Matchers.define :print_warning do |expected|
+  match(notify_expectation_failures: true) do |actual|
+    expects_output!
+
+    actual.call
+    @actual = TTYString.parse(Leftovers.stderr.string, clear_style: false)
+
+    Leftovers.stdout.string.empty? &&
+      values_match?(expected, @actual)
+  end
+
+  diffable
+  supports_block_expectations
+end
+
+::RSpec::Matchers.define :print_error_and_exit do |expected|
+  match(notify_expectation_failures: true) do |actual|
+    expects_output!
+
+    return_value = catch(:leftovers_exit) { actual.call }
+    @actual = TTYString.parse(Leftovers.stderr.string, clear_style: false)
+
+    return_value == 1 &&
+      Leftovers.stdout.string.empty? &&
+      values_match?(expected, @actual)
+  end
+
+  diffable
+  supports_block_expectations
+end
+
+::RSpec::Matchers.define :print_output do |expected|
+  match(notify_expectation_failures: true) do |actual|
+    expects_output!
+
+    actual.call
+    @actual = TTYString.parse(Leftovers.stdout.string, clear_style: false)
+
+    Leftovers.stderr.string.empty? &&
+      values_match?(expected, @actual)
+  end
+
+  diffable
+  supports_block_expectations
+end
+
+::RSpec::Matchers.define :print_output_and_exit_with_success do |expected|
+  match(notify_expectation_failures: true) do |actual|
+    expects_output!
+
+    return_value = catch(:leftovers_exit) { actual.call }
+    @actual = TTYString.parse(Leftovers.stdout.string, clear_style: false)
+
+    return_value == 0 &&
+      Leftovers.stderr.string.empty? &&
+      values_match?(expected, @actual)
+  end
+
+  diffable
+  supports_block_expectations
+end
+
+::RSpec::Matchers.define :print_output_and_exit_with_failure do |expected|
+  match(notify_expectation_failures: true) do |actual|
+    expects_output!
+
+    return_value = catch(:leftovers_exit) { actual.call }
+    @actual = TTYString.parse(Leftovers.stdout.string, clear_style: false)
+
+    return_value == 1 &&
+      Leftovers.stderr.string.empty? &&
+      values_match?(expected, @actual)
+  end
+
+  diffable
+  supports_block_expectations
 end

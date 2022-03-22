@@ -5,7 +5,7 @@ require 'set'
 module Leftovers
   module MatcherBuilders
     module NodeType
-      def self.build(types_pattern) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+      def self.build(types_pattern) # rubocop:disable Metrics
         Or.each_or_self(types_pattern) do |type|
           case type
           when :Symbol then Matchers::NodeType.new(:sym)

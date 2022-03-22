@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 ::RSpec.describe ::Leftovers::MergedConfig do
-  before { ::Leftovers.reset }
-
-  after { ::Leftovers.reset }
-
   describe '<<' do
     it 'handles clearing memoization' do
       subject << :ruby
@@ -48,11 +44,9 @@
         require: 'ruby' # is a reserved gem
       YML
 
-      message = <<~MSG
+      expect { subject << config }.to print_warning(<<~MSG)
         cannot require 'ruby' from .invalid.yml
       MSG
-
-      expect { subject << config }.to output(a_string_including(message)).to_stderr
     end
 
     it "or's correctly" do

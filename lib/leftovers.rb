@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'parser'
-require 'parser/current' # to get the error message early and once.
-
 module Leftovers
   require_relative 'leftovers/autoloader'
   include Autoloader
@@ -19,11 +16,11 @@ module Leftovers
     attr_writer :stdout, :stderr
 
     def stdout
-      @stdout ||= $stdout
+      @stdout ||= ::StringIO.new
     end
 
     def stderr
-      @stderr ||= $stderr
+      @stderr ||= ::StringIO.new
     end
 
     def config
@@ -44,8 +41,9 @@ module Leftovers
       stderr.puts("\e[2K#{message}")
     end
 
-    def error(message)
+    def error(message, did_you_mean = nil)
       warn("\e[31m#{message}\e[0m")
+      warn("\n#{did_you_mean}") if did_you_mean
       exit 1
     end
 
@@ -54,11 +52,7 @@ module Leftovers
     end
 
     def print(message)
-      stdout.print(message)
-    end
-
-    def newline
-      stdout.puts('')
+      stdout.print("\e[2K#{message}\r")
     end
 
     def pwd

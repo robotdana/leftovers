@@ -9,12 +9,6 @@ require 'spec_helper'
     collector
   end
 
-  before do
-    ::Leftovers.reset
-  end
-
-  after { ::Leftovers.reset }
-
   let(:path) { 'foo.yaml' }
   let(:file) do
     ::Leftovers::File.new(::Leftovers.pwd + path)
@@ -58,7 +52,7 @@ require 'spec_helper'
     end
 
     it 'outputs an error and collects nothing' do
-      expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
+      expect { subject }.to print_warning(<<~STDERR)
         Psych::SyntaxError: foo.yaml:1:11 found unexpected end of stream while scanning a quoted scalar
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)

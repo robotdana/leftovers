@@ -24,13 +24,11 @@ end
   config.before(:each, :with_temp_dir) do
     @__temp_dir = ::Pathname.new(::Dir.mktmpdir + '/')
     ::Leftovers::Config.reset # MatcherBuilders::Path calls Leftovers.pwd, make it forget
-    ::Leftovers.reset
     allow(::Leftovers).to receive_messages(pwd: @__temp_dir)
   end
 
   config.after(:each, :with_temp_dir) do
     @__temp_dir.rmtree
     ::Leftovers::Config.reset # MatcherBuilders::Path calls Leftovers.pwd, make it forget
-    ::Leftovers.reset
   end
 end

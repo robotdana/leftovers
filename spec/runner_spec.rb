@@ -5,6 +5,8 @@
     subject { described_class.new.tap(&:run).collection }
 
     it "doesn't care about using one of multiple simultaneous defined methods" do
+      expects_output!
+
       temp_file '.leftovers.yml', <<~YML
         dynamic:
           name: attribute
@@ -32,6 +34,8 @@
     end
 
     it "doesn't think method calls in the same file are leftovers" do
+      expects_output!
+
       temp_file 'foo.rb', <<~RUBY
         class Actions
           def initialize(params)
@@ -58,6 +62,8 @@
 
     context 'with broken rails migration' do
       it do
+        expects_output!
+
         temp_file(
           'db/migrate/20220502053745_create_active_storage_tables.active_storage.rb',
           <<~RUBY

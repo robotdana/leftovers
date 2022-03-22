@@ -4,15 +4,12 @@ require 'optparse'
 
 module Leftovers
   class CLI
-    def initialize(argv: [], stdout: $stdout, stderr: $stderr)
+    def initialize(argv: [])
       @argv = argv
-      @stdout = stdout
-      @stderr = stderr
     end
 
     def run
       catch(:leftovers_exit) do
-        ::Leftovers.reset
         parse_options
 
         runner.run
@@ -21,7 +18,7 @@ module Leftovers
 
     private
 
-    attr_reader :argv, :stdout, :stderr
+    attr_reader :argv
 
     def option_parser
       @option_parser ||= ::OptionParser.new do |o|
@@ -40,18 +37,11 @@ module Leftovers
     def parse_options
       option_parser.parse!(argv)
     rescue ::OptionParser::ParseError => e
-      stderr.puts("\e[31mCLI Error: #{e.message}\e[0m")
-      stderr.puts ''
-      stderr.puts(option_parser.help)
-      exit 1
+      ::Leftovers.error("CLI Error: #{e.message}", option_parser.help)
     end
 
     def runner
-      @runner ||= Runner.new(stdout: @stdout, stderr: @stderr)
-    end
-
-    def parallel_option(parallel)
-      runner.parallel = parallel
+      @runner ||= Runner.new
     end
 
     def exit(status = 0)
@@ -59,27 +49,27 @@ module Leftovers
     end
 
     def dry_run
-      FileList.new.each { |file| stdout.puts file.relative_path }
+      FileList.new.each { |file| ::Leftovers.puts file.relative_path }
 
       exit
     end
 
     def view_compiled
       FileList.new(argv_rules: argv).each do |file|
-        stdout.puts "\e[0;2m#{file.relative_path}\e[0m\n#{file.ruby}"
+        ::Leftovers.puts "\e[0;2m#{file.relative_path}\e[0m\n#{file.ruby}"
       end
 
       exit
     end
 
     def print_version
-      stdout.puts(VERSION)
+      ::Leftovers.puts(VERSION)
 
       exit
     end
 
     def print_help
-      stdout.puts(option_parser.help)
+      ::Leftovers.puts(option_parser.help)
 
       exit
     end

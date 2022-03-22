@@ -2,6 +2,9 @@
 
 require 'parallel'
 
+require 'parser'
+require 'parser/current' # to get the error message early and once before we parallel things
+
 module Leftovers
   class Collector
     attr_writer :progress, :parallel
@@ -18,8 +21,7 @@ module Leftovers
 
     def collect
       collect_file_list(FileList.new)
-      print_progress
-      ::Leftovers.newline
+      ::Leftovers.puts progress_message
     end
 
     def collect_file_list(list)
@@ -39,25 +41,17 @@ module Leftovers
       file_collector.to_h
     end
 
-    def print_progress
-      ::Leftovers.print(
-        "\e[2Kchecked #{@count} files, " \
-          "collected #{@count_calls} calls, #{@count_definitions} definitions\r"
-      )
+    def progress_message
+      "checked #{@count} files, collected #{@count_calls} calls, #{@count_definitions} definitions"
     end
 
     def finish_file(_item, _index, result)
       @count += 1
       @count_calls += result[:calls].length
       @count_definitions += result[:definitions].length
-      print_progress if @progress
-      if result[:test?]
-        @collection.test_calls.concat(result[:calls])
-      else
-        @collection.calls.concat(result[:calls])
-      end
+      ::Leftovers.print(progress_message) if @progress
 
-      @collection.definitions.concat(result[:definitions])
+      @collection.concat(**result)
     end
   end
 end

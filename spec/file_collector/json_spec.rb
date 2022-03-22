@@ -9,12 +9,6 @@ require 'spec_helper'
     collector
   end
 
-  before do
-    ::Leftovers.reset
-  end
-
-  after { ::Leftovers.reset }
-
   let(:path) { 'foo.json' }
   let(:file) do
     ::Leftovers::File.new(::Leftovers.pwd + path)
@@ -31,9 +25,9 @@ require 'spec_helper'
     end
 
     it 'outputs an error and collects nothing' do
-      expect { subject }.to output(match(
-        /\A\e\[2KJSON::ParserError: foo.json (\d+: )?unexpected token at ''\n\z/
-      )).to_stderr
+      expect { subject }.to print_warning(match(
+        /\AJSON::ParserError: foo.json (\d+: )?unexpected token at ''\n\z/
+      ))
       expect(subject).to have_no_definitions.and(have_no_calls)
     end
   end

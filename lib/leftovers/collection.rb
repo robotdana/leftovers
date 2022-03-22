@@ -34,6 +34,16 @@ module Leftovers
       leftovers.empty?
     end
 
+    def concat(calls:, definitions:, test:)
+      if test
+        @test_calls.concat(calls)
+      else
+        @calls.concat(calls)
+      end
+
+      @definitions.concat(definitions)
+    end
+
     private
 
     def split_leftovers

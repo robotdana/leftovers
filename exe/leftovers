@@ -3,4 +3,6 @@
 
 require_relative '../lib/leftovers'
 
+Leftovers.stderr = $stderr
+Leftovers.stdout = $stdout
 exit ::Leftovers::CLI.new(argv: ::ARGV).run

@@ -13,11 +13,8 @@ require 'spec_helper'
     allow(::Leftovers).to receive(:try_require_cache).and_call_original
     allow(::Leftovers).to receive(:try_require_cache).with('bundler').and_return(false)
 
-    ::Leftovers.reset
     ::Leftovers.config << ::Leftovers::Config.new('foo.yml', content: config)
   end
-
-  after { ::Leftovers.reset }
 
   let(:config) { '' }
   let(:path) { 'foo.rb' }
@@ -373,13 +370,10 @@ require 'spec_helper'
         end
 
         it do
-          message = <<~MESSAGE
-            Tried using the ::String##{method} method, but the activesupport gem was not available and/or not required
+          expect { subject }.to print_error_and_exit(<<~MESSAGE)
+            \e[31mTried using the ::String##{method} method, but the activesupport gem was not available and/or not required
             `gem install activesupport`, and/or add `requires: ['active_support', 'active_support/core_ext/string']` to your .leftovers.yml\n\e[0m
           MESSAGE
-
-          expect { catch(:leftovers_exit) { subject } }
-            .to output(a_string_ending_with(message)).to_stderr
         end
       end
     end

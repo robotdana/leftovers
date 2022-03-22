@@ -5,8 +5,6 @@ require 'fast_ignore'
 ::RSpec.describe ::Leftovers::Config do
   config_methods = described_class.new(:rails).public_methods - ::Class.new.new.public_methods
 
-  before { ::Leftovers.reset }
-
   describe 'config in documentation' do
     files = ::FastIgnore.new(include_rules: ['*.md', '!CHANGELOG.md', '!vendor'])
     files.each do |file|

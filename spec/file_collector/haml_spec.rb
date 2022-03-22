@@ -9,12 +9,6 @@ require 'spec_helper'
     collector
   end
 
-  before do
-    ::Leftovers.reset
-  end
-
-  after { ::Leftovers.reset }
-
   let(:path) { 'foo.haml' }
   let(:file) do
     ::Leftovers::File.new(::Leftovers.pwd + path)
@@ -42,8 +36,8 @@ require 'spec_helper'
     end
 
     it 'outputs an error and collects nothing' do
-      expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
-        \e[2KHaml::SyntaxError: foo.haml:1 Illegal nesting: content can't be both given on the same line as %a and nested within it.
+      expect { subject }.to print_warning(<<~STDERR)
+        Haml::SyntaxError: foo.haml:1 Illegal nesting: content can't be both given on the same line as %a and nested within it.
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
     end

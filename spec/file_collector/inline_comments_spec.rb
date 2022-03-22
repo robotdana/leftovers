@@ -9,10 +9,6 @@ require 'spec_helper'
     collector
   end
 
-  before { ::Leftovers.reset }
-
-  after { ::Leftovers.reset }
-
   let(:path) { 'foo.rb' }
   let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }
   let(:ruby) { '' }

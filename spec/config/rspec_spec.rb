@@ -10,11 +10,8 @@ require 'spec_helper'
   end
 
   before do
-    ::Leftovers.reset
     ::Leftovers.config << :rspec
   end
-
-  after { ::Leftovers.reset }
 
   let(:path) { 'spec/file_spec.rb' }
   let(:file) { ::Leftovers::File.new(::Leftovers.pwd + path) }

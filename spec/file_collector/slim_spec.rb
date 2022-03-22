@@ -9,12 +9,6 @@ require 'spec_helper'
     collector
   end
 
-  before do
-    ::Leftovers.reset
-  end
-
-  after { ::Leftovers.reset }
-
   let(:path) { 'foo.slim' }
   let(:file) do
     ::Leftovers::File.new(::Leftovers.pwd + path)
@@ -43,8 +37,8 @@ require 'spec_helper'
     end
 
     it 'outputs an error and collects nothing' do
-      expect { subject }.to output(a_string_including(<<~STDERR)).to_stderr
-        \e[2KSlim::Parser::SyntaxError: foo.slim:2:5 Expected tag
+      expect { subject }.to print_warning(<<~STDERR)
+        Slim::Parser::SyntaxError: foo.slim:2:5 Expected tag
       STDERR
       expect(subject).to have_no_definitions.and(have_no_calls)
     end
