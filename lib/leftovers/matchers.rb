@@ -10,6 +10,7 @@ module Leftovers
       :NodeHasAnyPositionalArgumentWithValue,
       "#{__dir__}/matchers/node_has_any_positional_argument_with_value"
     )
+    autoload(:NodeHasAnyReceiver, "#{__dir__}/matchers/node_has_any_receiver")
     autoload(
       :NodeHasPositionalArgumentWithValue,
       "#{__dir__}/matchers/node_has_positional_argument_with_value"

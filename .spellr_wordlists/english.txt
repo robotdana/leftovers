@@ -12,6 +12,7 @@ activestorage
 activesupport
 affixxed
 argumentless
+ast
 attr
 autoloaded
 barx
@@ -56,6 +57,7 @@ noninfringement
 numericality
 ofs
 okcomputer
+orm
 overwritable
 precompilable
 precompile

@@ -13,6 +13,7 @@ module Leftovers
     autoload(:DynamicSchema, "#{__dir__}/config_loader/dynamic_schema")
     autoload(:HasArgumentSchema, "#{__dir__}/config_loader/has_argument_schema")
     autoload(:HasValueSchema, "#{__dir__}/config_loader/has_value_schema")
+    autoload(:HasReceiverSchema, "#{__dir__}/config_loader/has_receiver_schema")
     autoload(:InheritSchemaAttributes, "#{__dir__}/config_loader/inherit_schema_attributes")
     autoload(:KeepTestOnlySchema, "#{__dir__}/config_loader/keep_test_only_schema")
     autoload(:KeywordArgumentSchema, "#{__dir__}/config_loader/keyword_argument_schema")

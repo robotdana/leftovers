@@ -504,7 +504,7 @@ and when used in:
 
 It can have any of these properties:
 - [`at:`](#at)
-- [`has_value:`](#has_value_has_receiver)
+- [`has_value:`](#has_value)
 
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level.
 
@@ -522,7 +522,7 @@ The method call/constant variable/assignment will be considered matching if it h
 
 It can have any of these properties:
 - [`at:`](#at)
-- [`has_value:`](#has_value_has_receiver)
+- [`has_value:`](#has_value)
 
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
 
@@ -603,9 +603,9 @@ dynamic:
 will match the first argument of anything named my_method or with the receiver MyReceiver, that have both the keyword arguments part_a and part_b
 
 
-## `has_value:`, `has_receiver:`
+## `has_value:`
 
-filter [`arguments:`](#arguments), [`has_arguments:`](#has_arguments), and [`keywords:`](#keywords), by the argument/assigned/receiver value
+filter [`arguments:`](#arguments), [`has_arguments:`](#has_arguments), and [`keywords:`](#keywords), by the argument/assigned value
 
 Each entry can be one of
 - `true`, `false`, `nil`, or an Integer. matches the literal value
@@ -616,11 +616,33 @@ Each entry can be one of
   - [`matches:`](#matches)
 - or have at least one of the following properties to match within an array or hash:
   - [`at`](#at)
-  - [`has_value`](#has_value_has_receiver)
+  - [`has_value`](#has_value)
 - or have the following property to match the value type
   - [`type`](#type)
 - or have the following property to match the receiver
-  - [`has_receiver`](#has_value_has_receiver)
+  - [`has_receiver`](#has_receiver)
+
+## `has_receiver:`
+
+filter [`dynamic:`](#dynamic), and [`keep:`](#keep), by the receiver presence or value
+
+Each entry can be one of
+- `true`, `false`, matches the presence of any receiver or not
+- an Integer. matches the literal value
+- a String. matches the literal string or symbol value
+- or have at least one of the following properties to match the name:
+  - [`has_prefix:`](#has_prefix)
+  - [`has_suffix:`](#has_suffix)
+  - [`matches:`](#matches)
+- or have at least one of the following properties to match the literal value or match within an array or hash:
+  - [`at`](#at)
+  - [`has_value`](#has_value)
+- or have the following property to match the value type
+  - [`type`](#type)
+- or have the following property to match the receiver of the receiver
+  - [`has_receiver`](#has_receiver)
+- or have the following property to match a literal true, false, or nil value:
+  - `literal: true`, or `literal: false`, or `literal: nil`
 
 ## `privacy:`
 

@@ -2755,6 +2755,80 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
+  context 'with has_receiver: true' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          name: new
+          has_receiver: true
+          calls:
+            argument: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        Caller.new(:yes)
+        NotCaller.new(:yes2)
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:Caller, :new, :allocate, :initialize, :yes, :yes2, :NotCaller))
+    end
+  end
+
+  context 'with has_receiver: literal: true' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          name: new
+          has_receiver:
+            literal: true
+          calls:
+            argument: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        Caller.new(:no)
+        true.new(:yes)
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:Caller, :new, :allocate, :initialize, :yes))
+    end
+  end
+
+  context 'with has_receiver: false' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          name: new
+          has_receiver: false
+          calls:
+            argument: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        new(:yes)
+        Caller.new(:no)
+        nil.new(:no)
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_no_definitions
+        .and(have_calls(:Caller, :new, :allocate, :initialize, :yes))
+    end
+  end
+
   context 'with has_receiver list' do
     let(:config) do
       <<~YML

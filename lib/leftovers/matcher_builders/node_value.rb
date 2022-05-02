@@ -53,6 +53,7 @@ module Leftovers
           names: nil, match: nil, has_prefix: nil, has_suffix: nil,
           type: nil,
           has_receiver: nil,
+          literal: nil,
           unless_arg: nil
         )
           ::Leftovers::MatcherBuilders::And.build([
@@ -60,6 +61,7 @@ module Leftovers
             build_node_name_matcher(names, match, has_prefix, has_suffix),
             ::Leftovers::MatcherBuilders::NodeType.build(type),
             ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),
+            ::Leftovers::MatcherBuilders::NodeValue.build(literal),
             build_unless(unless_arg)
           ])
         end

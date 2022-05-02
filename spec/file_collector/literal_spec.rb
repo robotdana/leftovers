@@ -248,6 +248,12 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_definitions(:Whatever).and(have_calls(:SuperClass)) }
   end
 
+  context 'with class definitions and constant calls to the inheritance class with a hash' do
+    let(:ruby) { 'class Whatever < SuperClass[5.2]; end' }
+
+    it { is_expected.to have_definitions(:Whatever).and(have_calls(:SuperClass, :[])) }
+  end
+
   context 'with module definitions' do
     let(:ruby) { 'module Whatever; end' }
 

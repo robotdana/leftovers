@@ -88,6 +88,8 @@ dynamic:
 
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html
   - name: has_one
+    unless:
+      has_receiver: true
     defines:
       argument: 0
       transforms:
@@ -100,6 +102,8 @@ dynamic:
 
   - name: belongs_to
     has_argument: polymorphic
+    unless:
+      has_receiver: true
     defines:
       argument: 0
       transforms:
@@ -111,7 +115,9 @@ dynamic:
 
   - name: belongs_to
     unless:
-      has_argument: polymorphic
+      any:
+        - has_argument: polymorphic
+        - has_receiver: true
     defines:
       argument: 0
       transforms:
@@ -125,6 +131,8 @@ dynamic:
         - add_suffix: _previously_changed?
 
   - name: [has_and_belongs_to_many, has_many]
+    unless:
+      has_receiver: true
     defines:
       argument: 0
       transforms:
@@ -139,7 +147,9 @@ dynamic:
     - has_one
     - belongs_to
     unless:
-      has_argument: [class_name, polymorphic]
+      any:
+        - has_argument: [class_name, polymorphic]
+        - has_receiver: true
     calls:
       argument: 0
       camelize: true
@@ -149,7 +159,9 @@ dynamic:
     - has_many
     - has_and_belongs_to_many
     unless:
-      has_argument: [class_name, polymorphic]
+      any:
+        - has_argument: [class_name, polymorphic]
+        - has_receiver: true
     calls:
       - argument: 0
         camelize: true
@@ -174,9 +186,11 @@ dynamic:
 
   - name: belongs_to
     unless:
-      has_argument:
-        at: optional
-        has_value: true
+      any:
+        - has_argument:
+            at: optional
+            has_value: true
+        - has_receiver: true
     calls:
       argument: 0
 
@@ -185,6 +199,8 @@ dynamic:
      - has_many
      - belongs_to
      - has_and_belongs_to_many
+    unless:
+      has_receiver: true
     calls:
       - argument: class_name
         split: '::'
@@ -193,6 +209,8 @@ dynamic:
         add_suffix: '='
 
   - name: belongs_to
+    unless:
+      has_receiver: true
     calls:
       argument: ensuring_owner_was
 
@@ -202,6 +220,8 @@ dynamic:
      - has_many
      - belongs_to
      - has_and_belongs_to_many
+    unless:
+      has_receiver: true
     has_argument:
       at:
         - dependent
@@ -219,6 +239,8 @@ dynamic:
       argument: 0
 
   - name: [has_one, has_many, belongs_to, has_and_belongs_to_many]
+    unless:
+      has_receiver: true
     calls:
       argument: [before_add, after_add, before_remove, after_remove]
       nested: '*'
