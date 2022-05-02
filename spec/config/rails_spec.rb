@@ -89,6 +89,17 @@ RSpec.describe 'rails gem' do
     end
   end
 
+  context 'with belongs_to :whatever' do
+    let(:ruby) { 'belongs_to :whatever' }
+
+    it do
+      expect(subject).to have_definitions(
+        :whatever, :whatever=, :whatever_changed?, :whatever_previously_changed?, :build_whatever,
+        :create_whatever, :create_whatever!, :reload_whatever
+      ).and(have_calls(:belongs_to, :whatever, :Whatever))
+    end
+  end
+
   context 'with scoped constant calls in class_name symbol keys' do
     let(:ruby) { 'has_many :whatevers, class_name: "Which::Ever"' }
 

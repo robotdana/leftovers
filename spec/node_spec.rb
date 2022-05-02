@@ -28,6 +28,7 @@ RSpec.describe Leftovers::AST::Node do
   let(:lambda_node) { Leftovers::Parser.parse_with_comments('lambda {}').first }
   let(:do_end_lambda_node) { Leftovers::Parser.parse_with_comments('lambda do; end').first }
   let(:stabby_lambda_node) { Leftovers::Parser.parse_with_comments('-> {}').first }
+  let(:leftovers_definition_node) { Leftovers::DefinitionNode.new(sym_node, name: :foo) }
 
   describe '#to_s' do
     it 'provides a string representation' do
@@ -52,6 +53,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(integer_node.to_s).to eq '1'
       expect(float_node.to_s).to eq '1.0'
       expect(proc_node.to_s).to eq ''
+      expect(leftovers_definition_node.to_s).to eq 'foo'
     end
   end
 
@@ -77,6 +79,33 @@ RSpec.describe Leftovers::AST::Node do
       expect(integer_node.to_sym).to eq :'1'
       expect(float_node.to_sym).to eq :'1.0'
       expect(proc_node.to_sym).to eq :''
+      expect(leftovers_definition_node.to_sym).to eq :foo
+    end
+  end
+
+  describe '#sym?' do
+    it 'provides whether it is a sym' do
+      expect(send_node).not_to be_sym
+      expect(str_node).not_to be_sym
+      expect(sym_node).to be_sym
+      expect(csend_node).not_to be_sym
+      expect(true_node).not_to be_sym
+      expect(false_node).not_to be_sym
+      expect(nil_node).not_to be_sym
+      expect(constant_node).not_to be_sym
+      expect(def_node).not_to be_sym
+      expect(ivar_node).not_to be_sym
+      expect(ivasgn_node).not_to be_sym
+      expect(cvar_node).not_to be_sym
+      expect(cvasgn_node).not_to be_sym
+      expect(gvar_node).not_to be_sym
+      expect(gvasgn_node).not_to be_sym
+      expect(class_node).not_to be_sym
+      expect(module_node).not_to be_sym
+      expect(integer_node).not_to be_sym
+      expect(float_node).not_to be_sym
+      expect(proc_node).not_to be_sym
+      expect(leftovers_definition_node).not_to be_sym
     end
   end
 
@@ -101,6 +130,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(module_node.name).to eq :Foo
       expect(integer_node.name).to be_nil
       expect(float_node.name).to be_nil
+      expect(leftovers_definition_node.name).to eq :foo
     end
   end
 
@@ -125,6 +155,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(module_node.to_scalar_value).to be_nil
       expect(integer_node.to_scalar_value).to eq 1
       expect(float_node.to_scalar_value).to eq 1.0
+      expect(leftovers_definition_node.to_scalar_value).to be_nil
     end
   end
 
@@ -149,6 +180,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(module_node).not_to be_scalar
       expect(integer_node).to be_scalar
       expect(float_node).to be_scalar
+      expect(leftovers_definition_node).not_to be_scalar
     end
   end
 
@@ -159,10 +191,11 @@ RSpec.describe Leftovers::AST::Node do
       expect(do_end_lambda_node).to be_proc
       expect(stabby_lambda_node).to be_proc
       expect(send_node).not_to be_proc
+      expect(leftovers_definition_node).not_to be_proc
     end
   end
 
-  describe 'receiver' do
+  describe '#receiver' do
     it 'responds to receiver', :aggregate_failures do
       expect(true_node.receiver).to be_nil
       expect(send_node.receiver).to be_nil
@@ -170,6 +203,7 @@ RSpec.describe Leftovers::AST::Node do
       expect(const_then_const_node.receiver.name).to eq :Foo
       expect(send_then_send_node.receiver.name).to eq :foo
       expect(send_then_csend_node.receiver.name).to eq :foo
+      expect(leftovers_definition_node.receiver).to be_nil
     end
   end
 end
