@@ -48,20 +48,20 @@ RSpec.describe 'rails gem' do
   end
 
   context 'with method calls passed to before_save if:' do
-    let(:ruby) { 'before_save :do_a_thing, if: :thing_to_be_done?' }
+    let(:ruby) { 'before_save :method_one, :method_two, if: :thing_to_be_done?' }
 
     it do
       expect(subject).to have_no_definitions
-        .and have_calls(:before_save, :do_a_thing, :thing_to_be_done?)
+        .and have_calls(:before_save, :method_one, :method_two, :thing_to_be_done?)
     end
   end
 
   context 'with method calls passed in an array to a before_save if:' do
-    let(:ruby) { 'before_save :do_a_thing, if: [:thing_to_be_done?, :another_thing?]' }
+    let(:ruby) { 'before_save :method_one, :method_two, if: [:thing_to_be_done?, :another_thing?]' }
 
     it do
       expect(subject).to have_no_definitions
-        .and have_calls(:before_save, :do_a_thing, :thing_to_be_done?, :another_thing?)
+        .and have_calls(:before_save, :method_one, :method_two, :thing_to_be_done?, :another_thing?)
     end
   end
 

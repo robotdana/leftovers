@@ -35,8 +35,8 @@ module Leftovers
     end
 
     def print_definition(definition)
-      puts "#{aqua definition.location_s} "\
-        "#{definition} "\
+      puts "#{aqua definition.location_s} " \
+        "#{definition} " \
         "#{grey definition.highlighted_source("\e[33m", "\e[0;2m")}"
     end
 
