@@ -37,21 +37,29 @@ dynamic:
       - prepend_around_action
       - prepend_before_action
     calls:
-      - arguments: ['*', if, unless]
+      - arguments: '*'
+      - arguments: [if, unless]
+        nested: '*'
 
   - names:
     - skip_after_action
     - skip_around_action
     - skip_before_action
-    calls: [if, unless]
+    calls:
+      arguments: [if, unless]
+      nested: '*'
 
   - names: protect_from_forgery
-    calls: [if, unless]
+    calls:
+      arguments: [if, unless]
+      nested: '*'
 
 
   # https://edgeapi.rubyonrails.org/classes/ActionController/Logging/ClassMethods.html#method-i-log_at
   - names: log_at
-    calls: [if, unless]
+    calls:
+      arguments: [if, unless]
+      nested: '*'
 
 
   - name: helper

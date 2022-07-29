@@ -146,8 +146,12 @@ dynamic:
 
   # https://api.rubyonrails.org/classes/ActiveSupport/Callbacks/ClassMethods.html#method-i-set_callback
   - name: set_callback
-    calls: [2, if, unless]
+    calls:
+      - arguments: '2+'
+      - arguments: [if, unless]
+        nested: '*'
 
+  # The second argument indicates whether the callback is to be run :before, :after, or :around the event. If omitted, :before is assumed.
   - name: set_callback
     calls: 1
     unless:
@@ -156,7 +160,9 @@ dynamic:
 
   # https://api.rubyonrails.org/classes/ActiveSupport/Callbacks/ClassMethods.html#method-i-skip_callback
   - name: skip_callback
-    calls: [if, unless]
+    calls:
+      arguments: [if, unless]
+      nested: '*'
 
   # https://api.rubyonrails.org/classes/ActiveSupport/Configurable/ClassMethods.html#method-i-config_accessor
   - name: config_accessor
@@ -203,7 +209,11 @@ dynamic:
   # https://api.rubyonrails.org/classes/ActiveSupport/Reloader.html#method-c-to_prepare
   # this is not well documented but uses set_callback internally so we can just guess
   - name: [before_class_unload, after_class_unload, to_prepare]
-    calls: [0, if, unless]
+    calls:
+      - arguments: '*'
+      - arguments: [if, unless]
+        nested:
+          arguments: '*'
 
   # https://api.rubyonrails.org/classes/Module/Concerning.html#method-i-concern
   - name: concern

@@ -23,10 +23,9 @@ dynamic:
       - around_perform
       - after_perform
     calls:
-      - arguments: 0
+      - arguments: '*'
       - arguments: [if, unless]
-        nested:
-          arguments: '*'
+        nested: '*'
 
   # https://api.rubyonrails.org/v7.0.2.2/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-discard_on
   # https://api.rubyonrails.org/v7.0.2.2/classes/ActiveJob/Exceptions/ClassMethods.html#method-i-retry_on

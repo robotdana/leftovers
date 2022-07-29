@@ -26,7 +26,10 @@ dynamic:
       - before_action
       - after_action
       - around_action
-    calls: ['*', if, unless]
+    calls:
+      - arguments: '*'
+      - arguments: [if, unless]
+        nested: '*'
 
   # https://guides.rubyonrails.org/action_mailer_basics.html#intercepting-emails
   - names: interceptors=

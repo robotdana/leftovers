@@ -15,7 +15,10 @@ keep:
 dynamic:
   # https://api.rubyonrails.org/v7.0.2.2/classes/ActionMailbox/Base.html
   - names: [before_processing, after_processing, around_processing]
-    calls: ['*', if, unless]
+    calls:
+      - arguments: '*'
+      - arguments: [if, unless]
+        nested: '*'
 
   # https://guides.rubyonrails.org/action_mailbox_basics.html#examples
   # i'm guessing a lot about how this is supposed to work

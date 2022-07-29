@@ -82,14 +82,16 @@ dynamic:
       - before_validation
       - after_validation
     calls:
-      - arguments: 0
+      - arguments: '*'
       - arguments: [if, unless]
-        nested:
-          arguments: '*'
+        nested: '*'
   - name:
       - validates_associated
     calls:
-      - arguments: ['*', if, unless]
+      - arguments: '*'
+      - arguments: [if, unless]
+        nested: '*'
+
   # https://api.rubyonrails.org/classes/ActiveModel/Validations/ClassMethods.html#method-i-validates
   - name: [validates, validates!]
     calls:
@@ -99,8 +101,6 @@ dynamic:
           - inclusion
           - exclusion
           - scope
-          - if
-          - unless
       - arguments: [if, unless]
         nested: '*'
       - arguments: [inclusion, exclusion]
@@ -122,10 +122,6 @@ dynamic:
         camelize: true
         add_suffix: Validator
         split: '::'
-    eval:
-      - arguments: [if, unless]
-      - arguments: [if, unless]
-        nested: '*'
 
   - name: validates_confirmation_of
     calls:
@@ -170,9 +166,7 @@ dynamic:
       - validates_presence_of
       - validates_size_of
     calls:
-      - arguments: ['*', if, unless]
-    eval:
-      - arguments: [if, unless]
+      - arguments: '*'
       - arguments: [if, unless]
         nested: '*'
 
@@ -183,9 +177,7 @@ dynamic:
       - validate_associated
       - validates_each
     calls:
-      - arguments: ['*', if, unless]
-    eval:
-      - arguments: [if, unless]
+      - arguments: '*'
       - arguments: [if, unless]
         nested: '*'
 
@@ -193,10 +185,7 @@ dynamic:
   - name: validates_with
     calls:
       arguments: [if, unless]
-    eval:
-      - arguments: [if, unless]
-      - arguments: [if, unless]
-        nested: '*'
+      nested: '*'
 
   # https://api.rubyonrails.org/classes/ActiveModel/AttributeMethods/ClassMethods.html#method-i-alias_attribute
   # https://api.rubyonrails.org/classes/ActiveModel/Dirty.html

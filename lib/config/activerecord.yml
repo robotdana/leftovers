@@ -22,7 +22,10 @@ dynamic:
       - validates_numericality_of
       - validates_presence_of
       - validates_uniqueness_of
-    calls: ['*', if, unless]
+    calls:
+      - arguments: '*'
+      - arguments: [if, unless]
+        nested: '*'
 
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Aggregations/ClassMethods.html
   # i had to read the code for this
@@ -369,8 +372,7 @@ dynamic:
     calls:
       - arguments: '*'
       - arguments: [if, unless]
-        nested:
-          arguments: '*'
+        nested: '*'
 
   - name:
       - includes
