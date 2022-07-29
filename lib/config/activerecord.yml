@@ -27,6 +27,19 @@ dynamic:
       - arguments: [if, unless]
         nested: '*'
 
+  - name: validates_uniqueness_of
+    calls:
+      arguments: scope
+      nested: '*'
+
+  - name: [validates, validates!]
+    calls:
+      - arguments: scope
+      - arguments: uniqueness
+        nested:
+          arguments: scope
+          nested: '*'
+
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Aggregations/ClassMethods.html
   # i had to read the code for this
   - name: composed_of
