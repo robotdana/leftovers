@@ -11,6 +11,7 @@ activerecord
 activestorage
 activesupport
 affixxed
+args
 argumentless
 ast
 attr
@@ -59,6 +60,7 @@ ofs
 okcomputer
 orm
 overwritable
+palexvs
 precompilable
 precompile
 precompiled
