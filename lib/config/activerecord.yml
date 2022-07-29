@@ -367,7 +367,7 @@ dynamic:
       - before_save
       - before_update
     calls:
-      - arguments: 0
+      - arguments: '*'
       - arguments: [if, unless]
         nested:
           arguments: '*'
