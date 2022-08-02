@@ -97,7 +97,7 @@ module Leftovers
       when :send, :csend then calls << :"#{node.name}="
       # just collects the call, super will collect the definition
       when :ivasgn, :gvasgn, :cvasgn then calls << node.name
-      when :lvasgn then nil # we don't care about lvasgn
+      when :lvasgn, :casgn then nil # we don't care about lvasgn or casgn
       # :nocov:
       else raise Leftovers::UnexpectedCase, "Unhandled value #{node.type.inspect}"
         # :nocov:
