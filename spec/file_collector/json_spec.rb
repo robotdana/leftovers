@@ -31,7 +31,7 @@ RSpec.describe Leftovers::Precompilers::JSON do
 
     it 'outputs an error and collects nothing' do
       expect { subject }.to output(match(
-        /\A\e\[2KJSON::ParserError: foo.json \d+: unexpected token at ''\n\z/
+        /\A\e\[2KJSON::ParserError: foo.json (\d+: )?unexpected token at ''\n\z/
       )).to_stderr
       expect(subject).to have_no_definitions.and(have_no_calls)
     end
