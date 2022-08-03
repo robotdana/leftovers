@@ -269,12 +269,12 @@ RSpec.describe Leftovers::FileCollector do
     end
   end
 
-  context 'with constant reassignment' do
+  context 'with constant ||= assignment' do
     let(:ruby) { 'Whatever ||= Class.new' }
 
     it do
       expect(subject).to have_definitions(:Whatever)
-        .and(have_calls(:Class, :new, :allocate, :initialize))
+        .and(have_calls(:Whatever, :Class, :new, :allocate, :initialize))
     end
   end
 

@@ -96,8 +96,9 @@ module Leftovers
       # just collects the :call=, super will collect the :call
       when :send, :csend then calls << :"#{node.name}="
       # just collects the call, super will collect the definition
-      when :ivasgn, :gvasgn, :cvasgn then calls << node.name
-      when :lvasgn, :casgn then nil # we don't care about lvasgn or casgn
+      when :ivasgn, :gvasgn, :cvasgn, :casgn then calls << node.name
+      when :lvasgn then nil # we don't check local variable use, rubocop already covers this
+
       # :nocov:
       else raise Leftovers::UnexpectedCase, "Unhandled value #{node.type.inspect}"
         # :nocov:

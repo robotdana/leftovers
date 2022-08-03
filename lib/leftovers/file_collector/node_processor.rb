@@ -110,6 +110,7 @@ module Leftovers
       alias_method :on_module, :on_class
 
       # grab Constant = Class.new or CONSTANT = 'string'.freeze
+      # or Constant ||= Class.new
       def on_casgn(node)
         super
 
