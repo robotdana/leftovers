@@ -1,3 +1,6 @@
+# v0.11.1
+- Fixed an issue with parsing files that have `MyConstant ||= value` patterns #19 (thanks for the pr - @kamoh)
+
 # v0.11.0
 - Fixed an issue with active_record's `before_save` with multiple callbacks #18, #17 - thanks @palexvs for raising the issue and creating a pr
 - Due to this pr, i reviewed everything else that i think calls `ActiveSupport::Callbacks.set_callback`, and ensured they all:
