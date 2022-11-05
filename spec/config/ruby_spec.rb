@@ -94,6 +94,16 @@ RSpec.describe 'ruby and stdlib' do
     it { is_expected.to have_definitions(:foo).and(have_calls(:send, :foo)) }
   end
 
+  context 'with methods defined using &block' do
+    let(:ruby) do
+      <<~RUBY
+        def foo(&block); end
+      RUBY
+    end
+
+    it { is_expected.to have_definitions(:foo).and(have_no_calls) }
+  end
+
   context 'with method calls using send with interpolated lvars' do
     let(:ruby) do
       <<~RUBY

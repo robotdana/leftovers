@@ -250,6 +250,7 @@ Each entry must have at least one of the following properties to restrict which 
 - [`paths:`](#paths)
 - [`has_arguments:`](#has_arguments)
 - [`has_receiver:`](#has_receiver)
+- [`has_block:`](#has_block)
 - [`type:`](#type)
 - [`privacy:`](#privacy)
 - [`unless:`](#unless)
@@ -527,6 +528,12 @@ It can have any of these properties:
 Arrays are not necessary for single values and if the rule contains only `at:` it can be omitted, and the values moved up a level
 
 Positional arguments are zero indexed
+
+## `has_block:`
+
+Use `has_block: true` or `has_block: false` filter by whether they have a block or not
+
+This will match either `this { syntax }` or `this(&syntax)`
 
 ## `keywords:`
 When the keyword argument **keywords** are the thing being called.

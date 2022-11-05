@@ -43,6 +43,14 @@ module Leftovers
         @memo[:privacy] || :public
       end
 
+      def parent
+        @memo[:parent]
+      end
+
+      def parent=(value)
+        @memo[:parent] = value
+      end
+
       def to_scalar_value
         nil
       end
@@ -97,6 +105,10 @@ module Leftovers
 
       def name
         nil
+      end
+
+      def block_given?
+        false
       end
     end
   end

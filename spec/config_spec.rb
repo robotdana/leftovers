@@ -185,7 +185,7 @@ RSpec.describe Leftovers::Config do
 
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:4 unrecognized key tuesday for dynamic value
-        Did you mean: paths, document, has_arguments, has_receiver, type, privacy, unless, all, any, define, set_privacy, set_default_privacy, eval\e[0m
+        Did you mean: paths, document, has_arguments, has_receiver, has_block, type, privacy, unless, all, any, define, set_privacy, set_default_privacy, eval\e[0m
       MESSAGE
     end
 
@@ -347,7 +347,7 @@ RSpec.describe Leftovers::Config do
         keep: {}
       YML
       expect { catch(:leftovers_exit) { config.keep } }.to output(<<~MESSAGE).to_stderr
-        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, names, paths, document, has_arguments, has_receiver, type, privacy, all, any, unless or an array\e[0m
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:1:6 keep must include at least one of match, has_prefix, has_suffix, names, paths, document, has_arguments, has_receiver, has_block, type, privacy, all, any, unless or an array\e[0m
       MESSAGE
     end
 
@@ -382,6 +382,19 @@ RSpec.describe Leftovers::Config do
       YML
       expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
         \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:4:18 has_value value must be any scalar value or a hash with any of names, match, has_prefix, has_suffix, has_arguments, at, has_value, has_receiver, type, unless\e[0m
+      MESSAGE
+    end
+
+    it 'can report errors when non-boolean values for has_block' do
+      config = described_class.new('invalid', content: <<~YML)
+        dynamic:
+          - names: fancy
+            has_block: argument
+            calls:
+              argument: 1
+      YML
+      expect { catch(:leftovers_exit) { config.dynamic } }.to output(<<~MESSAGE).to_stderr
+        \e[2K\e[31mConfig SchemaError: lib/config/invalid.yml:3:15 has_block must be true or false\e[0m
       MESSAGE
     end
 

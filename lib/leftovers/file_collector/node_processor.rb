@@ -90,6 +90,13 @@ module Leftovers
         @collector.collect_commented_dynamic(node)
       end
 
+      # why are block args the parent of send/csend
+      def on_block(node)
+        node.first.parent = node
+
+        super
+      end
+
       # grab e.g. :to_s in each(&:to_s)
       def on_block_pass(node)
         super

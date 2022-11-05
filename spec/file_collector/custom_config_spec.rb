@@ -2570,6 +2570,88 @@ RSpec.describe Leftovers::FileCollector do
     it { is_expected.to have_no_definitions.and(have_calls(:bar, :baz, :my_method)) }
   end
 
+  context 'with dynamic has_block' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_block: true
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        def my_method; end
+        my_method('yes') { |no| no }
+        my_method('yes2', 'foo', &:block)
+        my_method('no')
+        my_method() { |no| no }
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(:my_method)
+        .and(have_calls(:yes, :yes2, :my_method, :block))
+    end
+  end
+
+  context 'with dynamic has_block with ambiguously constant/method name' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: MyMethod
+            has_block: true
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        def MyMethod; end
+        MyMethod('yes') { |no| no }
+        MyMethod('yes2', 'foo', &:block)
+        MyMethod('no')
+        MyMethod() { |no| no }
+        ::MyMethod = 'whatever'
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(:MyMethod)
+        .and(have_calls(:yes, :yes2, :MyMethod, :block))
+    end
+  end
+
+  context 'with dynamic has_block: false' do
+    let(:config) do
+      <<~YML
+        dynamic:
+          - name: my_method
+            has_block: false
+            calls:
+              arguments: 0
+      YML
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        def my_method(&block); end
+        my_method('no') { |no| no }
+        my_method('no', 'foo', &:block)
+        my_method('yes')
+        my_method() { |no| no }
+      RUBY
+    end
+
+    it do
+      expect(subject).to have_definitions(:my_method)
+        .and(have_calls(:yes, :my_method, :block))
+    end
+  end
+
   context 'with find has_argument with a mix of kw and index array acts like or' do
     let(:config) do
       <<~YML

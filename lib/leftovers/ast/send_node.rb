@@ -14,11 +14,24 @@ module Leftovers
       end
 
       def arguments
-        @memo[:arguments] ||= children.drop(2)
+        @memo[:arguments] ||= if block_pass_argument?
+          children[2...-1]
+        else
+          children.drop(2)
+        end
       end
 
       def as_arguments_list
         first.as_arguments_list if name == :freeze
+      end
+
+      def block_pass_argument?
+        last_child = children.last
+        last_child.respond_to?(:type) && last_child.type == :block_pass
+      end
+
+      def block_given?
+        block_pass_argument? || parent&.type == :block
       end
     end
   end

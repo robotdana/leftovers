@@ -156,7 +156,7 @@ dynamic:
     calls: 1
     unless:
       - has_argument: 2
-      # - has_block_argument: true
+      - has_block: true
 
   # https://api.rubyonrails.org/classes/ActiveSupport/Callbacks/ClassMethods.html#method-i-skip_callback
   - name: skip_callback

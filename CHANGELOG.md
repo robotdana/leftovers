@@ -1,3 +1,8 @@
+# Unreleased
+
+- add `has_block: true/false` for matching method calls with a block.
+- fix block_pass (`call(&block)`) being considered a regular argument, which meant the keyword arguments was a hash in the second-last position instead of the last position, so weren't keyword arguments, and also inflated how many positional arguments there were.
+
 # v0.11.1
 - Fixed an issue with parsing files that have `MyConstant ||= value` patterns #19 (thanks for the pr - @kamoh)
 

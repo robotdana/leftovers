@@ -16,12 +16,13 @@ module Leftovers
           end
         end
 
-        def build_from_hash( # rubocop:disable Metrics/ParameterLists
+        def build_from_hash( # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
           names: nil, match: nil, has_prefix: nil, has_suffix: nil,
           document: false,
           paths: nil,
           has_arguments: nil,
           has_receiver: nil,
+          has_block: nil,
           type: nil,
           privacy: nil,
           unless_arg: nil, all: nil, any: nil
@@ -31,6 +32,7 @@ module Leftovers
             ::Leftovers::MatcherBuilders::Document.build(document),
             ::Leftovers::MatcherBuilders::NodePath.build(paths),
             ::Leftovers::MatcherBuilders::NodeHasArgument.build(has_arguments),
+            ::Leftovers::MatcherBuilders::NodeHasBlock.build(has_block),
             ::Leftovers::MatcherBuilders::NodeHasReceiver.build(has_receiver),
             ::Leftovers::MatcherBuilders::NodePrivacy.build(privacy),
             ::Leftovers::MatcherBuilders::NodeType.build(type),
