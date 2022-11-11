@@ -7,33 +7,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.5, 2.6, 2.7, '3.0', 3.1, ruby-head]
+        include:
+          - { name: ruby 2.5.x,        ruby: 2.5,   gemfile: null, coverage: 0 }
+          - { name: ruby 2.6.x,        ruby: 2.6,   gemfile: null, coverage: 0 }
+          - { name: ruby 2.7.x,        ruby: 2.7,   gemfile: null, coverage: 0 }
+          # forking and simplecov dont work in 3.1, so we run coverage in 3.0
+          - { name: ruby 3.0.x,        ruby: '3.0', gemfile: null, coverage: 1 }
+          - { name: ruby 3.1.x,        ruby: 3.1,   gemfile: null, coverage: 0 }
+
+          - { name: activesupport 6.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 7.0'", coverage: 0 }
+          - { name: activesupport 6.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 6.0'", coverage: 0 }
+          - { name: activesupport 5.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 5.0'", coverage: 0 }
+          - { name: activesupport 4.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 4.0'", coverage: 0 }
+          - { name: activesupport 3.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 3.0'", coverage: 0 }
+
+          - { name: haml 6.x,          ruby: 3.1,   gemfile: "gem 'haml', '~> 6.0'", coverage: 0 }
+          - { name: haml 5.x,          ruby: 3.1,   gemfile: "gem 'haml', '~> 5.0'", coverage: 0 }
+
+          - { name: slim 4.x,          ruby: 3.1,   gemfile: "gem 'slim', '~> 4.0'", coverage: 0 }
+          - { name: slim 3.x,          ruby: 3.1,   gemfile: "gem 'slim', '~> 3.0'", coverage: 0 }
     continue-on-error: ${{ endsWith(matrix.ruby, 'head') }}
     runs-on: ubuntu-latest
+    env:
+      COVERAGE: ${{ matrix.coverage }}
+    name: rspec (${{matrix.name }})
     steps:
     - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - run: gem install did_you_mean; bundle exec rspec
+    - run: echo "${{ matrix.gemfile }}" >> Gemfile; bundle update
+      if: ${{ !! matrix.gemfile }}
 
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-          bundler-cache: true
-      - run: gem install did_you_mean; COVERAGE=1 bundle exec rspec
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: coverage-report
-          path: 'coverage/*'
-          retention-days: 1
-        if: ${{ failure() }}
+    - run: bundle exec rspec
+    - uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: 'coverage/*'
+        retention-days: 1
+      if: ${{ matrix.coverage && failure() }}
 
   rubocop:
     runs-on: ubuntu-latest
@@ -43,7 +56,7 @@ jobs:
       with:
         ruby-version: 3.1
         bundler-cache: true
-    - run: gem install did_you_mean; bundle exec rubocop
+    - run: bundle exec rubocop
 
   spellr:
     runs-on: ubuntu-latest
@@ -53,7 +66,7 @@ jobs:
       with:
         ruby-version: 3.1
         bundler-cache: true
-    - run: gem install did_you_mean; bundle exec spellr
+    - run: bundle exec spellr
 
   leftovers:
     runs-on: ubuntu-latest
@@ -63,7 +76,7 @@ jobs:
       with:
         ruby-version: 3.1
         bundler-cache: true
-    - run: gem install did_you_mean; bundle exec leftovers
+    - run: bundle exec leftovers
 
   build:
     runs-on: ubuntu-latest
@@ -73,7 +86,7 @@ jobs:
       with:
         ruby-version: 3.1
         bundler-cache: true
-    - run: gem install did_you_mean; bundle exec rake build
+    - run: bundle exec rake build
 
   autoload:
     runs-on: ubuntu-latest
@@ -83,4 +96,4 @@ jobs:
       with:
         ruby-version: 3.1
         bundler-cache: true
-    - run: gem install did_you_mean; bundle exec rake test_autoload[10]
+    - run: bundle exec rake test_autoload[10]

@@ -4,7 +4,7 @@ require 'fileutils'
 ::FileUtils.rm_rf(::File.join(__dir__, '..', 'coverage'))
 require 'bundler/setup'
 
-require 'simplecov' if ::ENV['COVERAGE']
+require 'simplecov' if ::ENV['COVERAGE'] == '1'
 
 require_relative '../lib/leftovers'
 require 'timecop'
