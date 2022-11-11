@@ -1,4 +1,4 @@
-# frozen-string-literal: true
+# frozen_string_literal: true
 
 ::RSpec.describe ::Leftovers::Runner do
   describe '.leftovers', :with_temp_dir do

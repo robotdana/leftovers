@@ -109,7 +109,7 @@ Metrics:
   CountComments: false
 
 Metrics/BlockLength:
-  IgnoredMethods:
+  AllowedMethods:
     - configure
     - describe
     - context

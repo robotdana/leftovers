@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# frozen-string-literal: true
+# frozen_string_literal: true
 
 @count = 0
 
