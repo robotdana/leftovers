@@ -1,20 +1,31 @@
-# frozen-string-literal: true
+# frozen_string_literal: true
 
 module Leftovers
   class PrecompileError < Error
     attr_reader :line, :column
 
-    def initialize(message, line: nil, column: nil)
+    def initialize(message, line: nil, column: nil, display_class: nil)
       @line = line
       @column = column
+      @display_class = display_class
       super(message)
     end
 
     def warn(path:)
-      line_column = ":#{line}#{":#{column}" if column}" if line
-      klass = cause ? cause.class : self.class
+      ::Leftovers.warn "#{display_class}: #{path}#{location} #{message}"
+    end
 
-      ::Leftovers.warn "#{klass}: #{path}#{line_column} #{message}"
+    private
+
+    def display_class
+      @display_class || cause&.class || self.class
+    end
+
+    def location
+      return unless line
+      return ":#{line}" unless column
+
+      ":#{line}:#{column}"
     end
   end
 end

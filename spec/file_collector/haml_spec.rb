@@ -43,6 +43,24 @@ require 'spec_helper'
     end
   end
 
+  context 'with invalid haml file on a different line' do
+    let(:haml) do
+      <<~HAML
+        %a text
+        %a text
+
+          %a text
+      HAML
+    end
+
+    it 'outputs an error and collects nothing' do
+      expect { subject }.to print_warning(<<~STDERR)
+        Haml::SyntaxError: foo.haml:3 Illegal nesting: content can't be both given on the same line as %a and nested within it.
+      STDERR
+      expect(subject).to have_no_definitions.and(have_no_calls)
+    end
+  end
+
   context 'with haml files with hidden scripts' do
     let(:haml) do
       <<~HAML
