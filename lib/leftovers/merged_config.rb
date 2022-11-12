@@ -17,7 +17,7 @@ module Leftovers
 
     def initialize(load_defaults: false)
       @configs = []
-      @loaded_configs = ::Set.new
+      @loaded_configs = ::Set.new.compare_by_identity
       return unless load_defaults
 
       self << :ruby

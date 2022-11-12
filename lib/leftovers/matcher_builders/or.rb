@@ -66,7 +66,7 @@ module Leftovers
         end
 
         def build_grouped(set: nil, regexp: nil, nil: nil, **matcher_classes) # rubocop:disable Lint/UnusedMethodArgument i want to throw away nils
-          set = set.to_set.compare_by_identity if set.is_a?(::Array)
+          set = set.to_set.compare_by_identity.freeze if set.is_a?(::Array)
           regexp = ::Regexp.union(regexp) if regexp.is_a?(::Array)
           matcher_classes = matcher_classes.each_value.flat_map do |matchers|
             build_grouped_for_matcher(matchers)

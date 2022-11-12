@@ -59,8 +59,8 @@ module Leftovers
     end
 
     def freeze_calls
-      @calls = @calls.to_set.freeze
-      @test_calls = @test_calls.to_set.freeze
+      @calls = @calls.to_set.compare_by_identity.freeze
+      @test_calls = @test_calls.to_set.compare_by_identity.freeze
     end
   end
 end
