@@ -15,7 +15,7 @@ jobs:
           - { name: ruby 3.0.x,        ruby: '3.0', gemfile: null, coverage: 1 }
           - { name: ruby 3.1.x,        ruby: 3.1,   gemfile: null, coverage: 0 }
 
-          - { name: activesupport 6.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 7.0'", coverage: 0 }
+          - { name: activesupport 7.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 7.0'", coverage: 0 }
           - { name: activesupport 6.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 6.0'", coverage: 0 }
           - { name: activesupport 5.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 5.0'", coverage: 0 }
           - { name: activesupport 4.x, ruby: 3.1,   gemfile: "gem 'activesupport', '~> 4.0'", coverage: 0 }
@@ -38,7 +38,7 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - run: echo "${{ matrix.gemfile }}" >> Gemfile; bundle update
-      if: ${{ !! matrix.gemfile }}
+      if: ${{ matrix.gemfile }}
 
     - run: bundle exec rspec
     - uses: actions/upload-artifact@v2
