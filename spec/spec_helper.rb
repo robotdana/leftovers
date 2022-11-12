@@ -75,6 +75,7 @@ end
 
   diffable
 end
+
 ::RSpec::Matchers.define :have_calls_excluding do |*expected|
   match do |actual|
     @actual = actual.calls.uniq

@@ -62,3 +62,24 @@ dynamic:
       has_argument: 1
     defines: 0
     path: /spec/
+
+  - name: define
+    has_receiver:
+      match: Matchers
+      has_receiver: RSpec
+    defines:
+      argument: 0
+    path: /spec/
+
+  - name: matcher
+    has_block: true
+    defines:
+      argument: 0
+    path: /spec/
+
+  - name: alias_matcher
+    defines:
+      argument: 0
+    calls:
+      argument: 1
+    path: /spec/
