@@ -185,6 +185,7 @@ see the [built in config files](https://github.com/robotdana/leftovers/tree/main
   Add the method/pattern to the `dynamic:` list with `skip: true` in the `.leftovers.yml`, or add an inline comment with the list of possibilities `# leftovers:call my_method_1, my_method_2`.
 - Leftovers compares by name only, so multiple definitions with the same name will count as used even if only one is.
 - haml, slim & erb line and column numbers will be wrong as the files have to be precompiled before checking.
+- dynamic calls & definitions based on values copied by rails `with_options` method aren't captured by leftovers.
 
 ## Other tools
 
