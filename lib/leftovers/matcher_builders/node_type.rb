@@ -15,8 +15,14 @@ module Leftovers
           when :Array then Matchers::NodeType.new(:array)
           when :Hash then Matchers::NodeType.new(:hash)
           when :Proc then Matchers::NodeIsProc
-          when :Method then Matchers::NodeType.new(::Set[:send, :csend, :def, :defs].compare_by_identity.freeze)
-          when :Constant then Matchers::NodeType.new(::Set[:const, :class, :module, :casgn].compare_by_identity.freeze)
+          when :Method
+            Matchers::NodeType.new(
+              ::Set[:send, :csend, :def, :defs].compare_by_identity.freeze
+            )
+          when :Constant
+            Matchers::NodeType.new(
+              ::Set[:const, :class, :module, :casgn].compare_by_identity.freeze
+            )
           # :nocov:
           else raise UnexpectedCase, "Unhandled value #{type.inspect}"
             # :nocov:
