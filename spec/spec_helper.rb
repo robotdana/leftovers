@@ -103,15 +103,6 @@ end
   diffable
 end
 
-::RSpec::Matchers.define :have_no_test_only_definitions do
-  match do |actual|
-    @actual = actual.definitions.compact.select(&:test?)
-    expect(@actual).to be_empty
-  end
-
-  diffable
-end
-
 ::RSpec::Matchers.define :have_no_calls do
   match do |actual|
     @actual = actual.calls
