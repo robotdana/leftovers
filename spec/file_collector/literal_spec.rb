@@ -379,8 +379,9 @@ require 'spec_helper'
     end
 
     it 'has an error message' do
-      expect { collector }.to print_warning(<<~MESSAGE)
-        \e[31mfoo.rb:3:0 SyntaxError: unexpected token $end\e[0m
+      expect { collector }.to raise_error(::Leftovers::Error, <<~MESSAGE.chomp)
+        SyntaxError: unexpected token $end
+          when processing foo.rb:3:0
       MESSAGE
     end
   end

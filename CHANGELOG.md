@@ -1,3 +1,7 @@
+# v0.12.0
+- improve error handling when a file can't be processed
+- fail rather than warn when encountering a syntax error in a file being processed
+
 # v0.11.2
 
 - add `has_block: true/false` for matching method calls with a block.

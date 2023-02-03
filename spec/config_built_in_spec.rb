@@ -10,10 +10,8 @@
     gems.each do |gem|
       it gem do
         expect do
-          catch(:leftovers_exit) do
-            described_class.new(gem).tap do |c|
-              config_methods.each { |method| c.send(method) }
-            end
+          described_class.new(gem).tap do |c|
+            config_methods.each { |method| c.send(method) }
           end
         end.not_to output.to_stderr
       end
@@ -26,10 +24,8 @@
 
       it 'can build the voltron (sorted)' do
         expect do
-          catch(:leftovers_exit) do
-            gems.sort.each { |gem| ::Leftovers.config << gem }
-            merged_config_methods.each { |method| ::Leftovers.config.send(method) }
-          end
+          gems.sort.each { |gem| ::Leftovers.config << gem }
+          merged_config_methods.each { |method| ::Leftovers.config.send(method) }
         end.not_to output.to_stderr
       end
 
@@ -40,10 +36,8 @@
           srand ::RSpec.configuration.seed + iteration
 
           expect do
-            catch(:leftovers_exit) do
-              gems.shuffle.each { |gem| ::Leftovers.config << gem }
-              merged_config_methods.each { |method| ::Leftovers.config.send(method) }
-            end
+            gems.shuffle.each { |gem| ::Leftovers.config << gem }
+            merged_config_methods.each { |method| ::Leftovers.config.send(method) }
           end.not_to output.to_stderr
         end
       end

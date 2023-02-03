@@ -4,7 +4,17 @@ require 'parser'
 
 module Leftovers
   class FileCollector
-    class NodeProcessor < ::Parser::AST::Processor
+    class NodeProcessor < ::Parser::AST::Processor # rubocop:disable Metrics/ClassLength
+      include Autoloader
+
+      def process(ast)
+        super
+      rescue FileCollector::Error
+        raise
+      rescue StandardError => e
+        raise Error.new(e.message, ast)
+      end
+
       def initialize(collector) # rubocop:disable Lint/MissingSuper # there isn't one to call
         @collector = collector
       end

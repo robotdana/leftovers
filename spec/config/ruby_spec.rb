@@ -202,7 +202,55 @@ require 'spec_helper'
     it 'raises an error with the filename of the file being checked' do
       expect { collector }.to raise_error(
         ::Leftovers::Error,
-        "ArgumentError: original message\nwhen processing attr_reader at foo.rb:1:0"
+        "ArgumentError: original message\n  when processing attr_reader at foo.rb:1:0"
+      )
+    end
+  end
+
+  context 'with a processing error within eval' do
+    before do
+      allow(::Leftovers::Processors::AddCall)
+        .to receive(:process).and_raise(::ArgumentError, 'original message')
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        "a string to offset things"
+        instance_eval <<~MY_RUBY, __FILE__, __LINE__ + 1
+          "something else"; attr_reader :method_name # leftovers:allow
+        MY_RUBY
+      RUBY
+    end
+
+    # this seems to be the wrong line because of heredoc weirdness i don't want to solve today
+    it 'raises an error with the filename of the file being checked' do
+      expect { collector }.to raise_error(
+        ::Leftovers::Error,
+        "ArgumentError: original message\n  when processing attr_reader at foo.rb:2:32"
+      )
+    end
+  end
+
+  context 'with a collector error within eval' do
+    before do
+      allow(::Leftovers::FileCollector::NodeProcessor)
+        .to receive(:new).and_raise(::ArgumentError, 'original message')
+    end
+
+    let(:ruby) do
+      <<~RUBY
+        "a string to offset things"
+        instance_eval <<~MY_RUBY, __FILE__, __LINE__ + 1
+          "something else"; attr_reader :method_name # leftovers:allow
+        MY_RUBY
+      RUBY
+    end
+
+    # this seems to be the wrong line because of heredoc weirdness i don't want to solve today
+    it 'raises an error with the filename of the file being checked' do
+      expect { collector }.to raise_error(
+        ::Leftovers::Error,
+        "ArgumentError: original message\n  when processing foo.rb"
       )
     end
   end

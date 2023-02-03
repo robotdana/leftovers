@@ -9,11 +9,14 @@ module Leftovers
     end
 
     def run
-      catch(:leftovers_exit) do
-        parse_options
+      parse_options
 
-        runner.run
-      end
+      runner.run
+    rescue ::Leftovers::Error => e
+      Leftovers.warn("\e[31m#{e.class}: #{e.message}\e[0m\n\n#{e.backtrace.join("\n")}")
+      1
+    rescue ::Leftovers::Exit => e
+      e.status # what why?
     end
 
     private

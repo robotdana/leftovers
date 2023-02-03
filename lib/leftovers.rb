@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 module Leftovers
+  class Exit < ::StandardError
+    attr_reader :status
+
+    def initialize(status) # rubocop:disable Lint/MissingSuper
+      @status = status
+    end
+  end
+
   require_relative 'leftovers/autoloader'
   include Autoloader
 
@@ -44,7 +52,7 @@ module Leftovers
     def error(message, did_you_mean = nil)
       warn("\e[31m#{message}\e[0m")
       warn("\n#{did_you_mean}") if did_you_mean
-      exit 1
+      raise Exit, 1
     end
 
     def puts(message)
@@ -60,7 +68,7 @@ module Leftovers
     end
 
     def exit(status = 0)
-      throw :leftovers_exit, status
+      raise Exit, status
     end
 
     def try_require(requirable, message: nil)

@@ -4,6 +4,8 @@ require 'set'
 
 module Leftovers
   class FileCollector
+    class Error < ::Leftovers::Error; end
+
     include Autoloader
 
     attr_reader :calls, :allow_lines, :test_lines, :dynamic_lines
@@ -35,15 +37,27 @@ module Leftovers
       list
     end
 
-    def collect(ruby = @ruby, line = 1)
+    def collect(ruby = @ruby, line = 1) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       ast, comments = Parser.parse_with_comments(ruby, @file.relative_path, line)
       CommentsProcessor.process(comments, self)
       NodeProcessor.new(self).process(ast)
     rescue ::Parser::SyntaxError => e
-      ::Leftovers.warn(
-        "\e[31m#{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column} " \
-          "SyntaxError: #{e.message}\e[0m"
-      )
+      raise Error, <<~MESSAGE.chomp, e.backtrace
+        SyntaxError: #{e.message}
+          when processing #{filename}:#{e.diagnostic.location.line}:#{e.diagnostic.location.column}
+      MESSAGE
+    rescue NodeProcessor::Error => e
+      raise Error, <<~MESSAGE.chomp, e.backtrace
+        #{e.cause.class}: #{e.message}
+          when processing #{e.node} at #{filename}:#{e.node.loc.line}:#{e.node.loc.column}
+      MESSAGE
+    rescue Error
+      raise
+    rescue ::StandardError => e
+      raise Error, <<~MESSAGE.chomp, e.backtrace
+        #{e.class}: #{e.message}
+          when processing #{filename}
+      MESSAGE
     end
 
     def collect_subfile(string, location)
@@ -112,9 +126,6 @@ module Leftovers
 
     def collect_dynamic(node)
       ::Leftovers.config.dynamic.process(nil, node, node, self)
-    rescue ::StandardError => e
-      raise Error, "#{e.class}: #{e.message}\n" \
-        "when processing #{node} at #{filename}:#{node.loc.line}:#{node.loc.column}", e.backtrace
     end
 
     private

@@ -196,6 +196,17 @@ require 'parallel'
         STDOUT
       end
 
+      it 'runs with an error while collecting' do
+        allow(::Leftovers::FileCollector::NodeProcessor).to receive(:new).and_raise(ArgumentError,
+                                                                                    "don't")
+        expect { run }.to print_error_and_exit(
+          %r{
+            \e\[31mLeftovers::FileCollector::Error:\ ArgumentError:\ don't\n
+            \ \ when\ processing\ app/foo.rb\e\[0m\n\n
+          }x
+        )
+      end
+
       it 'runs with --write-todo' do
         Timecop.freeze('2021-06-14T22:03:35 UTC')
         expect { run('--write-todo') }.to print_output_and_exit_with_success <<~STDOUT

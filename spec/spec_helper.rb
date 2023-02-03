@@ -145,7 +145,14 @@ end
   match(notify_expectation_failures: true) do |actual|
     expects_output!
 
-    return_value = catch(:leftovers_exit) { actual.call }
+    return_value = begin
+      actual.call
+    rescue ::Leftovers::Exit => e
+      e.status
+    rescue ::Leftovers::Error
+      1
+    end
+
     @actual = TTYString.parse(Leftovers.stderr.string, clear_style: false)
 
     return_value == 1 &&
@@ -176,7 +183,14 @@ end
   match(notify_expectation_failures: true) do |actual|
     expects_output!
 
-    return_value = catch(:leftovers_exit) { actual.call }
+    return_value = begin
+      actual.call
+    rescue ::Leftovers::Exit => e
+      e.status
+    rescue ::Leftovers::Error
+      1
+    end
+
     @actual = TTYString.parse(Leftovers.stdout.string, clear_style: false)
 
     return_value == 0 &&
@@ -192,7 +206,14 @@ end
   match(notify_expectation_failures: true) do |actual|
     expects_output!
 
-    return_value = catch(:leftovers_exit) { actual.call }
+    return_value = begin
+      actual.call
+    rescue ::Leftovers::Exit => e
+      e.status
+    rescue ::Leftovers::Error
+      1
+    end
+
     @actual = TTYString.parse(Leftovers.stdout.string, clear_style: false)
 
     return_value == 1 &&

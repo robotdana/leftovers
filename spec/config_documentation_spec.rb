@@ -12,10 +12,8 @@ require 'fast_ignore'
       file.read.scan(/(?<=```yml\n)[^`]*(?=\n```\n)/).each.with_index(1) do |yaml, index|
         it "#{file.relative_path} example #{index}\n\e[0m#{yaml}" do
           expect do
-            catch(:leftovers_exit) do
-              described_class.new('docs', path: "#{file}:#{index}", content: yaml).tap do |c|
-                config_methods.each { |method| c.send(method) }
-              end
+            described_class.new('docs', path: "#{file}:#{index}", content: yaml).tap do |c|
+              config_methods.each { |method| c.send(method) }
             end
           end.not_to output.to_stderr
         end
