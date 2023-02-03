@@ -248,4 +248,4 @@ Style/RedundantConstantBase:
   Enabled: false
 
 Gemspec/DevelopmentDependencies:
-  Enabled: false # it means i can't do the gem matrix thing i'm doing ini ci.
+  Enabled: false # it means i can't do the gem matrix thing i'm doing in ci.
