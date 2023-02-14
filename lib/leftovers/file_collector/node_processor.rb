@@ -110,7 +110,7 @@ module Leftovers
       # grab e.g. :to_s in each(&:to_s)
       def on_block_pass(node)
         super
-        return unless node.first.sym?
+        return unless node.first&.sym?
 
         @collector.calls << node.first.to_sym
       end

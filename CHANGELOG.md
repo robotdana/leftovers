@@ -1,3 +1,7 @@
+# v0.12.1
+
+- handle anonymous block arguments e.g. `def method(&); other_method(&); end`. thanks @sclarsen and @orien and @juanlujoanne
+
 # v0.12.0
 - improve error handling when a file can't be processed
 - fail rather than warn when encountering a syntax error in a file being processed

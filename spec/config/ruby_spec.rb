@@ -100,6 +100,16 @@ require 'spec_helper'
     it { is_expected.to have_definitions(:foo).and(have_no_calls) }
   end
 
+  context 'with methods defined using unnamed block pass' do
+    let(:ruby) do
+      <<~RUBY
+        def foo(&); send(&); end
+      RUBY
+    end
+
+    it { is_expected.to have_definitions(:foo).and(have_calls(:send)) }
+  end
+
   context 'with method calls using send with interpolated lvars' do
     let(:ruby) do
       <<~RUBY
