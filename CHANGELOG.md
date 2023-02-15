@@ -1,6 +1,6 @@
 # v0.12.1
 
-- handle anonymous block arguments e.g. `def method(&); other_method(&); end`. thanks @sclarsen and @orien and @juanlujoanne
+- handle anonymous block arguments e.g. `def method(&); other_method(&); end`. thanks @sclarson and @orien and @juanlujoanne
 
 # v0.12.0
 - improve error handling when a file can't be processed
