@@ -26,6 +26,7 @@ require 'tty_string'
   require_relative './support/temp_file_helper'
   require_relative './support/cli_helper'
   require_relative './support/expects_output_helper'
+  require_relative './support/ruby_version_helper'
 
   config.after do
     Timecop.return

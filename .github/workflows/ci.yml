@@ -11,11 +11,10 @@ jobs:
           - { name: ruby 2.5.x,        ruby: 2.5,   gemfile: null, coverage: 0 }
           - { name: ruby 2.6.x,        ruby: 2.6,   gemfile: null, coverage: 0 }
           - { name: ruby 2.7.x,        ruby: 2.7,   gemfile: null, coverage: 0 }
-          # forking and simplecov dont work in 3.1, so we run coverage in 3.0
-          - { name: ruby 3.0.x,        ruby: '3.0', gemfile: null, coverage: 1 }
+          - { name: ruby 3.0.x,        ruby: '3.0', gemfile: null, coverage: 0 }
           - { name: ruby 3.1.x,        ruby: 3.1,   gemfile: null, coverage: 0 }
-          - { name: ruby 3.2.x,        ruby: 3.2,   gemfile: null, coverage: 0 }
-          - { name: ruby head,         ruby: head,   gemfile: null, coverage: 0 }
+          - { name: ruby 3.2.x,        ruby: 3.2,   gemfile: null, coverage: 1 }
+          - { name: ruby head,         ruby: head,  gemfile: null, coverage: 0 }
 
           - { name: activesupport 7.x, ruby: 3.2,   gemfile: "gem 'activesupport', '~> 7.0'", coverage: 0 }
           - { name: activesupport 6.x, ruby: 3.2,   gemfile: "gem 'activesupport', '~> 6.0'", coverage: 0 }

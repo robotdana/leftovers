@@ -42,6 +42,7 @@ i'm
 ips
 jpg
 json
+juanlujoanne
 kamoh
 kchecked
 kjson
@@ -59,6 +60,7 @@ noninfringement
 numericality
 ofs
 okcomputer
+orien
 orm
 overwritable
 palexvs
@@ -80,6 +82,7 @@ rubo
 rubocop
 rvm
 schemas
+sclarsen
 sherson
 sidekiq
 simplecov
