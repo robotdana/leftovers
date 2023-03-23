@@ -13,15 +13,18 @@ module Leftovers
         freeze
       end
 
-      def process(str, current_node, matched_node, acc)
+      def process(str, current_node, matched_node, acc) # rubocop:disable Metrics/MethodLength
         set = DefinitionNodeSet.new
 
         @processors.each do |processor|
           processor.process(str, current_node, matched_node, set)
         end
 
-        if set.definitions.length == 1
+        case set.definitions.length
+        when 1
           acc.add_definition_node set.definitions.first
+        when 0
+          nil
         else
           acc.add_definition_set set
         end

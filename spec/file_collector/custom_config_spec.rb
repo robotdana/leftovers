@@ -3096,6 +3096,19 @@ require 'spec_helper'
       expect(subject).to have_definitions(:try_acting!, :try_acting)
         .and(have_calls(:delegate_with_bang, :acting, :try))
     end
+
+    context 'with only non string/symbol values' do
+      let(:ruby) do
+        <<~RUBY
+          delegate_with_bang acting, to: :try
+        RUBY
+      end
+
+      it do
+        expect(subject).to have_no_definitions
+          .and(have_calls(:delegate_with_bang, :acting, :try))
+      end
+    end
   end
 
   context 'with all public constants being kept' do

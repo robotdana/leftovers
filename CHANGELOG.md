@@ -1,3 +1,6 @@
+# v0.12.2
+- fix for structures like activerecord `attribute a_variable_we_cant_get_a_string_out_of` leaving empty definition sets. thanks @gentlemich
+
 # v0.12.1
 
 - handle anonymous block arguments e.g. `def method(&); other_method(&); end`. thanks @sclarson and @orien and @juanlujoanne
