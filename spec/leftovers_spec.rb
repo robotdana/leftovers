@@ -21,9 +21,7 @@
 
       expect(
         subject.instance_variables
-      ).to contain_exactly(
-        *::Leftovers::MEMOIZED_IVARS
-      )
+      ).to match_array(::Leftovers::MEMOIZED_IVARS)
 
       described_class.reset
 

@@ -350,7 +350,7 @@ require 'spec_helper'
       titleize
       underscore
     }.each do |method|
-      context "for #{method}" do
+      context "when using #{method}" do
         before do
           allow_any_instance_of(::String).to receive(method) # rubocop:disable RSpec/AnyInstance # not sure how else i'd solve this
             .and_raise(::NoMethodError)

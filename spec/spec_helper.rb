@@ -37,7 +37,7 @@ end
 ::RSpec::Matchers.define :have_definitions do |*expected|
   match do |actual|
     @actual = actual.definitions.compact.flat_map(&:names).uniq
-    expect(@actual).to contain_exactly(*expected)
+    expect(@actual).to match_array(expected)
   end
 
   diffable
@@ -45,7 +45,7 @@ end
 ::RSpec::Matchers.define :have_non_test_definitions do |*expected|
   match do |actual|
     @actual = actual.definitions.compact.reject(&:test?).flat_map(&:names).uniq
-    expect(@actual).to contain_exactly(*expected)
+    expect(@actual).to match_array(expected)
   end
 
   diffable
@@ -54,7 +54,7 @@ end
 ::RSpec::Matchers.define :have_test_only_definitions do |*expected|
   match do |actual|
     @actual = actual.definitions.compact.select(&:test?).flat_map(&:names).uniq
-    expect(@actual).to contain_exactly(*expected)
+    expect(@actual).to match_array(expected)
   end
 
   diffable
@@ -63,7 +63,7 @@ end
 ::RSpec::Matchers.define :have_calls do |*expected|
   match do |actual|
     @actual = actual.calls.uniq
-    expect(@actual).to contain_exactly(*expected)
+    expect(@actual).to match_array(expected)
   end
 
   diffable

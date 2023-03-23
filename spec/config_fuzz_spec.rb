@@ -9,7 +9,7 @@ require 'support/config_fuzzer'
 
   describe 'fuzzed config' do
     ::ENV.fetch('FUZZ_ITERATIONS', 10).to_i.times do |n|
-      context "iteration #{n}" do
+      context "iteration #{n}" do # rubocop:disable RSpec/ContextWording
         let(:yaml) { ::Leftovers::ConfigLoader::Fuzzer.new(n).to_yaml }
 
         it do
