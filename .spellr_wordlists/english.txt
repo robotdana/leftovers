@@ -84,6 +84,7 @@ rubocop
 rvm
 schemas
 sclarsen
+sclarson
 sherson
 sidekiq
 simplecov
